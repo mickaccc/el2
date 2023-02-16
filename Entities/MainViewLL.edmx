@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="DB_COS_LIEFERLISTE_SQLModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'DB_COS_LIEFERLISTE_SQL.dbo.lieferliste' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="lieferliste">
+          <Key>
+            <PropertyRef Name="AID" />
+            <PropertyRef Name="Dringend" />
+            <PropertyRef Name="Mappe" />
+            <PropertyRef Name="fertig" />
+            <PropertyRef Name="abgeschlossen" />
+          </Key>
+          <Property Name="AID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="AuftragFarbe" Type="nvarchar" MaxLength="10" />
+          <Property Name="Dringend" Type="bit" Nullable="false" />
+          <Property Name="Bemerkung" Type="nvarchar" MaxLength="255" />
+          <Property Name="Prio" Type="nvarchar" MaxLength="255" />
+          <Property Name="LieferTermin" Type="nvarchar" MaxLength="255" />
+          <Property Name="Text" Type="nvarchar" MaxLength="150" />
+          <Property Name="SysStatus" Type="nvarchar" MaxLength="255" />
+          <Property Name="VNR" Type="smallint" />
+          <Property Name="SpaetEnd" Type="datetime" />
+          <Property Name="VID" Type="varchar" MaxLength="255" />
+          <Property Name="Mappe" Type="bit" Nullable="false" />
+          <Property Name="Projekt" Type="nvarchar" MaxLength="50" />
+          <Property Name="Projektinfo" Type="nvarchar(max)" />
+          <Property Name="ProjektFarbe" Type="nvarchar" MaxLength="10" />
+          <Property Name="ArbBereich" Type="nvarchar" MaxLength="255" />
+          <Property Name="ArbBID" Type="int" />
+          <Property Name="ArbPlSAP" Type="varchar" MaxLength="255" />
+          <Property Name="PID" Type="int" />
+          <Property Name="SpaetStart" Type="datetime" />
+          <Property Name="fertig" Type="bit" Nullable="false" />
+          <Property Name="Arbeitsplatz" Type="nvarchar" MaxLength="80" />
+          <Property Name="RID" Type="int" />
+          <Property Name="RessName" Type="nvarchar" MaxLength="30" />
+          <Property Name="AuftragArt" Type="nvarchar" MaxLength="255" />
+          <Property Name="abgeschlossen" Type="bit" Nullable="false" />
+          <Property Name="ProjektArt" Type="nvarchar" MaxLength="255" />
+          <Property Name="Material" Type="varchar" MaxLength="255" />
+          <Property Name="Teil" Type="varchar" MaxLength="255" />
+          <Property Name="Plantermin" Type="nvarchar" MaxLength="7" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="Quantity-yield" Type="int" />
+          <Property Name="marker" Type="nchar" MaxLength="10" />
+          <Property Name="Bem_M" Type="varchar(max)" />
+          <Property Name="Bem_T" Type="varchar(max)" />
+          <Property Name="Bem_MA" Type="varchar(max)" />
+          <Property Name="Termin" Type="datetime" />
+          <Property Name="Quantity-miss" Type="int" />
+          <Property Name="Quantity-scrap" Type="int" />
+          <Property Name="Quantity-rework" Type="int" />
+          <Property Name="ausgebl" Type="bit" />
+          <Property Name="ProcessTime" Type="real" />
+        </EntityType>
+        <EntityContainer Name="DB_COS_LIEFERLISTE_SQLModelStoreContainer">
+          <EntitySet Name="lieferliste" EntityType="Self.lieferliste" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [lieferliste].[AID] AS [AID], 
+    [lieferliste].[AuftragFarbe] AS [AuftragFarbe], 
+    [lieferliste].[Dringend] AS [Dringend], 
+    [lieferliste].[Bemerkung] AS [Bemerkung], 
+    [lieferliste].[Prio] AS [Prio], 
+    [lieferliste].[LieferTermin] AS [LieferTermin], 
+    [lieferliste].[Text] AS [Text], 
+    [lieferliste].[SysStatus] AS [SysStatus], 
+    [lieferliste].[VNR] AS [VNR], 
+    [lieferliste].[SpaetEnd] AS [SpaetEnd], 
+    [lieferliste].[VID] AS [VID], 
+    [lieferliste].[Mappe] AS [Mappe], 
+    [lieferliste].[Projekt] AS [Projekt], 
+    [lieferliste].[Projektinfo] AS [Projektinfo], 
+    [lieferliste].[ProjektFarbe] AS [ProjektFarbe], 
+    [lieferliste].[ArbBereich] AS [ArbBereich], 
+    [lieferliste].[ArbBID] AS [ArbBID], 
+    [lieferliste].[ArbPlSAP] AS [ArbPlSAP], 
+    [lieferliste].[PID] AS [PID], 
+    [lieferliste].[SpaetStart] AS [SpaetStart], 
+    [lieferliste].[fertig] AS [fertig], 
+    [lieferliste].[Arbeitsplatz] AS [Arbeitsplatz], 
+    [lieferliste].[RID] AS [RID], 
+    [lieferliste].[RessName] AS [RessName], 
+    [lieferliste].[AuftragArt] AS [AuftragArt], 
+    [lieferliste].[abgeschlossen] AS [abgeschlossen], 
+    [lieferliste].[ProjektArt] AS [ProjektArt], 
+    [lieferliste].[Material] AS [Material], 
+    [lieferliste].[Teil] AS [Teil], 
+    [lieferliste].[Plantermin] AS [Plantermin], 
+    [lieferliste].[Quantity] AS [Quantity], 
+    [lieferliste].[Quantity-yield] AS [Quantity-yield], 
+    [lieferliste].[marker] AS [marker], 
+    [lieferliste].[Bem_M] AS [Bem_M], 
+    [lieferliste].[Bem_T] AS [Bem_T], 
+    [lieferliste].[Bem_MA] AS [Bem_MA], 
+    [lieferliste].[Termin] AS [Termin], 
+    [lieferliste].[Quantity-miss] AS [Quantity-miss], 
+    [lieferliste].[Quantity-scrap] AS [Quantity-scrap], 
+    [lieferliste].[Quantity-rework] AS [Quantity-rework], 
+    [lieferliste].[ausgebl] AS [ausgebl], 
+    [lieferliste].[ProcessTime] AS [ProcessTime]
+    FROM [dbo].[lieferliste] AS [lieferliste]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DB_COS_LIEFERLISTE_SQLModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="lieferliste">
+          <Key>
+            <PropertyRef Name="AID" />
+            <PropertyRef Name="Dringend" />
+            <PropertyRef Name="Mappe" />
+            <PropertyRef Name="fertig" />
+            <PropertyRef Name="abgeschlossen" />
+          </Key>
+          <Property Name="AID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="AuftragFarbe" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Dringend" Type="Boolean" Nullable="false" />
+          <Property Name="Bemerkung" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Prio" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="LieferTermin" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Text" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="SysStatus" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="VNR" Type="Int16" />
+          <Property Name="SpaetEnd" Type="DateTime" Precision="3" />
+          <Property Name="VID" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Mappe" Type="Boolean" Nullable="false" />
+          <Property Name="Projekt" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Projektinfo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ProjektFarbe" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ArbBereich" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ArbBID" Type="Int32" />
+          <Property Name="ArbPlSAP" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="PID" Type="Int32" />
+          <Property Name="SpaetStart" Type="DateTime" Precision="3" />
+          <Property Name="fertig" Type="Boolean" Nullable="false" />
+          <Property Name="Arbeitsplatz" Type="String" MaxLength="80" FixedLength="false" Unicode="true" />
+          <Property Name="RID" Type="Int32" />
+          <Property Name="RessName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="AuftragArt" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="abgeschlossen" Type="Boolean" Nullable="false" />
+          <Property Name="ProjektArt" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Material" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Teil" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Plantermin" Type="String" MaxLength="7" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" />
+          <Property Name="Quantity_yield" Type="Int32" />
+          <Property Name="marker" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Bem_M" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Bem_T" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Bem_MA" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Termin" Type="DateTime" Precision="3" />
+          <Property Name="Quantity_miss" Type="Int32" />
+          <Property Name="Quantity_scrap" Type="Int32" />
+          <Property Name="Quantity_rework" Type="Int32" />
+          <Property Name="ausgebl" Type="Boolean" />
+          <Property Name="ProcessTime" Type="Single" />
+        </EntityType>
+        <EntityContainer Name="EntitiesLL" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="lieferliste" EntityType="Self.lieferliste" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DB_COS_LIEFERLISTE_SQLModelStoreContainer" CdmEntityContainer="EntitiesLL">
+          <EntitySetMapping Name="lieferliste">
+            <EntityTypeMapping TypeName="DB_COS_LIEFERLISTE_SQLModel.lieferliste">
+              <MappingFragment StoreEntitySet="lieferliste">
+                <ScalarProperty Name="AID" ColumnName="AID" />
+                <ScalarProperty Name="AuftragFarbe" ColumnName="AuftragFarbe" />
+                <ScalarProperty Name="Dringend" ColumnName="Dringend" />
+                <ScalarProperty Name="Bemerkung" ColumnName="Bemerkung" />
+                <ScalarProperty Name="Prio" ColumnName="Prio" />
+                <ScalarProperty Name="LieferTermin" ColumnName="LieferTermin" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="SysStatus" ColumnName="SysStatus" />
+                <ScalarProperty Name="VNR" ColumnName="VNR" />
+                <ScalarProperty Name="SpaetEnd" ColumnName="SpaetEnd" />
+                <ScalarProperty Name="VID" ColumnName="VID" />
+                <ScalarProperty Name="Mappe" ColumnName="Mappe" />
+                <ScalarProperty Name="Projekt" ColumnName="Projekt" />
+                <ScalarProperty Name="Projektinfo" ColumnName="Projektinfo" />
+                <ScalarProperty Name="ProjektFarbe" ColumnName="ProjektFarbe" />
+                <ScalarProperty Name="ArbBereich" ColumnName="ArbBereich" />
+                <ScalarProperty Name="ArbBID" ColumnName="ArbBID" />
+                <ScalarProperty Name="ArbPlSAP" ColumnName="ArbPlSAP" />
+                <ScalarProperty Name="PID" ColumnName="PID" />
+                <ScalarProperty Name="SpaetStart" ColumnName="SpaetStart" />
+                <ScalarProperty Name="fertig" ColumnName="fertig" />
+                <ScalarProperty Name="Arbeitsplatz" ColumnName="Arbeitsplatz" />
+                <ScalarProperty Name="RID" ColumnName="RID" />
+                <ScalarProperty Name="RessName" ColumnName="RessName" />
+                <ScalarProperty Name="AuftragArt" ColumnName="AuftragArt" />
+                <ScalarProperty Name="abgeschlossen" ColumnName="abgeschlossen" />
+                <ScalarProperty Name="ProjektArt" ColumnName="ProjektArt" />
+                <ScalarProperty Name="Material" ColumnName="Material" />
+                <ScalarProperty Name="Teil" ColumnName="Teil" />
+                <ScalarProperty Name="Plantermin" ColumnName="Plantermin" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Quantity_yield" ColumnName="Quantity-yield" />
+                <ScalarProperty Name="marker" ColumnName="marker" />
+                <ScalarProperty Name="Bem_M" ColumnName="Bem_M" />
+                <ScalarProperty Name="Bem_T" ColumnName="Bem_T" />
+                <ScalarProperty Name="Bem_MA" ColumnName="Bem_MA" />
+                <ScalarProperty Name="Termin" ColumnName="Termin" />
+                <ScalarProperty Name="Quantity_miss" ColumnName="Quantity-miss" />
+                <ScalarProperty Name="Quantity_scrap" ColumnName="Quantity-scrap" />
+                <ScalarProperty Name="Quantity_rework" ColumnName="Quantity-rework" />
+                <ScalarProperty Name="ausgebl" ColumnName="ausgebl" />
+                <ScalarProperty Name="ProcessTime" ColumnName="ProcessTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

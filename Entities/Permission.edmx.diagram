@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="beaf9dbe7a0943af83ab5cabc6bec982" Name="Diagram1">
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.PermissionRoles" Width="1.5" PointX="1.75" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.Roles" Width="1.5" PointX="2.875" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.tblBerechtigung" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.tblUserListe" Width="1.5" PointX="6.5" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.UserRoles" Width="1.5" PointX="4.5" PointY="3.625" IsExpanded="true" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel2.FK_PermissionRoles_Roles" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel2.FK_PermissionRoles_tblBerechtigung" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel2.FK_UserRoles_Roles" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel2.FK_UserRoles_tblUserListe" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

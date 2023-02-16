@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="Lieferliste_WPF.DayLine" Collapsed="true">
+    <Position X="1.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAIAgAAAAAIAgAAAAGAAAAAAAAQAAAAAIAAAA=</HashCode>
+      <FileName>DayLine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lieferliste_WPF.TimeLine" Collapsed="true">
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QACAAAASAigABAAAYAAIBoAAgAAgCIAAQAAigAAIkAA=</HashCode>
+      <FileName>TimeLine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lieferliste_WPF.Working.ActionStripe" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAIAAMAiAggAIAAACAAB4AAAAQBQiBCQAAAAQEgAA=</HashCode>
+      <FileName>Working\ActionStripe.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lieferliste_WPF.Working.ShiftOne" Collapsed="true">
+    <Position X="1.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAAAEAiAAAAYAAAAAAQIAAAAAAAAAAQAIAAAAAAA=</HashCode>
+      <FileName>Working\ShiftOne.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lieferliste_WPF.Working.ShiftThree" Collapsed="true">
+    <Position X="5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAAAEAiAAAAYAAAAAAQIAAAAAAAAAAQAIAAAAAAA=</HashCode>
+      <FileName>Working\ShiftThree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lieferliste_WPF.Working.ShiftTwo" Collapsed="true">
+    <Position X="3.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAAAEAiAAAAYAAAAAAQIAAAAAAAAAAQAIAAAAAAA=</HashCode>
+      <FileName>Working\ShiftTwo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lieferliste_WPF.Working.StripePause" Collapsed="true">
+    <Position X="7.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAIAAAAEAiAAAAYAAAAAAQoAAAAAAAAAAQAIAAAAAAA=</HashCode>
+      <FileName>Working\StripePause.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lieferliste_WPF.Entities.Stripe" Collapsed="true">
+    <Position X="7.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAEAiAAAIIAAAAAAAIAoAAgAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Entities\Stripe.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

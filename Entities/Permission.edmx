@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="DB_COS_LIEFERLISTE_SQLModel2.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="PermissionRoles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="created" Type="datetime" Nullable="false" />
+          <Property Name="UserKey" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="RoleKey" Type="int" Nullable="false" />
+          <Property Name="PermissionKey" Type="nvarchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nchar" MaxLength="30" />
+          <Property Name="created" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblBerechtigung">
+          <Key>
+            <PropertyRef Name="Berechtigung" />
+          </Key>
+          <Property Name="Berechtigung" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tblUserListe">
+          <Key>
+            <PropertyRef Name="UserIdent" />
+          </Key>
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="Personalnummer" Type="nvarchar" MaxLength="50" />
+          <Property Name="UserIdent" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Gruppe" Type="int" />
+          <Property Name="Bereich" Type="int" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="Info" Type="nvarchar(max)" />
+          <Property Name="info_anzeigen" Type="bit" Nullable="false" />
+          <Property Name="exited" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserRoles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserIdent" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="RoleID" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_PermissionRoles_Roles">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PermissionRoles" Type="Self.PermissionRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PermissionRoles">
+              <PropertyRef Name="RoleKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PermissionRoles_tblBerechtigung">
+          <End Role="tblBerechtigung" Type="Self.tblBerechtigung" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PermissionRoles" Type="Self.PermissionRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblBerechtigung">
+              <PropertyRef Name="Berechtigung" />
+            </Principal>
+            <Dependent Role="PermissionRoles">
+              <PropertyRef Name="PermissionKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRoles_Roles">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserRoles">
+              <PropertyRef Name="RoleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRoles_tblUserListe">
+          <End Role="tblUserListe" Type="Self.tblUserListe" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUserListe">
+              <PropertyRef Name="UserIdent" />
+            </Principal>
+            <Dependent Role="UserRoles">
+              <PropertyRef Name="UserIdent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DB_COS_LIEFERLISTE_SQLModel2StoreContainer">
+          <EntitySet Name="PermissionRoles" EntityType="Self.PermissionRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblBerechtigung" EntityType="Self.tblBerechtigung" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblUserListe" EntityType="Self.tblUserListe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRoles" EntityType="Self.UserRoles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_PermissionRoles_Roles" Association="Self.FK_PermissionRoles_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="PermissionRoles" EntitySet="PermissionRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PermissionRoles_tblBerechtigung" Association="Self.FK_PermissionRoles_tblBerechtigung">
+            <End Role="tblBerechtigung" EntitySet="tblBerechtigung" />
+            <End Role="PermissionRoles" EntitySet="PermissionRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRoles_Roles" Association="Self.FK_UserRoles_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="UserRoles" EntitySet="UserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRoles_tblUserListe" Association="Self.FK_UserRoles_tblUserListe">
+            <End Role="tblUserListe" EntitySet="tblUserListe" />
+            <End Role="UserRoles" EntitySet="UserRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DB_COS_LIEFERLISTE_SQLModel2" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="PermissionRoles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="created" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UserKey" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RoleKey" Type="Int32" Nullable="false" />
+          <Property Name="PermissionKey" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Roles" Relationship="Self.FK_PermissionRoles_Roles" FromRole="PermissionRoles" ToRole="Roles" />
+          <NavigationProperty Name="tblBerechtigung" Relationship="Self.FK_PermissionRoles_tblBerechtigung" FromRole="PermissionRoles" ToRole="tblBerechtigung" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+          <Property Name="created" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PermissionRoles" Relationship="Self.FK_PermissionRoles_Roles" FromRole="Roles" ToRole="PermissionRoles" />
+          <NavigationProperty Name="UserRoles" Relationship="Self.FK_UserRoles_Roles" FromRole="Roles" ToRole="UserRoles" />
+        </EntityType>
+        <EntityType Name="tblBerechtigung">
+          <Key>
+            <PropertyRef Name="Berechtigung" />
+          </Key>
+          <Property Name="Berechtigung" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PermissionRoles" Relationship="Self.FK_PermissionRoles_tblBerechtigung" FromRole="tblBerechtigung" ToRole="PermissionRoles" />
+        </EntityType>
+        <EntityType Name="tblUserListe">
+          <Key>
+            <PropertyRef Name="UserIdent" />
+          </Key>
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Personalnummer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UserIdent" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Gruppe" Type="Int32" />
+          <Property Name="Bereich" Type="Int32" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Info" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="info_anzeigen" Type="Boolean" Nullable="false" />
+          <Property Name="exited" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="UserRoles" Relationship="Self.FK_UserRoles_tblUserListe" FromRole="tblUserListe" ToRole="UserRoles" />
+        </EntityType>
+        <EntityType Name="UserRoles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserIdent" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RoleID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Roles" Relationship="Self.FK_UserRoles_Roles" FromRole="UserRoles" ToRole="Roles" />
+          <NavigationProperty Name="tblUserListe" Relationship="Self.FK_UserRoles_tblUserListe" FromRole="UserRoles" ToRole="tblUserListe" />
+        </EntityType>
+        <Association Name="FK_PermissionRoles_Roles">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PermissionRoles" Type="Self.PermissionRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PermissionRoles">
+              <PropertyRef Name="RoleKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PermissionRoles_tblBerechtigung">
+          <End Role="tblBerechtigung" Type="Self.tblBerechtigung" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PermissionRoles" Type="Self.PermissionRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblBerechtigung">
+              <PropertyRef Name="Berechtigung" />
+            </Principal>
+            <Dependent Role="PermissionRoles">
+              <PropertyRef Name="PermissionKey" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRoles_Roles">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserRoles">
+              <PropertyRef Name="RoleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRoles_tblUserListe">
+          <End Role="tblUserListe" Type="Self.tblUserListe" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUserListe">
+              <PropertyRef Name="UserIdent" />
+            </Principal>
+            <Dependent Role="UserRoles">
+              <PropertyRef Name="UserIdent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="EntitiesPermiss" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="PermissionRoles" EntityType="Self.PermissionRoles" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" />
+          <EntitySet Name="tblBerechtigung" EntityType="Self.tblBerechtigung" />
+          <EntitySet Name="tblUserListe" EntityType="Self.tblUserListe" />
+          <EntitySet Name="UserRoles" EntityType="Self.UserRoles" />
+          <AssociationSet Name="FK_PermissionRoles_Roles" Association="Self.FK_PermissionRoles_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="PermissionRoles" EntitySet="PermissionRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PermissionRoles_tblBerechtigung" Association="Self.FK_PermissionRoles_tblBerechtigung">
+            <End Role="tblBerechtigung" EntitySet="tblBerechtigung" />
+            <End Role="PermissionRoles" EntitySet="PermissionRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRoles_Roles" Association="Self.FK_UserRoles_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="UserRoles" EntitySet="UserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRoles_tblUserListe" Association="Self.FK_UserRoles_tblUserListe">
+            <End Role="tblUserListe" EntitySet="tblUserListe" />
+            <End Role="UserRoles" EntitySet="UserRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DB_COS_LIEFERLISTE_SQLModel2StoreContainer" CdmEntityContainer="EntitiesPermiss">
+          <EntitySetMapping Name="PermissionRoles">
+            <EntityTypeMapping TypeName="DB_COS_LIEFERLISTE_SQLModel2.PermissionRoles">
+              <MappingFragment StoreEntitySet="PermissionRoles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="created" ColumnName="created" />
+                <ScalarProperty Name="UserKey" ColumnName="UserKey" />
+                <ScalarProperty Name="RoleKey" ColumnName="RoleKey" />
+                <ScalarProperty Name="PermissionKey" ColumnName="PermissionKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="DB_COS_LIEFERLISTE_SQLModel2.Roles">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="created" ColumnName="created" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblBerechtigung">
+            <EntityTypeMapping TypeName="DB_COS_LIEFERLISTE_SQLModel2.tblBerechtigung">
+              <MappingFragment StoreEntitySet="tblBerechtigung">
+                <ScalarProperty Name="Berechtigung" ColumnName="Berechtigung" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblUserListe">
+            <EntityTypeMapping TypeName="DB_COS_LIEFERLISTE_SQLModel2.tblUserListe">
+              <MappingFragment StoreEntitySet="tblUserListe">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Personalnummer" ColumnName="Personalnummer" />
+                <ScalarProperty Name="UserIdent" ColumnName="UserIdent" />
+                <ScalarProperty Name="Gruppe" ColumnName="Gruppe" />
+                <ScalarProperty Name="Bereich" ColumnName="Bereich" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Info" ColumnName="Info" />
+                <ScalarProperty Name="info_anzeigen" ColumnName="info_anzeigen" />
+                <ScalarProperty Name="exited" ColumnName="exited" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserRoles">
+            <EntityTypeMapping TypeName="DB_COS_LIEFERLISTE_SQLModel2.UserRoles">
+              <MappingFragment StoreEntitySet="UserRoles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="UserIdent" ColumnName="UserIdent" />
+                <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="Lieferliste_WPF.UserControls.WeekView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:converter="clr-namespace:Lieferliste_WPF.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"    
+             d:DesignHeight="200" d:DesignWidth="1350" xmlns:my="clr-namespace:Lieferliste_WPF.UserControls" xmlns:my1="clr-namespace:System;assembly=mscorlib">
+    <UserControl.Resources>
+        <converter:DateConverter x:Key="DateConverter1" />        
+    </UserControl.Resources>
+    <StackPanel Height="auto" HorizontalAlignment="Left" Margin="0" Name="stackPanel1" VerticalAlignment="Top" Width="auto" Orientation="Horizontal">
+        <Label Name="lblKW" Background="#FFEBE1CA" HorizontalContentAlignment="Center" FontSize="20" Height="40" BorderThickness="1" BorderBrush="#FF272323">
+            <Label.LayoutTransform>
+                <RotateTransform Angle="-90"/>
+            </Label.LayoutTransform>
+        </Label>
+        <my:DayView x:Name="dayView1" VerticalAlignment="Top" Width="140" />
+        <my:DayView x:Name="dayView2" VerticalAlignment="Top" Width="140" />
+        <my:DayView x:Name="dayView3" VerticalAlignment="Top" Width="140" />
+        <my:DayView x:Name="dayView4" VerticalAlignment="Top" Width="140" />
+        <my:DayView x:Name="dayView5" VerticalAlignment="Top" Width="140" />
+        <my:DayView x:Name="dayView6" VerticalAlignment="Top" Width="140" />
+        <my:DayView x:Name="dayView7" VerticalAlignment="Top" Width="140" />
+    </StackPanel>
+ 
+</UserControl>

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<root>
+  <DocumentPanes>
+    <Item Param="1" Type="MachineContainerViewModel"/>
+  </DocumentPanes>
+  <AnchorablePanes>
+    <Item Static="true" Type="OrderViewModel"/>
+  </AnchorablePanes>
+</root>
