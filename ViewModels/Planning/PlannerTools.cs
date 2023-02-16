@@ -5,7 +5,6 @@ using System.Text;
 using Lieferliste_WPF.Working;
 using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.ViewModels;
-using log4net;
 using System.Globalization;
 using System.Collections.ObjectModel;
 
@@ -14,8 +13,7 @@ namespace Lieferliste_WPF.Planning
     
     static class PlannerTools
     {
-        private static ILog _logger = log4net.LogManager.GetLogger
-            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private static double pCap;
         private static Collection<WorkingWeek> _Weeks;
         private static LinkedList<Process> Orders = new LinkedList<Process>();
@@ -109,7 +107,6 @@ namespace Lieferliste_WPF.Planning
                             CultureInfo.CurrentCulture,
                             "PlannerError {0}\n{1}\n{2}",
                             "insertForce", ex, ex.InnerException);
-                        _logger.Error(sb.ToString(),ex);
                     }
         }
         

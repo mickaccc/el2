@@ -1,7 +1,6 @@
 ﻿using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.ViewModels.Base;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,8 +22,7 @@ namespace Lieferliste_WPF.ViewModels
     class DeliveryListViewModel : Support.CrudVM, IDisposable
     {
         #region Fields
-        private static readonly ILog _logger = log4net.LogManager.GetLogger
-            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         static DeliveryListViewModel _this = new DeliveryListViewModel();
         private bool isRun = false;
         public bool showInVisible { get; set; }

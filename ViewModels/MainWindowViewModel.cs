@@ -6,7 +6,6 @@ using System.Text;
 using System.Windows;
 using Lieferliste_WPF.ViewModels.Base;
 using System.Windows.Controls;
-using log4net;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -15,8 +14,7 @@ namespace Lieferliste_WPF.ViewModels
     /// </summary>
     public sealed class MainWindowViewModel : ViewModelBase
     {
-        private static readonly ILog _logger = log4net.LogManager.GetLogger
-            (System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The default title for the main window.
         /// </summary>
@@ -54,10 +52,9 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show("Fehler beim starten 'MainWindow'\n" + e.Message + "\n" + e.StackTrace);
-                _logger.Error("Startfehler");
+ 
             }
-            AppDomain.CurrentDomain.UnhandledException += UnhandledException;
-            this.DialogProvider = dialogProvider;
+
 
             ////
             //// Initialize the 'Document Overview' pane view-model.
@@ -83,14 +80,7 @@ namespace Lieferliste_WPF.ViewModels
             //this.Documents.Add(new DeliveryListViewModel());
         }
 
-        private void UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var ex = (Exception)e.ExceptionObject;
-            _logger.Error("UnhandledException caught : " + ex.Message);
-            _logger.Error("UnhandledException StackTrace : " + ex.StackTrace);
-            if (e.IsTerminating)
-                _logger.Fatal("Runtime terminating: {0}", ex);
-        }
+
 
         /// <summary>
         /// The current title of the main window.
@@ -156,7 +146,6 @@ namespace Lieferliste_WPF.ViewModels
         {
             get
             {
-                _logger.Info("getActiveDocument");
                 return activeDocument;
             }
             set
@@ -168,7 +157,6 @@ namespace Lieferliste_WPF.ViewModels
 
                 if (activeDocument != null)
                 {
-                    _logger.Info("setNewActiveDocument");
                     switch (activeDocument.GetType().Name)
                     {
                         case "DeliveryListViewModel":

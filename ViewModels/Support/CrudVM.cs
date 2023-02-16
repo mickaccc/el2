@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight.Messaging;
 using Lieferliste_WPF.Messages;
 
 namespace Lieferliste_WPF.ViewModels.Support
@@ -70,7 +69,7 @@ namespace Lieferliste_WPF.ViewModels.Support
         protected virtual void RefreshData()
         {
            // GetData();
-            Messenger.Default.Send<UserMessage>(new UserMessage { Message = "Data Refreshed" });
+
         }
         protected virtual void GetData()
         {
@@ -79,8 +78,7 @@ namespace Lieferliste_WPF.ViewModels.Support
         protected CrudVM()
         {
             GetData();
-            Messenger.Default.Register<CommandMessage>(this, (action) => HandleCommand(action));
-            Messenger.Default.Register<NavigateMessage>(this, (action) => CurrentUserControl(action));
+
         }
         protected bool isCurrentView = false;
         private void CurrentUserControl(NavigateMessage nm)

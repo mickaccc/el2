@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using GalaSoft.MvvmLight.Messaging;
 using Lieferliste_WPF.Messages;
 
 namespace Lieferliste_WPF.ViewModels

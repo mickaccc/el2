@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Documents;
 using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.Working;
-using log4net;
 
 
 namespace Lieferliste_WPF
@@ -18,7 +17,6 @@ namespace Lieferliste_WPF
     {
         private const int MAX_ERRORS_TO_LOG = 100;
         private static List<int[]> pause = new List<int[]>();
-        private static readonly ILog _logger = log4net.LogManager.GetLogger("DBManager");
         private static DataSetEL4 _lieferDataSet = new DataSetEL4();
         private static DataSetPermission _permissionDataSet = new DataSetPermission();
         private static DataSetTables _tablesDataSet = new DataSetTables();
@@ -99,7 +97,6 @@ namespace Lieferliste_WPF
                 sb.AppendLine();
                 sb.Append(errorRows[i].RowError);
             }
-            _logger.Error(sb.ToString());
         }
         internal void boundingProcess(Process pro,int RID,short pos)
         {
