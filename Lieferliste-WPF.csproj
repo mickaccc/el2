@@ -109,6 +109,10 @@
     <Reference Include="AvalonDock.Themes">
       <HintPath>AvalonDockMVVM\bin\Debug\AvalonDock.Themes.dll</HintPath>
     </Reference>
+    <Reference Include="CodeReason.Reports, Version=0.5.56.936, Culture=neutral, PublicKeyToken=74fc60a060db7911, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>CodeReason.Reports\bin\Release\CodeReason.Reports.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -334,7 +338,7 @@
     </Compile>
     <Compile Include="Entities\Process.cs" />
     <Compile Include="ViewModels\IOrderPool.cs" />
-    <Compile Include="SortAdorner.cs" />
+    <Compile Include="Utilities\SortAdorner.cs" />
     <Compile Include="UserControls\DocumentOverviewPaneView.xaml.cs">
       <DependentUpon>DocumentOverviewPaneView.xaml</DependentUpon>
     </Compile>
@@ -379,7 +383,6 @@
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Pane\LayoutInitializer.cs" />
     <Compile Include="View\Pane\PanesStyleSelector.cs" />
     <Compile Include="View\Pane\PanesTemplateSelector.cs" />
     <Compile Include="View\Settings.xaml.cs">
@@ -409,7 +412,7 @@
     <Compile Include="Converters\TimeStrConverter.cs" />
     <Compile Include="Converters\TTNR_Converter.cs" />
     <Compile Include="Converters\XML_FlowDocumentConverter.cs" />
-    <Compile Include="DateUtils.cs" />
+    <Compile Include="Utilities\DateUtils.cs" />
     <Compile Include="DayLine.cs" />
     <Compile Include="DbManager.cs" />
     <Compile Include="Entities\Union.cs" />
@@ -428,8 +431,8 @@
     <Compile Include="UserControls\OrderView.xaml.cs">
       <DependentUpon>OrderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Permission.cs" />
-    <Compile Include="PermissionsManager.cs" />
+    <Compile Include="Utilities\Permission.cs" />
+    <Compile Include="Utilities\PermissionsManager.cs" />
     <Compile Include="ProgressBarTask.xaml.cs">
       <DependentUpon>ProgressBarTask.xaml</DependentUpon>
     </Compile>
@@ -444,7 +447,7 @@
     <Compile Include="UserControls\UserControlweekView.xaml.cs">
       <DependentUpon>UserControlweekView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils.cs" />
+    <Compile Include="Utilities\Utils.cs" />
     <Compile Include="Working\ShiftFour.cs" />
     <Compile Include="Working\ShiftTwo.cs" />
     <Compile Include="Working\StripePause.cs" />
@@ -798,16 +801,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AvalonDock\AvalonDock.csproj">
-      <Project>{db81988f-e0f2-45a0-a1fd-8c37f3d35244}</Project>
-      <Name>AvalonDock</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\codereason_reports_v0.5_alpha\CodeReason.Reports\CodeReason.Reports.VS2008.csproj">
-      <Project>{87a8d936-ae11-40aa-8927-a414c2225991}</Project>
-      <Name>CodeReason.Reports.VS2008</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PublishFile Include="Perspective\AllocationDrill.xml">
       <Visible>False</Visible>
       <Group>
@@ -862,7 +855,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />

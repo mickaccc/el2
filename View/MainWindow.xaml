@@ -1,6 +1,5 @@
 ﻿<Window x:Class="Lieferliste_WPF.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:avalonDock="http://avalondock.codeplex.com"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:Lieferliste_WPF.Converters"
         xmlns:lie="clr-namespace:Lieferliste_WPF.UserControls"
@@ -29,11 +28,11 @@
                 </MenuItem>
                 <MenuItem Header="Perspektiven">
                     <ItemsControl ItemsSource="{Binding Path=Perspectives}">
-                        <ItemsControl.ItemTemplate>
+                        <!--<ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Content="{Binding Path=Name}" IsTabStop="False" Click="Perspective_Click" />
                             </DataTemplate>
-                        </ItemsControl.ItemTemplate>
+                        </ItemsControl.ItemTemplate>-->
                     </ItemsControl>
                 </MenuItem>
                 <MenuItem Header="Teamleiterfunktionen">
@@ -172,108 +171,6 @@
 
            
         </DockPanel>
-        <!--AnchorablesSource="{Binding AttachedPanes}" DocumentsSource="{Binding LeaderPanes}"-->
-        <avalonDock:DockingManager x:Name="dockManager" 
-                                   AnchorablesSource="{Binding AttachedPanes}" 
-                                   DocumentsSource="{Binding LeaderPanes}"
-                                   ActiveContent="{Binding ActivePerspective, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
-                                   Grid.Row="1" Height="513" VerticalAlignment="Bottom">
-            <!-- avalonDock:DockingManager.Theme>
-                <avalonDock:AeroTheme/>
-            </avalonDock:DockingManager.Theme -->
-            <avalonDock:DockingManager.LayoutItemTemplateSelector>
-                <pane:PanesTemplateSelector>
-                    <pane:PanesTemplateSelector.DeliveryListViewTemplate>
-                        <DataTemplate>
-                            <lie:LieferlisteView1>
-                                <lie:LieferlisteView1.InputBindings>
-
-                                </lie:LieferlisteView1.InputBindings>
-                            </lie:LieferlisteView1>
-                        </DataTemplate>
-                    </pane:PanesTemplateSelector.DeliveryListViewTemplate>
-                    <pane:PanesTemplateSelector.OrderViewTemplate>
-                        <DataTemplate>
-                            <lie:OrderView/>
-                        </DataTemplate>
-                    </pane:PanesTemplateSelector.OrderViewTemplate>
-                    <pane:PanesTemplateSelector.MachineContainerViewTemplate>
-                        <DataTemplate>
-                            <lie:Allocation/>
-                        </DataTemplate>
-                    </pane:PanesTemplateSelector.MachineContainerViewTemplate>
-                    <pane:PanesTemplateSelector.MachineWrapperTemplate>
-                        <DataTemplate>
-                            <lie:MachineActionView/>
-                        </DataTemplate>
-                    </pane:PanesTemplateSelector.MachineWrapperTemplate>
-
-                </pane:PanesTemplateSelector>
-
-            </avalonDock:DockingManager.LayoutItemTemplateSelector>
-
-            <avalonDock:DockingManager.LayoutItemContainerStyleSelector>
-                <pane:PanesStyleSelector>
-                    <pane:PanesStyleSelector.ToolStyle>
-                        <Style TargetType="{x:Type avalonDock:LayoutAnchorableItem}">
-                            <Setter Property="Title" Value="{Binding Model.Title}"/>
-                            <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
-                            <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
-                            <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
-                            <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
-                        </Style>
-                    </pane:PanesStyleSelector.ToolStyle>
-                    <pane:PanesStyleSelector.DocumentStyle>
-                        <Style TargetType="{x:Type avalonDock:LayoutItem}">
-                            <Setter Property="Title" Value="{Binding Model.Title}"/>
-                            <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
-                            <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
-                            <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
-                            <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
-                        </Style>
-                    </pane:PanesStyleSelector.DocumentStyle>
-                    <pane:PanesStyleSelector.DeliveryStyle>
-                        <Style TargetType="{x:Type avalonDock:LayoutItem}">
-                            <Setter Property="Title" Value="{Binding Model.Title}"/>
-                            <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
-                            <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
-                            <Setter Property="CanClose" Value="False"/>
-                            <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
-                        </Style>
-                    </pane:PanesStyleSelector.DeliveryStyle>
-                    <pane:PanesStyleSelector.MachineWrapperStyle>
-                        <Style TargetType="{x:Type avalonDock:LayoutItem}">
-                            <Setter Property="Title" Value="{Binding Model.Title}"/>
-                            <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
-                            <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
-                            <Setter Property="CanClose" Value="False"/>
-                            <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
-                        </Style>
-                    </pane:PanesStyleSelector.MachineWrapperStyle>
-                </pane:PanesStyleSelector>
-            </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
-            <avalonDock:DockingManager.LayoutUpdateStrategy>
-                <pane:LayoutInitializer/>
-            </avalonDock:DockingManager.LayoutUpdateStrategy>
-
-            <avalonDock:LayoutRoot>
-                <avalonDock:LayoutPanel Orientation="Vertical">
-                    <avalonDock:LayoutDocumentPane/>
-
-                </avalonDock:LayoutPanel>
-                <avalonDock:LayoutRoot.RightSide>
-                    <avalonDock:LayoutAnchorSide>
-                        <avalonDock:LayoutAnchorGroup>
-
-                            <avalonDock:LayoutAnchorable >
-
-                            </avalonDock:LayoutAnchorable>
-
-                        </avalonDock:LayoutAnchorGroup>
-                    </avalonDock:LayoutAnchorSide>
-                </avalonDock:LayoutRoot.RightSide>
-            </avalonDock:LayoutRoot>
-        </avalonDock:DockingManager>
 
     </Grid>
 </Window>

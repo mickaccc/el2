@@ -6,7 +6,7 @@
   using System.Text;
   using System.Windows.Controls;
   using System.Windows;
-  using AvalonDock.Layout;
+
     using Lieferliste_WPF.ViewModels;
 
   class PanesTemplateSelector : DataTemplateSelector
@@ -46,8 +46,7 @@
 
         public override System.Windows.DataTemplate SelectTemplate(object item, System.Windows.DependencyObject container)
         {
-            var itemAsLayoutContent = item as LayoutContent;
-
+  
 
             if (item is OrderViewModel)
               return OrderViewTemplate;

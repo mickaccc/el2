@@ -4,14 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lieferliste-WPF", "Lieferliste-WPF.csproj", "{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{87A8D936-AE11-40AA-8927-A414C2225991} = {87A8D936-AE11-40AA-8927-A414C2225991}
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244} = {DB81988F-E0F2-45A0-A1FD-8C37F3D35244}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonDock", "..\..\AvalonDock\AvalonDock.csproj", "{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeReason.Reports.VS2008", "..\..\codereason_reports_v0.5_alpha\CodeReason.Reports\CodeReason.Reports.VS2008.csproj", "{87A8D936-AE11-40AA-8927-A414C2225991}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,30 +26,6 @@ Global
 		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Release|Mixed Platforms.Build.0 = Release|x86
 		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Release|x86.ActiveCfg = Release|x86
 		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Release|x86.Build.0 = Release|x86
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Debug|x86.Build.0 = Debug|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Release|x86.ActiveCfg = Release|Any CPU
-		{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}.Release|x86.Build.0 = Release|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Debug|x86.Build.0 = Debug|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Release|Any CPU.Build.0 = Release|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Release|x86.ActiveCfg = Release|Any CPU
-		{87A8D936-AE11-40AA-8927-A414C2225991}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
