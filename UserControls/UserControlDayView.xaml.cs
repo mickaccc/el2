@@ -1,16 +1,13 @@
-﻿using System;
+﻿using Lieferliste_WPF.Dialogs;
+using Lieferliste_WPF.Entities;
+using Lieferliste_WPF.Working;
+using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using Lieferliste_WPF.Dialogs;
-using Lieferliste_WPF.Working;
-using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.Planning;
-using System.ComponentModel;
 
 namespace Lieferliste_WPF.UserControls
 {
@@ -24,10 +21,10 @@ namespace Lieferliste_WPF.UserControls
     {
         public delegate void DayViewEventHandler(object sender, DayViewEventArgs args);
         public static readonly DependencyProperty DateProperty = DependencyProperty.Register("DateDT", typeof(DateTime), typeof(DayView), new FrameworkPropertyMetadata(DateTime.Now)
-            {
-                BindsTwoWayByDefault = true,
-                DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-            });
+        {
+            BindsTwoWayByDefault = true,
+            DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+        });
         public static readonly DependencyProperty ActionProperty = DependencyProperty.Register("Actions", typeof(LinkedList<Process>), typeof(DayView), new FrameworkPropertyMetadata(new LinkedList<Process>())
         {
             BindsTwoWayByDefault = true,
@@ -97,8 +94,8 @@ namespace Lieferliste_WPF.UserControls
             {
                 var t = target.Items[index] as ActionStripe;
                 if (t != null && dragged != null)
-                { 
-                    
+                {
+
                     //this.PlannerControl.MoveProcess(t,dragged);
 
                 }

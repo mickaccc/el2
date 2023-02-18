@@ -14,7 +14,7 @@ namespace Lieferliste_WPF.UserControls
 
         public WeekView(int year, int week)
         {
-            
+
             InitializeComponent();
             setKW(year, week);
         }

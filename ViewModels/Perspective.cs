@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-using Lieferliste_WPF.ViewModels.Base;
+﻿using Lieferliste_WPF.ViewModels.Base;
 
 namespace Lieferliste_WPF.ViewModels
 {

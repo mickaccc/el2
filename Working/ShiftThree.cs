@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Lieferliste_WPF.Entities;
-using System.Windows.Media;
+﻿using Lieferliste_WPF.Entities;
+using System;
 
 namespace Lieferliste_WPF.Working
 {

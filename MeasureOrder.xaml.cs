@@ -14,15 +14,15 @@ namespace Lieferliste_WPF.Dialogs
             InitializeComponent();
 
             this.MainGrid.DataContext = DbManager.Instance().getVorgSelect(VID);
-            cmbOrderer.ItemsSource= DbManager.Instance().getUsers();
-            cmbRess.ItemsSource= DbManager.Instance().getResources().Where(x => x.Abteilung=="COS").OrderBy(x => x.RessName);
-            
+            cmbOrderer.ItemsSource = DbManager.Instance().getUsers();
+            cmbRess.ItemsSource = DbManager.Instance().getResources().Where(x => x.Abteilung == "COS").OrderBy(x => x.RessName);
+
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             if (this.cmbOrderer.SelectedValue != null &&
-                this.cmbRess.SelectedItem != null) { } 
+                this.cmbRess.SelectedItem != null) { }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)

@@ -106,56 +106,19 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AvalonDock.Themes">
-      <HintPath>AvalonDockMVVM\bin\Debug\AvalonDock.Themes.dll</HintPath>
-    </Reference>
-    <Reference Include="CodeReason.Reports, Version=0.5.56.936, Culture=neutral, PublicKeyToken=74fc60a060db7911, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>CodeReason.Reports\bin\Release\CodeReason.Reports.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="FastMember.Signed, Version=1.5.0.0, Culture=neutral, PublicKeyToken=9e8f22703bef9a29, processorArchitecture=MSIL">
-      <HintPath>packages\FastMember.Signed.1.5.0\lib\net461\FastMember.Signed.dll</HintPath>
-    </Reference>
-    <Reference Include="MySqlConnector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
-      <HintPath>packages\MySqlConnector.2.0.0\lib\net471\MySqlConnector.dll</HintPath>
-    </Reference>
-    <Reference Include="MySqlConnector.Logging.log4net, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
-      <HintPath>packages\MySqlConnector.Logging.log4net.2.0.0\lib\net45\MySqlConnector.Logging.log4net.dll</HintPath>
+    <Reference Include="CodeReason.Reports">
+      <HintPath>res\CodeReason.Reports.dll</HintPath>
     </Reference>
     <Reference Include="ReachFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Diagnostics.DiagnosticSource.5.0.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Threading.Tasks.Extensions.4.3.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
@@ -178,26 +141,23 @@
     <Compile Include="AppCommand.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
-    <Compile Include="Converters\ActiveDocumentConverter.cs" />
-    <Compile Include="Converters\BoolConverter.cs" />
-    <Compile Include="Converters\ZeroToVisibilityConverter.cs" />
-    <Compile Include="DataSetEL4.cs">
-      <DependentUpon>DataSetEL4.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="DataSetEL4.Designer.cs">
+    <Compile Include="myConverters\ActiveDocumentConverter.cs" />
+    <Compile Include="myConverters\BoolConverter.cs" />
+    <Compile Include="myConverters\ZeroToVisibilityConverter.cs" />
+    <Compile Include="DataSetEL2.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DataSetEL4.xsd</DependentUpon>
+      <DependentUpon>DataSetEL2.xsd</DependentUpon>
     </Compile>
     <Compile Include="DataSetPermission.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DataSetPermission.xsd</DependentUpon>
     </Compile>
-    <Compile Include="DataSetTables.Designer.cs">
+    <Compile Include="DataSetPerspectives.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DataSetTables.xsd</DependentUpon>
+      <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
     </Compile>
     <Compile Include="Entities\Allocation.Context.cs">
       <AutoGen>True</AutoGen>
@@ -393,25 +353,25 @@
       <DependentUpon>Allocation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Commands\eLCommands.cs" />
-    <Compile Include="Converters\Color2Brush.cs" />
-    <Compile Include="Converters\Color2MediaBrush.cs" />
-    <Compile Include="Converters\ColorToBrushKomplementConverter.cs" />
-    <Compile Include="Converters\DateLess2Color.cs" />
-    <Compile Include="Converters\CountConverter.cs" />
-    <Compile Include="Converters\DateConverter.cs" />
-    <Compile Include="Converters\KomplementColorConverter.cs" />
-    <Compile Include="Converters\FillZerosConverter.cs" />
-    <Compile Include="Converters\MinuteSizeConverter.cs" />
-    <Compile Include="Converters\NullVisibilityConverter.cs" />
-    <Compile Include="Converters\PermissionConverter.cs" />
-    <Compile Include="Converters\PermissionVisibilityConverter.cs" />
-    <Compile Include="Converters\PSP_Converter.cs" />
-    <Compile Include="Converters\RoleToVisibilityConverter.cs" />
-    <Compile Include="Converters\TextInpuToVisibilityConverter.cs" />
-    <Compile Include="Converters\TimeConverter.cs" />
-    <Compile Include="Converters\TimeStrConverter.cs" />
-    <Compile Include="Converters\TTNR_Converter.cs" />
-    <Compile Include="Converters\XML_FlowDocumentConverter.cs" />
+    <Compile Include="myConverters\Color2Brush.cs" />
+    <Compile Include="myConverters\Color2MediaBrush.cs" />
+    <Compile Include="myConverters\ColorToBrushKomplementConverter.cs" />
+    <Compile Include="myConverters\DateLess2Color.cs" />
+    <Compile Include="myConverters\CountConverter.cs" />
+    <Compile Include="myConverters\DateConverter.cs" />
+    <Compile Include="myConverters\KomplementColorConverter.cs" />
+    <Compile Include="myConverters\FillZerosConverter.cs" />
+    <Compile Include="myConverters\MinuteSizeConverter.cs" />
+    <Compile Include="myConverters\NullVisibilityConverter.cs" />
+    <Compile Include="myConverters\PermissionConverter.cs" />
+    <Compile Include="myConverters\PermissionVisibilityConverter.cs" />
+    <Compile Include="myConverters\PSP_Converter.cs" />
+    <Compile Include="myConverters\RoleToVisibilityConverter.cs" />
+    <Compile Include="myConverters\TextInpuToVisibilityConverter.cs" />
+    <Compile Include="myConverters\TimeConverter.cs" />
+    <Compile Include="myConverters\TimeStrConverter.cs" />
+    <Compile Include="myConverters\TTNR_Converter.cs" />
+    <Compile Include="myConverters\XML_FlowDocumentConverter.cs" />
     <Compile Include="Utilities\DateUtils.cs" />
     <Compile Include="DayLine.cs" />
     <Compile Include="DbManager.cs" />
@@ -626,16 +586,16 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="DataSetEL4.xsc">
-      <DependentUpon>DataSetEL4.xsd</DependentUpon>
+    <None Include="DataSetEL2.xsc">
+      <DependentUpon>DataSetEL2.xsd</DependentUpon>
     </None>
-    <None Include="DataSetEL4.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DataSetEL4.Designer.cs</LastGenOutput>
+    <None Include="DataSetEL2.xsd">
       <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetEL2.Designer.cs</LastGenOutput>
     </None>
-    <None Include="DataSetEL4.xss">
-      <DependentUpon>DataSetEL4.xsd</DependentUpon>
+    <None Include="DataSetEL2.xss">
+      <DependentUpon>DataSetEL2.xsd</DependentUpon>
     </None>
     <None Include="DataSetPermission.xsc">
       <DependentUpon>DataSetPermission.xsd</DependentUpon>
@@ -648,16 +608,16 @@
     <None Include="DataSetPermission.xss">
       <DependentUpon>DataSetPermission.xsd</DependentUpon>
     </None>
-    <None Include="DataSetTables.xsc">
-      <DependentUpon>DataSetTables.xsd</DependentUpon>
+    <None Include="DataSetPerspectives.xsc">
+      <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
     </None>
-    <None Include="DataSetTables.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DataSetTables.Designer.cs</LastGenOutput>
+    <None Include="DataSetPerspectives.xsd">
       <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetPerspectives.Designer.cs</LastGenOutput>
     </None>
-    <None Include="DataSetTables.xss">
-      <DependentUpon>DataSetTables.xsd</DependentUpon>
+    <None Include="DataSetPerspectives.xss">
+      <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
     </None>
     <None Include="Doku\Diagramms\Planning.cd" />
     <EntityDeploy Include="Entities\Allocation.edmx">
@@ -689,7 +649,6 @@
       <DependentUpon>Perspective.edmx</DependentUpon>
     </None>
     <None Include="Lieferliste-WPF.ruleset" />
-    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -709,7 +668,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8.1">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.8.1 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.8.1 %28x86 und x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -852,19 +811,35 @@
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Dirkster.AvalonDock.Themes.Aero">
+      <Version>4.71.2</Version>
+    </PackageReference>
+    <PackageReference Include="EntityFramework">
+      <Version>6.4.4</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.15</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NETCore.Platforms">
+      <Version>7.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="NETStandard.Library">
+      <Version>2.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Diagnostics.DiagnosticSource">
+      <Version>7.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks.Extensions">
+      <Version>4.5.4</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
+      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

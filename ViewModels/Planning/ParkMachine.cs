@@ -1,8 +1,5 @@
 ﻿using Lieferliste_WPF.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Lieferliste_WPF.Planning
 {
@@ -34,7 +31,7 @@ namespace Lieferliste_WPF.Planning
             {
                 throw new NotImplementedException();
             }
- 
+
         }
 
         public void addKappa(DateTime thisDate, Entities.Stripe thisStripe)

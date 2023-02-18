@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Lieferliste_WPF.ViewModels
+﻿namespace Lieferliste_WPF.ViewModels
 {
     /// <summary>
     /// Abstract base class for an AvalonDock pane view-model.

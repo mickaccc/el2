@@ -1,11 +1,6 @@
 ﻿namespace Lieferliste_WPF.ViewModels.Base
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Text;
-
-  class ToolViewModel : PaneViewModel
+    class ToolViewModel : PaneViewModel
     {
         public ToolViewModel(string name)
         {

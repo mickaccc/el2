@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.Commands
 {
-    class ActionCommand:ICommand
+    class ActionCommand : ICommand
     {
         private readonly Action<object> _executeHandler;
         private readonly Func<object, bool> _canExecuteHandler;

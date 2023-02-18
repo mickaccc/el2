@@ -1,6 +1,5 @@
 ﻿using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.Planning;
-using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.ViewModels.Base;
 using Lieferliste_WPF.Working;
 using System;
@@ -23,12 +22,14 @@ namespace Lieferliste_WPF.ViewModels
         public bool isFilling { get; set; }
         private bool _isSelected = false;
         public Collection<WorkingWeek> WorkingWeeks { get; set; }
-        public IEnumerable<WorkingWeek> FullWorkingDays {
+        public IEnumerable<WorkingWeek> FullWorkingDays
+        {
             get
             {
                 DateUtils.CalendarWeek cw = DateUtils.GetGermanCalendarWeek(DateTime.Now.Date);
-                return WorkingWeeks.Where(x => x.CalendarWeek.Equals(cw) || x.getWorkingDays.Any(y => y.ActionStripes.Count>0));
-            } }
+                return WorkingWeeks.Where(x => x.CalendarWeek.Equals(cw) || x.getWorkingDays.Any(y => y.ActionStripes.Count > 0));
+            }
+        }
 
         public ObservableLinkedList<RessZuteilView> ProcessesLine
         { get; internal set; }
@@ -46,7 +47,8 @@ namespace Lieferliste_WPF.ViewModels
         public bool isSelected
         {
             get { return _isSelected; }
-            set {
+            set
+            {
                 _isSelected = value;
             }
         }
@@ -57,11 +59,11 @@ namespace Lieferliste_WPF.ViewModels
             MachineViewModel = new MachineViewModel();
             WorkingWeeks = new ObservableCollection<WorkingWeek>();
             ProcessesLine = new ObservableLinkedList<RessZuteilView>();
-            
+
         }
 
         #region Methods
- 
+
         public void addKappa(DateTime thisDate, Stripe thisStripe)
         {
             WorkingWeek wd;
@@ -70,15 +72,15 @@ namespace Lieferliste_WPF.ViewModels
             {
 
                 wd = new WorkingWeek(cw);
-                wd.getWorkingDays.First(x => x.Date==thisDate).Kappa.Add(thisStripe);
+                wd.getWorkingDays.First(x => x.Date == thisDate).Kappa.Add(thisStripe);
                 WorkingWeeks.Add(wd);
             }
             else
             {
-                wd=WorkingWeeks.First(x => x.CalendarWeek.Equals(cw));
-                wd.getWorkingDays.First(x => x.Date==thisDate).Kappa.Add(thisStripe);
+                wd = WorkingWeeks.First(x => x.CalendarWeek.Equals(cw));
+                wd.getWorkingDays.First(x => x.Date == thisDate).Kappa.Add(thisStripe);
             }
-            if (!isFilling && _workingLine.Count>0)
+            if (!isFilling && _workingLine.Count > 0)
             {
                 PlannerTools.Reorganize(ref _workingLine);
             }
@@ -94,18 +96,18 @@ namespace Lieferliste_WPF.ViewModels
                 //ProcessesLine.AddLast(thisOrder);
 
             }
-            return dt-thisOrder.ProcessRestTime;
+            return dt - thisOrder.ProcessRestTime;
         }
         public void moveOrder(Process target, Process source)
         {
-            
+
             PlannerTools.moveForce(target, source, ref _workingLine);
 
             int index = _workingLine.TakeWhile(x => !x.Equals(source)).Count();
             for (int p = index; p < _workingLine.Count; p++)
             {
                 Process pp = _workingLine.ElementAt(p);
-                DbManager.Instance().changeBoudedProcess(pp, null, Convert.ToInt16(p+1), null);
+                DbManager.Instance().changeBoudedProcess(pp, null, Convert.ToInt16(p + 1), null);
 
             }
             foreach (Process p in _workingLine)
@@ -124,21 +126,21 @@ namespace Lieferliste_WPF.ViewModels
             //Process source = _workingLine.First(x => x.ActionStripes.Contains(sourceActionStripe));
 
             //    moveOrder(target, source);
-            
+
         }
         public bool Remove(Process order)
         {
             LinkedListNode<Process> node = _workingLine.Find(order);
             LinkedListNode<Process> preOrder = node.Previous;
-                _workingLine.Remove(node);
+            _workingLine.Remove(node);
             //DateTime dt = node.Value.ActionStripes.First().Date;
             //if (preOrder != null)
             //{
             //    dt = preOrder.Value.ActionStripes.Last().Date;
             //}
-                bool ret = PlannerTools.Reorganize(ref _workingLine);
-                DbManager.Instance().removeBoundedProcess(order,RID);
-                return ret;
+            bool ret = PlannerTools.Reorganize(ref _workingLine);
+            DbManager.Instance().removeBoundedProcess(order, RID);
+            return ret;
 
         }
         #endregion Methods

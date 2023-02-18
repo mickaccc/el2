@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using Lieferliste_WPF.Working;
-using Lieferliste_WPF.Entities;
+﻿using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.ViewModels;
+using Lieferliste_WPF.Working;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Lieferliste_WPF.Planning
 {
@@ -29,13 +28,13 @@ namespace Lieferliste_WPF.Planning
                                (r, a) => new { tblRessource = r, tblArbeitsplatzZuteilung = a })
                                .Where(result => result.tblArbeitsplatzZuteilung.BID == machineContainer.BID)
                                .ToList();
-                               
+
                 foreach (var zut in machines)
                 {
                     IMachine m = _machineFactory.createMachine();
                     m.MachineName = zut.tblRessource.RessName;
                     m.RID = (int)zut.tblRessource.RID;
-                    
+
                     m.isFilling = true;
 
                     DateUtils.CalendarWeek week = DateUtils.GetGermanCalendarWeek(DateTime.Now);
@@ -89,7 +88,7 @@ namespace Lieferliste_WPF.Planning
                     //    ord.CommentMA = dr.Bem_MA;
                     //    ord.VID = dr.VID;
 
-                        //m.addOrder(ord);
+                    //m.addOrder(ord);
 
                     //}
                     machineContainer.Machines.Add(new MachineViewModel { Machine = m, MachineContainerViewModel = machineContainer });
@@ -122,7 +121,7 @@ namespace Lieferliste_WPF.Planning
                     pro.CommentTL = zutRow.Bem_T;
                     pro.CommentMA = zutRow.Bem_MA;
                     pro.VID = zutRow.VID;
-                    
+
                     machineContainer.OrderPool.Add(pro);
                 }
 
@@ -131,10 +130,10 @@ namespace Lieferliste_WPF.Planning
 
         public void fillParking(MachineContainer machineContainer)
         {
-            EnumerableRowCollection<DataSetEL4.RessZuteilViewRow> r = DbManager.Instance().getRessZuteilView().Where(x => x.IsARBIDNull()!=false);
+            EnumerableRowCollection<DataSetEL2.RessZuteilViewRow> r = DbManager.Instance().getRessZuteilView().Where(x => x.IsARBIDNull() != false);
             if (_machineFactory.GetType() == typeof(ParkMachineFactory))
             {
-                DataSetEL4.RessZuteilViewRow row = r.SingleOrDefault(x => x.BID == machineContainer.BID && x.Type == 3);
+                DataSetEL2.RessZuteilViewRow row = r.SingleOrDefault(x => x.BID == machineContainer.BID && x.Type == 3);
                 if (row != null)
                 {
                     IMachine m = _machineFactory.createMachine();

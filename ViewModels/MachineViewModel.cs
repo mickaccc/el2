@@ -1,15 +1,12 @@
 ﻿using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.Planning;
 using System;
-using System.Reflection;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Lieferliste_WPF.Messages;
+using System.Linq;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class MachineViewModel: Support.CrudVM
+    class MachineViewModel : Support.CrudVM
     {
         private IMachine _machine;
         public IMachine Machine
@@ -22,7 +19,7 @@ namespace Lieferliste_WPF.ViewModels
                 RaisePropertyChanged("Title");
             }
         }
- 
+
         public ObservableCollection<DayLine> KappaLine { get; private set; }
         public ObservableLinkedList<Process> Processes { get; private set; }
         public MachineContainerViewModel MachineContainerViewModel { get; set; }
@@ -35,14 +32,14 @@ namespace Lieferliste_WPF.ViewModels
             KappaLine = new ObservableCollection<DayLine>();
             Processes = new ObservableLinkedList<Process>();
 
-            
+
         }
 
         private void LoadData()
-    {
-        DataSetTablesTableAdapters.tblRessKappaTableAdapter Kappa = DbManager.Instance().getRessKappa(RID);
+        {
+            DataSetEL2TableAdapters.tblRessKappaTableAdapter Kappa = DbManager.Instance().getRessKappa(RID);
 
-    }
+        }
         protected override void GetData()
         {
             if (_machine != null)
@@ -54,7 +51,7 @@ namespace Lieferliste_WPF.ViewModels
                                 where p.RID == RID
                                 orderby p.SPOS
                                 select p).ToList();
-                    
+
                     foreach (RessZuteilView r in prop)
                     {
                         Process pro = new Process(r.AID);
@@ -96,14 +93,14 @@ namespace Lieferliste_WPF.ViewModels
                                select p);
 
                     var maxn = data.tblRessourceVorgang.Where(x => x.RID == Machine.RID).Max(y => y.SPOS);
-                    var max = (Int16) ((maxn == null) ? 1 : maxn +1);
+                    var max = (Int16)((maxn == null) ? 1 : maxn + 1);
 
-                    data.tblRessourceVorgang.Add(new tblRessourceVorgang { RID = Machine.RID, VID=dragged.VID,SPOS=max });
+                    data.tblRessourceVorgang.Add(new tblRessourceVorgang { RID = Machine.RID, VID = dragged.VID, SPOS = max });
                     retValue = data.SaveChanges() > 0;
                     Processes.AddLast(dragged);
-                   
+
                 }
-              
+
             }
             else
             {
@@ -111,8 +108,8 @@ namespace Lieferliste_WPF.ViewModels
                     + "Auftrag/Vorgang: {0:S} / {1:D4}\n{2:S}\n\n"
                     + "freie Fertigungskapazität: {3:F}\n"
                     + "benötigte Fertigungskapazität: {4:F}\n"
-                    + "offene Menge: {5:D}",dragged.OrderNumber,dragged.ExecutionNumber,
-                    dragged.ExecutionShortText,0.2,dragged.ProcessRestTime,dragged.Quantity_miss) , "Kalkulationsfehler", System.Windows.MessageBoxButton.OK);
+                    + "offene Menge: {5:D}", dragged.OrderNumber, dragged.ExecutionNumber,
+                    dragged.ExecutionShortText, 0.2, dragged.ProcessRestTime, dragged.Quantity_miss), "Kalkulationsfehler", System.Windows.MessageBoxButton.OK);
 
             }
             return retValue;

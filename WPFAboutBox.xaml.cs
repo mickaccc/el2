@@ -94,7 +94,7 @@ namespace Lieferliste_WPF
             {
                 string result = string.Empty;
                 // first, try to get the version string from the assembly.
- 
+
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 if (version != null)
                 {

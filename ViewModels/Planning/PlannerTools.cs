@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Lieferliste_WPF.Entities;
+using Lieferliste_WPF.ViewModels;
+using Lieferliste_WPF.Working;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using Lieferliste_WPF.Working;
-using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.ViewModels;
-using System.Globalization;
-using System.Collections.ObjectModel;
 
 namespace Lieferliste_WPF.Planning
 {
-    
+
     static class PlannerTools
     {
 
@@ -65,7 +65,7 @@ namespace Lieferliste_WPF.Planning
         //        {
         //            dt = startDate;
         //        }
-  
+
         //    }
         //    catch (Exception ex)
         //    {
@@ -88,39 +88,39 @@ namespace Lieferliste_WPF.Planning
         /// <param name="ref Orders"></param>
         /// <returns>ActionStripe</returns>
         public static void insertForce(Process order,
-            Collection<WorkingWeek> workingWeeks)         
+            Collection<WorkingWeek> workingWeeks)
         {
             _Weeks = workingWeeks;
 
-                    try
-                    {
-                        //LinkedListNode<Process> node = workingDays.AddLast(order);
-                        int cind = Orders.Count % 16;
+            try
+            {
+                //LinkedListNode<Process> node = workingDays.AddLast(order);
+                int cind = Orders.Count % 16;
 
-                        planningForce(order, cind);
-                        Orders.AddLast(order);
-                    }
-                    catch (Exception ex)
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendFormat(
-                            CultureInfo.CurrentCulture,
-                            "PlannerError {0}\n{1}\n{2}",
-                            "insertForce", ex, ex.InnerException);
-                    }
+                planningForce(order, cind);
+                Orders.AddLast(order);
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat(
+                    CultureInfo.CurrentCulture,
+                    "PlannerError {0}\n{1}\n{2}",
+                    "insertForce", ex, ex.InnerException);
+            }
         }
-        
+
 
         public static bool Reorganize(ref LinkedList<Process> workingLine)
         {
             foreach (WorkingWeek wek in _Weeks)
             {
-                foreach(WorkingDayViewModel wd in wek.getWorkingDays)
+                foreach (WorkingDayViewModel wd in wek.getWorkingDays)
                 {
-                wd.ActionStripes.Clear();
+                    wd.ActionStripes.Clear();
                 }
             }
-            int cind =0;
+            int cind = 0;
             foreach (Process order in workingLine)
             {
                 planningForce(order, cind);
@@ -146,8 +146,8 @@ namespace Lieferliste_WPF.Planning
             while (sumL > 0)
             {
                 var result = (from w in _Weeks
-                             from d in w.getWorkingDays
-                             select d).FirstOrDefault(x => x.getFreeCapacity() > 0);
+                              from d in w.getWorkingDays
+                              select d).FirstOrDefault(x => x.getFreeCapacity() > 0);
 
                 if (result == null)
                 {
@@ -188,7 +188,7 @@ namespace Lieferliste_WPF.Planning
                 else
                 {
                     ac.CalcLenght = (wDay.getFreeCapacity());
-                    int ind = wDay.getWorkingMinutes().TakeWhile(y => y.CompareTo(ac.Start) < 0).Count() + ac.CalcLenght-1;
+                    int ind = wDay.getWorkingMinutes().TakeWhile(y => y.CompareTo(ac.Start) < 0).Count() + ac.CalcLenght - 1;
                     ac.End = wDay.getWorkingMinutes().ElementAt(ind);
                     sumL -= ac.CalcLenght;
                 }
@@ -198,7 +198,7 @@ namespace Lieferliste_WPF.Planning
             return new DateTime(ret.Date.Date.Ticks + ret.EndTime.Ticks);
         }
 
-        public static bool moveForce(Process targetBefore, Process sourceOrder,ref LinkedList<Process> orders)
+        public static bool moveForce(Process targetBefore, Process sourceOrder, ref LinkedList<Process> orders)
         {
 
             if (targetBefore.Equals(sourceOrder)) return false;
@@ -211,16 +211,16 @@ namespace Lieferliste_WPF.Planning
             int indexCurrent = orders.TakeWhile(x => !x.Equals(targetBefore)).Count();
 
             //DateTime dt;
-            if (indexNode>indexCurrent)
+            if (indexNode > indexCurrent)
             {
                 orders.Remove(node);
-            //    dt = current.Value.ActionStripes.First().Date;
+                //    dt = current.Value.ActionStripes.First().Date;
                 orders.AddBefore(current, node);
             }
             else
             {
                 orders.Remove(node);
-            //    dt = node.Value.ActionStripes.First().Date;
+                //    dt = node.Value.ActionStripes.First().Date;
                 orders.AddAfter(current, node);
             }
             return Reorganize(ref orders);

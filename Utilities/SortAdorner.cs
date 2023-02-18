@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.ComponentModel;
-using System.Windows;
 
 namespace Lieferliste_WPF
 {
-    class SortAdorner:Adorner
+    class SortAdorner : Adorner
     {
         private static Geometry ascGeometry =
                 Geometry.Parse("M 0 4 L 3.5 0 L 7 4 Z");

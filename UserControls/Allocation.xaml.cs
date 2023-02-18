@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Lieferliste_WPF.Entities;
+using Lieferliste_WPF.ViewModels;
+using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media;
-using Lieferliste_WPF.Entities;
 using System.Windows.Documents;
-using System.ComponentModel;
-using Lieferliste_WPF.ViewModels;
 using System.Windows.Input;
-using System.Reflection;
+using System.Windows.Media;
 
 namespace Lieferliste_WPF.UserControls
 {
@@ -37,19 +36,19 @@ namespace Lieferliste_WPF.UserControls
 
             lstItems.Drop += lstItems_Drop;
             lstItems.DragOver += lstItems_DragOver;
-            
-            lstItems.AddHandler(ListView.MouseDownEvent, new RoutedEventHandler(lstItems_MouseDown),true);
-            
+
+            lstItems.AddHandler(ListView.MouseDownEvent, new RoutedEventHandler(lstItems_MouseDown), true);
+
 
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(lstMain.ItemsSource);
-            if(view != null)
+            if (view != null)
                 view.Filter = lstMainFilter;
 
-            if(lstItems.HasItems) lstItems.SelectedIndex = 0;
+            if (lstItems.HasItems) lstItems.SelectedIndex = 0;
 
         }
 
- 
+
 
         #region Events
         private void lstMain_MouseDown(object sender, RoutedEventArgs e)
@@ -61,8 +60,8 @@ namespace Lieferliste_WPF.UserControls
             {
                 draggedIndex = -1;
                 // Package the Data.
-                DataObject data = new DataObject(typeof(Process),pro);
- 
+                DataObject data = new DataObject(typeof(Process), pro);
+
                 DragDrop.DoDragDrop(lstMain, data, DragDropEffects.Move);
 
             }
@@ -113,22 +112,22 @@ namespace Lieferliste_WPF.UserControls
             ListBox l = sender as ListBox;
 
             ListView lv = e.Source as ListView;
-            
 
-                Process pro = lv.SelectedItem as Process;
-                if (pro != null)
-                {
-    
-                    DataObject data = new DataObject(typeof(Process), pro);
-                    data.SetData("dragSource", l);
-                    DragDrop.DoDragDrop(l, data, DragDropEffects.Move);
-                }
-            
+
+            Process pro = lv.SelectedItem as Process;
+            if (pro != null)
+            {
+
+                DataObject data = new DataObject(typeof(Process), pro);
+                data.SetData("dragSource", l);
+                DragDrop.DoDragDrop(l, data, DragDropEffects.Move);
+            }
+
 
         }
         private void ListView_MouseMove(object sender, MouseEventArgs e)
         {
-            
+
             ListView l = sender as ListView;
             if (l != null && e.LeftButton == MouseButtonState.Pressed)
             {
@@ -283,7 +282,7 @@ namespace Lieferliste_WPF.UserControls
             {
                 //MainWindow.ViewList.Add(UI);
 
-                
+
             }
 
         }

@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using Lieferliste_WPF.Entities;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Lieferliste_WPF.Working
@@ -121,7 +119,8 @@ namespace Lieferliste_WPF.Working
         }
         public override string StripeColor
         {
-            get {
+            get
+            {
                 var r = Properties.Settings.Default.ColorPallette[ColorIndex];
                 return Convert.ToString(r);
             }

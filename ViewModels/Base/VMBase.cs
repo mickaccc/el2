@@ -1,45 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Lieferliste_WPF.ViewModels.Base
+﻿namespace Lieferliste_WPF.ViewModels.Base
 {
-    public class VMBase: ViewModelBase
+    public class VMBase : ViewModelBase
     {
-    private bool isNew = true;
-    public bool IsNew
-    {
-        get { return isNew; }
-        set
+        private bool isNew = true;
+        public bool IsNew
         {
-            isNew = value;
-            RaisePropertyChanged();
+            get { return isNew; }
+            set
+            {
+                isNew = value;
+                RaisePropertyChanged();
+            }
         }
-    }
-    private bool isSelected = false;
+        private bool isSelected = false;
 
-    public bool IsSelected
-    {
-        get { return isSelected; }
-        set
+        public bool IsSelected
         {
-            isSelected = value;
-            RaisePropertyChanged();
+            get { return isSelected; }
+            set
+            {
+                isSelected = value;
+                RaisePropertyChanged();
+            }
         }
-    }
-    private bool isDeleted = false;
+        private bool isDeleted = false;
 
-    public bool IsDeleted
-    {
-        get { return isDeleted; }
-        set
+        public bool IsDeleted
         {
-            isDeleted = value;
-            RaisePropertyChanged();
+            get { return isDeleted; }
+            set
+            {
+                isDeleted = value;
+                RaisePropertyChanged();
+            }
         }
-    }
         private bool isModified = false;
 
         public bool IsModified
@@ -51,5 +45,5 @@ namespace Lieferliste_WPF.ViewModels.Base
                 RaisePropertyChanged();
             }
         }
-}
+    }
 }

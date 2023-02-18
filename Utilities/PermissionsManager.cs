@@ -23,14 +23,14 @@ namespace Lieferliste_WPF
             }
             return _instance;
         }
-  
+
         private PermissionsManager(String user)
-            {
+        {
 
             _permissions = new HashSet<string>();
             string pattern = @"^EMEA\\";
             Regex reg = new Regex(pattern);
-            _user = reg.Replace(user.ToUpper(),"");
+            _user = reg.Replace(user.ToUpper(), "");
             try
             {
                 ds = new DataSetPermission();
@@ -46,7 +46,7 @@ namespace Lieferliste_WPF
             foreach (DataRow dr in ds.permissionUSER.Rows)
             {
                 _permissions.Add(dr[0].ToString());
-            }   
+            }
         }
 
 
@@ -56,7 +56,7 @@ namespace Lieferliste_WPF
         }
         public HashSet<DataRow> getPermissions()
         {
-            
+
             //EL4_SQLDataSetTableAdapters.tblBerechtigungTableAdapter adapt = new EL4_SQLDataSetTableAdapters.tblBerechtigungTableAdapter();
             //adapt.Fill(ds.tblBerechtigung);
             HashSet<DataRow> rows = new HashSet<DataRow>();
@@ -66,6 +66,6 @@ namespace Lieferliste_WPF
             //}
             return rows;
         }
-     
+
     }
 }

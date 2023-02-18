@@ -40,7 +40,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand SortAscCommand { get; private set; }
         public ICommand SortDescCommand { get; private set; }
         public ICommand ToArchiveCommand { get; private set; }
- 
+
 
         /// <summary>
         /// Tooltip to display in the UI.
@@ -50,10 +50,10 @@ namespace Lieferliste_WPF.ViewModels
             get
             {
                 var toolTip = new StringBuilder();
-                if (_filterCriterias.Count>0)
+                if (_filterCriterias.Count > 0)
                 {
                     toolTip.Append("gefiltert:\n");
-                    foreach (KeyValuePair<String,String> c in _filterCriterias)
+                    foreach (KeyValuePair<String, String> c in _filterCriterias)
                     {
                         toolTip.Append(c.Key).Append(" = ").Append(c.Value).Append("\n");
                     }
@@ -62,7 +62,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     toolTip.Append("sortiert nach:\n").Append(_sortField).Append(" / ").Append(_sortDirection);
                 }
-  
+
                 return toolTip.ToString();
             }
         }
@@ -78,7 +78,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             _processCV = CollectionViewSource.GetDefaultView(Processes);
             _filterCriterias = new Dictionary<string, string>();
-            _processCV.Filter = delegate(Object item)
+            _processCV.Filter = delegate (Object item)
             {
                 ProcessVM temp = item as ProcessVM;
                 if (temp == null) return true;
@@ -141,33 +141,33 @@ namespace Lieferliste_WPF.ViewModels
         }
         public override void addFilterCriteria(string PropertyName, string CriteriaValue)
         {
-            int repeat=0;
+            int repeat = 0;
 
-            if (PropertyName == "alle") repeat=3;
+            if (PropertyName == "alle") repeat = 3;
 
-                do
+            do
+            {
+                switch (repeat)
                 {
-                    switch (repeat)
-                    {
-                        case 3: PropertyName = "TTNR"; break;
-                        case 2: PropertyName = "Teil"; break;
-                        case 1: PropertyName = "Auftrag"; break;
-                    }
-                    repeat--;
-                    if (PropertyName == "TTNR") PropertyName = "Material";
-                    if (PropertyName == "Teil") PropertyName = "Teil";
-                    if (PropertyName == "Auftrag") PropertyName = "AID";
-                    if (_filterCriterias.ContainsKey(PropertyName))
-                    {
-                        _filterCriterias[PropertyName] = CriteriaValue;
-                    }
-                    else
-                    {
-                        _filterCriterias.Add(PropertyName, CriteriaValue);
-                    }
+                    case 3: PropertyName = "TTNR"; break;
+                    case 2: PropertyName = "Teil"; break;
+                    case 1: PropertyName = "Auftrag"; break;
+                }
+                repeat--;
+                if (PropertyName == "TTNR") PropertyName = "Material";
+                if (PropertyName == "Teil") PropertyName = "Teil";
+                if (PropertyName == "Auftrag") PropertyName = "AID";
+                if (_filterCriterias.ContainsKey(PropertyName))
+                {
+                    _filterCriterias[PropertyName] = CriteriaValue;
+                }
+                else
+                {
+                    _filterCriterias.Add(PropertyName, CriteriaValue);
+                }
 
-                } while (repeat > 0);
-            
+            } while (repeat > 0);
+
             RaisePropertyChanged("ToolTip");
             _processCV.Refresh();
         }
@@ -179,7 +179,7 @@ namespace Lieferliste_WPF.ViewModels
             _processCV.Refresh();
 
         }
-protected async override void GetData()
+        protected async override void GetData()
         {
             if (isRun) return;
             using (var data = db)
@@ -187,11 +187,11 @@ protected async override void GetData()
                 ObservableCollection<ProcessVM> _processes = new ObservableCollection<ProcessVM>();
                 isRun = true;
                 var processes = await (from p in data.lieferliste
-                                       where p.abgeschlossen==false
+                                       where p.abgeschlossen == false
                                        orderby p.SpaetEnd
                                        select p).ToListAsync();
 
-                
+
                 isRun = false;
                 foreach (lieferliste l in processes)
                 {
@@ -203,7 +203,7 @@ protected async override void GetData()
             RaisePropertyChanged("Processes");
 
         }
-        
+
         //private void LoadData()
         //{
 
@@ -213,9 +213,9 @@ protected async override void GetData()
         //        try
         //        {
         //            ctx.lieferlistes.OrderBy(x => x.SpaetEnd).Load();
- 
+
         //            Processes = ctx.lieferlistes.Local;
-                    
+
         //            _logger.Info("loaded lieferlistes");
         //        }
         //        catch (Exception ex)
@@ -239,51 +239,51 @@ protected async override void GetData()
         //            }
         //        }
 
-                //Processes = new ObservableCollection<Process>();
+        //Processes = new ObservableCollection<Process>();
 
 
-                //foreach (DataSetEL4.lieferlisteRow row in dataTable)
-                //{
-                //    Process pro = new Process(row.AID);
-                //    pro.isFilling = true;
-                //    pro.ExecutionNumber = String.Format("{0:d4}", row.VNR);
-                //    pro.ExecutionShortText = row.Text;
-                //    pro.Material = row.Material;
-                //    pro.MaterialDescription = row.Teil;
-                //    pro.Quantity = (row.IsQuantityNull()) ? 0 : row.Quantity;
-                //    pro.Quantity_yield = row.Is_Quantity_yieldNull() ? 0 : row._Quantity_yield;
-                //    pro.Quantity_scrap = row.Is_Quantity_scrapNull() ? 0 : row._Quantity_scrap;
-                //    pro.Quantity_rework = row.Is_Quantity_reworkNull() ? 0 : row._Quantity_rework;
-                //    pro.Quantity_miss = row.Is_Quantity_missNull() ? 0 : row._Quantity_miss;
+        //foreach (DataSetEL4.lieferlisteRow row in dataTable)
+        //{
+        //    Process pro = new Process(row.AID);
+        //    pro.isFilling = true;
+        //    pro.ExecutionNumber = String.Format("{0:d4}", row.VNR);
+        //    pro.ExecutionShortText = row.Text;
+        //    pro.Material = row.Material;
+        //    pro.MaterialDescription = row.Teil;
+        //    pro.Quantity = (row.IsQuantityNull()) ? 0 : row.Quantity;
+        //    pro.Quantity_yield = row.Is_Quantity_yieldNull() ? 0 : row._Quantity_yield;
+        //    pro.Quantity_scrap = row.Is_Quantity_scrapNull() ? 0 : row._Quantity_scrap;
+        //    pro.Quantity_rework = row.Is_Quantity_reworkNull() ? 0 : row._Quantity_rework;
+        //    pro.Quantity_miss = row.Is_Quantity_missNull() ? 0 : row._Quantity_miss;
 
-                //    pro.CommentMei = row.Bem_M;
-                //    pro.CommentTL = row.Bem_T;
-                //    pro.CommentMA = row.Bem_MA;
+        //    pro.CommentMei = row.Bem_M;
+        //    pro.CommentTL = row.Bem_T;
+        //    pro.CommentMA = row.Bem_MA;
 
-                //    pro.isHighPrio = row.Dringend;
-                //    pro.CommentHighPrio = row.Bemerkung;
+        //    pro.isHighPrio = row.Dringend;
+        //    pro.CommentHighPrio = row.Bemerkung;
 
-                //    pro.isReady = row.fertig;
-                //    pro.isInVisible = row.ausgebl;
-                //    pro.isPortfolioAvail = row.Mappe;
-                //    pro.isArchivated = row.abgeschlossen;
+        //    pro.isReady = row.fertig;
+        //    pro.isInVisible = row.ausgebl;
+        //    pro.isPortfolioAvail = row.Mappe;
+        //    pro.isArchivated = row.abgeschlossen;
 
-                //    pro.marker = row.marker;
-                //    pro.PlanTermin = row.Plantermin;
-                //    pro.LieferTermin = row.LieferTermin;
-                //    pro.Termin = row.IsTerminNull() ? (DateTime?)null : row.Termin;
-                //    pro.LastEnd = row.SpaetEnd;
+        //    pro.marker = row.marker;
+        //    pro.PlanTermin = row.Plantermin;
+        //    pro.LieferTermin = row.LieferTermin;
+        //    pro.Termin = row.IsTerminNull() ? (DateTime?)null : row.Termin;
+        //    pro.LastEnd = row.SpaetEnd;
 
-                //    pro.WorkPlace = row.Arbeitsplatz;
-                //    pro.WorkPlaceSAP = row.ArbPlSAP;
-                //    pro.WorkSpace = row.ArbBereich;
+        //    pro.WorkPlace = row.Arbeitsplatz;
+        //    pro.WorkPlaceSAP = row.ArbPlSAP;
+        //    pro.WorkSpace = row.ArbBereich;
 
-                //    pro.isFilling = false;
-                //    Processes.Add(pro);
-                //}
-            //}
+        //    pro.isFilling = false;
+        //    Processes.Add(pro);
         //}
- 
+        //}
+        //}
+
         public void addSortDescription(String field, bool asc)
         {
             _processCV.SortDescriptions.Clear();
@@ -320,7 +320,7 @@ protected async override void GetData()
             {
                 _processCV.SortDescriptions.Clear();
                 _processCV.SortDescriptions.Add(new SortDescription(field, ListSortDirection.Ascending));
- 
+
             }
         }
         bool OnSortAscCanExecute(object parameter)
@@ -353,10 +353,10 @@ protected async override void GetData()
         void OnArchiveExecuted(object parameter)
         {
             String orderNr = parameter as string;
-  
+
             foreach (ProcessVM pro in Processes.Where(x => x.TheProcess.AID == orderNr))
             {
-                pro.IsDeleted=true;
+                pro.IsDeleted = true;
             }
             _processCV.Refresh();
 
@@ -372,7 +372,7 @@ protected async override void GetData()
             {
                 String a = String.Empty;
 
-                foreach(var pro in Processes.Where(x => x.IsDeleted))
+                foreach (var pro in Processes.Where(x => x.IsDeleted))
                 {
                     if (pro.TheProcess.AID != a)
                     {
@@ -385,7 +385,7 @@ protected async override void GetData()
                         }
                     }
                 }
-                    data.SaveChanges();
+                data.SaveChanges();
             }
         }
 

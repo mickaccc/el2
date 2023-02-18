@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200" 
              xmlns:local="clr-namespace:Lieferliste_WPF.UserControls"
-             xmlns:conv="clr-namespace:Lieferliste_WPF.Converters"
+             xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
              xmlns:System="clr-namespace:System;assembly=mscorlib" ForceCursor="False">
     <UserControl.Resources>
 

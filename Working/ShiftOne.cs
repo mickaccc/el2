@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Lieferliste_WPF.Entities;
-using System.Windows.Media;
+﻿using Lieferliste_WPF.Entities;
+using System;
 
 namespace Lieferliste_WPF.Working
 {
@@ -44,14 +40,14 @@ namespace Lieferliste_WPF.Working
             get
             {
                 System.Drawing.Color c = Properties.Settings.Default.Stripe1;
-                return "#"+c.Name.Substring(2).ToUpper();
+                return "#" + c.Name.Substring(2).ToUpper();
             }
         }
         public override int Start { get; set; }
         public override int End { get; set; }
         public override int TimeLenght
         {
-            get { return End-Start; }
+            get { return End - Start; }
         }
         public void buildShift(int Start, int End, int type, String comment)
         {

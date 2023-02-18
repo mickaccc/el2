@@ -1,26 +1,21 @@
 ﻿namespace Lieferliste_WPF.View.Pane
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Text;
-  using System.Windows.Controls;
-  using System.Windows;
-
     using Lieferliste_WPF.ViewModels;
+    using System.Windows;
+    using System.Windows.Controls;
 
-  class PanesTemplateSelector : DataTemplateSelector
+    class PanesTemplateSelector : DataTemplateSelector
     {
         public PanesTemplateSelector()
         {
-        
+
         }
 
 
         public DataTemplate OrderViewTemplate
         {
-          get;
-          set;
+            get;
+            set;
         }
 
         public DataTemplate DeliveryListViewTemplate
@@ -46,10 +41,10 @@
 
         public override System.Windows.DataTemplate SelectTemplate(object item, System.Windows.DependencyObject container)
         {
-  
+
 
             if (item is OrderViewModel)
-              return OrderViewTemplate;
+                return OrderViewTemplate;
             if (item is DeliveryListViewModel)
                 return DeliveryListViewTemplate;
             if (item is MachineContainerViewModel)

@@ -1,20 +1,11 @@
 ﻿namespace Lieferliste_WPF.View
 {
-  using System.IO;
-  using System.Windows;
-  using System.Windows.Input;
- 
-    using Lieferliste_WPF.Commands;
     using Lieferliste_WPF.ViewModels;
-    using Lieferliste_WPF.Entities;
-    using System.Windows.Controls;
-    using Lieferliste_WPF.ViewModels.Base;
     using System;
-    using System.Data.SqlClient;
-    using System.Data.Entity.Core.EntityClient;
-    using System.Data.Entity;
+    using System.Windows;
+    using System.Windows.Controls;
 
-  /// <summary>
+    /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
@@ -34,8 +25,8 @@
             about.ShowDialog();
         }
 
-        protected override void  OnClosing(System.ComponentModel.CancelEventArgs e)
-{
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
             //using (var db = new DB_COS_LIEFERLISTE_SQLEntities())
             //{
             //    DeliveryListViewModel persp = null;
@@ -58,15 +49,15 @@
             //        //        lie.Mappe = persp.Processes.Find(y => y.VID == lie.VID).Mappe;
             //        //    }
             //        //}
-  
+
             //    }
             //    db.SaveChanges();
             //}
- 	 base.OnClosing(e);
-}
+            base.OnClosing(e);
+        }
         #endregion
 
- 
+
 
 
         #region ToArchiveCommand
@@ -81,7 +72,7 @@
         {
             TextBox t = e.Source as TextBox;
 
-                (this.DataContext as ToolCase).ActivePerspective.LeaderPanes[0].addFilterCriteria(this.cmbFields.Text,this.txtSearch.Text);
+            (this.DataContext as ToolCase).ActivePerspective.LeaderPanes[0].addFilterCriteria(this.cmbFields.Text, this.txtSearch.Text);
         }
 
 

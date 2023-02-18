@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:my="clr-namespace:Lieferliste_WPF"
              xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
-             xmlns:conv="clr-namespace:Lieferliste_WPF.Converters"
+             xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
               mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="1220">
         <UserControl.Resources>

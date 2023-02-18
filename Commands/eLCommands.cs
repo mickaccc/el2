@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Lieferliste_WPF.Commands
 {
@@ -78,7 +77,7 @@ namespace Lieferliste_WPF.Commands
         }
         public static RoutedUICommand ListSortAscending
         {
-            get { return listSortAscending; } 
+            get { return listSortAscending; }
         }
         public static RoutedUICommand ListSortDescending
         {

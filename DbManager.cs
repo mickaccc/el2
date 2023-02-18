@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Lieferliste_WPF.Entities;
+using Lieferliste_WPF.Working;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -6,9 +8,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Documents;
-using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.Working;
 
 
 namespace Lieferliste_WPF
@@ -17,26 +16,24 @@ namespace Lieferliste_WPF
     {
         private const int MAX_ERRORS_TO_LOG = 100;
         private static List<int[]> pause = new List<int[]>();
-        private static DataSetEL4 _lieferDataSet = new DataSetEL4();
         private static DataSetPermission _permissionDataSet = new DataSetPermission();
-        private static DataSetTables _tablesDataSet = new DataSetTables();
+        private static DataSetEL2 _tablesDataSet = new DataSetEL2();
 
-        private static DataSetEL4TableAdapters.RessourceOfBIDTableAdapter _ressOfBID = new DataSetEL4TableAdapters.RessourceOfBIDTableAdapter();
-        private static DataSetEL4TableAdapters.RessZuteilTableAdapter _ressZuteil = new DataSetEL4TableAdapters.RessZuteilTableAdapter();
-        private static DataSetTablesTableAdapters.tblPauseTableAdapter _pauseAdapt = new DataSetTablesTableAdapters.tblPauseTableAdapter();
-        private static DataSetTablesTableAdapters.tblFeiertagSchliesstagTableAdapter _feierAdapt = new DataSetTablesTableAdapters.tblFeiertagSchliesstagTableAdapter();
-        private static DataSetTablesTableAdapters.tblRessKappaTableAdapter _kappaAdapt = new DataSetTablesTableAdapters.tblRessKappaTableAdapter();
-        private static DataSetTablesTableAdapters.tblProjektTableAdapter _projAktAdapt = new DataSetTablesTableAdapters.tblProjektTableAdapter();
-        private static DataSetEL4TableAdapters.RessZutTableAdapter _resZut = new DataSetEL4TableAdapters.RessZutTableAdapter();
-        private static DataSetTablesTableAdapters.tblRessourceVorgangTableAdapter resVorg = new DataSetTablesTableAdapters.tblRessourceVorgangTableAdapter();
-        private static DataSetEL4TableAdapters.OrderHeaderByVIDTableAdapter Header = new DataSetEL4TableAdapters.OrderHeaderByVIDTableAdapter();
-        private static DataSetTablesTableAdapters.tblRessourceTableAdapter res = new DataSetTablesTableAdapters.tblRessourceTableAdapter();
-        private static DataSetTablesTableAdapters.tblAuftragTableAdapter ord = new DataSetTablesTableAdapters.tblAuftragTableAdapter();
-        private static DataSetTablesTableAdapters.tblVorgangTableAdapter lie = new DataSetTablesTableAdapters.tblVorgangTableAdapter();
+        private static DataSetEL2TableAdapters.RessourceOfBIDTableAdapter _ressOfBID = new DataSetEL2TableAdapters.RessourceOfBIDTableAdapter();
+        private static DataSetEL2TableAdapters.RessZuteilTableAdapter _ressZuteil = new DataSetEL2TableAdapters.RessZuteilTableAdapter();
+        private static DataSetEL2TableAdapters.tblPauseTableAdapter _pauseAdapt = new DataSetEL2TableAdapters.tblPauseTableAdapter();
+        private static DataSetEL2TableAdapters.tblRessKappaTableAdapter _kappaAdapt = new DataSetEL2TableAdapters.tblRessKappaTableAdapter();
+        private static DataSetEL2TableAdapters.tblProjektTableAdapter _projAktAdapt = new DataSetEL2TableAdapters.tblProjektTableAdapter();
+        private static DataSetEL2TableAdapters.RessZutTableAdapter _resZut = new DataSetEL2TableAdapters.RessZutTableAdapter();
+        private static DataSetEL2TableAdapters.tblRessourceVorgangTableAdapter resVorg = new DataSetEL2TableAdapters.tblRessourceVorgangTableAdapter();
+        private static DataSetEL2TableAdapters.OrderHeaderByVIDTableAdapter Header = new DataSetEL2TableAdapters.OrderHeaderByVIDTableAdapter();
+        private static DataSetEL2TableAdapters.tblRessourceTableAdapter res = new DataSetEL2TableAdapters.tblRessourceTableAdapter();
+        private static DataSetEL2TableAdapters.tblAuftragTableAdapter ord = new DataSetEL2TableAdapters.tblAuftragTableAdapter();
+        private static DataSetEL2TableAdapters.tblVorgangTableAdapter lie = new DataSetEL2TableAdapters.tblVorgangTableAdapter();
         private static DataSetPermissionTableAdapters.tblUserListeTableAdapter user = new DataSetPermissionTableAdapters.tblUserListeTableAdapter();
-        private static DataSetEL4TableAdapters.OrderListTableAdapter _orderList = new DataSetEL4TableAdapters.OrderListTableAdapter();
+        private static DataSetEL2TableAdapters.OrderListTableAdapter _orderList = new DataSetEL2TableAdapters.OrderListTableAdapter();
 
-        private static DataSetEL4TableAdapters.lieferlisteTableAdapter _lieferListeAdapter = new DataSetEL4TableAdapters.lieferlisteTableAdapter();
+        private static DataSetEL2TableAdapters.lieferlisteTableAdapter _lieferListeAdapter = new DataSetEL2TableAdapters.lieferlisteTableAdapter();
         private static int _bid;
 
         private static DbManager _instance;
@@ -45,24 +42,27 @@ namespace Lieferliste_WPF
         {
             try
             {
+                if (getPermissions(ViewModels.MainWindowViewModel.currentUser).Count == 0)
+                {
+                    MessageBox.Show("Sie haben keine Berechtigungen um diese Anwendung zu verwenden!", "ERROR", MessageBoxButton.OK);
+                    Application.Current.Shutdown();
+                }
                 _pauseAdapt.Fill(_tablesDataSet.tblPause);
-                _feierAdapt.Fill(_tablesDataSet.tblFeiertagSchliesstag);
                 _kappaAdapt.Fill(_tablesDataSet.tblRessKappa);
-
                 _projAktAdapt.Fill(_tablesDataSet.tblProjekt);
- 
+
 
                 resVorg.Fill(_tablesDataSet.tblRessourceVorgang);
                 LogErrors(_tablesDataSet);
             }
             catch (Exception e)
             {
-                LogErrors(_lieferDataSet);
+
                 LogErrors(_permissionDataSet);
                 LogErrors(_tablesDataSet);
-                System.Windows.MessageBox.Show("Datenbankproblem 'DbManager'\n" + e.Message + "\n" + e.InnerException, "ERROR",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Error);
+                MessageBox.Show("Datenbankproblem 'DbManager'\n" + e.Message + "\n" + e.InnerException, "ERROR",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
 
             }
 
@@ -97,14 +97,15 @@ namespace Lieferliste_WPF
                 sb.AppendLine();
                 sb.Append(errorRows[i].RowError);
             }
+            System.Windows.MessageBox.Show("'dbManager'\n" + sb.ToString(), "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-        internal void boundingProcess(Process pro,int RID,short pos)
+        internal void boundingProcess(Process pro, int RID, short pos)
         {
 
             try
             {
-                resVorg.Insert(RID, String.Format("{0:D12}{1:D5}", Convert.ToInt32(pro.OrderNumber), Convert.ToInt32(pro.ExecutionNumber)), pos,
-            "", null, DateTime.Now,0);
+                resVorg.Insert(RID, String.Format("{0:D12}{1:D5}", Convert.ToInt32(pro.OrderNumber), Convert.ToInt32(pro.ExecutionNumber)),
+                    DateTime.Now, "", pos, 1, null, DateTime.Now);
             }
             catch (Exception)
             {
@@ -117,7 +118,7 @@ namespace Lieferliste_WPF
             try
             {
                 String vid = String.Format("{0:D12}{1:D5}", Convert.ToInt32(pro.OrderNumber), Convert.ToInt32(pro.ExecutionNumber));
-                DataSetTables.tblRessourceVorgangRow Row = _tablesDataSet.tblRessourceVorgang.Single(x => x.VID == vid);
+                DataSetEL2.tblRessourceVorgangRow Row = _tablesDataSet.tblRessourceVorgang.Single(x => x.VID == vid);
 
                 if (newRID != null)
                 {
@@ -142,12 +143,13 @@ namespace Lieferliste_WPF
             }
         }
 
-        internal void removeBoundedProcess(Process pro,int RID)
+        internal void removeBoundedProcess(Process pro, int RID)
         {
+            //TODO: Check its coorect
             try
             {
                 String Original_VID = String.Format("{0:D12}{1:D5}", Convert.ToInt32(pro.OrderNumber), Convert.ToInt32(pro.ExecutionNumber));
-                resVorg.Delete2(RID,Original_VID);
+                resVorg.DeleteByRID(RID);
             }
             catch (Exception)
             {
@@ -155,23 +157,25 @@ namespace Lieferliste_WPF
                 LogErrors(_tablesDataSet);
             }
         }
-        internal DataSetEL4.PrespectivesDataTable getPerspectives(string User)
+
+
+        internal DataSetPerspectives.PerspectiveDataTable getPerspectives(string User)
         {
-            DataSetEL4TableAdapters.PrespectivesTableAdapter ta = new DataSetEL4TableAdapters.PrespectivesTableAdapter();
-            return ta.GetData(User);
+            DataSetPerspectivesTableAdapters.QueriesTableAdapter ta = new DataSetPerspectivesTableAdapters.QueriesTableAdapter();
+            return (DataSetPerspectives.PerspectiveDataTable)ta.PerspectiveUser(User);
         }
-        internal DataSetEL4.RessZuteilViewDataTable getRessZuteilView()
+        internal DataSetEL2.RessZuteilViewDataTable getRessZuteilView()
         {
-            return _lieferDataSet.RessZuteilView;
+            return _tablesDataSet.RessZuteilView;
         }
 
         internal DataTable getProjects()
         {
             return _tablesDataSet.tblProjekt;
         }
-        internal DataSetTables.tblbereichDataTable getBereiche()
+        internal DataSetPermission.RolesDataTable getRoles()
         {
-            return _tablesDataSet.tblbereich;
+            return _permissionDataSet.Roles;
         }
         internal List<Stripe> getPauseList()
         {
@@ -185,25 +189,25 @@ namespace Lieferliste_WPF
             return ret;
         }
 
-        internal DataSetEL4.OrderListDataTable getOrderList(String AID)
+        internal DataSetEL2.OrderListDataTable getOrderList(String AID)
         {
-            _orderList.Fill(_lieferDataSet.OrderList, AID);
+            _orderList.Fill(_tablesDataSet.OrderList, AID);
             return _orderList.GetData(AID);
         }
         internal DataTable changeRessOfBID(int BID)
         {
             _bid = BID;
-            _ressOfBID.Fill(_lieferDataSet.RessourceOfBID, BID);
-            return _lieferDataSet.RessourceOfBID;
+            _ressOfBID.Fill(_tablesDataSet.RessourceOfBID, BID);
+            return _tablesDataSet.RessourceOfBID;
         }
-        internal DataSetEL4.RessZuteilDataTable getRessZuteil(int Bid)
+        internal DataSetEL2.RessZuteilDataTable getRessZuteil(int Bid)
         {
             DataTable dt = _tablesDataSet.tblRessourceVorgang.GetChanges();
             return _ressZuteil.GetData(Bid);
         }
         internal DataTable getResZut(int RID)
         {
-            _resZut.Fill(_lieferDataSet.RessZut, RID);
+            _resZut.Fill(_tablesDataSet.RessZut, RID);
 
             return _resZut.GetData(RID);
         }
@@ -211,14 +215,14 @@ namespace Lieferliste_WPF
         {
             DataRow[] ret;
             _bid = BID;
-            _ressZuteil.Fill(_lieferDataSet.RessZuteil, BID);
+            _ressZuteil.Fill(_tablesDataSet.RessZuteil, BID);
             if (isNew)
             {
-                ret = _lieferDataSet.RessZuteil.Select();
+                ret = _tablesDataSet.RessZuteil.Select();
             }
             else
             {
-                ret = _lieferDataSet.RessZuteil.Select("VGRID IS NULL");
+                ret = _tablesDataSet.RessZuteil.Select("VGRID IS NULL");
             }
             return ret;
         }
@@ -232,7 +236,7 @@ namespace Lieferliste_WPF
                 int? start = dr["start1"] as int?;
                 int? end = dr["end1"] as int?;
                 String comment = dr["comment1"] as String;
-                if (start!=null && end!=null) ret.Add(new ShiftOne((int)start,(int)end,comment));
+                if (start != null && end != null) ret.Add(new ShiftOne((int)start, (int)end, comment));
 
                 start = dr["start2"] as int?;
                 end = dr["end2"] as int?;
@@ -255,28 +259,15 @@ namespace Lieferliste_WPF
             return _kappaAdapt.GetData().Where(x => x.RID == rid && x.Datum >= monday).Select(y => y.Datum).ToList<DateTime>();
 
         }
-        internal bool isHolyday(DateTime dte)
-        {
-            bool ret=false;
-            try
-            {
-                ret= _tablesDataSet.tblFeiertagSchliesstag.Any(x => x.Datum == dte);
-            }
-            catch (Exception)
-            {
 
-                LogErrors(_tablesDataSet);
-            }
-            return ret;
-        }
-        internal DataSetTablesTableAdapters.tblRessKappaTableAdapter getRessKappa(int Rid)
+        internal DataSetEL2TableAdapters.tblRessKappaTableAdapter getRessKappa(int Rid)
         {
             return _kappaAdapt;
         }
 
         internal void SyncronizeRessKapa(int RID, SortedDictionary<DateTime, DayLine> dl)
         {
-            DataSetTables.tblRessKappaRow dt = null;
+            DataSetEL2.tblRessKappaRow dt = null;
             try
             {
                 foreach (DayLine d in dl.Values)
@@ -304,7 +295,7 @@ namespace Lieferliste_WPF
         {
             try
             {
-                DataSetTables.tblRessKappaRow row = _tablesDataSet.tblRessKappa.Where(x => x.Datum == dl.Day
+                DataSetEL2.tblRessKappaRow row = _tablesDataSet.tblRessKappa.Where(x => x.Datum == dl.Day
             && x.RID == RID).SingleOrDefault();
                 if (row == null) return;
                 DateTime? r = null;
@@ -371,24 +362,24 @@ namespace Lieferliste_WPF
         // TODO implemnt Delete DatabaseRow
         internal void Delete(DayLine dl)
         {
-            DataSetTables.tblRessKappaRow row = _tablesDataSet.tblRessKappa.Where(x => x.Datum == dl.Day).Single();
+            DataSetEL2.tblRessKappaRow row = _tablesDataSet.tblRessKappa.Where(x => x.Datum == dl.Day).Single();
             //_kappaAdapt.DeleteByID(row.ID);
 
         }
 
         internal short getMaxSPOS(int rid)
         {
-            List<DataSetTables.tblRessourceVorgangRow> dt = resVorg.GetData().Select("RID=" + rid).Cast<DataSetTables.tblRessourceVorgangRow>().ToList();
+            List<DataSetEL2.tblRessourceVorgangRow> dt = resVorg.GetData().Select("RID=" + rid).Cast<DataSetEL2.tblRessourceVorgangRow>().ToList();
             short result = 0;
             if (dt.Count > 0) result = dt.Max(x => x.SPOS);
             return result;
         }
 
-        internal DataSetEL4.RessZuteilDataTable UpdateZuteil(int VGRID, int RID, short newPos)
+        internal DataSetEL2.RessZuteilDataTable UpdateZuteil(int VGRID, int RID, short newPos)
         {
             try
             {
-                 DataSetTables.tblRessourceVorgangRow drow = resVorg.GetData().Where(x => x.VGRID == VGRID).SingleOrDefault();
+                DataSetEL2.tblRessourceVorgangRow drow = resVorg.GetData().Where(x => x.VGRID == VGRID).SingleOrDefault();
                 if (drow != null)
                 {
                     drow.SPOS = newPos;
@@ -405,7 +396,7 @@ namespace Lieferliste_WPF
             }
 
         }
-        internal DataSetEL4.RessZuteilDataTable DeleteZuteil(int VGRID)
+        internal DataSetEL2.RessZuteilDataTable DeleteZuteil(int VGRID)
         {
 
             //resVorg.DeleteQuery(VGRID);
@@ -416,7 +407,7 @@ namespace Lieferliste_WPF
         {
             return user.GetData().OrderBy(x => x.Name);
         }
-        internal DataSetTables.tblRessourceDataTable getResources()
+        internal DataSetEL2.tblRessourceDataTable getResources()
         {
 
             res.Fill(_tablesDataSet.tblRessource);
@@ -424,14 +415,14 @@ namespace Lieferliste_WPF
         }
 
         internal DataRow getVorgSelect(String VID)
-        {            
-            return lie.GetData().Where(x => x.VID==VID).SingleOrDefault();
+        {
+            return lie.GetData().Where(x => x.VID == VID).SingleOrDefault();
         }
 
         internal void UpdateVorgang(string vid, string field, object value)
         {
 
-            DataSetTables.tblVorgangRow dr = lie.GetData().Select("VID='" + vid + "'").SingleOrDefault() as DataSetTables.tblVorgangRow;
+            DataSetEL2.tblVorgangRow dr = lie.GetData().Select("VID='" + vid + "'").SingleOrDefault() as DataSetEL2.tblVorgangRow;
             if (dr != null)
             {
 
@@ -465,58 +456,58 @@ namespace Lieferliste_WPF
             SqlConnection con = new SqlConnection(Properties.Settings.Default.DB_COS_LIEFERLISTE_SQLConnectionString);
             con.Open();
             int res = 0;
-                switch (field.ToUpper())
-                {
-                    case "ABGESCHLOSSEN":
+            switch (field.ToUpper())
+            {
+                case "ABGESCHLOSSEN":
 
-                        SqlCommand cmd = new SqlCommand("dbo.Archivate", con);
-                        cmd.CommandType=CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@resultVal", res);
-                        cmd.Parameters.AddWithValue("@aid",AID);
-                        cmd.Parameters.AddWithValue("@boolValue", Convert.ToBoolean(value));
-                        cmd.Parameters.AddWithValue("@boolForce", false);
- 
-                        cmd.ExecuteNonQuery();
-                        if (res > 0)
+                    SqlCommand cmd = new SqlCommand("dbo.Archivate", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@resultVal", res);
+                    cmd.Parameters.AddWithValue("@aid", AID);
+                    cmd.Parameters.AddWithValue("@boolValue", Convert.ToBoolean(value));
+                    cmd.Parameters.AddWithValue("@boolForce", false);
+
+                    cmd.ExecuteNonQuery();
+                    if (res > 0)
+                    {
+                        if (MessageBox.Show(string.Format("Achtung!\nEs gibt noch {d} Vorgänge mit offener Menge.\n\n"
+                         + "Soll trotzdem abgelegt werden?", res), "Warnung", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                            == MessageBoxResult.Yes)
                         {
-                            if (MessageBox.Show(string.Format("Achtung!\nEs gibt noch {d} Vorgänge mit offener Menge.\n\n"
-                             + "Soll trotzdem abgelegt werden?", res), "Warnung", MessageBoxButton.YesNo, MessageBoxImage.Warning)
-                                == MessageBoxResult.Yes)
+                            cmd.Parameters.RemoveAt(2);
+                            cmd.Parameters.AddWithValue("@boolforce", true);
+                            cmd.ExecuteNonQuery();
+                            if (res != 0)
                             {
-                                cmd.Parameters.RemoveAt(2);
-                                cmd.Parameters.AddWithValue("@boolforce", true);
-                                cmd.ExecuteNonQuery();
-                                if (res != 0)
-                                {
-                                    MessageBox.Show("Es ist ein Fehler beim ablegen aufgetreten!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                }
+                                MessageBox.Show("Es ist ein Fehler beim ablegen aufgetreten!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
-                        break;
+                    }
+                    break;
 
-                    case "MAPPE":
-                        SqlCommand Mcmd = new SqlCommand("UPDATE dbo.tblAuftrag SET Mappe=" + Convert.ToByte(Convert.ToBoolean(value))
-                            + " WHERE AID='" + AID + "'",con);
-                        Mcmd.ExecuteNonQuery();
-                        break;
-                    case "LIEFERTERMIN":
-                        SqlCommand Lcmd = new SqlCommand("UPDATE dbo.tblAuftrag SET LieferTermin='" + Convert.ToString(value)
-                            + "' WHERE AID='" + AID + "'",con);
-                        Lcmd.ExecuteNonQuery();
-                        break;
-                    case "PRIO":
-                        SqlCommand Pcmd = new SqlCommand("UPDATE dbo.tblAuftrag SET Dringend=" + Convert.ToByte(Convert.ToBoolean(value))
-                            + " WHERE AID='" + AID + "'", con);
-                        Pcmd.ExecuteNonQuery();
-                        break;
-                    case "PRIOTXT":
-                        SqlCommand Ptcmd = new SqlCommand("UPDATE dbo.tblAuftrag SET Bemerkung='" + Convert.ToString(value)
-                            + "' WHERE AID='" + AID + "'", con);
-                        Ptcmd.ExecuteNonQuery();
-                        break; 
+                case "MAPPE":
+                    SqlCommand Mcmd = new SqlCommand("UPDATE dbo.tblAuftrag SET Mappe=" + Convert.ToByte(Convert.ToBoolean(value))
+                        + " WHERE AID='" + AID + "'", con);
+                    Mcmd.ExecuteNonQuery();
+                    break;
+                case "LIEFERTERMIN":
+                    SqlCommand Lcmd = new SqlCommand("UPDATE dbo.tblAuftrag SET LieferTermin='" + Convert.ToString(value)
+                        + "' WHERE AID='" + AID + "'", con);
+                    Lcmd.ExecuteNonQuery();
+                    break;
+                case "PRIO":
+                    SqlCommand Pcmd = new SqlCommand("UPDATE dbo.tblAuftrag SET Dringend=" + Convert.ToByte(Convert.ToBoolean(value))
+                        + " WHERE AID='" + AID + "'", con);
+                    Pcmd.ExecuteNonQuery();
+                    break;
+                case "PRIOTXT":
+                    SqlCommand Ptcmd = new SqlCommand("UPDATE dbo.tblAuftrag SET Bemerkung='" + Convert.ToString(value)
+                        + "' WHERE AID='" + AID + "'", con);
+                    Ptcmd.ExecuteNonQuery();
+                    break;
             }
-                con.Close();
-                return res==0;
+            con.Close();
+            return res == 0;
         }
 
 
@@ -524,15 +515,21 @@ namespace Lieferliste_WPF
         internal object getHeaderInfo(string VID)
         {
 
-            Header.Fill(_lieferDataSet.OrderHeaderByVID, VID);
-            return _lieferDataSet.OrderHeaderByVID;
+            Header.Fill(_tablesDataSet.OrderHeaderByVID, VID);
+            return _tablesDataSet.OrderHeaderByVID;
         }
 
-        internal DataSetEL4.lieferlisteDataTable GetLieferliste()
+        internal DataSetEL2.lieferlisteDataTable getLieferliste()
         {
 
-            _lieferListeAdapter.Fill(_lieferDataSet.lieferliste);
-            return _lieferDataSet.lieferliste;
+
+            return _tablesDataSet.lieferliste;
+        }
+
+        internal DataSetPermission.PermissionUSERDataTable getPermissions(string USERID)
+        {
+            _permissionDataSet.PermissionUSER.Where(r => ((string)r["UserIdent"]) == USERID);
+            return _permissionDataSet.PermissionUSER;
         }
     }
 }

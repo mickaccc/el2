@@ -1,15 +1,10 @@
 ﻿using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.ViewModels.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Lieferliste_WPF.Messages;
+using Lieferliste_WPF.ViewModels.Base;
 
 namespace Lieferliste_WPF.ViewModels.Support
 {
-    public class CrudVM :ViewModelBase
+    public class CrudVM : ViewModelBase
     {
         protected EntitiesLL db = new EntitiesLL();
         protected EntitiesAlloc dbAlloc = new EntitiesAlloc();
@@ -68,13 +63,13 @@ namespace Lieferliste_WPF.ViewModels.Support
         }
         protected virtual void RefreshData()
         {
-           // GetData();
+            // GetData();
 
         }
         protected virtual void GetData()
         {
         }
- 
+
         protected CrudVM()
         {
             GetData();

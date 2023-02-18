@@ -1,21 +1,18 @@
-﻿using System;
+﻿using Lieferliste_WPF.Working;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Lieferliste_WPF.Working;
-using System.Windows.Media;
 using System.ComponentModel;
 
 namespace Lieferliste_WPF.Entities
 {
     public class Process
     {
- 
+
         public event PropertyChangedEventHandler PropertyChanged;
         public String OrderNumber { get; set; }
         public String ExecutionNumber { get; set; }
         public String VID { get; set; }
-        public String Material{ get; set; }
+        public String Material { get; set; }
         public String MaterialDescription { get; set; }
         public String ExecutionShortText { get; set; }
         public bool isArchivated { get; set; }
@@ -84,13 +81,14 @@ namespace Lieferliste_WPF.Entities
             set { _termin = value; }
         }
         private bool _isInvisible;
-        public bool isInVisible {
+        public bool isInVisible
+        {
             get { return _isInvisible; }
             set { _isInvisible = value; }
         }
         private bool _isPortfolioAvail;
-        public bool isPortfolioAvail 
-        { 
+        public bool isPortfolioAvail
+        {
             get { return _isPortfolioAvail; }
             set { _isPortfolioAvail = value; }
         }
@@ -106,11 +104,11 @@ namespace Lieferliste_WPF.Entities
         //    get { return this._actionStripes; }
         //    set { this._actionStripes = value; }
         //}
-        public override bool  Equals(object obj)
+        public override bool Equals(object obj)
         {
-            if(obj==null) return false;
-            Process p=obj as Process;
-            if(p==null) return false;
+            if (obj == null) return false;
+            Process p = obj as Process;
+            if (p == null) return false;
 
             return this.OrderNumber.Equals(p.OrderNumber) && this.ExecutionNumber.Equals(p.ExecutionNumber);
         }
@@ -129,7 +127,7 @@ namespace Lieferliste_WPF.Entities
             var handler = PropertyChanged;
             if (handler != null)
                 handler(this, new PropertyChangedEventArgs(propertyName));
-            
+
         }
     }
 }

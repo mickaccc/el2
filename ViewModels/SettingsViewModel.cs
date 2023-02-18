@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Lieferliste_WPF.Entities;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Lieferliste_WPF.Entities;
-using System.Windows;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class SettingsViewModel:Base.ViewModelBase
+    class SettingsViewModel : Base.ViewModelBase
     {
         public ObservableList<tblBerechtigung> PermissionsAvail { get; set; }
         public ObservableList<tblBerechtigung> PermissionsChecked { get; set; }
@@ -15,7 +12,7 @@ namespace Lieferliste_WPF.ViewModels
         public List<tblUserListe> Users { get; set; }
         public ObservableList<Roles> RolesChecked { get; set; }
         public ObservableList<Roles> RolesAvail { get; private set; }
-        private int _roleIdent=0;
+        private int _roleIdent = 0;
         private string _userIdent;
 
 
@@ -42,7 +39,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
- 
+
 
         public string UserIdent
         {
@@ -54,15 +51,15 @@ namespace Lieferliste_WPF.ViewModels
                 reLoadRolesChecked();
                 RolesAvail.Clear();
 
-                foreach(Roles r in Roles)
+                foreach (Roles r in Roles)
                 {
-                    if(!RolesChecked.Any(x => x.id==r.id))
-                         RolesAvail.Add(r);
+                    if (!RolesChecked.Any(x => x.id == r.id))
+                        RolesAvail.Add(r);
                 }
-                
+
             }
         }
-        
+
         //DB_COS_LIEFERLISTE_SQLEntities ctx = new DB_COS_LIEFERLISTE_SQLEntities(Statics.);
 
         public SettingsViewModel()

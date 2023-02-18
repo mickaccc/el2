@@ -9,13 +9,12 @@
  *
  ************************************************************************/
 
+using CodeReason.Reports;
 using System;
 using System.Data;
 using System.IO;
 using System.Windows;
 using System.Windows.Xps.Packaging;
-using System.Collections.Generic;
-using CodeReason.Reports;
 
 namespace Lieferliste_WPF
 {
@@ -59,7 +58,7 @@ namespace Lieferliste_WPF
                 reportDocument.XamlImagePath = Path.Combine(Environment.CurrentDirectory, @"Templates\");
                 reader.Close();
 
-                
+
 
                 // set constant document values
                 data.ReportDocumentValues.Add("PrintDate", DateTime.Now); // print date is now

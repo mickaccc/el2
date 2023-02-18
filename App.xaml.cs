@@ -1,8 +1,8 @@
 ﻿
-using System.Windows;
-using System.Threading;
-using System.Windows.Markup;
 using System.Globalization;
+using System.Threading;
+using System.Windows;
+using System.Windows.Markup;
 namespace Lieferliste_WPF
 {
     /// <summary>

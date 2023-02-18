@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections.ObjectModel;
+﻿using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.Working;
-using Lieferliste_WPF.Entities;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class WorkingDayViewModel:AbstractViewModel
+    class WorkingDayViewModel : AbstractViewModel
     {
         private SortedSet<int> _workingMinutes;
         public Collection<Stripe> Kappa { get; set; }

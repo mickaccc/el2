@@ -3,17 +3,17 @@ using System.ComponentModel;
 
 namespace Lieferliste_WPF.Entities
 {
-	public abstract class Stripe : INotifyPropertyChanged
-	{
+    public abstract class Stripe : INotifyPropertyChanged
+    {
 
-     
+
         public abstract int Start { get; set; }
         public abstract int End { get; set; }
         public abstract String Comment { get; set; }
         public abstract bool ValidateStartEnd(int value);
         public abstract String StripeColor { get; }
         public abstract int Type { get; }
-        
+
 
 
         public abstract int TimeLenght
@@ -24,7 +24,8 @@ namespace Lieferliste_WPF.Entities
         public TimeSpan StartTime
         {
             get { return TimeSpan.FromMinutes(Start); }
-            set {
+            set
+            {
                 Start = (int)value.TotalMinutes;
                 NotifyPropertyChanged("TimeLenght");
                 NotifyPropertyChanged("Start");
@@ -33,7 +34,8 @@ namespace Lieferliste_WPF.Entities
         public TimeSpan EndTime
         {
             get { return TimeSpan.FromMinutes(End); }
-            set { 
+            set
+            {
                 End = (int)value.TotalMinutes;
                 NotifyPropertyChanged("TimeLenght");
                 NotifyPropertyChanged("End");
@@ -49,6 +51,6 @@ namespace Lieferliste_WPF.Entities
                 //PropertyChanged(this, new PropertyChangedEventArgs("DisplayMember"));
             }
         }
-	}
+    }
 }
 

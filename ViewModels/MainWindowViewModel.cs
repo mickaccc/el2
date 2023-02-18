@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Lieferliste_WPF.ViewModels.Base;
+using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using Lieferliste_WPF.ViewModels.Base;
-using System.Windows.Controls;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -23,7 +21,7 @@ namespace Lieferliste_WPF.ViewModels
         /// <summary>
         /// Argument for the SearchFilter.
         /// </summary>
-        public string FilterArg {private get; set;}
+        public string FilterArg { private get; set; }
         /// <summary>
         /// View-model for the active document.
         /// </summary>
@@ -52,7 +50,7 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show("Fehler beim starten 'MainWindow'\n" + e.Message + "\n" + e.StackTrace);
- 
+
             }
 
 
@@ -263,7 +261,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 DialogProvider.ErrorMessage("Failed to save document " + newFilePath + "\n" +
                                             "Exception occurred: \n" +
-                                            ex.ToString());                                          
+                                            ex.ToString());
             }
         }
 
@@ -406,7 +404,7 @@ namespace Lieferliste_WPF.ViewModels
                     return false;
                 }
             }
-           
+
 
             //
             // Allow application exit to proceed.
@@ -435,51 +433,51 @@ namespace Lieferliste_WPF.ViewModels
         }
         public void txtSearch_TextChanged(string search)
         {
-            
 
-                switch (ActiveDocument.GetType().Name)
-                {
-                    case "DeliveryListViewModel":
-                        DeliveryListViewModel d = (DeliveryListViewModel) ActiveDocument;
-                        
-                            switch (FilterArg.ToLower())
-                            {
 
-                                case "alle":
-                                    d.addFilterCriteria("OrderNumber", ".*" + search + ".*");
-                                    d.addFilterCriteria("Material", ".*" + search + ".*");
-                                    d.addFilterCriteria("MaterialDescription", ".*" +  search + ".*");
-                                   
-                                    break;
-                                case "ttnr":
-                                   d.removeFilterCriteria("MaterialDescription");
-                                    d.removeFilterCriteria("OrderNumber");
-                                    d.addFilterCriteria("Material", ".*" + search + ".*");
-                                    
-                                    break;
-                                case "teil":
-                                    d.removeFilterCriteria("Material");
-                                    d.removeFilterCriteria("OrderNumber");
-                                    d.addFilterCriteria("MaterialDescription", ".*" + search + ".*");
-                                    
-                                    break;
-                                case "auftrag":
-                                    d.removeFilterCriteria("MaterialDescription");
-                                    d.removeFilterCriteria("Material");
-                                    d.addFilterCriteria("OrderNumber", ".*" + search + ".*");
-                                    
-                                    break;
-                            }
+            switch (ActiveDocument.GetType().Name)
+            {
+                case "DeliveryListViewModel":
+                    DeliveryListViewModel d = (DeliveryListViewModel)ActiveDocument;
 
-                        break;
-                    case "Allocation":
+                    switch (FilterArg.ToLower())
+                    {
 
-                        break;
-                    case "AllocationWorkingList":
-                        break;
-                }
+                        case "alle":
+                            d.addFilterCriteria("OrderNumber", ".*" + search + ".*");
+                            d.addFilterCriteria("Material", ".*" + search + ".*");
+                            d.addFilterCriteria("MaterialDescription", ".*" + search + ".*");
 
+                            break;
+                        case "ttnr":
+                            d.removeFilterCriteria("MaterialDescription");
+                            d.removeFilterCriteria("OrderNumber");
+                            d.addFilterCriteria("Material", ".*" + search + ".*");
+
+                            break;
+                        case "teil":
+                            d.removeFilterCriteria("Material");
+                            d.removeFilterCriteria("OrderNumber");
+                            d.addFilterCriteria("MaterialDescription", ".*" + search + ".*");
+
+                            break;
+                        case "auftrag":
+                            d.removeFilterCriteria("MaterialDescription");
+                            d.removeFilterCriteria("Material");
+                            d.addFilterCriteria("OrderNumber", ".*" + search + ".*");
+
+                            break;
+                    }
+
+                    break;
+                case "Allocation":
+
+                    break;
+                case "AllocationWorkingList":
+                    break;
             }
+
         }
     }
+}
 

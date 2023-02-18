@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.ViewModels.Base;
+using Lieferliste_WPF.ViewModels.Support;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
-using Lieferliste_WPF.Commands;
-using System;
 using System.Xml.Linq;
-using System.Reflection;
-using Lieferliste_WPF.ViewModels.Support;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -21,9 +21,9 @@ namespace Lieferliste_WPF.ViewModels
         protected ToolCase()
         {
 
-            DataSetEL4.PrespectivesDataTable pers = DbManager.Instance().getPerspectives(MainWindowViewModel.currentUser);
+            DataSetPerspectives.PerspectiveDataTable pers = DbManager.Instance().getPerspectives(MainWindowViewModel.currentUser);
 
-            foreach (DataSetEL4.PrespectivesRow row in pers)
+            foreach (DataSetPerspectives.PerspectiveRow row in pers)
             {
                 Perspective p = new Perspective();
                 p.Name = row.PerspectName;
@@ -48,9 +48,9 @@ namespace Lieferliste_WPF.ViewModels
                             {
                                 if (item.Attribute("Static") != null)
                                 {
-                                    PropertyInfo method = itemType.GetProperty("This",BindingFlags.Public | BindingFlags.Static);
+                                    PropertyInfo method = itemType.GetProperty("This", BindingFlags.Public | BindingFlags.Static);
                                     var vm = (CrudVM)method.GetValue(null, null);
-                                    
+
                                     p.LeaderPanes.Add(vm);
                                 }
                                 else
@@ -71,14 +71,14 @@ namespace Lieferliste_WPF.ViewModels
                             {
                                 p.SubType = Convert.ToInt32(item.Attribute("Param").Value);
                                 p.AttatchedPanes.Add((ViewModelBase)Activator.CreateInstance(itemType, new object[] { p }));
-                                
+
                             }
                             else
                             {
                                 if (item.Attribute("Static") != null)
                                 {
-                                    PropertyInfo prop = itemType.GetProperty("This",BindingFlags.Public | BindingFlags.Static);
-                                    p.AttatchedPanes.Add((ViewModelBase)prop.GetValue(null,null));
+                                    PropertyInfo prop = itemType.GetProperty("This", BindingFlags.Public | BindingFlags.Static);
+                                    p.AttatchedPanes.Add((ViewModelBase)prop.GetValue(null, null));
                                 }
                                 else
                                 {

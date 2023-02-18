@@ -1,15 +1,10 @@
-﻿using System;
+﻿using Lieferliste_WPF.Entities;
+using Lieferliste_WPF.UserControls;
+using Lieferliste_WPF.ViewModels;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.UserControls;
-using Lieferliste_WPF.Working;
-using System.Collections.ObjectModel;
-using Lieferliste_WPF.Planning;
-using Lieferliste_WPF.ViewModels;
 
 namespace Lieferliste_WPF.Dialogs
 {
@@ -61,7 +56,7 @@ namespace Lieferliste_WPF.Dialogs
             //int rid = _parentDV.PlannerControl.myMachine.RID;
             //ObservableCollection<DayLine> mdays = null;
 
-            
+
             //TimeSpan? st1,st2,st3, end1,end2,end3;
             //TimeSpan st, end;
             //st1 = (TimeSpan.TryParse(this.txt_start1.Text, out st)) ? st : (TimeSpan?)null;
@@ -83,12 +78,12 @@ namespace Lieferliste_WPF.Dialogs
             //            if (!(mdays.Any(x => x.Day==tmpDt)))
             //            {
             //                DayLine dayLine = new DayLine(tmpDt);
-                            
-                            
+
+
             //                if (st1!=null && end1!=null)
             //                {
             //                    dayLine.Add(new ShiftOne((TimeSpan)st1,(TimeSpan)end1,this.comment1.Text));
-                               
+
             //                }
             //                if (st2!=null && end2!=null)
             //                {
@@ -111,7 +106,7 @@ namespace Lieferliste_WPF.Dialogs
             //                }
             //                mdays.Add(dayLine);
             //                DbManager.Instance().InsertRessKappa(rid, dayLine);
-                          
+
             //            }
             //            else
             //            {
@@ -147,7 +142,7 @@ namespace Lieferliste_WPF.Dialogs
             //                }
             //                if (chk_edit3.IsChecked.Equals(true))
             //                {
-                                
+
             //                    Stripe stripe = mdays.First(x => x.Day==tmpDt).Where(x => x.Type == 3 && x.Start==ShiftThree.MinMinute).SingleOrDefault();
             //                    if (stripe != null)
             //                    {
@@ -179,7 +174,7 @@ namespace Lieferliste_WPF.Dialogs
             //                {
             //                DbManager.Instance().UpdateRessKappa(rid, mdays.First(x => x.Day==tmpDt.AddDays(-1)));
             //                }
-                            
+
             //            }
             //        }
             //        tmpDt = tmpDt.AddDays(1);
@@ -199,6 +194,6 @@ namespace Lieferliste_WPF.Dialogs
             }
             return false;
         }
-    
+
     }
 }

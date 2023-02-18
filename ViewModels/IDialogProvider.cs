@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Lieferliste_WPF.ViewModels
+﻿namespace Lieferliste_WPF.ViewModels
 {
     /// <summary>
     /// An interface for file dialog services.

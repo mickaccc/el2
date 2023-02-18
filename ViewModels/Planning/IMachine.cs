@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Lieferliste_WPF.Entities;
-using System.Collections.ObjectModel;
-using Lieferliste_WPF.ViewModels.Support;
-using Lieferliste_WPF.ViewModels.Base;
-using System.Data.Entity;
+﻿using Lieferliste_WPF.Entities;
+using System;
 
 namespace Lieferliste_WPF.Planning
 {
@@ -15,7 +10,7 @@ namespace Lieferliste_WPF.Planning
         bool isFilling { get; set; }
         bool isSelected { get; set; }
         ObservableLinkedList<RessZuteilView> ProcessesLine { get; }
-        void addKappa(DateTime thisDate,Stripe thisStripe);
+        void addKappa(DateTime thisDate, Stripe thisStripe);
         double? addOrder(Process thisOrder);
     }
 }

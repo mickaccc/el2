@@ -5,16 +5,16 @@
     using System.Linq.Expressions;
 
     public class ViewModelBase : INotifyPropertyChanged
-  {
-  
-        protected virtual void RaisePropertyChanged([System.Runtime.CompilerServices.CallerMemberName]string propertyName ="")
     {
-      if (PropertyChanged != null)
-        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-    }
-   
 
-    public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void RaisePropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Tell bound controls (via WPF binding) to refresh their display.
@@ -26,21 +26,21 @@
         /// <typeparam name="TProperty"></typeparam>
         /// <param name="property"></param>
         public void NotifyPropertyChanged<TProperty>(Expression<Func<TProperty>> property)
-    {
-      var lambda = (LambdaExpression)property;
-      MemberExpression memberExpression;
+        {
+            var lambda = (LambdaExpression)property;
+            MemberExpression memberExpression;
 
-      if (lambda.Body is UnaryExpression)
-      {
-        var unaryExpression = (UnaryExpression)lambda.Body;
-        memberExpression = (MemberExpression)unaryExpression.Operand;
-      }
-      else
-        memberExpression = (MemberExpression)lambda.Body;
+            if (lambda.Body is UnaryExpression)
+            {
+                var unaryExpression = (UnaryExpression)lambda.Body;
+                memberExpression = (MemberExpression)unaryExpression.Operand;
+            }
+            else
+                memberExpression = (MemberExpression)lambda.Body;
 
-      this.RaisePropertyChanged(memberExpression.Member.Name);
+            this.RaisePropertyChanged(memberExpression.Member.Name);
+        }
+        public virtual void addFilterCriteria(string PropertyName, string CriteriaValue) { }
+        public virtual void removeFilterCriteria(string PropertyName) { }
     }
-    public virtual void addFilterCriteria(string PropertyName, string CriteriaValue){}
-    public virtual void removeFilterCriteria(string PropertyName) {}
-  }
 }

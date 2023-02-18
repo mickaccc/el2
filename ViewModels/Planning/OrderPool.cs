@@ -1,12 +1,10 @@
-﻿using System;
+﻿using Lieferliste_WPF.Entities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Lieferliste_WPF.Entities;
 
 namespace Lieferliste_WPF.Planning
 {
-    class OrderPool:IOrderPool
+    class OrderPool : IOrderPool
     {
         public List<Process> Orders
         {

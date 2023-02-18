@@ -1,18 +1,11 @@
-﻿using System;
-using System.ComponentModel;
+﻿using Lieferliste_WPF.Dialogs;
+using Lieferliste_WPF.Entities;
+using Lieferliste_WPF.ViewModels;
+using Lieferliste_WPF.ViewModels.Base;
+using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using Lieferliste_WPF.Commands;
-using Lieferliste_WPF.Dialogs;
-using System.Collections.ObjectModel;
-using Lieferliste_WPF.ViewModels;
-using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.ViewModels.Base;
 
 namespace Lieferliste_WPF.UserControls
 {
@@ -24,19 +17,19 @@ namespace Lieferliste_WPF.UserControls
         GroupFilter gf = new GroupFilter();
         ProcessVM _selectedProcess = null;
 
-    //    public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(eLCommands));
-    //public ICommand Command
-    //{
-    //    get { return (ICommand) GetValue(CommandProperty); }
-    //    set{SetValue(CommandProperty, value);}
-    //}
+        //    public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(eLCommands));
+        //public ICommand Command
+        //{
+        //    get { return (ICommand) GetValue(CommandProperty); }
+        //    set{SetValue(CommandProperty, value);}
+        //}
 
-    //public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.Register("CommandParameter", typeof(object), typeof(eLCommands));
-    //public object CommandParameter
-    //{
-    //    get { return (object) GetValue(CommandParameterProperty); }
-    //    set { SetValue(CommandParameterProperty, value); }
-    //}
+        //public static readonly DependencyProperty CommandParameterProperty = DependencyProperty.Register("CommandParameter", typeof(object), typeof(eLCommands));
+        //public object CommandParameter
+        //{
+        //    get { return (object) GetValue(CommandParameterProperty); }
+        //    set { SetValue(CommandParameterProperty, value); }
+        //}
 
         public LieferlisteView1()
         {
@@ -87,17 +80,17 @@ namespace Lieferliste_WPF.UserControls
         }
 
 
-  
+
         private void listBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var sel = (e.Source as ListView).SelectedItem;
             lieferliste pro = null;
-            if(sel != null)
+            if (sel != null)
                 pro = (sel as ProcessVM).TheProcess as lieferliste;
-                     
+
             if (pro != null && !_selectedProcess.TheProcess.AID.Equals(pro.AID))
             {
-                
+
                 _selectedProcess = sel as ProcessVM;
                 OrderViewModel.This.ReLoad(pro.AID);
 

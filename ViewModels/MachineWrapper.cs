@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Lieferliste_WPF.ViewModels
+﻿namespace Lieferliste_WPF.ViewModels
 {
-    class MachineWrapper:Base.ViewModelBase
+    class MachineWrapper : Base.ViewModelBase
     {
         private MachineViewModel _machine;
         public MachineViewModel MachineViewModel

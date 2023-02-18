@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Lieferliste_WPF.ViewModels.Base;
+using System;
 using System.Collections.ObjectModel;
-using Lieferliste_WPF.ViewModels.Base;
 
 namespace Lieferliste_WPF.ViewModels
 {

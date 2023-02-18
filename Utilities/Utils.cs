@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Documents;
 
 
 namespace Lieferliste_WPF
@@ -14,7 +13,7 @@ namespace Lieferliste_WPF
 
     public class SortableObservableCollection<T> : ObservableCollection<T>
     {
-    
+
         public void Sort()
         {
             Sort(Comparer<T>.Default);
@@ -245,7 +244,7 @@ namespace Lieferliste_WPF
         int IList.Add(object value)
         {
             var result = ((IList)_List).Add(value);
-            
+
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value));
             return result;
         }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace Lieferliste_WPF.UserControls
 {

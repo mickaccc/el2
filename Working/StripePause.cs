@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Lieferliste_WPF.Entities;
-using System.Windows.Media;
+﻿using Lieferliste_WPF.Entities;
+using System;
 
 namespace Lieferliste_WPF.Working
 {
@@ -13,14 +9,14 @@ namespace Lieferliste_WPF.Working
         public const int MinMinute = 0;
         private int _type = 0;
         public String ToolTip { get; set; }
-        public StripePause(TimeSpan start,TimeSpan end,String comment )
+        public StripePause(TimeSpan start, TimeSpan end, String comment)
         {
             this.Start = (int)start.TotalMinutes;
             this.End = (int)end.TotalMinutes;
         }
         public StripePause(int start, int end)
         {
-            this.Start=start;
+            this.Start = start;
             this.End = end;
         }
         public override int Type { get { return _type; } }
@@ -39,18 +35,18 @@ namespace Lieferliste_WPF.Working
             }
         }
 
-        public override int Start {  get; set; }
-        public override int End {  get; set; }
+        public override int Start { get; set; }
+        public override int End { get; set; }
         public override string Comment { get; set; }
         public override int TimeLenght
         {
             get { return End - Start; }
         }
-        public void buildShift(int Start, int End, int type,  String comment)
+        public void buildShift(int Start, int End, int type, String comment)
         {
             this.Start = Start;
             this.End = End;
-            
+
         }
     }
 }

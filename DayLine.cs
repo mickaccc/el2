@@ -1,8 +1,7 @@
+using Lieferliste_WPF.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.Working;
 
 namespace Lieferliste_WPF
 {
@@ -26,7 +25,7 @@ namespace Lieferliste_WPF
             set
             {
                 mDay = value;
-                
+
             }
         }
 

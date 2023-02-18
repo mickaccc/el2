@@ -1,7 +1,5 @@
-﻿using System;
+﻿using Lieferliste_WPF.ViewModels;
 using System.Windows.Controls;
-using System.Windows;
-using Lieferliste_WPF.ViewModels;
 
 namespace Lieferliste_WPF.UserControls
 {

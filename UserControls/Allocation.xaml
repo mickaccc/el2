@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:conv="clr-namespace:Lieferliste_WPF.Converters"
+             xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
              xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="1300" >

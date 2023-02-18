@@ -98,7 +98,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             ComputeWordAndLineCount();
 
- 	        OnPropertyChanged("FileName");
+            OnPropertyChanged("FileName");
             OnPropertyChanged("DirectoryPath");
             OnPropertyChanged("LineCount");
             OnPropertyChanged("WordCount");
