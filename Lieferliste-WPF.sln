@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lieferliste-WPF", "Lieferliste-WPF.csproj", "{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lieferliste_WPF", "Lieferliste_WPF.csproj", "{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,8 +31,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_StartDate = 2000/1/1
-		BuildVersion_UseGlobalSettings = True
 		SolutionGuid = {14DC33B3-CB6D-4C03-B495-13C1F02BE944}
+		BuildVersion_UseGlobalSettings = True
+		BuildVersion_StartDate = 2000/1/1
 	EndGlobalSection
 EndGlobal

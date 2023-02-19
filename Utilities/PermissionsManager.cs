@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text.RegularExpressions;
 
-namespace Lieferliste_WPF
+namespace Lieferliste_WPF.Utilities
 {
     public class PermissionsManager
     {

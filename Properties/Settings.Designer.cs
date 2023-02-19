@@ -80,17 +80,6 @@ namespace Lieferliste_WPF.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=HL0VSQL02.emea.bosch.com;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integ" +
-            "rated Security=True")]
-        public string DBOConnectionString {
-            get {
-                return ((string)(this["DBOConnectionString"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
         [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-88O2DD0;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Sec" +
             "urity=True")]
         public string DB_COS_LIEFERLISTE_SQLConnectionString {
@@ -123,6 +112,17 @@ namespace Lieferliste_WPF.Properties {
         public global::System.Collections.Specialized.StringCollection ColorPallette {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["ColorPallette"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-88O2DD0;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Sec" +
+            "urity=True")]
+        public string DBOConnectionString {
+            get {
+                return ((string)(this["DBOConnectionString"]));
             }
         }
     }

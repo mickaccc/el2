@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Lieferliste_WPF
+namespace Lieferliste_WPF.Utilities
 {
     public class DateUtils
     {

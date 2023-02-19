@@ -1,4 +1,5 @@
 ﻿using Lieferliste_WPF.Working;
+using Lieferliste_WPF.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -42,7 +43,7 @@ namespace Lieferliste_WPF.Entities
         public int ProcessRestTime { get; set; }
         public int ProcessCorrect { get; set; }
         public int ProcessTime { get; set; }
-        public Lieferliste_WPF.DateUtils.CalendarWeek deadKW { get; set; }
+        public DateUtils.CalendarWeek deadKW { get; set; }
         public DateTime LastEnd { get; set; }
         private bool _isHighPrio;
         public bool isHighPrio

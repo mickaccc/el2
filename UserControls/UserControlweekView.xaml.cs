@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
+using Lieferliste_WPF.Utilities;
+
 
 namespace Lieferliste_WPF.UserControls
 {
@@ -8,8 +10,8 @@ namespace Lieferliste_WPF.UserControls
     /// </summary>
     public partial class WeekView : UserControl
     {
-        private Lieferliste_WPF.DateUtils.CalendarWeek _kw;
-        public Lieferliste_WPF.DateUtils.CalendarWeek KW { get { return _kw; } }
+        private DateUtils.CalendarWeek _kw;
+        public DateUtils.CalendarWeek KW { get { return _kw; } }
 
 
         public WeekView(int year, int week)

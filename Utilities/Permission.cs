@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Lieferliste_WPF.Dialogs
+namespace Lieferliste_WPF.Utilities
 {
     public class Permission
     {

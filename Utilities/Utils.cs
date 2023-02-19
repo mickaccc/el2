@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 
 
-namespace Lieferliste_WPF
+namespace Lieferliste_WPF.Utilities
 {
 
 

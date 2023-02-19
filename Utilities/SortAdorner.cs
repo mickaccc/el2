@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace Lieferliste_WPF
+namespace Lieferliste_WPF.Utilities
 {
     class SortAdorner : Adorner
     {

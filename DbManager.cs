@@ -1,5 +1,6 @@
 ﻿using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.Working;
+using Lieferliste_WPF.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -254,7 +255,7 @@ namespace Lieferliste_WPF
         }
         internal List<DateTime> getRessKapaDates(int rid)
         {
-            Lieferliste_WPF.DateUtils.CalendarWeek week = DateUtils.GetGermanCalendarWeek(DateTime.Now);
+            DateUtils.CalendarWeek week = DateUtils.GetGermanCalendarWeek(DateTime.Now);
             DateTime monday = DateUtils.GetMonday(week.Year, week.Week);
             return _kappaAdapt.GetData().Where(x => x.RID == rid && x.Datum >= monday).Select(y => y.Datum).ToList<DateTime>();
 

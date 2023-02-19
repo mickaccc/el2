@@ -2,6 +2,7 @@
 using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.ViewModels.Base;
+using Lieferliste_WPF.Utilities;
 using System;
 using System.Data;
 using System.Windows;

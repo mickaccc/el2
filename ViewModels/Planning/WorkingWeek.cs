@@ -1,4 +1,5 @@
 ﻿using Lieferliste_WPF.ViewModels;
+using Lieferliste_WPF.Utilities;
 using System;
 
 namespace Lieferliste_WPF.Planning
@@ -14,7 +15,7 @@ namespace Lieferliste_WPF.Planning
         public WorkingDayViewModel Saturday { get { return _workingDays[5]; } }
         public WorkingDayViewModel Sunday { get { return _workingDays[6]; } }
         public WorkingDayViewModel[] getWorkingDays { get { return _workingDays; } }
-        public Lieferliste_WPF.DateUtils.CalendarWeek CalendarWeek { get; private set; }
+        public DateUtils.CalendarWeek CalendarWeek { get; private set; }
 
         public WorkingWeek(DateUtils.CalendarWeek CalendarWeek)
         {

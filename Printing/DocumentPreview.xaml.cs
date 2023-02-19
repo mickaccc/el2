@@ -16,7 +16,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Xps.Packaging;
 
-namespace Lieferliste_WPF
+namespace Lieferliste_WPF.Printing
 {
     /// <summary>
     /// Application's main form
@@ -36,7 +36,7 @@ namespace Lieferliste_WPF
         /// </summary>
         public DocumentPreview()
         {
-            InitializeComponent();
+           // InitializeComponent();
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Lieferliste_WPF
                 DateTime dateTimeStart = DateTime.Now; // start time measure here
 
                 XpsDocument xps = reportDocument.CreateXpsDocument(data);
-                documentViewer.Document = xps.GetFixedDocumentSequence();
+               // documentViewer.Document = xps.GetFixedDocumentSequence();
 
                 // show the elapsed time in window title
                 Title += " - generated in " + (DateTime.Now - dateTimeStart).TotalMilliseconds + "ms";

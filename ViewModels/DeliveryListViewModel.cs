@@ -1,6 +1,6 @@
-﻿using Lieferliste_WPF.Commands;
-using Lieferliste_WPF.Entities;
+﻿using Lieferliste_WPF.Entities;
 using Lieferliste_WPF.ViewModels.Base;
+using Lieferliste_WPF.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
