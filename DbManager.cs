@@ -162,8 +162,8 @@ namespace Lieferliste_WPF
 
         internal DataSetPerspectives.PerspectiveDataTable getPerspectives(string User)
         {
-            DataSetPerspectivesTableAdapters.QueriesTableAdapter ta = new DataSetPerspectivesTableAdapters.QueriesTableAdapter();
-            return (DataSetPerspectives.PerspectiveDataTable)ta.PerspectiveUser(User);
+            DataSetPerspectivesTableAdapters.PerspectiveTableAdapter ta = new DataSetPerspectivesTableAdapters.PerspectiveTableAdapter();
+            return ta.GetData();
 
         }
         internal DataSetEL2.RessZuteilViewDataTable getRessZuteilView()

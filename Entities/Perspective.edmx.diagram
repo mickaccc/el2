@@ -7,6 +7,77 @@
       <Diagram DiagramId="b78d9f1d1de1473daf3d072dbfa5b40b" Name="Diagram1">
         <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.Perspective" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblUserListe" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.ChangedOrdersCOS" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.Logs" Width="1.5" PointX="10.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.PermissionRoles" Width="1.5" PointX="18" PointY="4.125" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.PerspectRole" Width="1.5" PointX="15" PointY="2.375" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.PerspectUser" Width="1.5" PointX="5.375" PointY="1.375" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.ProductionOrderFilter" Width="1.5" PointX="2.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.ProductionOrdersCOS" Width="1.5" PointX="14.75" PointY="16.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.ProductionOrdersFHM" Width="1.5" PointX="16.75" PointY="16.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.Roles" Width="1.5" PointX="12.75" PointY="4.25" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.SAP_Status_en" Width="1.5" PointX="7.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.sysdiagrams" Width="1.5" PointX="12.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblAbfrageblatt" Width="1.5" PointX="8.25" PointY="11.625" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblAbfrageblattAuswahl" Width="1.5" PointX="6" PointY="5.125" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblArbeitsplatzSAP" Width="1.5" PointX="3" PointY="8.125" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblArbeitsplatzZuteilung" Width="1.5" PointX="10.5" PointY="7.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblAuftrag" Width="1.5" PointX="3" PointY="11.125" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblBerechtigung" Width="1.5" PointX="15.75" PointY="8.5" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblDummy" Width="1.5" PointX="0.75" PointY="9.875" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblEinstellTeil" Width="1.5" PointX="10" PointY="17.625" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblEinstellteileTrans" Width="1.5" PointX="17.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblGrunddaten" Width="1.5" PointX="17.75" PointY="7.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblHoliMask" Width="1.5" PointX="17.75" PointY="10.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblMA" Width="1.5" PointX="12.75" PointY="12" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblMaterial" Width="1.5" PointX="0.75" PointY="16.5" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblMAZu" Width="1.5" PointX="15" PointY="13" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblMessraum" Width="1.5" PointX="18.75" PointY="13.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblMessraumAbarbeitung" Width="1.5" PointX="18.75" PointY="18.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblMm" Width="1.5" PointX="19.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblProjekt" Width="1.5" PointX="0.75" PointY="12.875" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblProjektAnhang" Width="1.5" PointX="3" PointY="19.625" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblRessKappa" Width="1.5" PointX="19.75" PointY="7.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblRessource" Width="1.5" PointX="8.25" PointY="7.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblRessourceVorgang" Width="1.5" PointX="10.5" PointY="12.5" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblUserBerechtigung" Width="1.5" PointX="20.75" PointY="3.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblVorgang" Width="1.5" PointX="5.25" PointY="10.125" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblVorgangAnhang" Width="1.5" PointX="7.5" PointY="17.625" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.UserRoles" Width="1.5" PointX="15" PointY="5.625" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.UserWorkArea" Width="1.5" PointX="20.75" PointY="12.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.WorkArea" Width="1.5" PointX="8.25" PointY="4.125" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.ChangedOrders" Width="1.5" PointX="20.75" PointY="15.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.SAP_Status_de" Width="1.5" PointX="20.75" PointY="18.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblFeiertagSchliesstag" Width="1.5" PointX="21.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblPause" Width="1.5" PointX="5.75" PointY="21.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblVorgangKlima" Width="1.5" PointX="21.75" PointY="6.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.tblVorgangMessraumDoku" Width="1.5" PointX="7.75" PointY="21.75" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel3.TESTWEBSERVICE" Width="1.5" PointX="9.75" PointY="21.75" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_PermissionRoles_Roles" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_PermissionRoles_tblBerechtigung" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_PerspectRole_Perspective" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_PerspectUser_Perspective" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_PerspectRole_Roles" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_PerspectUser_tblUserListe" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_UserRoles_Roles" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblAbfrageblatt_tblAbfrageblattAuswahl" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblAbfrageblatt_tblAuftrag" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblArbeitsplatzZuteilung_tblArbeitsplatzSAP" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblVorgang_tblArbeitsplatzSAP" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblArbeitsplatzZuteilung_tblbereich" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblArbeitsplatzZuteilung_tblRessource" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblAuftrag_tblDummy1" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblAuftrag_tblMaterial" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblAuftrag_tblProjekt" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblVorgang_tblAuftrag" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblEinstellTeil_tblDummy" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblEinstellTeil_tblMaterial" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblMAZu_tblMA" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblProjektAnhang_tblProjekt" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblRessourceVorgang_tblRessource" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblRessourceVorgang_tblVorgang" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_UserRoles_tblUserListe" />
+        <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel3.FK_tblVorgangAnhang_tblVorgang" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

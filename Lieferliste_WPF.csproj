@@ -146,6 +146,11 @@
     <Compile Include="DataSetPerspectives.cs">
       <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Entities\Perspective1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Perspective.tt</DependentUpon>
+    </Compile>
     <Compile Include="myConverters\ActiveDocumentConverter.cs" />
     <Compile Include="myConverters\BoolConverter.cs" />
     <Compile Include="myConverters\ZeroToVisibilityConverter.cs" />
@@ -231,11 +236,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Perspective.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Perspective1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Perspective.tt</DependentUpon>
-    </Compile>
     <Compile Include="Entities\RessourceAllocation.cs">
       <DependentUpon>Allocation.tt</DependentUpon>
     </Compile>
@@ -270,7 +270,7 @@
       <DependentUpon>Allocation.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\tblUserListe.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
+      <DependentUpon>Perspective.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\tblVorgang.cs">
       <DependentUpon>Allocation.tt</DependentUpon>
@@ -665,7 +665,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8.1">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.8.1 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.8.1 %28x86 und x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -838,7 +838,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
+      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
