@@ -10,7 +10,7 @@ namespace Lieferliste_WPF.Utilities
         private static PermissionsManager _instance;
 
         private DataSetPermission ds;
-        private Lieferliste_WPF.DataSetPermissionTableAdapters.permissionUSERTableAdapter tableAdapt;
+        private DataSetPermissionTableAdapters.PermissionUSERTableAdapter tableAdapt;
         private HashSet<String> _permissions;
         private String _user;
 
@@ -34,8 +34,8 @@ namespace Lieferliste_WPF.Utilities
             try
             {
                 ds = new DataSetPermission();
-                tableAdapt = new Lieferliste_WPF.DataSetPermissionTableAdapters.permissionUSERTableAdapter();
-                tableAdapt.Fill(ds.permissionUSER, _user);
+                tableAdapt = new DataSetPermissionTableAdapters.PermissionUSERTableAdapter();
+                tableAdapt.Fill(ds.PermissionUSER, _user);
             }
             catch (Exception e)
             {
@@ -43,7 +43,7 @@ namespace Lieferliste_WPF.Utilities
                 System.Windows.MessageBox.Show("Fehler Permissionsmanager!\n" + e.Message + "\n" + e.InnerException,
                     "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
-            foreach (DataRow dr in ds.permissionUSER.Rows)
+            foreach (DataRow dr in ds.PermissionUSER.Rows)
             {
                 _permissions.Add(dr[0].ToString());
             }

@@ -143,6 +143,9 @@
     <Compile Include="AppCommand.cs" />
     <Compile Include="Commands\ActionCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="DataSetPerspectives.cs">
+      <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
+    </Compile>
     <Compile Include="myConverters\ActiveDocumentConverter.cs" />
     <Compile Include="myConverters\BoolConverter.cs" />
     <Compile Include="myConverters\ZeroToVisibilityConverter.cs" />
@@ -295,9 +298,6 @@
     <Compile Include="ViewModels\MachineWrapper.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\Perspective.cs" />
-    <Compile Include="Printing\DocumentPreview.xaml.cs">
-      <DependentUpon>DocumentPreview.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Entities\Process.cs" />
     <Compile Include="ViewModels\IOrderPool.cs" />
     <Compile Include="Utilities\SortAdorner.cs" />
@@ -545,10 +545,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Printing\DocumentPreview.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\Archive.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -669,7 +665,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8.1">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.8.1 %28x86 und x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.8.1 %28x86 and x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -738,6 +734,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\CustomControls\" />
+    <Folder Include="Printing\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\copy16.png" />
@@ -813,6 +810,9 @@
     </PublishFile>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Dirkster.AvalonDock">
+      <Version>4.71.2</Version>
+    </PackageReference>
     <PackageReference Include="Dirkster.AvalonDock.Themes.Aero">
       <Version>4.71.2</Version>
     </PackageReference>

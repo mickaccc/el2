@@ -98,7 +98,7 @@ namespace Lieferliste_WPF
                 sb.AppendLine();
                 sb.Append(errorRows[i].RowError);
             }
-            System.Windows.MessageBox.Show("'dbManager'\n" + sb.ToString(), "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("'dbManager'\n" + sb.ToString(), "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         internal void boundingProcess(Process pro, int RID, short pos)
         {
@@ -164,6 +164,7 @@ namespace Lieferliste_WPF
         {
             DataSetPerspectivesTableAdapters.QueriesTableAdapter ta = new DataSetPerspectivesTableAdapters.QueriesTableAdapter();
             return (DataSetPerspectives.PerspectiveDataTable)ta.PerspectiveUser(User);
+
         }
         internal DataSetEL2.RessZuteilViewDataTable getRessZuteilView()
         {

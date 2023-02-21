@@ -1,11 +1,11 @@
 ﻿<Window x:Class="Lieferliste_WPF.Dialogs.MessauftragDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:my="clr-namespace:Lieferliste_WPF"
+        xmlns:VM="clr-namespace:Lieferliste_WPF.ViewModels"
         Title="MessauftragDialog" Width="350" Topmost="True" DataContext="{Binding}">
     <Grid>
         <Grid.Resources>
-            <my:DataSetEL4 x:Key="DataSet"/>
+            
         </Grid.Resources>
         <StackPanel>
             <DockPanel DataContext="{Binding Source={StaticResource DataSet}, Path=OrderHeaderByVID}" Name="HeaderInfo">
