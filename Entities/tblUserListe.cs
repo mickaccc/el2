@@ -14,6 +14,12 @@ namespace Lieferliste_WPF.Entities
     
     public partial class tblUserListe
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public tblUserListe()
+        {
+            this.UserRoles = new HashSet<UserRoles>();
+        }
+    
         public string Name { get; set; }
         public string Personalnummer { get; set; }
         public string UserIdent { get; set; }
@@ -23,5 +29,8 @@ namespace Lieferliste_WPF.Entities
         public string Info { get; set; }
         public bool info_anzeigen { get; set; }
         public bool exited { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<UserRoles> UserRoles { get; set; }
     }
 }

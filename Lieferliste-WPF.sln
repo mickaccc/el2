@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lieferliste_WPF", "Lieferliste_WPF.csproj", "{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lieferliste_WPF", "Lieferliste_WPF.csproj", "{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +15,8 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Debug|Any CPU.Build.0 = Debug|x86
+		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}.Debug|x86.ActiveCfg = Debug|x86
@@ -31,8 +31,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {14DC33B3-CB6D-4C03-B495-13C1F02BE944}
-		BuildVersion_UseGlobalSettings = True
 		BuildVersion_StartDate = 2000/1/1
+		BuildVersion_UseGlobalSettings = True
+		SolutionGuid = {14DC33B3-CB6D-4C03-B495-13C1F02BE944}
 	EndGlobalSection
 EndGlobal

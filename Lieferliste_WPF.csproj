@@ -1,24 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AB4F5D98-EDF2-45BD-8528-CF13B6D850DF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lieferliste_WPF</RootNamespace>
     <AssemblyName>el4</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <PublishUrl>Q:\ZproF\COS_Lieferung\EL2\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
@@ -44,29 +30,15 @@
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>default</LangVersion>
     <DebugSymbols>true</DebugSymbols>
     <CodeAnalysisRuleSet>
@@ -74,9 +46,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>el4-application.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>
@@ -94,331 +63,155 @@
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
-  <PropertyGroup />
   <PropertyGroup>
     <SignManifests>false</SignManifests>
   </PropertyGroup>
-  <PropertyGroup />
-  <PropertyGroup />
   <PropertyGroup>
     <StartupObject>Lieferliste_WPF.App</StartupObject>
   </PropertyGroup>
-  <PropertyGroup />
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
+    <Nullable>enable</Nullable>
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CodeReason.Reports">
       <HintPath>res\CodeReason.Reports.dll</HintPath>
     </Reference>
-    <Reference Include="ReachFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="AppCommand.cs" />
-    <Compile Include="Commands\ActionCommand.cs" />
-    <Compile Include="Commands\RelayCommand.cs" />
-    <Compile Include="DataSetPerspectives.cs">
+    <Compile Update="DataSetPerspectives.cs">
       <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Perspective1.cs">
+    <Compile Update="Entities\Allocation.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Allocation.edmx</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\MainViewLL.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MainViewLL.edmx</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\Permission.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Permission.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\Permission.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Permission.edmx</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\Permissions.cs">
+      <DependentUpon>Permission.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\Perspective.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Perspective.edmx</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\Perspective1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Perspective.tt</DependentUpon>
     </Compile>
-    <Compile Include="myConverters\ActiveDocumentConverter.cs" />
-    <Compile Include="myConverters\BoolConverter.cs" />
-    <Compile Include="myConverters\ZeroToVisibilityConverter.cs" />
-    <Compile Include="DataSetEL2.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataSetEL2.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="DataSetPermission.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataSetPermission.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="DataSetPerspectives.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\Allocation.Context.cs">
+    <Compile Update="Entities\Allocation.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Allocation.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Allocation.cs">
+    <Compile Update="Entities\Allocation.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Allocation.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Allocation.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Allocation.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\lieferliste.cs">
+    <Compile Update="Entities\lieferliste.cs">
       <DependentUpon>MainViewLL.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\MainViewLL.Context.cs">
+    <Compile Update="Entities\MainViewLL.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MainViewLL.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\MainViewLL.cs">
+    <Compile Update="Entities\MainViewLL.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MainViewLL.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\MainViewLL.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MainViewLL.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\OrderList_Result.cs">
+    <Compile Update="Entities\OrderList_Result.cs">
       <DependentUpon>Allocation.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Permission.Context.cs">
+    <Compile Update="Entities\Permission.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Permission.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Permission.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
+    <Compile Update="Entities\PermissionRoles.cs">
       <DependentUpon>Permission.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Permission.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Permission.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\PermissionRoles.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\Perspective.Context.cs">
+    <Compile Update="Entities\Perspective.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Perspective.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Perspective.cs">
+    <Compile Update="Entities\Perspective.cs">
       <DependentUpon>Perspective.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Perspective.Designer.cs">
+    <Compile Update="Entities\RessourceAllocation.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\RessZuteilView.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\Roles.cs">
+      <DependentUpon>Permission.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblArbeitsplatzZuteilung.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblAuftrag.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblDummy.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblMaterial.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblRessKappa.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblRessource.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblRessourceVorgang.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblUserListe.cs">
+      <DependentUpon>Permission.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\tblVorgang.cs">
+      <DependentUpon>Allocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Entities\UserRoles.cs">
+      <DependentUpon>Permission.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Perspective.edmx</DependentUpon>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Entities\RessourceAllocation.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\RessZuteilView.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\Roles.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblArbeitsplatzZuteilung.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblAuftrag.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblBerechtigung.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblDummy.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblMaterial.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblRessKappa.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblRessource.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblRessourceVorgang.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblUserListe.cs">
-      <DependentUpon>Perspective.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\tblVorgang.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\UserRoles.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Messages\CommandMessage.cs" />
-    <Compile Include="Messages\NavigateMessage.cs" />
-    <Compile Include="Messages\UserMessage.cs" />
-    <Compile Include="ViewModels\Base\ProcessVM.cs" />
-    <Compile Include="ViewModels\Base\VMBase.cs" />
-    <Compile Include="ViewModels\Planning\IMachine.cs" />
-    <Compile Include="ViewModels\Planning\IMachineFactory.cs" />
-    <Compile Include="ViewModels\Planning\InternalMachine.cs" />
-    <Compile Include="ViewModels\Planning\InternalMachineFactory.cs" />
-    <Compile Include="ViewModels\Planning\MachineContainer.cs" />
-    <Compile Include="ViewModels\Planning\MachineCreator.cs" />
-    <Compile Include="ViewModels\Planning\OrderPool.cs" />
-    <Compile Include="ViewModels\Planning\ParkMachine.cs" />
-    <Compile Include="ViewModels\Planning\ParkMachineFactory.cs" />
-    <Compile Include="ViewModels\Planning\PlannerTools.cs" />
-    <Compile Include="ViewModels\Planning\WorkingWeek.cs" />
-    <Compile Include="ViewModels\MachineContainerViewModel.cs" />
-    <Compile Include="ViewModels\MachineWrapper.cs" />
-    <Compile Include="ViewModels\OrderViewModel.cs" />
-    <Compile Include="ViewModels\Perspective.cs" />
-    <Compile Include="Entities\Process.cs" />
-    <Compile Include="ViewModels\IOrderPool.cs" />
-    <Compile Include="Utilities\SortAdorner.cs" />
-    <Compile Include="UserControls\DocumentOverviewPaneView.xaml.cs">
-      <DependentUpon>DocumentOverviewPaneView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\MachineActionView.xaml.cs">
-      <DependentUpon>MachineActionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\OpenDocumentsPaneView.xaml.cs">
-      <DependentUpon>OpenDocumentsPaneView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\MachineViewModel.cs" />
-    <Compile Include="ViewModels\AbstractPaneViewModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModels\AbstractViewModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModels\DocumentOverviewPaneViewModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModels\IDialogProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModels\MainWindowViewModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModels\OpenDocumentsPaneViewModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModels\DeliveryListViewModel.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModels\SettingsViewModel.cs" />
-    <Compile Include="ViewModels\Support\CrudVM.cs" />
-    <Compile Include="ViewModels\ToolCase.cs" />
-    <Compile Include="ViewModels\WorkingDayViewModel.cs" />
-    <Compile Include="View\Archive.xaml.cs">
-      <DependentUpon>Archive.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\Base\ToolViewModel.cs" />
-    <Compile Include="ViewModels\Base\ViewModelBase.cs" />
-    <Compile Include="ViewModels\PaneViewModel.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Pane\PanesStyleSelector.cs" />
-    <Compile Include="View\Pane\PanesTemplateSelector.cs" />
-    <Compile Include="View\Settings.xaml.cs">
-      <DependentUpon>Settings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Working\ActionStripe.cs" />
-    <Compile Include="UserControls\Allocation.xaml.cs">
-      <DependentUpon>Allocation.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Commands\eLCommands.cs" />
-    <Compile Include="myConverters\Color2Brush.cs" />
-    <Compile Include="myConverters\Color2MediaBrush.cs" />
-    <Compile Include="myConverters\ColorToBrushKomplementConverter.cs" />
-    <Compile Include="myConverters\DateLess2Color.cs" />
-    <Compile Include="myConverters\CountConverter.cs" />
-    <Compile Include="myConverters\DateConverter.cs" />
-    <Compile Include="myConverters\KomplementColorConverter.cs" />
-    <Compile Include="myConverters\FillZerosConverter.cs" />
-    <Compile Include="myConverters\MinuteSizeConverter.cs" />
-    <Compile Include="myConverters\NullVisibilityConverter.cs" />
-    <Compile Include="myConverters\PermissionConverter.cs" />
-    <Compile Include="myConverters\PermissionVisibilityConverter.cs" />
-    <Compile Include="myConverters\PSP_Converter.cs" />
-    <Compile Include="myConverters\RoleToVisibilityConverter.cs" />
-    <Compile Include="myConverters\TextInpuToVisibilityConverter.cs" />
-    <Compile Include="myConverters\TimeConverter.cs" />
-    <Compile Include="myConverters\TimeStrConverter.cs" />
-    <Compile Include="myConverters\TTNR_Converter.cs" />
-    <Compile Include="myConverters\XML_FlowDocumentConverter.cs" />
-    <Compile Include="Utilities\DateUtils.cs" />
-    <Compile Include="DayLine.cs" />
-    <Compile Include="DbManager.cs" />
-    <Compile Include="Entities\Union.cs" />
-    <Compile Include="UserControls\Home.xaml.cs">
-      <DependentUpon>Home.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\LieferlisteView1.xaml.cs">
-      <DependentUpon>LieferlisteView1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MeasureOrder.xaml.cs">
-      <DependentUpon>MeasureOrder.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\MessauftragDialog.xaml.cs">
-      <DependentUpon>MessauftragDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\OrderView.xaml.cs">
-      <DependentUpon>OrderView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utilities\Permission.cs" />
-    <Compile Include="Utilities\PermissionsManager.cs" />
-    <Compile Include="ProgressBarTask.xaml.cs">
-      <DependentUpon>ProgressBarTask.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\SchDialog.xaml.cs">
-      <DependentUpon>SchDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.cs" />
-    <Compile Include="Entities\Stripe.cs" />
-    <Compile Include="UserControls\UserControlDayView.xaml.cs">
-      <DependentUpon>UserControlDayView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\UserControlweekView.xaml.cs">
-      <DependentUpon>UserControlweekView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Utilities\Utils.cs" />
-    <Compile Include="Working\ShiftFour.cs" />
-    <Compile Include="Working\ShiftTwo.cs" />
-    <Compile Include="Working\StripePause.cs" />
-    <Compile Include="Working\ShiftThree.cs" />
-    <Compile Include="Working\IShift.cs" />
-    <Compile Include="Working\ShiftOne.cs" />
-    <Compile Include="WPFAboutBox.xaml.cs">
-      <DependentUpon>WPFAboutBox.xaml</DependentUpon>
-    </Compile>
+    <Content Include="appsettings.json" />
     <Resource Include="Images\multiply-1.png" />
     <EmbeddedResource Include="Resources\DefaultLayoutFile.xml" />
     <Content Include="Entities\Allocation.Context.tt">
@@ -476,153 +269,46 @@
     <Content Include="Perspective\Delivery.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Templates\AllocationReport.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Page Include="UserControls\Allocation.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\DocumentOverviewPaneView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\Home.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="UserControls\LieferlisteView1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MeasureOrder.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\MessauftragDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\MachineActionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\OpenDocumentsPaneView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\OrderView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\PlannerControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="ProgressBarTask.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dialogs\SchDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\UserControlDayView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\UserControlweekView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Archive.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Settings.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WPFAboutBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UserControls\PlannerControl.xaml.cs">
-      <DependentUpon>PlannerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="DataSetEL2.xsc">
+    <None Update="DataSetEL2.xsc">
       <DependentUpon>DataSetEL2.xsd</DependentUpon>
     </None>
-    <None Include="DataSetEL2.xsd">
+    <None Update="DataSetEL2.xsd">
       <SubType>Designer</SubType>
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>DataSetEL2.Designer.cs</LastGenOutput>
     </None>
-    <None Include="DataSetEL2.xss">
+    <None Update="DataSetEL2.xss">
       <DependentUpon>DataSetEL2.xsd</DependentUpon>
     </None>
-    <None Include="DataSetPermission.xsc">
+    <None Update="DataSetPermission.xsc">
       <DependentUpon>DataSetPermission.xsd</DependentUpon>
     </None>
-    <None Include="DataSetPermission.xsd">
+    <None Update="DataSetPermission.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>DataSetPermission.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="DataSetPermission.xss">
+    <None Update="DataSetPermission.xss">
       <DependentUpon>DataSetPermission.xsd</DependentUpon>
     </None>
-    <None Include="DataSetPerspectives.xsc">
+    <None Update="DataSetPerspectives.xsc">
       <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
     </None>
-    <None Include="DataSetPerspectives.xsd">
+    <None Update="DataSetPerspectives.xsd">
       <SubType>Designer</SubType>
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>DataSetPerspectives.Designer.cs</LastGenOutput>
     </None>
-    <None Include="DataSetPerspectives.xss">
+    <None Update="DataSetPerspectives.xss">
       <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
     </None>
-    <None Include="Doku\Diagramms\Planning.cd" />
     <EntityDeploy Include="Entities\Allocation.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Allocation.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="Entities\Allocation.edmx.diagram">
+    <None Update="Entities\Allocation.edmx.diagram">
       <DependentUpon>Allocation.edmx</DependentUpon>
     </None>
     <EntityDeploy Include="Entities\Perspective.edmx">
@@ -637,17 +323,16 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>MainViewLL.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="Entities\MainViewLL.edmx.diagram">
+    <None Update="Entities\MainViewLL.edmx.diagram">
       <DependentUpon>MainViewLL.edmx</DependentUpon>
     </None>
-    <None Include="Entities\Permission.edmx.diagram">
+    <None Update="Entities\Permission.edmx.diagram">
       <DependentUpon>Permission.edmx</DependentUpon>
     </None>
-    <None Include="Entities\Perspective.edmx.diagram">
+    <None Update="Entities\Perspective.edmx.diagram">
       <DependentUpon>Perspective.edmx</DependentUpon>
     </None>
-    <None Include="Properties\app.manifest" />
-    <None Include="Properties\Settings.settings">
+    <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
@@ -810,17 +495,17 @@
     </PublishFile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Dirkster.AvalonDock">
-      <Version>4.71.2</Version>
-    </PackageReference>
-    <PackageReference Include="Dirkster.AvalonDock.Themes.Aero">
-      <Version>4.71.2</Version>
-    </PackageReference>
-    <PackageReference Include="EntityFramework">
-      <Version>6.4.4</Version>
-    </PackageReference>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.Platforms">
       <Version>7.0.0</Version>
@@ -828,24 +513,42 @@
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.3</Version>
     </PackageReference>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource">
       <Version>7.0.1</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.5.4</Version>
     </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.410601">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.410601">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Remove="AllocationWorkingList.xaml.cs" />
+    <Compile Remove="NodeListView.cs" />
+    <Compile Remove="Properties\Settings1.Designer.cs" />
+    <Compile Remove="Properties\Settings2.Designer.cs" />
+    <Compile Remove="UserControls\AllocationWorkingList.xaml.cs" />
+    <Compile Remove="Version.cs" />
+    <Compile Remove="ViewModels\LLViewModel.cs" />
+    <Compile Remove="ViewModels\Planning\testMachine.cs" />
+    <Page Remove="AllocationWorkingList.xaml" />
+    <Page Remove="Templates\AllocationReport.xaml" />
+    <Page Remove="UserControls\AllocationWorkingList.xaml" />
+  </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_StartDate="2000/1/1" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
     </VisualStudio>
   </ProjectExtensions>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>

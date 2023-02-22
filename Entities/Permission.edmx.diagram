@@ -7,7 +7,7 @@
       <Diagram DiagramId="beaf9dbe7a0943af83ab5cabc6bec982" Name="Diagram1">
         <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.PermissionRoles" Width="1.5" PointX="1.75" PointY="3.625" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.Roles" Width="1.5" PointX="2.875" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.tblBerechtigung" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.Permissions" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.tblUserListe" Width="1.5" PointX="6.5" PointY="0.875" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_COS_LIEFERLISTE_SQLModel2.UserRoles" Width="1.5" PointX="4.5" PointY="3.625" IsExpanded="true" />
         <AssociationConnector Association="DB_COS_LIEFERLISTE_SQLModel2.FK_PermissionRoles_Roles" ManuallyRouted="false" />

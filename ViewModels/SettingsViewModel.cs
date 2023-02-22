@@ -7,8 +7,8 @@ namespace Lieferliste_WPF.ViewModels
 {
     class SettingsViewModel : Base.ViewModelBase
     {
-        public ObservableList<tblBerechtigung> PermissionsAvail { get; set; }
-        public ObservableList<tblBerechtigung> PermissionsChecked { get; set; }
+        public ObservableList<Permissions> PermissionsAvail { get; set; }
+        public ObservableList<Permissions> PermissionsChecked { get; set; }
         public List<Roles> Roles { get; set; }
         public List<tblUserListe> Users { get; set; }
         public ObservableList<Roles> RolesChecked { get; set; }
@@ -28,9 +28,9 @@ namespace Lieferliste_WPF.ViewModels
                 PermissionsAvail.Clear();
                 using (var ctx = new EntitiesPermiss())
                 {
-                    ObservableList<tblBerechtigung> _permiss = new ObservableList<tblBerechtigung>();
+                    ObservableList<Permissions> _permiss = new ObservableList<Permissions>();
 
-                    foreach (tblBerechtigung p in ctx.tblBerechtigung)
+                    foreach (Permissions p in ctx.tblBerechtigung)
                     {
                         if (!PermissionsChecked.Any(x => x.Berechtigung == p.Berechtigung))
                             PermissionsAvail.Add(p);
@@ -65,10 +65,10 @@ namespace Lieferliste_WPF.ViewModels
 
         public SettingsViewModel()
         {
-            PermissionsAvail = new ObservableList<tblBerechtigung>();
+            PermissionsAvail = new ObservableList<Permissions>();
             Roles = new List<Roles>();
             Users = new List<tblUserListe>();
-            PermissionsChecked = new ObservableList<tblBerechtigung>();
+            PermissionsChecked = new ObservableList<Permissions>();
             RolesChecked = new ObservableList<Roles>();
             RolesAvail = new ObservableList<Roles>();
             LoadData();
