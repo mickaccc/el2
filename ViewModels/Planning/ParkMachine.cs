@@ -1,4 +1,4 @@
-﻿using Lieferliste_WPF.Entities;
+﻿using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Utilities;
 using System;
 
@@ -35,12 +35,12 @@ namespace Lieferliste_WPF.Planning
 
         }
 
-        public void addKappa(DateTime thisDate, Entities.Stripe thisStripe)
+        public void addKappa(DateTime thisDate, Stripe thisStripe)
         {
             throw new NotImplementedException();
         }
 
-        public double? addOrder(Entities.Process thisOrder)
+        public double? addOrder(Process thisOrder)
         {
             throw new NotImplementedException();
         }

@@ -1,6 +1,18 @@
-﻿using System.Windows;
+﻿using System;
+using System.Data;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Lieferliste_WPF.UserControls;
 
 namespace Lieferliste_WPF.UserControls
 {
@@ -20,7 +32,6 @@ namespace Lieferliste_WPF.UserControls
 
 
             ressOrdered.Criteria = Crit;
-            ressOrdered.Height = this.Height - 80;
         }
 
 
@@ -28,7 +39,8 @@ namespace Lieferliste_WPF.UserControls
 
         private void ressOrder_DoubleClick(object sender, RoutedEventArgs e)
         {
-
+            if (Keyboard.Modifiers == ModifierKeys.None)
+            {
                 Visual frWorkEle = e.OriginalSource as Visual;
 
                 UIElement UI = null;
@@ -101,7 +113,7 @@ namespace Lieferliste_WPF.UserControls
 
                 }
 
-            
+            }
         }
     }
 }

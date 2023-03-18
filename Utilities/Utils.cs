@@ -48,6 +48,10 @@ namespace Lieferliste_WPF.Utilities
 
         }
 
+        public static explicit operator SortableObservableCollection<T>(List<object> v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public static class LinkedListExtensions
@@ -309,10 +313,7 @@ namespace Lieferliste_WPF.Utilities
             get { return m_UnderLyingLinkedList.Count; }
         }
 
-        public LinkedListNode<T> First
-        {
-            get { return m_UnderLyingLinkedList.First; }
-        }
+        public LinkedListNode<T> First => m_UnderLyingLinkedList.First;
 
         public LinkedListNode<T> Last
         {
@@ -756,5 +757,13 @@ namespace Lieferliste_WPF.Utilities
         }
     }
 
+    public static class Helper
+    {
+        public static ObservableCollection<T> ToObservableCollection<T>
+             (this IEnumerable<T> en)
+        {
+            return new ObservableCollection<T>(en);
+        }
+    }
 
 }

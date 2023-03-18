@@ -70,9 +70,10 @@
     <StartupObject>Lieferliste_WPF.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <NoWin32Manifest>true</NoWin32Manifest>
     <Nullable>enable</Nullable>
     <IsPublishable>False</IsPublishable>
+    <UserSecretsId>0b5d0318-65fd-41f0-abb3-3c3607eb4cef</UserSecretsId>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
@@ -81,179 +82,38 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="View\Dialogs\CustomControls\**" />
+    <Compile Remove="MigrationBackup\**" />
+    <Compile Remove="Printing\**" />
+    <Compile Remove="res\**" />
+    <EmbeddedResource Remove="View\Dialogs\CustomControls\**" />
+    <EmbeddedResource Remove="MigrationBackup\**" />
+    <EmbeddedResource Remove="Printing\**" />
+    <EmbeddedResource Remove="res\**" />
+    <None Remove="View\Dialogs\CustomControls\**" />
+    <None Remove="MigrationBackup\**" />
+    <None Remove="Printing\**" />
+    <None Remove="res\**" />
+    <Page Remove="View\Dialogs\CustomControls\**" />
+    <Page Remove="MigrationBackup\**" />
+    <Page Remove="Printing\**" />
+    <Page Remove="res\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="CodeReason.Reports">
       <HintPath>res\CodeReason.Reports.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="DataSetPerspectives.cs">
-      <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Allocation.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Allocation.edmx</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\MainViewLL.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>MainViewLL.edmx</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Permission.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Permission.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Permission.edmx</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Permissions.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Perspective.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Perspective.edmx</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Perspective1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Perspective.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Allocation.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Allocation.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Allocation.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\lieferliste.cs">
-      <DependentUpon>MainViewLL.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\MainViewLL.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MainViewLL.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\MainViewLL.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MainViewLL.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\OrderList_Result.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Permission.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Permission.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\PermissionRoles.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Perspective.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Perspective.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Perspective.cs">
-      <DependentUpon>Perspective.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\RessourceAllocation.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\RessZuteilView.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\Roles.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblArbeitsplatzZuteilung.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblAuftrag.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblDummy.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblMaterial.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblRessKappa.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblRessource.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblRessourceVorgang.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblUserListe.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\tblVorgang.cs">
-      <DependentUpon>Allocation.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Entities\UserRoles.cs">
-      <DependentUpon>Permission.tt</DependentUpon>
-    </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Content Include="appsettings.json" />
     <Resource Include="Images\multiply-1.png" />
     <EmbeddedResource Include="Resources\DefaultLayoutFile.xml" />
-    <Content Include="Entities\Allocation.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Allocation.edmx</DependentUpon>
-      <LastGenOutput>Allocation.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Entities\Allocation.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Allocation.edmx</DependentUpon>
-      <LastGenOutput>Allocation.cs</LastGenOutput>
-    </Content>
-    <Content Include="Entities\MainViewLL.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MainViewLL.edmx</DependentUpon>
-      <LastGenOutput>MainViewLL.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Entities\MainViewLL.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MainViewLL.edmx</DependentUpon>
-      <LastGenOutput>MainViewLL.cs</LastGenOutput>
-    </Content>
-    <Content Include="Entities\Permission.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Permission.edmx</DependentUpon>
-      <LastGenOutput>Permission.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Entities\Permission.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Permission.edmx</DependentUpon>
-      <LastGenOutput>Permission.cs</LastGenOutput>
-    </Content>
-    <Content Include="Entities\Perspective.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Perspective.edmx</DependentUpon>
-      <LastGenOutput>Perspective.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Entities\Perspective.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Perspective.edmx</DependentUpon>
-      <LastGenOutput>Perspective1.cs</LastGenOutput>
-    </Content>
     <Content Include="Perspective\AllocationDrill.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -271,46 +131,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Update="DataSetEL2.xsc">
-      <DependentUpon>DataSetEL2.xsd</DependentUpon>
-    </None>
-    <None Update="DataSetEL2.xsd">
-      <SubType>Designer</SubType>
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DataSetEL2.Designer.cs</LastGenOutput>
-    </None>
-    <None Update="DataSetEL2.xss">
-      <DependentUpon>DataSetEL2.xsd</DependentUpon>
-    </None>
-    <None Update="DataSetPermission.xsc">
-      <DependentUpon>DataSetPermission.xsd</DependentUpon>
-    </None>
-    <None Update="DataSetPermission.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DataSetPermission.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Update="DataSetPermission.xss">
-      <DependentUpon>DataSetPermission.xsd</DependentUpon>
-    </None>
-    <None Update="DataSetPerspectives.xsc">
-      <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
-    </None>
-    <None Update="DataSetPerspectives.xsd">
-      <SubType>Designer</SubType>
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DataSetPerspectives.Designer.cs</LastGenOutput>
-    </None>
-    <None Update="DataSetPerspectives.xss">
-      <DependentUpon>DataSetPerspectives.xsd</DependentUpon>
-    </None>
     <EntityDeploy Include="Entities\Allocation.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Allocation.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Update="Entities\Allocation.edmx.diagram">
-      <DependentUpon>Allocation.edmx</DependentUpon>
-    </None>
     <EntityDeploy Include="Entities\Perspective.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Perspective.Designer.cs</LastGenOutput>
@@ -323,15 +147,6 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>MainViewLL.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Update="Entities\MainViewLL.edmx.diagram">
-      <DependentUpon>MainViewLL.edmx</DependentUpon>
-    </None>
-    <None Update="Entities\Permission.edmx.diagram">
-      <DependentUpon>Permission.edmx</DependentUpon>
-    </None>
-    <None Update="Entities\Perspective.edmx.diagram">
-      <DependentUpon>Perspective.edmx</DependentUpon>
-    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -418,8 +233,7 @@
     <Resource Include="Images\cut-content-button.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Dialogs\CustomControls\" />
-    <Folder Include="Printing\" />
+    <Folder Include="Templates\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\copy16.png" />
@@ -438,6 +252,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\print1.png" />
+    <Resource Include="UserControls\sort-by-attributes-Asc16.png" />
+    <Resource Include="UserControls\sort-by-attributes-Desc16.png" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -495,29 +311,32 @@
     </PublishFile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.NETCore.Platforms">
       <Version>7.0.0</Version>
     </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.3</Version>
     </PackageReference>
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource">
       <Version>7.0.1</Version>
     </PackageReference>
+    <PackageReference Include="System.ObjectModel" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.5.4</Version>
     </PackageReference>
@@ -531,15 +350,17 @@
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="AllocationWorkingList.xaml.cs" />
     <Compile Remove="NodeListView.cs" />
     <Compile Remove="Properties\Settings1.Designer.cs" />
     <Compile Remove="Properties\Settings2.Designer.cs" />
     <Compile Remove="UserControls\AllocationWorkingList.xaml.cs" />
     <Compile Remove="Version.cs" />
     <Compile Remove="ViewModels\LLViewModel.cs" />
+    <Compile Remove="ViewModels\Planning\ParkMachine.cs" />
+    <Compile Remove="ViewModels\Planning\ParkMachineFactory.cs" />
     <Compile Remove="ViewModels\Planning\testMachine.cs" />
-    <Page Remove="AllocationWorkingList.xaml" />
+    <None Remove="UserControls\sort-by-attributes-Asc16.png" />
+    <None Remove="UserControls\sort-by-attributes-Desc16.png" />
     <Page Remove="Templates\AllocationReport.xaml" />
     <Page Remove="UserControls\AllocationWorkingList.xaml" />
   </ItemGroup>

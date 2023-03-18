@@ -1,4 +1,4 @@
-﻿using Lieferliste_WPF.Entities;
+﻿using Lieferliste_WPF.Data;
 using Lieferliste_WPF.Messages;
 using Lieferliste_WPF.ViewModels.Base;
 
@@ -6,8 +6,8 @@ namespace Lieferliste_WPF.ViewModels.Support
 {
     public class CrudVM : ViewModelBase
     {
-        protected EntitiesLL db = new EntitiesLL();
-        protected EntitiesAlloc dbAlloc = new EntitiesAlloc();
+        protected DataContext _db = new ();
+        
 
         protected void HandleCommand(CommandMessage action)
         {

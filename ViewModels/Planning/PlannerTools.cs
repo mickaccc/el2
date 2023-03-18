@@ -1,5 +1,4 @@
-﻿using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.ViewModels;
+﻿using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Working;
 using Lieferliste_WPF.Utilities;
 using System;
@@ -8,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Lieferliste_WPF.Data.Models;
 
 namespace Lieferliste_WPF.Planning
 {

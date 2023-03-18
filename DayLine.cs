@@ -1,4 +1,4 @@
-using Lieferliste_WPF.Entities;
+using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Utilities;
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-
+using Lieferliste_WPF.ViewModels;
 namespace Lieferliste_WPF.UserControls
 {
     /// <summary>
@@ -11,7 +11,8 @@ namespace Lieferliste_WPF.UserControls
 
         public OrderView()
         {
-
+            
+            //this.DataContext = this;
             InitializeComponent();
 
         }

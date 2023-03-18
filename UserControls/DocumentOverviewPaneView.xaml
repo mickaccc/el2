@@ -11,8 +11,8 @@
     >
     <UserControl.Resources>
     </UserControl.Resources>
-    
-    <StackPanel>
+
+    <StackPanel Background="#FF94B7B3">
         <StackPanel
             Orientation="Horizontal"
             >
@@ -54,5 +54,5 @@
                 />
         </StackPanel>
     </StackPanel>
-    
+
 </UserControl>

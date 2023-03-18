@@ -1,5 +1,4 @@
-﻿using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.ViewModels;
+﻿using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Utilities;
 using System;
 using System.ComponentModel;
@@ -9,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Lieferliste_WPF.Data.Models;
 
 namespace Lieferliste_WPF.UserControls
 {

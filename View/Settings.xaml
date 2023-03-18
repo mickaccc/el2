@@ -1,8 +1,11 @@
 ﻿<Window x:Class="Lieferliste_WPF.View.Settings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Lieferliste_WPF.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+
         Title="Einstellungen" Height="600" Width="1000" Loaded="Window_Loaded">
-    <Grid DataContext="{Binding}">
+    <Grid DataContext="{Binding SettingsViewModel}">
 
         <TabControl  HorizontalAlignment="Left"  Name="tabControl1" VerticalAlignment="Top">
             <TabItem Header="Benutzer" Name="tabItem1" >
@@ -14,20 +17,14 @@
                     <Grid.Resources>
                         
                     </Grid.Resources>
-                    <ComboBox Grid.Row="0" Height="20" HorizontalAlignment="Left" Margin="25,15,0,0" Name="users" VerticalAlignment="Top" Width="120"
-                              ItemsSource="{Binding Path=Users}" DisplayMemberPath="Name" SelectedValuePath="UserIdent" SelectedValue="{Binding Path=UserIdent, Mode=OneWayToSource}"/>
+                    <ComboBox Grid.Row="0" Height="20" HorizontalAlignment="Left" Margin="25,15,0,0" Name="users" VerticalAlignment="Top" Width="120" DisplayMemberPath="Name" SelectedValuePath="UserIdent" SelectedValue="{Binding Path=UserIdent, Mode=OneWayToSource}" Cursor="Arrow" ItemsSource="{Binding Mode=OneWay}"/>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="400*"/>
                             <ColumnDefinition Width="400*"/>
                         </Grid.ColumnDefinitions>
-                        <DataGrid Grid.Column="0" Height="100" HorizontalAlignment="Left" Margin="25,10,0,0" Name="role_checked"
-                                   AutoGenerateColumns="False" VerticalAlignment="Top" ItemsSource="{Binding Path=RolesChecked}" >
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Rollen" Binding="{Binding Description}"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                        <DataGrid Grid.Column="1" Height="100" HorizontalAlignment="Left" Margin="10,10,0,0" Name="role_avail" VerticalAlignment="Top" ItemsSource="{Binding Path=RolesAvail}" />
+                        <DataGrid Grid.Column="0" Height="100" HorizontalAlignment="Left" Margin="25,10,0,0" x:Name="role_checked" VerticalAlignment="Top" ItemsSource="{Binding ElementName=role_avail, Mode=OneWay}" />
+                        <DataGrid Grid.Column="1" Height="100" HorizontalAlignment="Left" Margin="10,10,0,0" Name="role_avail" VerticalAlignment="Top" />
                     </Grid>
                 </Grid>
             </TabItem>
@@ -44,7 +41,7 @@
             </TabItem>
             <TabItem Header="Roles" Name="tabItem2">
                 <Grid>
-                    <ComboBox Height="20" HorizontalAlignment="Left" Margin="25,15,0,0" Name="role" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Path=Roles}"
+                    <ComboBox Height="20" HorizontalAlignment="Left" Margin="25,15,0,0" Name="role" VerticalAlignment="Top" Width="120"
                                DisplayMemberPath="Description" SelectedValuePath="id" SelectedValue="{Binding Path=RoleIdent, Mode=OneWayToSource}"/>
                     <DataGrid Height="100" HorizontalAlignment="Left" Margin="25,45,0,0" Name="permission_checked" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Path=PermissionsChecked}" />
                     <DataGrid Height="100" HorizontalAlignment="Left" Margin="177,45,0,0" Name="permission_avail" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Path=PermissionsAvail}" >

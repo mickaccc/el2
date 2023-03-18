@@ -7,41 +7,40 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:my="clr-namespace:Lieferliste_WPF"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="1400" Name="Lieferliste"  >
+             d:DesignHeight="200" d:DesignWidth="1400" Name="Lieferliste" Background="#FF655858"  >
 
     <UserControl.Resources>
         <conv:DateConverter x:Key="DateConverter1" />
         <conv:TTNR_Converter x:Key="TTNR_Converter1" />
         <conv:CountConverter x:Key="CountConverter1" />
         <conv:PermissionConverter x:Key="Permission" />
-        <conv:XML_FlowDocumentConverter x:Key="XML_to_FlowDoc"/>
         <conv:FillZerosConverter x:Key="FillZerosConverter1" />
         <conv:DateLess2Color x:Key="DateLess2Color1" />
         <conv:BoolConverter x:Key="boolConverter" />
 
         <ContextMenu x:Key="context" DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
             <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}" 
-                      CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType=ContextMenu, AncestorLevel=1}}">
+                      CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource FindAncestor, AncestorType=ContextMenu, AncestorLevel=1}}" Background="#FF907B7B">
                 <MenuItem.Icon>
-                    <Image Source="/el4;component/Images/sort-by-attributes-Asc16.png" />
+                    <Image Source="/UserControls/sort-by-attributes-Asc16.png" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand}" 
                       CommandParameter="{Binding Path=PlacementTarget,
                 RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}">
                 <MenuItem.Icon>
-                    <Image Source="/el4;component/Images/sort-by-attributes-Desc16.png" />
+                    <Image Source="/UserControls/sort-by-attributes-Desc16.png" />
                 </MenuItem.Icon>
             </MenuItem>
             
             <MenuItem Command="Copy">
                 <MenuItem.Icon>
-                    <Image Source="/el4;component/Images/copy16.png" />
+                    <Image Source="/Images/copy16.png" />
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Command="Paste">
                 <MenuItem.Icon>
-                    <Image Source="/el4;component/Images/paste16.png" />
+                    <Image Source="/Images/paste16.png" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -60,13 +59,13 @@
     </UserControl.Resources>
 
 
-    <Grid  Name="Liefer">
+    <Grid  Name="Liefer" Background="#FFE4C3C3">
         <Grid.RowDefinitions>
                 <RowDefinition Height="90" />
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid Name="header" Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=AccessText, AncestorLevel=1}, Path=Background}" Visibility="Visible">
+            <Grid Name="header" Visibility="Visible">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="82" />
                     <ColumnDefinition Width="132" />
@@ -90,8 +89,8 @@
                     <RowDefinition Height="30*" />
                 </Grid.RowDefinitions>
                 <Grid.Resources>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" />
 
                 </Grid.Resources>
 
@@ -100,7 +99,7 @@
                         <ContextMenu />
                     </Label.ContextMenu>
                 </Label>
-                <Label Content="Liefertermin" Grid.Row="1" HorizontalAlignment="Stretch" Name="label2" VerticalAlignment="Top" IsManipulationEnabled="True" Uid="Lfterm" BorderBrush="Black" BorderThickness="0,0,2,2" Margin="1" />
+                <Label Content="Liefertermin" Grid.Row="1" HorizontalAlignment="Stretch" Name="label2" VerticalAlignment="Top" IsManipulationEnabled="True" Uid="Lfterm" BorderBrush="Black" BorderThickness="0,0,2,2" Margin="1" Background="#FF9C5D5D" />
                 <Label Content="Projekt" HorizontalAlignment="Stretch" Name="label3" VerticalAlignment="Top" Grid.Column="1" BorderBrush="Black" BorderThickness="1,0,2,2" Margin="1" Height="89" />
                 <Label Content="Teilebezeichnung" Grid.Column="2" HorizontalAlignment="Stretch" Name="label4" VerticalAlignment="Top" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="0,0,2,2" Margin="1" Background="{Binding Path=lieferliste}" />
                 <Label Content="Auftrag" Grid.Column="4" HorizontalAlignment="Stretch" Name="label5" VerticalAlignment="Top" Grid.ColumnSpan="2" BorderBrush="Black" Margin="1" BorderThickness="0,0,2,2" Background="{Binding ElementName=listBox1, Path=ItemTemplate.IsSealed}" />
@@ -139,7 +138,7 @@
                 <Label Content="{Binding Path=Items.Count, ElementName=ListBox1}" Height="28" HorizontalAlignment="Left" Name="SizeInfo" VerticalAlignment="Top" Grid.Row="2" Width="78" UseLayoutRounding="True" />
         </Grid>
 
-            <ListView HorizontalAlignment="Left" Name="listBox1" VerticalAlignment="Top" ItemsSource="{Binding Processes}" Grid.Row="1" SelectionChanged="listBox1_SelectionChanged">
+            <ListView HorizontalAlignment="Left" Name="listBox1" VerticalAlignment="Top" Grid.Row="1" SelectionChanged="listBox1_SelectionChanged">
 
                 <ListView.ItemTemplate>
 

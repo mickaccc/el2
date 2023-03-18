@@ -17,7 +17,7 @@
         <conv:PermissionVisibilityConverter x:Key="PermissionVisibilityConverter1" />
         <conv:FillZerosConverter x:Key="FillZerosConverter1" />
     </UserControl.Resources>
-    <Grid DataContext="{Binding}" Name="MainGrid">
+    <Grid DataContext="{Binding OrderViewModel}" Name="MainGrid" IsEnabled="False">
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>
             <RowDefinition Height="90" />
@@ -27,7 +27,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid Name="InfoBar" Background="#FF7FD87F">
-            <TextBox Height="23" Margin="69,6,0,0" Name="txtAuftr" VerticalAlignment="Top" Text="{Binding Path=Title, Mode=OneWay}" HorizontalAlignment="Left" MinWidth="120" />
+            <TextBox Height="23" Margin="69,6,0,0" Name="txtAuftr" VerticalAlignment="Top" Text="{Binding Mode=OneWay}" HorizontalAlignment="Left" MinWidth="120" />
             <Label Content="Auftrag" Height="23" HorizontalAlignment="Left" Margin="3,6,0,0" VerticalAlignment="Top" Width="55" Padding="3" />
             <Label Content="Material" Height="28" HorizontalAlignment="Left" Margin="0,36,0,0" VerticalAlignment="Top" />
             <TextBox Height="23" HorizontalAlignment="Left" Margin="69,38,0,0" Name="txtTTNR" VerticalAlignment="Top" Text="{Binding Path=Material, Converter={StaticResource TTNR_Converter1}, Mode=OneWay}" MinWidth="120" />

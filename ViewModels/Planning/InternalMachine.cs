@@ -1,4 +1,4 @@
-﻿using Lieferliste_WPF.Entities;
+﻿
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.ViewModels.Base;
 using Lieferliste_WPF.Working;
@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Lieferliste_WPF.ViewModels.Support;
+using Lieferliste_WPF.Data.Models;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -32,7 +34,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public ObservableLinkedList<RessZuteilView> ProcessesLine
+        public ObservableLinkedList<TblRessource> ProcessesLine
         { get; internal set; }
 
         public List<ActionStripe> getActionStripes(DateTime date)
@@ -59,7 +61,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             MachineViewModel = new MachineViewModel();
             WorkingWeeks = new ObservableCollection<WorkingWeek>();
-            ProcessesLine = new ObservableLinkedList<RessZuteilView>();
+            ProcessesLine = new ObservableLinkedList<TblRessource>();
 
         }
 
@@ -108,7 +110,7 @@ namespace Lieferliste_WPF.ViewModels
             for (int p = index; p < _workingLine.Count; p++)
             {
                 Process pp = _workingLine.ElementAt(p);
-                DbManager.Instance().changeBoudedProcess(pp, null, Convert.ToInt16(p + 1), null);
+
 
             }
             foreach (Process p in _workingLine)
@@ -140,7 +142,7 @@ namespace Lieferliste_WPF.ViewModels
             //    dt = preOrder.Value.ActionStripes.Last().Date;
             //}
             bool ret = PlannerTools.Reorganize(ref _workingLine);
-            DbManager.Instance().removeBoundedProcess(order, RID);
+ 
             return ret;
 
         }

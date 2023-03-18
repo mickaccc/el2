@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text.RegularExpressions;
+using Lieferliste_WPF.Data;
+using Lieferliste_WPF.Data.Models;
+using System.Linq;
 
 namespace Lieferliste_WPF.Utilities
 {
+
     public class PermissionsManager
     {
-        private static PermissionsManager _instance;
+        private static PermissionsManager? _instance;
+        private readonly DataContext _db = new();
 
-        private DataSetPermission ds;
-        private DataSetPermissionTableAdapters.PermissionUSERTableAdapter tableAdapt;
-        private HashSet<String> _permissions;
-        private String _user;
+
+        private readonly List<String> _permissions;
+        private readonly String _user;
 
         public static PermissionsManager getInstance(String user)
         {
@@ -27,15 +31,23 @@ namespace Lieferliste_WPF.Utilities
         private PermissionsManager(String user)
         {
 
-            _permissions = new HashSet<string>();
+            _permissions = new List<string>();
             string pattern = @"^EMEA\\";
             Regex reg = new Regex(pattern);
             _user = reg.Replace(user.ToUpper(), "");
             try
             {
-                ds = new DataSetPermission();
-                tableAdapt = new DataSetPermissionTableAdapters.PermissionUSERTableAdapter();
-                tableAdapt.Fill(ds.PermissionUSER, _user);
+
+                var query = from p in _db.Permissions
+                            join pR in _db.PermissionRoles on p.ValidKey equals pR.PermissionKey
+                            join r in _db.Roles on pR.RoleKey equals r.Id
+                            join usrR in _db.UserRoles on r.Id equals usrR.RoleId
+                            join usr in _db.Users on usrR.UserIdent equals usr.UserIdent
+                            where usr.UserIdent == _user
+                            select new { p.ValidKey };
+
+                //_permissions.AddRange((IEnumerable<string>)query);
+
             }
             catch (Exception e)
             {
@@ -43,10 +55,7 @@ namespace Lieferliste_WPF.Utilities
                 System.Windows.MessageBox.Show("Fehler Permissionsmanager!\n" + e.Message + "\n" + e.InnerException,
                     "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
-            foreach (DataRow dr in ds.PermissionUSER.Rows)
-            {
-                _permissions.Add(dr[0].ToString());
-            }
+
         }
 
 
@@ -54,17 +63,9 @@ namespace Lieferliste_WPF.Utilities
         {
             return _permissions.Contains(permission);
         }
-        public HashSet<DataRow> getPermissions()
+        public List<string> getPermissions()
         {
-
-            //EL4_SQLDataSetTableAdapters.tblBerechtigungTableAdapter adapt = new EL4_SQLDataSetTableAdapters.tblBerechtigungTableAdapter();
-            //adapt.Fill(ds.tblBerechtigung);
-            HashSet<DataRow> rows = new HashSet<DataRow>();
-            //foreach (DataRow dr in ds.tblBerechtigung.Rows)
-            //{
-            //    rows.Add(dr);
-            //}
-            return rows;
+            return _permissions;
         }
 
     }

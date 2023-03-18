@@ -11,7 +11,6 @@ namespace Lieferliste_WPF.View
         public Settings()
         {
             InitializeComponent();
-            this.DataContext = new SettingsViewModel();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

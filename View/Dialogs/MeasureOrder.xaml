@@ -1,0 +1,63 @@
+﻿<Window x:Class="Lieferliste_WPF.View.Dialogs.MeasureOrder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        Title="Messauftrag" Height="300" Width="400">
+
+    <Grid Name="MainGrid">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <WrapPanel Orientation="Horizontal" Grid.Row="0">
+        <Label Content="Auftrag:" HorizontalAlignment="Left" Margin="1" Name="bezAuft" VerticalAlignment="Top" />
+        <Label Content="{Binding Path=AID}" HorizontalAlignment="Left" Margin="1" Name="valAuft" VerticalAlignment="Top" Background="#FAFFC391" />
+            <Label Content="Vorgang:" HorizontalAlignment="Left" Margin="1" Name="bezVorg" VerticalAlignment="Top" />
+            <Label Content="{Binding Path=VNR}" HorizontalAlignment="Left" Margin="1" Name="valVorg" VerticalAlignment="Top" Background="#FAFFC391" />
+            <Label Content="{Binding Path=Text}"  HorizontalAlignment="Left" Margin="3,1" Name="valTEXT" VerticalAlignment="Top" Background="#FAFFC391"/>
+        </WrapPanel>
+        <WrapPanel Orientation="Horizontal" Grid.Row="1">
+            <Label Content="TTNR:" HorizontalAlignment="Left" Margin="1" Name="bezTTNR" VerticalAlignment="Top" />
+            <Label HorizontalAlignment="Left" Margin="1" Name="valTTNR" VerticalAlignment="Top" Background="#FAFFC391" Content="{Binding Path=Material}" />
+            <Label Content="{Binding Path=Teil}"  HorizontalAlignment="Left" Margin="3,1" Name="valName" VerticalAlignment="Top" Background="#FAFFC391"/>
+        </WrapPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <GroupBox Header="Messaufgabe"  Name="grpMeasureTask" Width="150" BorderBrush="Black" AllowDrop="True">
+                <StackPanel>
+                    <RadioButton Content="1.Gutteil" Height="16" Name="rdGut" IsChecked="True" GroupName="measureGroup" />
+                    <RadioButton Content="lfd. Prozess" Height="16" Name="rdProcess" GroupName="measureGroup" />
+                    <RadioButton Content="Lehrenmessung" Height="16" Name="rdGauge" GroupName="measureGroup"/>
+                    <RadioButton Content="sonstiges" Height="16" Name="rdOthers" GroupName="measureGroup"/>
+
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Protokollausgabe"  Name="grpOutput" Margin="5,0" BorderBrush="Black">
+                <StackPanel>
+                    <CheckBox Content="Datei" Height="16" HorizontalAlignment="Left" Margin="3" Name="chkFileOut" VerticalAlignment="Top" />
+                    <CheckBox Content="Papier" Height="16" HorizontalAlignment="Left" Margin="3" Name="chkPaperOut" VerticalAlignment="Top" />
+                </StackPanel>
+            </GroupBox>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+            <Button Grid.Row="0" Content="Abbrechen" Height="23" Name="btnCancel" Width="75" Margin="10" Click="btnCancel_Click" />
+            <Button Grid.Row="1" Content="Speichern" Height="23" Name="btnSave" Width="75" Margin="10" Click="btnSave_Click" />
+            </Grid>
+        </StackPanel>
+        <StackPanel Grid.Row="3">
+        <StackPanel  Orientation="Horizontal" >
+            <Label Content="Ressource:" Grid.Row="3" Name="lblRess" />
+            <ComboBox Height="25" Name="cmbRess" Width="120" SelectedValuePath="RID" DisplayMemberPath="RessName" />
+            <Label Content="Aussteller:" Grid.Row="3"  HorizontalAlignment="Left"  Name="lblOrderer" VerticalAlignment="Top" />
+                <ComboBox Grid.Row="3" Height="25" HorizontalAlignment="Left"  Name="cmbOrderer" VerticalAlignment="Top" Width="110" DisplayMemberPath="Name" SelectedValuePath="UserIdent" />
+            </StackPanel>
+            <RichTextBox Grid.Row="3"  HorizontalAlignment="Left"  Name="comments" VerticalAlignment="Top" Width="380" />
+        </StackPanel>
+
+    </Grid>
+</Window>

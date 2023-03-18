@@ -5,6 +5,7 @@
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using Lieferliste_WPF.UserControls;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -15,9 +16,10 @@
         {
             InitializeComponent();
 
-            this.DataContext = ToolCase.This;
+            //this.DataContext = ToolCase.This;
+           // order.ItemsSource = OrderViewModel.orders;
 
-            ToolCase.This.InitCommandBindings(this);
+            //ToolCase.This.InitCommandBindings(this);
         }
         #region Events
         private void About_Click(object sender, RoutedEventArgs e)

@@ -1,0 +1,153 @@
+﻿{
+   "CodeGenerationMode": 3,
+   "ContextClassName": "DataContext",
+   "ContextNamespace": "Data",
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "ModelNamespace": "Data.Models",
+   "OutputContextPath": "Data",
+   "OutputPath": "Data\\Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "Lieferliste_WPF",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[dbo].[Permission]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PermissionRole]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Roles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblAbfrageblatt]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblAbfrageblattAuswahl]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblArbeitsplatzSAP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblArbeitsplatzZuteilung]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblAuftrag]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblDummy]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblEinstellTeil]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblEinstellteileTrans]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblGrunddaten]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblHoliMask]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblMA]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblMaterial]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblMAZu]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblMessraum]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblMessraumAbarbeitung]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblMm]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblProjekt]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblProjektAnhang]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblRessKappa]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblRessource]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblRessourceVorgang]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tblVorgang]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[User]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserWorkArea]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkArea]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "DESKTOP-88O2DD0.DB_COS_LIEFERLISTE_SQL",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": true,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": true,
+   "UseManyToManyEntity": true,
+   "UseNoDefaultConstructor": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

@@ -1,10 +1,10 @@
-﻿using Lieferliste_WPF.Entities;
-using Lieferliste_WPF.Working;
+﻿using Lieferliste_WPF.Working;
 using Lieferliste_WPF.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Lieferliste_WPF.Data.Models;
 
 namespace Lieferliste_WPF.ViewModels
 {

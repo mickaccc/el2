@@ -1,20 +1,24 @@
-﻿using Lieferliste_WPF.Entities;
+﻿using Lieferliste_WPF.Data.Models;
+using Lieferliste_WPF.Data;
 using Lieferliste_WPF.Utilities;
 using System.Collections.Generic;
 using System.Linq;
+
 
 namespace Lieferliste_WPF.ViewModels
 {
     class SettingsViewModel : Base.ViewModelBase
     {
-        public ObservableList<Permissions> PermissionsAvail { get; set; }
-        public ObservableList<Permissions> PermissionsChecked { get; set; }
-        public List<Roles> Roles { get; set; }
-        public List<tblUserListe> Users { get; set; }
-        public ObservableList<Roles> RolesChecked { get; set; }
-        public ObservableList<Roles> RolesAvail { get; private set; }
+        public ObservableList<Permission> PermissionsAvail { get; set; }
+        public ObservableList<Permission> PermissionsChecked { get; set; }
+        public List<Role> Roles { get; set; }
+        public List<User> Users { get; set; }
+        public ObservableList<Role> RolesChecked { get; set; }
+        public ObservableList<Role> RolesAvail { get; private set; }
         private int _roleIdent = 0;
-        private string _userIdent;
+        private readonly string _userIdent;
+        private DataContext _db = new DataContext();
+
 
 
         public int RoleIdent
@@ -26,19 +30,20 @@ namespace Lieferliste_WPF.ViewModels
                 RaisePropertyChanged("RoleIdent");
                 reloadPermissionChecked();
                 PermissionsAvail.Clear();
-                using (var ctx = new EntitiesPermiss())
+                using (var ctx = new DataContext())
                 {
-                    ObservableList<Permissions> _permiss = new ObservableList<Permissions>();
 
-                    foreach (Permissions p in ctx.tblBerechtigung)
+
+
+                    foreach (Permission p in ctx.Permissions)
                     {
-                        if (!PermissionsChecked.Any(x => x.Berechtigung == p.Berechtigung))
+                        if (!PermissionsChecked.Any(x => x.ValidKey == p.ValidKey))
                             PermissionsAvail.Add(p);
                     }
                 }
-
             }
         }
+
 
 
 
@@ -47,42 +52,40 @@ namespace Lieferliste_WPF.ViewModels
             get { return _userIdent; }
             set
             {
-                _userIdent = value;
                 RaisePropertyChanged("UserIdent");
                 reLoadRolesChecked();
                 RolesAvail.Clear();
 
-                foreach (Roles r in Roles)
+                foreach (Role r in Roles)
                 {
-                    if (!RolesChecked.Any(x => x.id == r.id))
+                    if (!RolesChecked.Any(x => x.Id == r.Id))
                         RolesAvail.Add(r);
                 }
 
             }
         }
 
-        //DB_COS_LIEFERLISTE_SQLEntities ctx = new DB_COS_LIEFERLISTE_SQLEntities(Statics.);
-
         public SettingsViewModel()
         {
-            PermissionsAvail = new ObservableList<Permissions>();
-            Roles = new List<Roles>();
-            Users = new List<tblUserListe>();
-            PermissionsChecked = new ObservableList<Permissions>();
-            RolesChecked = new ObservableList<Roles>();
-            RolesAvail = new ObservableList<Roles>();
+            _userIdent = "";
+            PermissionsAvail = new ObservableList<Permission>();
+            Roles = new List<Role>();
+            Users = new List<User>();
+            PermissionsChecked = new ObservableList<Permission>();
+            RolesChecked = new ObservableList<Role>();
+            RolesAvail = new ObservableList<Role>();
             LoadData();
         }
         private void LoadData()
         {
-            using (var ctx = new EntitiesPermiss())
+            using (var ctx = new DataContext())
             {
 
                 foreach (var p in ctx.Roles.ToList())
                 {
                     Roles.Add(p);
                 }
-                foreach (var u in ctx.tblUserListe.ToList())
+                foreach (var u in ctx.Users.ToList())
                 {
                     Users.Add(u);
                 }
@@ -92,24 +95,24 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void reLoadRolesChecked()
         {
-            using (var ctx = new EntitiesPermiss())
+            using (var ctx = new DataContext())
             {
                 var ur = from u in ctx.UserRoles
-                         join r in ctx.Roles on u.RoleID equals r.id
+                         join r in ctx.Roles on u.RoleId equals r.Id
                          where u.UserIdent == UserIdent
-                         select u.Roles;
+                         select u.Role;
                 RolesChecked.Clear();
                 RolesChecked.AddRange(ur);
             }
         }
         private void reloadPermissionChecked()
         {
-            using (var ctx = new EntitiesPermiss())
+            using (var ctx = new DataContext())
             {
                 var pc = from p in ctx.PermissionRoles
-                         join r in ctx.tblBerechtigung on p.PermissionKey equals r.Berechtigung
+                         join r in ctx.Permissions on p.PermissionKey equals r.ValidKey
                          where p.RoleKey == RoleIdent
-                         select p.tblBerechtigung;
+                         select p.PermissionKeyNavigation;
                 PermissionsChecked.Clear();
                 PermissionsChecked.AddRange(pc);
             }

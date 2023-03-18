@@ -1,11 +1,10 @@
-﻿using Lieferliste_WPF.Entities;
+﻿
 using Lieferliste_WPF.ViewModels.Base;
 using Lieferliste_WPF.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Lieferliste_WPF.Data.Models;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -29,14 +29,14 @@ namespace Lieferliste_WPF.ViewModels
         /// <summary>
         /// Collection of Processes
         /// </summary>
-        public ObservableCollection<ProcessVM> Processes { get; private set; }
+        public ObservableCollection<TblVorgang> Processes { get; private set; }
         //public List<OrderList_Result> OrderDetails { get; private set; }
         private String _selectedOrder;
         private ICollectionView _processCV;
         private Dictionary<String, String> _filterCriterias;
         private String _sortField;
         private String _sortDirection;
-        public ProcessVM SelectedProcess { get; set; }
+
         public ICommand SortAscCommand { get; private set; }
         public ICommand SortDescCommand { get; private set; }
         public ICommand ToArchiveCommand { get; private set; }
@@ -73,45 +73,23 @@ namespace Lieferliste_WPF.ViewModels
         #region Constructors
         private DeliveryListViewModel()
         {
+            Initialize();
         }
         private void Initialize()
         {
             _processCV = CollectionViewSource.GetDefaultView(Processes);
             _filterCriterias = new Dictionary<string, string>();
-            _processCV.Filter = delegate (Object item)
-            {
-                ProcessVM temp = item as ProcessVM;
-                if (temp == null) return true;
-                bool retValue;
-                retValue = Convert.ToBoolean(!temp.TheProcess.ausgebl);
-                retValue = !temp.IsDeleted;
-                if (retValue)
-                {
-                    bool tmpBool = true;
-                    PropertyInfo[] prop = GetType().GetProperties();
-                    foreach (String key in _filterCriterias.Keys)
-                    {
-                        PropertyInfo poI = temp.TheProcess.GetType().GetProperty(key);
-                        if (poI.PropertyType.Name == "String")
-                        {
-                            String value = (String)poI.GetValue(temp.TheProcess);
-                            Regex regex = new Regex("(?i)" + _filterCriterias[key]);
+            //_processCV.Filter = delegate (Object item)
+            //{
+            //    ProcessVM temp = item as ProcessVM;
+            //    if (temp == null) return true;
+            //    bool retValue;
+            //    retValue = Convert.ToBoolean(!temp.TheProcess.ausgebl);
+            //    retValue = !temp.IsDeleted;
 
-                            Match match = regex.Match((value == null) ? String.Empty : value);
-                            tmpBool = match.Success;
-                            if (tmpBool) break;
-                        }
-                        if (poI.PropertyType.Name == "Boolean")
-                        {
-                            bool value = (bool)poI.GetValue(temp.TheProcess, null);
-                            tmpBool = value == Convert.ToBoolean(_filterCriterias[key]);
-                        }
-                    }
-                    retValue = tmpBool;
-                }
 
-                return retValue;
-            };
+            //    return retValue;
+            //};
             addFilterCriteria("ausgebl", "false");
             SortAscCommand = new ActionCommand(OnSortAscExecuted, OnSortAscCanExecute);
             SortDescCommand = new ActionCommand(OnSortDescExecuted, OnSortDescCanExecute);
@@ -182,24 +160,8 @@ namespace Lieferliste_WPF.ViewModels
         protected async override void GetData()
         {
             if (isRun) return;
-            using (var data = db)
-            {
-                ObservableCollection<ProcessVM> _processes = new ObservableCollection<ProcessVM>();
-                isRun = true;
-                var processes = await (from p in data.lieferliste
-                                       where p.abgeschlossen == false
-                                       orderby p.SpaetEnd
-                                       select p).ToListAsync();
+            
 
-
-                isRun = false;
-                foreach (lieferliste l in processes)
-                {
-                    _processes.Add(new ProcessVM { IsNew = false, TheProcess = l });
-                }
-                Processes = _processes;
-            }
-            Initialize();
             RaisePropertyChanged("Processes");
 
         }
@@ -354,10 +316,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             String orderNr = parameter as string;
 
-            foreach (ProcessVM pro in Processes.Where(x => x.TheProcess.AID == orderNr))
-            {
-                pro.IsDeleted = true;
-            }
+            
             _processCV.Refresh();
 
         }
@@ -368,25 +327,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Dispose()
         {
-            using (var data = new EntitiesLL())
-            {
-                String a = String.Empty;
-
-                foreach (var pro in Processes.Where(x => x.IsDeleted))
-                {
-                    if (pro.TheProcess.AID != a)
-                    {
-                        var l = data.lieferliste.First(y => y.AID == pro.TheProcess.AID);
-                        if (l != null)
-                        {
-                            l.abgeschlossen = true;
-                            l.fertig = false;
-                            a = l.AID;
-                        }
-                    }
-                }
-                data.SaveChanges();
-            }
+            
         }
 
 

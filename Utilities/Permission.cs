@@ -2,12 +2,12 @@
 
 namespace Lieferliste_WPF.Utilities
 {
-    public class Permission
+    public class Access
     {
         public bool IsAllowed { get; set; }
         internal List<string> AccessControllList { get; private set; }
 
-        internal Permission(params string[] allowedRoles)
+        internal Access(params string[] allowedRoles)
         {
             IsAllowed = false;
             AccessControllList = new List<string>();

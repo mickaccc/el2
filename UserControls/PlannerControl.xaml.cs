@@ -1,4 +1,4 @@
-﻿using Lieferliste_WPF.Entities;
+﻿using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Working;

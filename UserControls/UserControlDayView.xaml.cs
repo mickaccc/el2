@@ -1,5 +1,5 @@
-﻿using Lieferliste_WPF.Dialogs;
-using Lieferliste_WPF.Entities;
+﻿using Lieferliste_WPF.Data.Models;
+using Lieferliste_WPF.Dialogs;
 using Lieferliste_WPF.Working;
 using System;
 using System.Collections.Generic;
