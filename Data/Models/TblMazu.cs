@@ -14,6 +14,6 @@ namespace Lieferliste_WPF.Data.Models
         public int? PersNr { get; set; }
         public DateTime? Timestamp { get; set; }
 
-        public virtual TblMa Ma { get; set; }
+        public virtual TblMa? Ma { get; set; }
     }
 }

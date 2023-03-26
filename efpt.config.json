@@ -19,7 +19,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[PermissionRole]",
+         "Name": "[dbo].[PermissionRoles]",
          "ObjectType": 0
       },
       {
@@ -115,10 +115,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[User]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[UserRoles]",
          "ObjectType": 0
       },
@@ -131,7 +127,7 @@
          "ObjectType": 0
       }
    ],
-   "UiHint": "DESKTOP-88O2DD0.DB_COS_LIEFERLISTE_SQL",
+   "UiHint": "DESKTOP-MEMDFDP\\SQLEXPRESS.DB_COS_LIEFERLISTE_SQL",
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
@@ -141,12 +137,12 @@
    "UseHandleBars": true,
    "UseHierarchyId": false,
    "UseInflector": true,
-   "UseLegacyPluralizer": true,
+   "UseLegacyPluralizer": false,
    "UseManyToManyEntity": true,
    "UseNoDefaultConstructor": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,
-   "UseNullableReferences": false,
+   "UseNullableReferences": true,
    "UseSchemaFolders": false,
    "UseSpatial": false,
    "UseT4": false

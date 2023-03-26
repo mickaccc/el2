@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,27 +11,22 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Lieferliste_WPF.ViewModels;
 
 namespace Lieferliste_WPF.View
 {
     /// <summary>
-    /// Interaction logic for OrderView.xaml
+    /// Interaktionslogik für Lieferliste.xaml
     /// </summary>
-    public partial class OrderView : Page
+    public partial class Lieferliste : Page
     {
-        public OrderView(string? arg)
+        public Lieferliste()
         {
             InitializeComponent();
-            var vm = new OrderViewModel();
-            vm.LoadData("2100786672");
-            this.MainView.DataContext = vm.Order;
-        }
-
-        private void MainView_Loaded(object sender, RoutedEventArgs e)
-        {
-
+            
+           this.Lieferlist.DataContext = new LieferViewModel().Orders;
         }
     }
 }

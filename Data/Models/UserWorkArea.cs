@@ -7,6 +7,6 @@ namespace Lieferliste_WPF.Data.Models
     {
         public int Id { get; set; }
         public int? BerId { get; set; }
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
     }
 }

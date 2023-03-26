@@ -2,11 +2,11 @@
 
 namespace Lieferliste_WPF.Commands
 {
-    public static class eLCommands
+    public class ELCommands
     {
         private static RoutedUICommand showOrderView;
         private static RoutedUICommand toArchive;
-        private static RoutedUICommand newImage;
+        private static RoutedUICommand showArchive;
         private static RoutedUICommand removeImage;
         private static RoutedUICommand rotateFriendImage90;
         private static RoutedUICommand rotateFriendImage180;
@@ -17,26 +17,26 @@ namespace Lieferliste_WPF.Commands
         private static RoutedUICommand listSortDescending;
         private static RoutedUICommand listExportXPS;
 
-        static eLCommands()
+        static ELCommands()
         {
-            showOrderView = new RoutedUICommand("Auftrag anzeigen", "ShowOrderView", typeof(eLCommands));
+            showOrderView = new RoutedUICommand("Auftrag anzeigen", "ShowOrderView", typeof(ELCommands));
             showOrderView.InputGestures.Add(new KeyGesture(Key.A, ModifierKeys.Alt));
-            toArchive = new RoutedUICommand("Auftrag ablegen", "ToAchive", typeof(eLCommands));
+            toArchive = new RoutedUICommand("Auftrag ablegen", "ToAchive", typeof(ELCommands));
             //newFriend.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Alt | ModifierKeys.Control));
             //newFriend.InputGestures.Add(new MouseGesture(MouseAction.LeftDoubleClick, ModifierKeys.Alt | ModifierKeys.Control));
-            newImage = new RoutedUICommand("Neues Bild", "NewImage", typeof(eLCommands));
-            newImage.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Alt | ModifierKeys.Control));
-            removeImage = new RoutedUICommand("Bild entfernen", "RemoveImage", typeof(eLCommands));
+            showArchive = new RoutedUICommand("Archiv anzeigen", "NewImage", typeof(ELCommands));
+            showArchive.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Alt | ModifierKeys.Control));
+            removeImage = new RoutedUICommand("Bild entfernen", "RemoveImage", typeof(ELCommands));
             removeImage.InputGestures.Add(new KeyGesture(Key.X, ModifierKeys.Alt | ModifierKeys.Control));
-            rotateFriendImage90 = new RoutedUICommand("Bild um 90 Grad drehen", "RotateImage90", typeof(eLCommands));
+            rotateFriendImage90 = new RoutedUICommand("Bild um 90 Grad drehen", "RotateImage90", typeof(ELCommands));
             rotateFriendImage90.InputGestures.Add(new KeyGesture(Key.R, ModifierKeys.Alt | ModifierKeys.Control));
-            rotateFriendImage180 = new RoutedUICommand("Bild um 180 Grad drehen", "RotateImage180", typeof(eLCommands));
-            rotateFriendImage270 = new RoutedUICommand("Bild um 270 Grad drehen", "RotateImage270", typeof(eLCommands));
-            gotoNextFriend = new RoutedUICommand("Vorwärts", "GotoNextFriend", typeof(eLCommands));
-            gotoPreviousFriend = new RoutedUICommand("Rückwärts", "GotoPreviousFriend", typeof(eLCommands));
-            listSortAscending = new RoutedUICommand("Aufsteigend sortieren", "ListSortAscending", typeof(eLCommands));
-            listSortDescending = new RoutedUICommand("Absteigend sortieren", "ListSortDescending", typeof(eLCommands));
-            listExportXPS = new RoutedUICommand("Liste als XPS exportieren", "ListExportXPS", typeof(eLCommands));
+            rotateFriendImage180 = new RoutedUICommand("Bild um 180 Grad drehen", "RotateImage180", typeof(ELCommands));
+            rotateFriendImage270 = new RoutedUICommand("Bild um 270 Grad drehen", "RotateImage270", typeof(ELCommands));
+            gotoNextFriend = new RoutedUICommand("Vorwärts", "GotoNextFriend", typeof(ELCommands));
+            gotoPreviousFriend = new RoutedUICommand("Rückwärts", "GotoPreviousFriend", typeof(ELCommands));
+            listSortAscending = new RoutedUICommand("Aufsteigend sortieren", "ListSortAscending", typeof(ELCommands));
+            listSortDescending = new RoutedUICommand("Absteigend sortieren", "ListSortDescending", typeof(ELCommands));
+            listExportXPS = new RoutedUICommand("Liste als XPS exportieren", "ListExportXPS", typeof(ELCommands));
             listExportXPS.InputGestures.Add(new KeyGesture(Key.E, ModifierKeys.Control));
         }
         public static RoutedUICommand ShowOrderView
@@ -47,9 +47,9 @@ namespace Lieferliste_WPF.Commands
         {
             get { return toArchive; }
         }
-        public static RoutedUICommand NewImage
+        public static RoutedUICommand ShowArchive
         {
-            get { return newImage; }
+            get { return showArchive; }
         }
         public static RoutedUICommand RemoveImage
         {

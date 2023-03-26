@@ -26,7 +26,7 @@ namespace Lieferliste_WPF.Data.Models
         /// Ende Schicht 1
         /// </summary>
         public int? End1 { get; set; }
-        public string Comment1 { get; set; }
+        public string? Comment1 { get; set; }
 
         /// <summary>
         /// Start Schicht 2
@@ -37,7 +37,7 @@ namespace Lieferliste_WPF.Data.Models
         /// Ende Schicht
         /// </summary>
         public int? End2 { get; set; }
-        public string Comment2 { get; set; }
+        public string? Comment2 { get; set; }
 
         /// <summary>
         /// Start Schicht 3
@@ -48,7 +48,7 @@ namespace Lieferliste_WPF.Data.Models
         /// Ende Schicht 3
         /// </summary>
         public int? End3 { get; set; }
-        public string Comment3 { get; set; }
+        public string? Comment3 { get; set; }
 
         /// <summary>
         /// Timestamp to create the Datarow

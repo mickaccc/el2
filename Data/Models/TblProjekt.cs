@@ -12,10 +12,10 @@ namespace Lieferliste_WPF.Data.Models
         }
 
         public int Pid { get; set; }
-        public string Projekt { get; set; }
-        public string Projektinfo { get; set; }
-        public string ProjektFarbe { get; set; }
-        public string ProjektArt { get; set; }
+        public string? Projekt { get; set; }
+        public string? Projektinfo { get; set; }
+        public string? ProjektFarbe { get; set; }
+        public string? ProjektArt { get; set; }
 
         public virtual ICollection<TblAuftrag> TblAuftrags { get; set; }
         public virtual ICollection<TblProjektAnhang> TblProjektAnhangs { get; set; }

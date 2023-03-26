@@ -38,13 +38,13 @@ namespace Lieferliste_WPF.Utilities
             try
             {
 
-                var query = from p in _db.Permissions
-                            join pR in _db.PermissionRoles on p.ValidKey equals pR.PermissionKey
-                            join r in _db.Roles on pR.RoleKey equals r.Id
-                            join usrR in _db.UserRoles on r.Id equals usrR.RoleId
-                            join usr in _db.Users on usrR.UserIdent equals usr.UserIdent
-                            where usr.UserIdent == _user
-                            select new { p.ValidKey };
+                //var query = from p in _db.Permissions
+                //            join pR in _db.PermissionRoles on p.ValidKey equals pR.PermissionKey
+                //            join r in _db.Roles on pR.RoleKey equals r.Id
+                //            join usrR in _db.UserRoles on r.Id equals usrR.RoleId
+                //            join usr in _db.Users on usrR.UserIdent equals usr.UserIdent
+                //            where usr.UserIdent == _user
+                //            select new { p.ValidKey };
 
                 //_permissions.AddRange((IEnumerable<string>)query);
 

@@ -1,10 +1,11 @@
-﻿namespace Lieferliste_WPF
+﻿namespace Lieferliste_WPF.View
 {
     using Lieferliste_WPF.ViewModels;
     using Lieferliste_WPF.Utilities;
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using Lieferliste_WPF;
     using Lieferliste_WPF.UserControls;
 
     /// <summary>
@@ -21,6 +22,7 @@
 
             //ToolCase.This.InitCommandBindings(this);
         }
+
         #region Events
         private void About_Click(object sender, RoutedEventArgs e)
         {
@@ -75,7 +77,7 @@
         {
             TextBox t = e.Source as TextBox;
 
-            (this.DataContext as ToolCase).ActivePerspective.LeaderPanes[0].addFilterCriteria(this.cmbFields.Text, this.txtSearch.Text);
+            //(this.DataContext as ToolCase).ActivePerspective.LeaderPanes[0].addFilterCriteria(this.cmbFields.Text, this.txtSearch.Text);
         }
 
 

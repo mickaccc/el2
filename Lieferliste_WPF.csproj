@@ -252,8 +252,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\print1.png" />
-    <Resource Include="UserControls\sort-by-attributes-Asc16.png" />
-    <Resource Include="UserControls\sort-by-attributes-Desc16.png" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -329,6 +327,7 @@
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.3</Version>
     </PackageReference>
+    <PackageReference Include="Remotion.Linq" Version="2.2.0" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
@@ -359,8 +358,6 @@
     <Compile Remove="ViewModels\Planning\ParkMachine.cs" />
     <Compile Remove="ViewModels\Planning\ParkMachineFactory.cs" />
     <Compile Remove="ViewModels\Planning\testMachine.cs" />
-    <None Remove="UserControls\sort-by-attributes-Asc16.png" />
-    <None Remove="UserControls\sort-by-attributes-Desc16.png" />
     <Page Remove="Templates\AllocationReport.xaml" />
     <Page Remove="UserControls\AllocationWorkingList.xaml" />
   </ItemGroup>

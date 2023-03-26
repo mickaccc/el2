@@ -11,8 +11,8 @@ namespace Lieferliste_WPF.Data.Models
             TblVorgangs = new HashSet<TblVorgang>();
         }
 
-        public string Arbid { get; set; }
-        public string Bezeichnung { get; set; }
+        public string Arbid { get; set; } = null!;
+        public string? Bezeichnung { get; set; }
         public int? Rid { get; set; }
 
         public virtual ICollection<TblArbeitsplatzZuteilung> TblArbeitsplatzZuteilungs { get; set; }

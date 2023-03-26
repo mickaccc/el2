@@ -12,7 +12,7 @@ namespace Lieferliste_WPF.Data.Models
         }
 
         public int Id { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Time of Create

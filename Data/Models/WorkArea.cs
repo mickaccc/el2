@@ -11,8 +11,8 @@ namespace Lieferliste_WPF.Data.Models
         }
 
         public int Bid { get; set; }
-        public string Bereich { get; set; }
-        public string Abteilung { get; set; }
+        public string? Bereich { get; set; }
+        public string? Abteilung { get; set; }
         public byte? Sort { get; set; }
 
         public virtual ICollection<TblArbeitsplatzZuteilung> TblArbeitsplatzZuteilungs { get; set; }

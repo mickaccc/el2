@@ -230,7 +230,7 @@ namespace Lieferliste_WPF.UserControls
                     TextBlock txt = frWorkEle as TextBlock;
                     if (txt.Parent != null)
                     {
-                        UI = new OrderView();
+                        UI = new OrderViewControl();
                     }
                     else
                     {

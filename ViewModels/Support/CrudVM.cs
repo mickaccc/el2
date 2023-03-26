@@ -6,7 +6,7 @@ namespace Lieferliste_WPF.ViewModels.Support
 {
     public class CrudVM : ViewModelBase
     {
-        protected DataContext _db = new ();
+        protected DataContext _db = new();
         
 
         protected void HandleCommand(CommandMessage action)

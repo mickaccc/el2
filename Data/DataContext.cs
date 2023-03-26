@@ -8,35 +8,34 @@ namespace Lieferliste_WPF.Data
 {
     public partial class DataContext : DbContext
     {
-        public virtual DbSet<Permission> Permissions { get; set; }
-        public virtual DbSet<PermissionRole> PermissionRoles { get; set; }
-        public virtual DbSet<Role> Roles { get; set; }
-        public virtual DbSet<TblAbfrageblatt> TblAbfrageblatts { get; set; }
-        public virtual DbSet<TblAbfrageblattAuswahl> TblAbfrageblattAuswahls { get; set; }
-        public virtual DbSet<TblArbeitsplatzSap> TblArbeitsplatzSaps { get; set; }
-        public virtual DbSet<TblArbeitsplatzZuteilung> TblArbeitsplatzZuteilungs { get; set; }
-        public virtual DbSet<TblAuftrag> TblAuftrags { get; set; }
-        public virtual DbSet<TblDummy> TblDummies { get; set; }
-        public virtual DbSet<TblEinstellTeil> TblEinstellTeils { get; set; }
-        public virtual DbSet<TblEinstellteileTran> TblEinstellteileTrans { get; set; }
-        public virtual DbSet<TblGrunddaten> TblGrunddatens { get; set; }
-        public virtual DbSet<TblHoliMask> TblHoliMasks { get; set; }
-        public virtual DbSet<TblMa> TblMas { get; set; }
-        public virtual DbSet<TblMaterial> TblMaterials { get; set; }
-        public virtual DbSet<TblMazu> TblMazus { get; set; }
-        public virtual DbSet<TblMessraum> TblMessraums { get; set; }
-        public virtual DbSet<TblMessraumAbarbeitung> TblMessraumAbarbeitungs { get; set; }
-        public virtual DbSet<TblMm> TblMms { get; set; }
-        public virtual DbSet<TblProjekt> TblProjekts { get; set; }
-        public virtual DbSet<TblProjektAnhang> TblProjektAnhangs { get; set; }
-        public virtual DbSet<TblRessKappa> TblRessKappas { get; set; }
-        public virtual DbSet<TblRessource> TblRessources { get; set; }
-        public virtual DbSet<TblRessourceVorgang> TblRessourceVorgangs { get; set; }
-        public virtual DbSet<TblVorgang> TblVorgangs { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<UserRole> UserRoles { get; set; }
-        public virtual DbSet<UserWorkArea> UserWorkAreas { get; set; }
-        public virtual DbSet<WorkArea> WorkAreas { get; set; }
+        public virtual DbSet<Permission> Permissions { get; set; } = null!;
+        public virtual DbSet<PermissionRole> PermissionRoles { get; set; } = null!;
+        public virtual DbSet<Role> Roles { get; set; } = null!;
+        public virtual DbSet<TblAbfrageblatt> TblAbfrageblatts { get; set; } = null!;
+        public virtual DbSet<TblAbfrageblattAuswahl> TblAbfrageblattAuswahls { get; set; } = null!;
+        public virtual DbSet<TblArbeitsplatzSap> TblArbeitsplatzSaps { get; set; } = null!;
+        public virtual DbSet<TblArbeitsplatzZuteilung> TblArbeitsplatzZuteilungs { get; set; } = null!;
+        public virtual DbSet<TblAuftrag> TblAuftrags { get; set; } = null!;
+        public virtual DbSet<TblDummy> TblDummies { get; set; } = null!;
+        public virtual DbSet<TblEinstellTeil> TblEinstellTeils { get; set; } = null!;
+        public virtual DbSet<TblEinstellteileTran> TblEinstellteileTrans { get; set; } = null!;
+        public virtual DbSet<TblGrunddaten> TblGrunddatens { get; set; } = null!;
+        public virtual DbSet<TblHoliMask> TblHoliMasks { get; set; } = null!;
+        public virtual DbSet<TblMa> TblMas { get; set; } = null!;
+        public virtual DbSet<TblMaterial> TblMaterials { get; set; } = null!;
+        public virtual DbSet<TblMazu> TblMazus { get; set; } = null!;
+        public virtual DbSet<TblMessraum> TblMessraums { get; set; } = null!;
+        public virtual DbSet<TblMessraumAbarbeitung> TblMessraumAbarbeitungs { get; set; } = null!;
+        public virtual DbSet<TblMm> TblMms { get; set; } = null!;
+        public virtual DbSet<TblProjekt> TblProjekts { get; set; } = null!;
+        public virtual DbSet<TblProjektAnhang> TblProjektAnhangs { get; set; } = null!;
+        public virtual DbSet<TblRessKappa> TblRessKappas { get; set; } = null!;
+        public virtual DbSet<TblRessource> TblRessources { get; set; } = null!;
+        public virtual DbSet<TblRessourceVorgang> TblRessourceVorgangs { get; set; } = null!;
+        public virtual DbSet<TblVorgang> TblVorgangs { get; set; } = null!;
+        public virtual DbSet<UserRole> UserRoles { get; set; } = null!;
+        public virtual DbSet<UserWorkArea> UserWorkAreas { get; set; } = null!;
+        public virtual DbSet<WorkArea> WorkAreas { get; set; } = null!;
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -51,7 +50,7 @@ namespace Lieferliste_WPF.Data
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=DESKTOP-88O2DD0;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Trust Server Certificate=True;Command Timeout=300");
+                optionsBuilder.UseSqlServer("Data Source=DESKTOP-MEMDFDP\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Trust Server Certificate=True;Command Timeout=300");
             }
         }
 
@@ -59,22 +58,22 @@ namespace Lieferliste_WPF.Data
         {
             modelBuilder.Entity<Permission>(entity =>
             {
-                entity.HasKey(e => e.ValidKey)
-                    .HasName("PK_Permissions");
+                entity.HasKey(e => e.PKey);
 
                 entity.ToTable("Permission");
 
-                entity.Property(e => e.ValidKey)
-                    .HasMaxLength(50)
-                    .HasColumnName("validKey");
+                entity.Property(e => e.PKey)
+                    .HasMaxLength(15)
+                    .HasColumnName("pKey")
+                    .IsFixedLength();
 
-                entity.Property(e => e.Description).HasMaxLength(50);
+                entity.Property(e => e.Categorie).HasMaxLength(50);
+
+                entity.Property(e => e.Description).HasColumnType("ntext");
             });
 
             modelBuilder.Entity<PermissionRole>(entity =>
             {
-                entity.ToTable("PermissionRole");
-
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Created)
@@ -83,21 +82,22 @@ namespace Lieferliste_WPF.Data
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.PermissionKey)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("permissionKey");
+                    .HasMaxLength(15)
+                    .IsFixedLength();
 
-                entity.Property(e => e.RoleKey).HasColumnName("roleKey");
+                entity.Property(e => e.UserKey).HasMaxLength(255);
 
                 entity.HasOne(d => d.PermissionKeyNavigation)
                     .WithMany(p => p.PermissionRoles)
                     .HasForeignKey(d => d.PermissionKey)
-                    .HasConstraintName("FK_PermissionRole_Permissions");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionRoles_Permission");
 
                 entity.HasOne(d => d.RoleKeyNavigation)
                     .WithMany(p => p.PermissionRoles)
                     .HasForeignKey(d => d.RoleKey)
-                    .HasConstraintName("FK_PermissionRole_Roles");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PermissionRoles_Roles");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -867,55 +867,18 @@ namespace Lieferliste_WPF.Data
                     .HasConstraintName("FK_tblVorgang_tblArbeitsplatzSAP");
             });
 
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.HasKey(e => e.UserIdent)
-                    .HasName("PK_tblUserListe");
-
-                entity.ToTable("User");
-
-                entity.Property(e => e.UserIdent).HasMaxLength(255);
-
-                entity.Property(e => e.Exited).HasColumnName("exited");
-
-                entity.Property(e => e.InfoAnzeigen).HasColumnName("info_anzeigen");
-
-                entity.Property(e => e.Personalnumber).HasMaxLength(50);
-
-                entity.Property(e => e.UsrEmail)
-                    .HasMaxLength(50)
-                    .HasColumnName("usrEmail");
-
-                entity.Property(e => e.UsrGroup).HasColumnName("usrGroup");
-
-                entity.Property(e => e.UsrInfo).HasColumnName("usrInfo");
-
-                entity.Property(e => e.UsrName)
-                    .HasMaxLength(50)
-                    .HasColumnName("usrName");
-
-                entity.Property(e => e.UsrRegion).HasColumnName("usrRegion");
-            });
-
             modelBuilder.Entity<UserRole>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.RoleId).HasColumnName("RoleID");
 
-                entity.Property(e => e.UserIdent)
-                    .IsRequired()
-                    .HasMaxLength(255);
+                entity.Property(e => e.UserIdent).HasMaxLength(255);
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.UserRoles)
                     .HasForeignKey(d => d.RoleId)
                     .HasConstraintName("FK_UserRoles_Roles");
-
-                entity.HasOne(d => d.UserIdentNavigation)
-                    .WithMany(p => p.UserRoles)
-                    .HasForeignKey(d => d.UserIdent)
-                    .HasConstraintName("FK_UserRoles_User");
             });
 
             modelBuilder.Entity<UserWorkArea>(entity =>

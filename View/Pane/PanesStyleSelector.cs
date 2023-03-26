@@ -32,7 +32,7 @@
 
         public override System.Windows.Style SelectStyle(object item, System.Windows.DependencyObject container)
         {
-            if (item is OrderViewModel)
+            if (item is LieferViewModel)
                 return DocumentStyle;
 
             if (item is ToolViewModel)

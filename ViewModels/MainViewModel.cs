@@ -14,7 +14,7 @@ namespace Lieferliste_WPF.ViewModels
         public MainViewModel()
         {
             ViewModels= new ObservableCollection<Base.ViewModelBase>();
-            ViewModels.Add(new(Lieferliste_WPF.ViewModels.ToolCase));
+            //ViewModels.Add(new(Lieferliste_WPF.ViewModels.ToolCase));
         }
         public void add_ViewModel(Base.ViewModelBase viewModel)
         {

@@ -35,11 +35,11 @@ namespace Lieferliste_WPF.ViewModels
 
 
 
-                    foreach (Permission p in ctx.Permissions)
-                    {
-                        if (!PermissionsChecked.Any(x => x.ValidKey == p.ValidKey))
-                            PermissionsAvail.Add(p);
-                    }
+                    //foreach (Permission p in ctx.Permissions)
+                    //{
+                    //    if (!PermissionsChecked.Any(x => x.ValidKey == p.ValidKey))
+                    //        PermissionsAvail.Add(p);
+                    //}
                 }
             }
         }
@@ -85,10 +85,10 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     Roles.Add(p);
                 }
-                foreach (var u in ctx.Users.ToList())
-                {
-                    Users.Add(u);
-                }
+                //foreach (var u in ctx.Users.ToList())
+                //{
+                //    Users.Add(u);
+                //}
 
 
             }
@@ -109,12 +109,12 @@ namespace Lieferliste_WPF.ViewModels
         {
             using (var ctx = new DataContext())
             {
-                var pc = from p in ctx.PermissionRoles
-                         join r in ctx.Permissions on p.PermissionKey equals r.ValidKey
-                         where p.RoleKey == RoleIdent
-                         select p.PermissionKeyNavigation;
+                //var pc = from p in ctx.PermissionRoles
+                //         join r in ctx.Permissions on p.PermissionKey equals r.ValidKey
+                //         where p.RoleKey == RoleIdent
+                //         select p.PermissionKeyNavigation;
                 PermissionsChecked.Clear();
-                PermissionsChecked.AddRange(pc);
+               //PermissionsChecked.AddRange(pc);
             }
         }
     }

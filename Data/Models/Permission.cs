@@ -10,8 +10,9 @@ namespace Lieferliste_WPF.Data.Models
             PermissionRoles = new HashSet<PermissionRole>();
         }
 
-        public string ValidKey { get; set; }
-        public string Description { get; set; }
+        public string PKey { get; set; } = null!;
+        public string? Description { get; set; }
+        public string? Categorie { get; set; }
 
         public virtual ICollection<PermissionRole> PermissionRoles { get; set; }
     }

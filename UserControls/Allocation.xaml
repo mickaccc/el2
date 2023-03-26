@@ -105,7 +105,7 @@
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=OrderNumber}" >
                                             <TextBlock.InputBindings>
-                                                <MouseBinding Gesture="LeftDoubleClick" Command="{x:Static cmd:eLCommands.ShowOrderView}" CommandParameter="{Binding ElementName=lstMain,Path=SelectedItem}"/>
+                                                <MouseBinding Gesture="LeftDoubleClick" Command="{x:Static cmd:ELCommands.ShowOrderView}" CommandParameter="{Binding ElementName=lstMain,Path=SelectedItem}"/>
                                             </TextBlock.InputBindings>
                                 </TextBlock>
 

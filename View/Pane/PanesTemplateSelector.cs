@@ -43,7 +43,7 @@
         {
 
 
-            if (item is OrderViewModel)
+            if (item is LieferViewModel)
                 return OrderViewTemplate;
             if (item is DeliveryListViewModel)
                 return DeliveryListViewTemplate;

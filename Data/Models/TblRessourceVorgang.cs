@@ -7,15 +7,15 @@ namespace Lieferliste_WPF.Data.Models
     {
         public int Vgrid { get; set; }
         public int? Rid { get; set; }
-        public string Vid { get; set; }
+        public string? Vid { get; set; }
         public DateTime? Timestamp { get; set; }
-        public string Usr { get; set; }
+        public string? Usr { get; set; }
         public short? Spos { get; set; }
         public short? Kw { get; set; }
         public float? Korrect { get; set; }
         public DateTime? DateCalculated { get; set; }
 
-        public virtual TblRessource RidNavigation { get; set; }
-        public virtual TblVorgang VidNavigation { get; set; }
+        public virtual TblRessource? RidNavigation { get; set; }
+        public virtual TblVorgang? VidNavigation { get; set; }
     }
 }
