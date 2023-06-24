@@ -1,0 +1,122 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
+        xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
+        xmlns:lib="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+        xmlns:UserControls="clr-namespace:Lieferliste_WPF.UserControls"
+        x:Class="Lieferliste_WPF.View.Dialogs.UserEdit"
+        mc:Ignorable="d"
+        Title="UserEdit" Height="450" Width="800"  ShowInTaskbar="False" Topmost="True"
+        WindowStartupLocation="CenterOwner" WindowStyle="None" x:Name="USERWindow">
+    <Window.Resources>
+        <vm:UserViewModel x:Key="usrVM"/>
+        
+    </Window.Resources>
+
+    <Grid Margin="10,10,0,0" DataContext="{StaticResource usrVM}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="4">
+            <Menu DockPanel.Dock="Top" Height="23">
+                <MenuItem Header="_NeuerUser" Command="{Binding NewCommand }"/>
+                <MenuItem Header="_Speichern" Command="{Binding SaveCommand}"/>
+
+            </Menu>
+        </DockPanel>
+        <lib:HintTextBox x:Name="U01" Grid.Row="1" Grid.Column="0" TabIndex="0" HintText="Name der angezeigt werden soll" 
+                         ShowText="{Binding Users/UsrName, Mode=TwoWay,
+            UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+
+
+        <lib:HintTextBox x:Name="U02" Grid.Column="1" Grid.Row="1" HintText="User Ident lt. Windows"
+                         ShowText="{Binding Users/UserIdent, Mode=TwoWay}" TabIndex="1"/>
+        <lib:HintTextBox x:Name="U03" Grid.Row="2" Grid.Column="0" TabIndex="2" HintText="Personalnummer"
+                         ShowText="{Binding Users/Personalnumber, Mode=TwoWay}"/>
+        <lib:HintTextBox x:Name="U04" Grid.Row="3" Grid.Column="0" HintText="E-Mail"
+                         ShowText="{Binding Users/UsrEmail, Mode=TwoWay}" TabIndex="3" />
+
+ 
+        <ListBox x:Name="ListWork" Grid.Row="4" Grid.Column="1" ItemsSource="{Binding Wo}">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel MinWidth="150" InputScope="Default" >
+                        <CheckBox IsChecked="{Binding Check}" DockPanel.Dock="Left" Focusable="False"/>
+                        <TextBlock Text="{Binding Name}" DockPanel.Dock="Left"/>
+                    </DockPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox x:Name="ListUsers" Grid.Row="4" Grid.Column="0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Users}"
+                  SelectedIndex="0" SelectionChanged="ListUsers_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding UsrName}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="löschen" Command="{Binding DeleteCommand}">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/delete.jpg"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"
+                                           CommandParameter="{Binding SelectedItem, ElementName=ListUsers}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+        </ListBox>
+        <ListBox x:Name="ListRole" Grid.Row="4" Grid.Column="2" Grid.RowSpan="3" Grid.ColumnSpan="3" ItemsSource="{Binding Ro}" >
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Check}" Focusable="False"/>
+                        <TextBlock Text="{Binding Name}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox x:Name="ListCost" Grid.Row="4" Grid.Column="3" ItemsSource="{Binding Cost}" >
+ 
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Check}" Focusable="False"/>
+                        <TextBlock Text="{Binding Id}" Margin="2,0,5,0"/>
+
+                        <TextBlock Text="{Binding Name}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
+            <Button x:Name="btnNew" Content="Neuer Benutzer" Command="{Binding NewCommand}"/>
+            <Button x:Name="btnSave" Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,0,0,0" />
+            <Button x:Name="BtnCancel" Content="Abbrechen" Command="{Binding CloseCommand}"
+                    CommandParameter="{Binding ElementName=USERWindow}"  HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

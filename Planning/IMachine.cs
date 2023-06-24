@@ -10,7 +10,7 @@ namespace Lieferliste_WPF.Planning
         int RID { get; set; }
         bool isFilling { get; set; }
         bool isSelected { get; set; }
-        ObservableLinkedList<TblRessource> ProcessesLine { get; }
+        ObservableLinkedList<Ressource> ProcessesLine { get; }
         void addKappa(DateTime thisDate, Stripe thisStripe);
         double? addOrder(Process thisOrder);
     }

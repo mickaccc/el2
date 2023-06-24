@@ -1,16 +1,16 @@
 ﻿<Window
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
-    xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
-        xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-
+    xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
+    xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
+    xmlns:util="clr-namespace:Lieferliste_WPF.Utilities"
     mc:Ignorable="av"
     x:Class="Lieferliste_WPF.View.MainWindow"
  
         x:Name="mainWindow"
-        Title="MainWindow" Height="600" Width="1000">
+        Title="LieferListe El2" Height="600" Loaded="HandleMainWindowLoaded">
 
     <Window.Resources>
         <conv:PermissionConverter x:Key="permission"/>
@@ -26,36 +26,38 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="21"/>
         </Grid.RowDefinitions>
-        <DockPanel x:Name="MainPanel" Grid.Row="0"  Background="Black">
+        <DockPanel x:Name="MainPanel" Grid.Row="0" LastChildFill="True">
 
             <Image x:Name="image1" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/Bosch_Anker48.png" StretchDirection="Both" />
-
+            
             <Menu Height="23" x:Name="menubar" VerticalAlignment="Top" Margin="2,0" HorizontalAlignment="Left" DockPanel.Dock="Top">
+                
                 <MenuItem Header="eL² 4cos" HorizontalAlignment="Left" Padding="2" >
                     <MenuItem Header="Print" Command="ApplicationCommands.Print"/>
                 </MenuItem>
-                <MenuItem Header="Perspektiven">
-                    <ItemsControl>
-                        <!--<ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Content="{Binding Path=Name}" IsTabStop="False" Click="Perspective_Click" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>-->
-                    </ItemsControl>
-                </MenuItem>
+
                 <MenuItem Header="Teamleiterfunktionen">
-                    <MenuItem Header="Maschinenzuteilung" IsEnabled="{Binding ConverterParameter=res0010zut, Converter={StaticResource permission}}" />
+                    <MenuItem Header="Maschinenzuteilung" IsEnabled="{Binding ConverterParameter=MP00, Converter={StaticResource permission}}"
+                              Command="{Binding OpenMachinePlanCommand}"/>
                 </MenuItem>
-                <MenuItem Header="Einstellungen" /> <!--<Click="Settings_Click"/>-->
+                <MenuItem Header="Lieferliste" Command="{Binding OpenLieferlisteCommand}"/>
+                <MenuItem Header="Einstellungen" Command="{Binding OpenSettingsCommand}" />
+                <MenuItem Header="Adminfunktionen">
+                    <MenuItem Header="Usermanagment" Command="{x:Static cmd:ELCommands.ShowUserMgmt}">
+                        <MenuItem.Icon>
+                            <Image Height="30" Source="/Images/CircleFull32.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
 
                 <MenuItem Header="Hilfe" >
                     <MenuItem Header="About" /> <!-- Click="About_Click"/>-->
                     <MenuItem Header="OrderView" Command="{Binding ShowOrderView, Mode=OneWay, Source={StaticResource elCmd}}"/>
                     <MenuItem Header="Archiv" Command="{Binding ShowArchive, Mode=OneWay, Source={StaticResource elCmd}}"/>
-
                 </MenuItem>
-
             </Menu>
+            <TextBlock DockPanel.Dock="Right" Text="{Binding UsrName, Source={x:Static util:AppStatic.User}}" Background="PaleGoldenrod" Padding="5"/>
+           
             <ToolBarTray Height="26">
                 <ToolBarTray.Resources>
                     <SolidColorBrush x:Key="brushWatermarkBackground" Color="White" />
@@ -86,7 +88,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Margin="5,2" Text="Suche nach..." Foreground="{StaticResource brushWatermarkForeground}" x:Name="txtHint" TextAlignment="Center" Grid.Column="0" />
                         <TextBox x:Name="txtSearch" Background="Transparent" BorderBrush="{StaticResource brushWatermarkBorder}" HorizontalAlignment="Left"  Width="120" Grid.Column="0" ForceCursor="True" />
-                        <ComboBox Height="23" x:Name="cmbFields" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding FilterArg, Mode=OneWayToSource}" >
+                        <ComboBox Height="23" x:Name="cmbFields" Grid.Column="1" HorizontalAlignment="Left"  >
                             <ComboBoxItem Content="alle" IsSelected="True" />
                             <ComboBoxItem Content="TTNR" Tag="Material" />
                             <ComboBoxItem Content="Teil" Tag="MaterialDescription" />
@@ -138,7 +140,7 @@
                         <Button Grid.Column="0" Height="23" HorizontalAlignment="Right" x:Name="btnClearProj" VerticalAlignment="Top" IsManipulationEnabled="False" Margin="0,3,0,0" >
                             <Image Source="/Images/eraser.png" Stretch="Uniform" ClipToBounds="True" />
                         </Button>
-                        <ComboBox Height="23" x:Name="cmbKst" Grid.Column="1" MinWidth="120" Margin="0,0,22,0" DisplayMemberPath="Bereich" SelectedValuePath="Bereich"  ItemsSource="{Binding}" />
+                        <ComboBox Height="23" x:Name="cmbKst" Grid.Column="1" MinWidth="120" Margin="0,0,22,0"  />
                         <TextBlock Margin="2,2,40,2" Text="Kostenstellen..." Grid.Column="1"
                                Foreground="{StaticResource brushWatermarkForeground}" 
                                IsHitTestVisible="False" 
@@ -171,13 +173,27 @@
             </ToolBarTray>
 
         </DockPanel>
-        <TabControl x:Name="TbControl" Grid.Row="1" >
-
-            <TabItem Header="TabItem">
-                <Frame Source="/View/Lieferliste.xaml"/>
-            </TabItem>
+        <TabControl x:Name="TbControl" Grid.Row="1" AllowDrop="True" ItemsSource="{Binding TabTitles}">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="AllowDrop" Value="True"/>
+                    <EventSetter Event="PreviewMouseMove" Handler="TabItem_Drag"/>
+                    <EventSetter Event="Drop" Handler="TabItem_Drop"/>
+                </Style>
+                <Style TargetType="TabControl">
+                    <EventSetter Event="DragLeave" Handler="TabControl_Leave"/>
+                    
+                </Style>
+            </TabControl.Resources>
+            
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Frame Content="{Binding}"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
 
         </TabControl>
+
 
     </Grid>
 </Window>

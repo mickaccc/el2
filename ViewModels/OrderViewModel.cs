@@ -25,7 +25,7 @@ namespace Lieferliste_WPF.ViewModels
             _order = _db.TblAuftrags
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)
-                .Include(v => v.TblVorgangs)
+                .Include(v => v.Vorgangs)
                 .Where(o => o.Aid  == AID)
                 .ToList();
             Order = _order;

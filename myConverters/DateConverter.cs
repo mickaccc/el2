@@ -8,11 +8,12 @@ namespace Lieferliste_WPF.myConverters
     [ValueConversion(typeof(DateTime), typeof(String))]
     public class DateConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
 
             try
             {
+                var v = value;
                 if (value == DBNull.Value) return null;
                 DateTime date = (DateTime)value;
                 return date.ToString("ddd, dd.MM.yyyy");

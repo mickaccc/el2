@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Lieferliste_WPF.UserControls.BulletedItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Lieferliste_WPF.UserControls"
+             mc:Ignorable="d" DataContext="{Binding}" x:Name="BulletItem">
+
+
+    <Grid >
+        <ItemsControl >
+            <BulletDecorator Width="Auto" >
+                <BulletDecorator.Bullet>
+                    <Ellipse Stroke="Black" StrokeThickness="1" Width="15" Height="15">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="{Binding BulletColor, ElementName=BulletItem}"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </BulletDecorator.Bullet>
+                <TextBlock Text="{Binding BulletText, ElementName=BulletItem}" />
+            </BulletDecorator>
+        </ItemsControl>
+    </Grid>
+</UserControl>

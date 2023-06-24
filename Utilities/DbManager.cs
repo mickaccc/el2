@@ -20,7 +20,7 @@ namespace Lieferliste_WPF.Utilities
             return _instance;
         }
 
-        public TblVorgang? GetVorgangSelect(string vid)
+        public Vorgang? GetVorgangSelect(string vid)
         {
             return null;
         }

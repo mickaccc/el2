@@ -4,22 +4,105 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Lieferliste_WPF.View"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:UserControls="clr-namespace:Lieferliste_WPF.UserControls"
-    xmlns:ViewModels="clr-namespace:Lieferliste_WPF.ViewModels"
+    xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
-    xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+    xmlns:utils="clr-namespace:Lieferliste_WPF.Utilities"
+    xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
+    xmlns:System="clr-namespace:System;assembly=System.Runtime" 
+    xmlns:WpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    x:Name="lieferListe"
     x:Class="Lieferliste_WPF.View.Lieferliste"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="Lieferliste">
+      d:DesignHeight="450"
+      Title="Lieferliste" Width="1399" Loaded="lieferListe_Loaded">
+    <Page.Resources>
+        <conv:DateConverter x:Key="DateConverter"/>
+        <conv:TTNR_Converter x:Key="TTNR-Converter"/>
+        <conv:FillZerosConverter x:Key="Fill-Converter"/>
+        <conv:PermissionConverter x:Key="Permission"/>
+        <conv:KW_Converter x:Key="KW-Converter"/>
+        <vm:LieferViewModel x:Key="LieferViewModel" />
 
-    <Grid x:Name="LieferGrid">
-        <ListView x:Name="Lieferlist" ItemsSource="{Binding}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <UserControls:LieferlisteControl Background="Bisque" DataContext="{Binding Mode=OneWay}"/>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListView>
+
+    </Page.Resources>
+    <Grid DataContext="{Binding Mode=OneWay, Source={StaticResource LieferViewModel}}" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <DockPanel LastChildFill="False">
+            <DockPanel.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF383636"/>
+                    <GradientStop Color="#FFE60B0B" Offset="1"/>
+                </LinearGradientBrush>
+            </DockPanel.Background>
+            <Button Content="Speichern" Command="{Binding SaveCommand}"/>
+            <WpfCustomControlLibrary:ClearableHintTextBox x:Name="searchBox" Width="1000"
+                                                          ClHintText="suchen in Auftragsnr, TTNR, Materialtext"
+                                                          Margin="10,0,0,0" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <i:InvokeCommandAction Command="{Binding TextSearchCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </WpfCustomControlLibrary:ClearableHintTextBox>
+            <StackPanel Orientation="Horizontal"  DockPanel.Dock="Right" Background="DarkBlue" TextElement.Foreground="Beige"
+                        TextElement.FontSize="20">
+                <TextBlock Text="Anzahl Vorgänge:" Margin="5,0,5,0"
+                   AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
+                <TextBlock x:Name="Count"  Width="auto"
+                           Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
+            </StackPanel>
+        </DockPanel>
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl x:Name="Lieferlist"
+                          Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                          ItemsSource="{Binding OrdersView , Source={StaticResource LieferViewModel}}"
+                          ScrollViewer.CanContentScroll="True"  >
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border CornerRadius="5" BorderBrush="Black" Background="LightGreen" BorderThickness="1" Margin="2" >
+                            <StackPanel Height="100">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand, Source={StaticResource LieferViewModel}}" />
+                                        <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand, Source={StaticResource LieferViewModel}}"
+                                                  />
+                                        <!--CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.InputBindings}"/>-->
+                                        <MenuItem Header="RTB" Command="{Binding ShowRtbEditor, Source={StaticResource LieferViewModel}}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
+                                <UserControls:LieferlisteControl x:Name="ucLiefer" 
+                            Aid="{Binding Aid}"
+                            MatText="{Binding MaterialNavigation.Bezeichng}"
+                            TTNR="{Binding Material}"
+                            EndDate="{Binding Eckende}" 
+                            Vnr="{Binding Vorgangs/Vnr}" 
+                            Quantity="{Binding Quantity}" 
+                            QuantityYield="{Binding Vorgangs/QuantityYield}" 
+                            QuantityScrap="{Binding Vorgangs/QuantityScrap}" 
+                            VgText="{Binding Vorgangs/Text}"
+                            WorkArea="{Binding Vorgangs/ArbPlSap}"
+                            WorkAreaText="{Binding Vorgangs/ArbPlSapNavigation.WorkSapId}"
+                            Comment_Me="{Binding Vorgangs/BemM, Mode=TwoWay}"
+                            Comment_Te="{Binding Vorgangs/BemT, Mode=TwoWay}"
+                            Comment_Ma="{Binding Vorgangs/BemMa, Mode=TwoWay}"
+                            Invisible="{Binding Vorgangs/Ausgebl, Mode=TwoWay}"
+                            Doku="{Binding Mappe, Mode=TwoWay}"
+                            Archivated="{Binding Abgeschlossen, Mode=TwoWay}"
+                            HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource LieferViewModel}}"/>
+                                
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Page>

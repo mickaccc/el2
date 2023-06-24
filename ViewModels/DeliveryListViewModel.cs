@@ -29,7 +29,7 @@ namespace Lieferliste_WPF.ViewModels
         /// <summary>
         /// Collection of Processes
         /// </summary>
-        public ObservableCollection<TblVorgang> Processes { get; private set; }
+        public ObservableCollection<Vorgang> Processes { get; private set; }
         //public List<OrderList_Result> OrderDetails { get; private set; }
         private String _selectedOrder;
         private ICollectionView _processCV;

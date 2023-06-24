@@ -17,7 +17,7 @@ namespace Lieferliste_WPF.ViewModels
         public ObservableList<Role> RolesAvail { get; private set; }
         private int _roleIdent = 0;
         private readonly string _userIdent;
-        private DataContext _db = new DataContext();
+        private DataContext _db = new();
 
 
 
@@ -52,7 +52,7 @@ namespace Lieferliste_WPF.ViewModels
             get { return _userIdent; }
             set
             {
-                RaisePropertyChanged("UserIdent");
+                RaisePropertyChanged(nameof(UserIdent));
                 reLoadRolesChecked();
                 RolesAvail.Clear();
 
@@ -78,32 +78,28 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void LoadData()
         {
-            using (var ctx = new DataContext())
+            
+            foreach (var p in _db.Roles.ToList())
             {
-
-                foreach (var p in ctx.Roles.ToList())
-                {
-                    Roles.Add(p);
-                }
-                //foreach (var u in ctx.Users.ToList())
-                //{
-                //    Users.Add(u);
-                //}
-
-
+                Roles.Add(p);
             }
+            //foreach (var u in ctx.Users.ToList())
+            //{
+            //    Users.Add(u);
+            //}
+
+
         }
         private void reLoadRolesChecked()
         {
-            using (var ctx = new DataContext())
-            {
-                var ur = from u in ctx.UserRoles
-                         join r in ctx.Roles on u.RoleId equals r.Id
+
+                var ur = from u in _db.UserRoles
+                         join r in _db.Roles on u.RoleId equals r.Id
                          where u.UserIdent == UserIdent
                          select u.Role;
                 RolesChecked.Clear();
-                RolesChecked.AddRange(ur);
-            }
+                //RolesChecked.AddRange(TblVorgang: ur);
+            
         }
         private void reloadPermissionChecked()
         {

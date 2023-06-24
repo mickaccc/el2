@@ -4,5 +4,6 @@
              StartupUri="View\MainWindow.xaml">
     <Application.Resources>
     <ZoomPercentageConverter x:Key="ZoomPercentageConverter2" />
+        
     </Application.Resources>
 </Application>

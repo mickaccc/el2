@@ -16,26 +16,261 @@ using Microsoft.Data.SqlClient;
 using System.Data.SqlTypes;
 using Microsoft.EntityFrameworkCore;
 using Remotion.Linq.Collections;
+using System.Collections.Immutable;
+using System.ComponentModel;
+using System.Windows.Data;
+using Lieferliste_WPF.Commands;
+using System.Windows;
+using Lieferliste_WPF.View;
+using System.Diagnostics;
+using Lieferliste_WPF.UserControls;
+using System.DirectoryServices;
+using System.Text;
+using System.Windows.Navigation;
+using Microsoft.IdentityModel.Tokens;
+using System.Windows.Input;
+using System.Windows.Controls;
+using Microsoft.VisualBasic;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class LieferViewModel : Base.ViewModelBase, IDisposable
+    class LieferViewModel : Base.ViewModelBase
     {
 
-        public String? Title { get; private set; }
-        public String? Material { get; private set; }
-        public String? MaterialDescription { get; private set; }
-        public int? Quantity { get; private set; }
-        public String? sysStatus { get; private set; }
-        private List<TblDummy> _dummys = new();
+
         private IDialogProvider DialogProvider { get; set; }
-        private static IEnumerable _orders;
-        public IEnumerable Orders { get; private set; }
-        private static List<TblVorgang> _processes => new();
+        public ICollectionView OrdersView { get { return ordersViewSource.View; } }
+        public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
+
+
+
+        private ObservableCollection<TblAuftrag> _orders { get; set; }
+        public ActionCommand SortAscCommand { get; private set; }
+        public ActionCommand SortDescCommand { get; private set; }
+        public ActionCommand ShowRtbEditor { get; private set; }
+        public ActionCommand SaveCommand { get; private set; }
+
+        public String HasMouse { get; set; }
+        private static bool isLoaded = false;
+        private Dictionary<String, String> _filterCriterias;
+        private String _sortField;
+        private String _sortDirection;
+        private RelayCommand textSearchCommand;
+        private string _searchFilterText;
+        internal CollectionViewSource ordersViewSource {get; private set;} = new();
         private readonly DataContext _db = new();
-        public LieferViewModel()
-        { Initialize(); }
-        private void Initialize()
+    public LieferViewModel()
+        {
+            LoadData();
+            //var collectionWrapper = new ObservableCollectionWrapper<object>(collection, this.Dispatcher);
+            //var defaultView = CollectionViewSource.GetDefaultView(collectionWrapper);
+            //OrdersView = CollectionViewSource.GetDefaultView(_orders);
+            //OrdersView.MoveCurrentToFirst();
+            ordersViewSource.Filter += OrdersView_Filter;
+            ordersViewSource.Source = _orders;
+            _filterCriterias = new();
+            
+            SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
+            SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
+            ShowRtbEditor = new ActionCommand(OnShowRtbEditorExecuted, OnSchowRtbEditorCanExecute);
+            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+
+            //addFilterCriteria("Ausgebl", "false");
+        }
+
+        private void OrdersView_Filter(object sender, FilterEventArgs e)
+        {
+            TblAuftrag ord = (TblAuftrag)e.Item;
+
+                e.Accepted = true;
+            String mat = (ord.Material != null) ? ord.Material.ToString() : String.Empty;
+            String matText = String.Empty;
+            if (ord.MaterialNavigation != null)
+            {
+                matText = (ord.MaterialNavigation.Bezeichng != null) ? ord.MaterialNavigation.Bezeichng.ToString() : String.Empty;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_searchFilterText))
+            {
+                if (ord.Aid.ToUpper().Contains(_searchFilterText.ToUpper()) ||
+                    mat.ToUpper().Contains(_searchFilterText.ToUpper()) ||
+                    matText.ToUpper().Contains(_searchFilterText.ToUpper()))
+                {
+                    e.Accepted = true;
+                }
+                else e.Accepted = false;
+            }
+            else e.Accepted = true;
+
+        }
+
+        public string ToolTip
+        {
+            get
+            {
+                var toolTip = new StringBuilder();
+                if (_filterCriterias.Count > 0)
+                {
+                    toolTip.Append("gefiltert:\n");
+                    foreach (KeyValuePair<String, String> c in _filterCriterias)
+                    {
+                        toolTip.Append(c.Key).Append(" = ").Append(c.Value).Append("\n");
+                    }
+                }
+                if (_sortField != string.Empty)
+                {
+                    toolTip.Append("sortiert nach:\n").Append(_sortField).Append(" / ").Append(_sortDirection);
+                }
+
+                return toolTip.ToString();
+            }
+        }
+        public override void addFilterCriteria(string PropertyName, string CriteriaValue)
+        {
+            int repeat = 0;
+
+            if (PropertyName == "alle") repeat = 3;
+
+            do
+            {
+                switch (repeat)
+                {
+                    case 3: PropertyName = "TTNR"; break;
+                    case 2: PropertyName = "Teil"; break;
+                    case 1: PropertyName = "Auftrag"; break;
+                }
+                repeat--;
+                if (PropertyName == "TTNR") PropertyName = "Material";
+                if (PropertyName == "Teil") PropertyName = "Teil";
+                if (PropertyName == "Auftrag") PropertyName = "AID";
+                if (_filterCriterias.ContainsKey(PropertyName))
+                {
+                    _filterCriterias[PropertyName] = CriteriaValue;
+                }
+                else
+                {
+                    _filterCriterias.Add(PropertyName, CriteriaValue);
+                }
+
+            } while (repeat > 0);
+
+            RaisePropertyChanged("ToolTip");
+            OrdersView.Refresh();
+        }
+
+        private void OnTextSearch(object commandParameter)
+        {
+            if (commandParameter is TextChangedEventArgs change)
+            {
+                TextBox tb = (TextBox)change.OriginalSource;
+
+                _searchFilterText = tb.Text;
+                var uiContext = SynchronizationContext.Current;
+                uiContext.Send(x => ordersViewSource.View.Refresh(), null);
+            }
+        }
+        public override void removeFilterCriteria(string PropertyName)
+        {
+            _filterCriterias.Remove(PropertyName);
+            RaisePropertyChanged("ToolTip");
+            OrdersView.Refresh();
+
+        }
+        private void OnSaveExecuted(object obj)
+        {
+            _db.SaveChanges();
+        }
+
+        private bool OnSaveCanExecute(object arg)
+        {
+            return _db.ChangeTracker.HasChanges();
+        }
+
+        private bool OnSchowRtbEditorCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnShowRtbEditorExecuted(object obj)
+        {
+            RichTextEditor w = new RichTextEditor();
+            
+            w.Show();
+        }
+
+        bool OnDescSortCanEcecute(object parameter)
+        { 
+            return !HasMouse.IsNullOrEmpty();
+
+        }
+
+        private void OnDescSortExecuted(object parameter)
+        {
+
+            if (OrdersView != null)
+            {
+                string v = Translate();
+
+
+                if (v != String.Empty)
+                {
+                    
+                    ordersViewSource.SortDescriptions.Clear();
+                    ordersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Descending));
+                    var uiContext = SynchronizationContext.Current;
+                    uiContext.Send(x => ordersViewSource.View.Refresh(), null);
+                }
+            }
+        }
+
+        private bool OnAscSortCanExecute(object parameter)
+        {
+
+            return !HasMouse.IsNullOrEmpty();
+        
+        }
+
+        private void OnAscSortExecuted(object parameter)
+        {
+            if (OrdersView != null)
+            {
+                string v = Translate();
+
+
+                if (v != String.Empty)
+                {
+                    ordersViewSource.SortDescriptions.Clear();
+                    ordersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
+                    var uiContext = SynchronizationContext.Current;
+                    uiContext.Send(x => ordersViewSource.View.Refresh(), null);
+                }
+            }
+        }
+        private string Translate()
+        {
+            string v = HasMouse switch
+            {
+                "txtOrder" => "Aid",
+                "txtVnr" => "Vorgangs.Vnr",
+                "txtMatText" => "MaterialNavigation.Bezeichng",
+                "txtMatTTNR" => "Material",
+                "txtVrgText" => "Vorgangs.Text",
+                "txtPlanT" => "Termin",
+                "txtProj" => "ProId",
+                "txtPojInfo" => "ProInfo",
+                "txtQuant" => "Quantity",
+                "txtWorkArea" => "Vorgangs.ArbplSap",
+                "txtQuantYield" => "Vorgangs.QuantityYield",
+                "txtScrap" => "Vorgangs.QuantityScrap",
+                "txtOpen" => "Vorgangs.QuantityMiss",
+                "txtRessTo" => "Vorgangs.RidNavigation.RessName",
+                _ => String.Empty,
+            };
+            
+            return v;
+            
+        }
+        private void LoadData()
         {
 
             try
@@ -43,124 +278,22 @@ namespace Lieferliste_WPF.ViewModels
                 _orders = _db.TblAuftrags
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)
-                .Include(v => v.TblVorgangs.Where(x => x.Aktuell))
+                .Include(v => v.Vorgangs.Where(v => v.Aktuell))
+                .ThenInclude(a => a.ArbPlSapNavigation)
                     .ToObservableCollection();
-
-                Orders = _orders;
+                
+                
             }
             catch (DataException e)
             {
                 DialogProvider.ErrorMessage("ERROR on load Data: " + e.ToString());
             }
-            catch(SqlNullValueException e)
+            catch (SqlNullValueException e)
             {
                 DialogProvider.ErrorMessage("ERROR on load Data: " + e.ToString());
-            }
-
+            }           
+            isLoaded = true;
         }
-
-        private ObservableCollection<dynamic> IEnumeratorToObservableCollection(IEnumerable source)
-        {
-
-            ObservableCollection<dynamic> SourceCollection = new ObservableCollection<dynamic>();
-
-            IEnumerator enumItem = source.GetEnumerator();
-            var gType = source.GetType();
-            string collectionFullName = gType.FullName;
-            Type[] genericTypes = gType.GetGenericArguments();
-            string className = genericTypes[0].Name;
-            string classFullName = genericTypes[0].FullName;
-            string assName = (classFullName.Split('.'))[0];
-
-            // Get the type contained in the name string
-            Type type = Type.GetType(classFullName, true);
-
-            // create an instance of that type
-            object instance = Activator.CreateInstance(type);
-            List<PropertyInfo> oProperty = instance.GetType().GetProperties().ToList();
-            while (enumItem.MoveNext())
-            {
-
-                Object instanceInner = Activator.CreateInstance(type);
-                var x = enumItem.Current;
-
-                foreach (var item in oProperty)
-                {
-                    if (x.GetType().GetProperty(item.Name) != null)
-                    {
-                        var propertyValue = x.GetType().GetProperty(item.Name).GetValue(x, null);
-                        if (propertyValue != null)
-                        {
-                            PropertyInfo prop = type.GetProperty(item.Name);
-                            prop.SetValue(instanceInner, propertyValue, null);
-                        }
-                    }
-                }
-
-                SourceCollection.Add(instanceInner);
-            }
-
-            return SourceCollection;
-        }
-
-        public void LoadData()
-        {
-
-            try
-            {
-                //var ord = (from o in _db.TblAuftrags
-                //           join mat in _db.TblMaterials on o.Material equals mat.Ttnr
-                //           join v in _db.TblVorgangs on o.Aid equals v.Aid
-                //           select new {o, mat, v})
-                //        .GroupBy(x => x.o.Aid);
-
-                //List<TblVorgang> proc= new List<TblVorgang>();
-                //if (ord.Any())
-                //{
-                    
-                //    foreach (var entry in ord)
-                //    {
-
-
-                        
-                //        _orders.Add(entry.First(x => x.o) as TblAuftrag);
-                        
-
-                //        //var ordpro = _db.TblVorgangs.Where(x => x.Aid == entry.o.Aid);
-                //        //_processes.AddRange(ordpro);
-
-                //    }
-                //}
-            }
-            catch (DataException e)
-            {
-
-                DialogProvider.ErrorMessage("ERROR on load Data: " + e.ToString());
-            }
-            catch(SqlNullValueException e)
-            {
-                DialogProvider.ErrorMessage("ERROR on load Data: " + e.ToString());
-            }
-
-        }
-
-       
-        public IEnumerable Get_Orders()
-        {
-
-                var orde = _db.TblAuftrags
-                .Include(m => m.MaterialNavigation)
-                .Include(d => d.DummyMatNavigation)
-                .Include(v => v.TblVorgangs)
-                .Where(x => x.Aid == "2100786672")
-                    .ToObservableCollection();
-
-            return orde;
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

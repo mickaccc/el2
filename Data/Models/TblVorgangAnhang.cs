@@ -21,5 +21,5 @@ public partial class TblVorgangAnhang
 
     public bool Aktuell { get; set; }
 
-    public virtual TblVorgang? VidNavigation { get; set; }
+    public virtual Vorgang? VidNavigation { get; set; }
 }

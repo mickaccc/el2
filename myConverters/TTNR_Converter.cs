@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 
@@ -12,6 +13,7 @@ namespace Lieferliste_WPF.myConverters
         {
             if (value == null) return value;
             String strVal = (value as String).Trim();
+
             Regex regex = new Regex("([a-zA-Z0-9]{4})([a-zA-Z0-9]{3})([a-zA-Z0-9]{3})([a-zA-Z0-9]*)");
             Match match = regex.Match(strVal);
             if (match.Success)

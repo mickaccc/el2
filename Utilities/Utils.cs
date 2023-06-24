@@ -5,7 +5,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-
+using System.Windows;
+using System.Windows.Media;
 
 namespace Lieferliste_WPF.Utilities
 {
@@ -765,5 +766,19 @@ namespace Lieferliste_WPF.Utilities
             return new ObservableCollection<T>(en);
         }
     }
+    //public static T GetChildOfType<T>(this DependencyObject depObj)
+    //where T : DependencyObject
+    //{
+    //    if (depObj == null) return null;
+
+    //    for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+    //    {
+    //        var child = VisualTreeHelper.GetChild(depObj, i);
+
+    //        var result = (child as T) ?? GetChildOfType<T>(child);
+    //        if (result != null) return result;
+    //    }
+    //    return null;
+    //}
 
 }

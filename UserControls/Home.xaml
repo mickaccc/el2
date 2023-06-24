@@ -20,5 +20,6 @@
                 <GradientStop Color="White" Offset="1" />
             </LinearGradientBrush>
         </Grid.Background>
+        
     </Grid>
 </UserControl>

@@ -1,4 +1,5 @@
-﻿using Lieferliste_WPF.Utilities;
+﻿using Azure.Core;
+using Lieferliste_WPF.Utilities;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -10,9 +11,19 @@ namespace Lieferliste_WPF.myConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return PermissionsManager.getInstance("mgsch").getUserPermission((String)parameter);
+            
+            String p = (string)parameter;
+            if (p.StartsWith("!"))
+            { 
+                p = p[1..];
+                return !PermissionsProvider.GetInstance().GetUserPermission(p);
+            }
+            else 
+            {
+                return PermissionsProvider.GetInstance().GetUserPermission(p);
+            }
         }
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
         }

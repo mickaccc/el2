@@ -1,6 +1,4 @@
-﻿
-using Lieferliste_WPF.Planning;
-using Lieferliste_WPF.ViewModels.Base;
+﻿using Lieferliste_WPF.ViewModels.Base;
 using Lieferliste_WPF.Working;
 using Lieferliste_WPF.Utilities;
 using System;
@@ -9,8 +7,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Lieferliste_WPF.ViewModels.Support;
 using Lieferliste_WPF.Data.Models;
+using Lieferliste_WPF.ViewModels;
 
-namespace Lieferliste_WPF.ViewModels
+namespace Lieferliste_WPF.Planning
 {
     class InternalMachine : ViewModelBase, IMachine
     {
@@ -34,7 +33,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public ObservableLinkedList<TblRessource> ProcessesLine
+        public ObservableLinkedList<Ressource> ProcessesLine
         { get; internal set; }
 
         public List<ActionStripe> getActionStripes(DateTime date)
@@ -61,7 +60,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             MachineViewModel = new MachineViewModel();
             WorkingWeeks = new ObservableCollection<WorkingWeek>();
-            ProcessesLine = new ObservableLinkedList<TblRessource>();
+            ProcessesLine = new ObservableLinkedList<Ressource>();
 
         }
 
@@ -142,7 +141,7 @@ namespace Lieferliste_WPF.ViewModels
             //    dt = preOrder.Value.ActionStripes.Last().Date;
             //}
             bool ret = PlannerTools.Reorganize(ref _workingLine);
- 
+
             return ret;
 
         }

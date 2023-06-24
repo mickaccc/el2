@@ -7,6 +7,7 @@ namespace Lieferliste_WPF.Commands
     {
         private readonly Action<object> _executeHandler;
         private readonly Func<object, bool> _canExecuteHandler;
+
         public ActionCommand(Action<object> execute, Func<object, bool> canExecute)
         {
             if (execute == null)
@@ -14,6 +15,7 @@ namespace Lieferliste_WPF.Commands
             _executeHandler = execute;
             _canExecuteHandler = canExecute;
         }
+
 
         public event EventHandler CanExecuteChanged
         {

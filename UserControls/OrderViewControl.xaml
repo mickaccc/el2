@@ -28,7 +28,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid Name="InfoBar" Background="#FF7FD87F" DataContext="{Binding}">
-            <TextBox Height="23" Margin="69,6,0,0" Name="txtAuftr" VerticalAlignment="Top" Text="{Binding Path=Aid, Mode=OneWay}" HorizontalAlignment="Left" MinWidth="120" AutomationProperties.HelpText="Auftragsnummer" />
+            <TextBox Height="23" Margin="69,6,0,0" Name="txtAuftr" VerticalAlignment="Top" Text="{Binding Aid, Converter={StaticResource TTNR_Converter1}, Mode=OneWay}" HorizontalAlignment="Left" MinWidth="120" AutomationProperties.HelpText="Auftragsnummer" />
             <Label Content="Auftrag" Height="23" HorizontalAlignment="Left" Margin="3,6,0,0" VerticalAlignment="Top" Width="55" Padding="3" />
             <Label Content="Material" Height="28" HorizontalAlignment="Left" Margin="0,36,0,0" VerticalAlignment="Top" />
             <TextBox Height="23" HorizontalAlignment="Left" Margin="69,38,0,0" Name="txtTTNR" VerticalAlignment="Top" Text="{Binding Path=Material, Converter={StaticResource TTNR_Converter1}, Mode=OneWay}" MinWidth="120" AutomationProperties.HelpText="Typ Teile Nummer" />
@@ -90,7 +90,7 @@
             <TextBox Text="Bemerkung Teamleiter" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" Grid.Column="8" Grid.RowSpan="2" IsReadOnly="True" />
             <TextBox HorizontalAlignment="Stretch" Text="Bemerkung Mitarbeiter" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="9" Grid.RowSpan="2" IsReadOnly="True" />
         </Grid>
-        <ListBox HorizontalAlignment="Left" Name="listBox1" VerticalAlignment="Top" ItemsSource="{Binding Path=TblVorgangs }" Grid.Row="3">
+        <ListBox HorizontalAlignment="Left" Name="listBox1" VerticalAlignment="Top" ItemsSource="{Binding Path=TblVorgangs }" Grid.Row="3" ScrollViewer.CanContentScroll="True">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
