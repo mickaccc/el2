@@ -54,7 +54,7 @@
             <TextBox Text="{Binding Description}" DockPanel.Dock="Bottom" FontSize="20" Background="Transparent"/>
             
         </DockPanel>
-        <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding Processes}" AutoGenerateColumns="False"
+        <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding ProcessesCV}" AutoGenerateColumns="False"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" IsSynchronizedWithCurrentItem="True"
                   dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" SelectionMode="Single" SelectionUnit="CellOrRowHeader"
                   dd:DragDrop.IsDropTarget="True"

@@ -50,7 +50,7 @@
                          
             </Grid>
         </Border>
-        <DataGrid x:Name="Planed" ItemsSource="{Binding Processes}"  AutoGenerateColumns="False" Grid.Row="1" CanUserSortColumns="False"
+        <DataGrid x:Name="Planed" ItemsSource="{Binding ProcessesCV}"  AutoGenerateColumns="False" Grid.Row="1" CanUserSortColumns="False"
                   RowDetailsVisibilityMode="VisibleWhenSelected" CanUserAddRows="False" CanUserDeleteRows="False"
                   IsSynchronizedWithCurrentItem="True"
                   dd:DragDrop.IsDragSource="True"

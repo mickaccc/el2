@@ -81,7 +81,7 @@
             </ItemsControl>
         </ScrollViewer>
         <Border Grid.Column="1" Grid.Row="0" BorderBrush="IndianRed" BorderThickness="2" Grid.RowSpan="2">
-            <ListBox ItemsSource="{Binding Parking}" x:Name="parking"
+            <ListBox ItemsSource="{Binding ParkingCV}" x:Name="parking"
                      dd:DragDrop.IsDragSource="True"
                      dd:DragDrop.IsDropTarget="True"
                      dd:DragDrop.DropHandler="{Binding}">

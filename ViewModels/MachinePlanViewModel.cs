@@ -30,22 +30,21 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand SelectionChangeCommand => selectionChangeCommand ??= new RelayCommand(SelectionChange);
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
-
-
         public ICommand SaveCommand { get; private set; }
   
         public List<WorkArea> WorkAreas { get; private set; }
         public List<PlanMachine> Machines { get; private set; }
-        private ObservableCollection<Vorgang> Processes { get; set; }
-        public ObservableCollection<Vorgang> Parking { get; set; }
-        private List<dynamic> _processesAll = new();
+        private ObservableCollection<Vorgang> Priv_processes { get; set; }
+        private ObservableCollection<Vorgang> Priv_parking { get; set; }
+        
         private readonly ICollectionView _ressCV;
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
-        private readonly ICollectionView _parkingCV;
+        public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         static readonly DataContext _db = new();
         private string _masterFilterText = "";
         private string _searchFilterText = "";
         internal CollectionViewSource ProcessViewSource { get; private set; } = new();
+        internal CollectionViewSource ParkingViewSource { get; private set; } = new();
  
         public MachinePlanViewModel() 
         {
@@ -56,13 +55,12 @@ namespace Lieferliste_WPF.ViewModels
             LoadData();
             _ressCV = CollectionViewSource.GetDefaultView(Machines);
             _ressCV.Filter = f => (f as PlanMachine).WorkArea.WorkAreaId == WorkAreas.First().WorkAreaId;
-            _ressCV.MoveCurrentToFirst();
-            CollectionViewSource cvs = new();
+            _ressCV.MoveCurrentToFirst();           
+            ProcessViewSource.Source = Priv_processes;
             ProcessViewSource.Filter += ProcessCV_Filter;
-            ProcessViewSource.Source = Processes;
-                   
-            _parkingCV = CollectionViewSource.GetDefaultView(Parking);
-            _parkingCV.Filter = f => (f as Vorgang).ArbPlSapNavigation.Ressource.WorkAreaId == WorkAreas.First().WorkAreaId;
+
+            ParkingViewSource.Source = Priv_parking;
+            ParkingCV.Filter = f => (f as Vorgang).ArbPlSapNavigation.Ressource.WorkAreaId == WorkAreas.First().WorkAreaId;
             _masterFilterText = WorkAreas.First().WorkAreaId.ToString();
             ProcessCV.Refresh();
          
@@ -91,7 +89,6 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.RidNavigation)
                 .ThenInclude(x => x.RessourceCostUnits)
-                .Include(x => x.ArbPlSapNavigation)
                 .Where(x => !x.AidNavigation.Fertig &&
                 !x.SysStatus.Contains("RÜCK") && 
                 !x.Text.ToUpper().Contains("AUFTRAG STARTEN"))
@@ -110,9 +107,9 @@ namespace Lieferliste_WPF.ViewModels
             {
 
                 var re = _db.Ressources
-                    .Include(x => x.WorkSaps)
                     .Include(x => x.RessourceCostUnits)
                     .Include(x => x.WorkArea)
+                    .Include(x => x.WorkSaps)
                     .Where(x => x.WorkArea != null).ToList();
 
                 var ress = re.Where(y => y.RessourceCostUnits.IntersectBy(AppStatic.User.UserCosts.Select(e => e.CostId), a => a.CostId).Any());
@@ -145,9 +142,9 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     list.AddRange(qp.FindAll(x => m.ArbPlSAPs.Contains(x.ArbPlSap)));
                 }
-                Processes = list.FindAll(x => x.Rid == null)
+                Priv_processes = list.FindAll(x => x.Rid == null)
                     .ToObservableCollection();
-                Parking = list.FindAll(x => x.Rid == -1)
+                Priv_parking = list.FindAll(x => x.Rid == -1)
                     .ToObservableCollection();
             }
 
@@ -261,13 +258,13 @@ namespace Lieferliste_WPF.ViewModels
                     }
                     else e.Accepted = false;
                 }
-             
-            } else { e.Accepted = false; }
 
+            }
+            else { e.Accepted = false; }
         }
         public void DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data as dynamic)
+            if (dropInfo.Data is Vorgang)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Move;
@@ -293,8 +290,9 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     vrg.Rid = null;
                 }
-                ((IList)dropInfo.DragInfo.SourceCollection).Remove(vrg);
-                ((IList)dropInfo.TargetCollection).Add(vrg);
+                ((ListCollectionView)dropInfo.DragInfo.SourceCollection).Remove(vrg);
+                ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
+                ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
             }
         }
 

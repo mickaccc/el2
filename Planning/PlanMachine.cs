@@ -91,16 +91,17 @@ namespace Lieferliste_WPF.Planning
 
         public ObservableCollection<Vorgang> Processes { get; set; }
         
-        private ICollectionView _processesCV;
+        public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
+        internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
         private void Initialize()
         {
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
 
-            
+
             Processes = new ObservableCollection<Vorgang>();
-            _processesCV = CollectionViewSource.GetDefaultView(Processes);
-            _processesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+            ProcessesCVSource.Source = Processes;
+            ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             
         }
 
@@ -131,7 +132,7 @@ namespace Lieferliste_WPF.Planning
             if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
             if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
-            _processesCV.Refresh();
+            ProcessesCV.Refresh();
   
         }
         public void Exit()
@@ -144,23 +145,26 @@ namespace Lieferliste_WPF.Planning
         public void Drop(IDropInfo dropInfo)
         {
             Vorgang vrg = (Vorgang)dropInfo.Data;
-            
-            ((IList)dropInfo.DragInfo.SourceCollection).Remove(vrg);
+            ListCollectionView s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
+            ListCollectionView t = dropInfo.TargetCollection as ListCollectionView;
+            if (s.CanRemove) s.Remove(vrg);
             int v = dropInfo.InsertIndex;
             vrg.Rid = _rId;
-            if (v > ((IList)dropInfo.TargetCollection).Count)
+            if (v > t.Count)
             {
-                ((IList)dropInfo.TargetCollection).Add(vrg);
+                ((IList)t.SourceCollection).Add(vrg);
             }
             else
-            { 
-                ((IList)dropInfo.TargetCollection).Insert(v, vrg);
-            }
-            for(int i = 0; i < Processes.Count; i++)
             {
-                Processes[i].Spos = i;
+                ((IList)t.SourceCollection).Insert(v, vrg);
+                
             }
-
+            Collection<Vorgang> p = t.SourceCollection as Collection<Vorgang>;
+            for(int i=0;i<p.Count;i++)
+            {
+                p[i].Spos = i;
+            }
+            t.Refresh();
         }
 
         public void DragOver(IDropInfo dropInfo)

@@ -88,7 +88,7 @@
                             QuantityScrap="{Binding Vorgangs/QuantityScrap}" 
                             VgText="{Binding Vorgangs/Text}"
                             WorkArea="{Binding Vorgangs/ArbPlSap}"
-                            WorkAreaText="{Binding Vorgangs/ArbPlSapNavigation.WorkSapId}"
+                            WorkAreaText="{Binding Vorgangs/ArbPlSap}"
                             Comment_Me="{Binding Vorgangs/BemM, Mode=TwoWay}"
                             Comment_Te="{Binding Vorgangs/BemT, Mode=TwoWay}"
                             Comment_Ma="{Binding Vorgangs/BemMa, Mode=TwoWay}"

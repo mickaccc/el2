@@ -99,6 +99,9 @@ namespace Lieferliste_WPF.Data.Models
         public int? Spos { get; set; }
         [Column("RID")]
         public int? Rid { get; set; }
+        [StringLength(50)]
+        [Unicode(false)]
+        public string? CommentMach { get; set; }
 
         [ForeignKey(nameof(Aid))]
         [InverseProperty(nameof(TblAuftrag.Vorgangs))]

@@ -122,7 +122,6 @@ namespace Lieferliste_WPF.Data
                 entity.HasOne(d => d.RidNavigation)
                     .WithMany(p => p.RessourceCostUnits)
                     .HasForeignKey(d => d.Rid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RessourceCostUnit_Ressource");
             });
 
@@ -362,6 +361,8 @@ namespace Lieferliste_WPF.Data
 
                 entity.Property(e => e.BemT).IsUnicode(false);
 
+                entity.Property(e => e.CommentMach).IsUnicode(false);
+
                 entity.Property(e => e.Marker).IsFixedLength();
 
                 entity.Property(e => e.ProcessingUom).IsFixedLength();
@@ -374,12 +375,12 @@ namespace Lieferliste_WPF.Data
                 entity.HasOne(d => d.ArbPlSapNavigation)
                     .WithMany(p => p.Vorgangs)
                     .HasForeignKey(d => d.ArbPlSap)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Vorgang_WorkSap");
 
                 entity.HasOne(d => d.RidNavigation)
                     .WithMany(p => p.Vorgangs)
                     .HasForeignKey(d => d.Rid)
-                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_Vorgang_Ressource");
             });
 
