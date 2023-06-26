@@ -23,8 +23,7 @@ using System.Windows.Input;
 namespace Lieferliste_WPF.ViewModels
 {
     internal class MachinePlanViewModel : Base.ViewModelBase, IDropTarget
-    {
-        
+    {      
         private RelayCommand selectionChangeCommand;
         private RelayCommand textSearchCommand;
         public ICommand SelectionChangeCommand => selectionChangeCommand ??= new RelayCommand(SelectionChange);
@@ -63,7 +62,7 @@ namespace Lieferliste_WPF.ViewModels
             ParkingCV.Filter = f => (f as Vorgang).ArbPlSapNavigation.Ressource.WorkAreaId == WorkAreas.First().WorkAreaId;
             _masterFilterText = WorkAreas.First().WorkAreaId.ToString();
             ProcessCV.Refresh();
-         
+        
         }
 
 

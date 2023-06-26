@@ -80,11 +80,11 @@ namespace Lieferliste_WPF.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-88O2DD0;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Sec" +
-            "urity=True")]
-        public string SQL_ConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-MEMDFDP\\\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;In" +
+            "tegrated Security=True;Trust Server Certificate=True;Command Timeout=300")]
+        public string ConnectionString {
             get {
-                return ((string)(this["SQL_ConnectionString"]));
+                return ((string)(this["ConnectionString"]));
             }
         }
         

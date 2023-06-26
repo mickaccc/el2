@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Lieferliste_WPF.Data.Models;
+using Lieferliste_WPF.Properties;
 
 namespace Lieferliste_WPF.Data
 {
@@ -53,7 +54,7 @@ namespace Lieferliste_WPF.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                //optionsBuilder.UseSqlServer(Settings.Default.ConnectionString);
                 optionsBuilder.UseSqlServer("Data Source=DESKTOP-MEMDFDP\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Trust Server Certificate=True;Command Timeout=300");
             }
         }
