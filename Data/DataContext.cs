@@ -54,8 +54,8 @@ namespace Lieferliste_WPF.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //optionsBuilder.UseSqlServer(Settings.Default.ConnectionString);
-                optionsBuilder.UseSqlServer("Data Source=DESKTOP-MEMDFDP\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Trust Server Certificate=True;Command Timeout=300");
+                optionsBuilder.UseSqlServer(Settings.Default.ConnectionString);
+                //optionsBuilder.UseSqlServer("Data Source=DESKTOP-MEMDFDP\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Trust Server Certificate=True;Command Timeout=300");
             }
         }
 
