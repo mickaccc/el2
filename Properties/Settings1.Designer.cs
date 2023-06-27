@@ -26,8 +26,7 @@ namespace el_squareSetup.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=HL0VSQL02.EMEA.bosch.com;Initial Catalog=DB_COS_Lieferliste_SQL;Integ" +
-            "rated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=HL0VM00069;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Connect Timeout=5;Encrypt=False;TrustServerCertificate=True;User Id=EL2;Password=SCM7777scm!$")]
         public string DB_COS_Lieferliste_SQLConnectionString {
             get {
                 return ((string)(this["DB_COS_Lieferliste_SQLConnectionString"]));
