@@ -58,7 +58,7 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand textSearchCommand;
         private string _searchFilterText;
         internal CollectionViewSource ordersViewSource {get; private set;} = new();
-        private readonly DataContext _db = new();
+        
     public LieferViewModel()
         {
             LoadData();
@@ -166,7 +166,7 @@ namespace Lieferliste_WPF.ViewModels
 
                 _searchFilterText = tb.Text;
                 var uiContext = SynchronizationContext.Current;
-                uiContext.Send(x => ordersViewSource.View.Refresh(), null);
+                uiContext?.Send(x => ordersViewSource.View.Refresh(), null);
             }
         }
         public override void removeFilterCriteria(string PropertyName)
@@ -178,12 +178,12 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnSaveExecuted(object obj)
         {
-            _db.SaveChanges();
+            Dbctx.SaveChanges();
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-            return _db.ChangeTracker.HasChanges();
+            return Dbctx.ChangeTracker.HasChanges();
         }
 
         private bool OnSchowRtbEditorCanExecute(object arg)
@@ -218,7 +218,7 @@ namespace Lieferliste_WPF.ViewModels
                     ordersViewSource.SortDescriptions.Clear();
                     ordersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Descending));
                     var uiContext = SynchronizationContext.Current;
-                    uiContext.Send(x => ordersViewSource.View.Refresh(), null);
+                    uiContext?.Send(x => ordersViewSource.View.Refresh(), null);
                 }
             }
         }
@@ -242,7 +242,7 @@ namespace Lieferliste_WPF.ViewModels
                     ordersViewSource.SortDescriptions.Clear();
                     ordersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
                     var uiContext = SynchronizationContext.Current;
-                    uiContext.Send(x => ordersViewSource.View.Refresh(), null);
+                    uiContext?.Send(x => ordersViewSource.View.Refresh(), null);
                 }
             }
         }
@@ -275,7 +275,7 @@ namespace Lieferliste_WPF.ViewModels
 
             try
             {
-                _orders = _db.TblAuftrags
+                _orders = Dbctx.TblAuftrags
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)
                 .Include(v => v.Vorgangs.Where(v => v.Aktuell))

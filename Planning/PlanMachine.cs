@@ -10,8 +10,6 @@ using System.Windows.Shapes;
 using System.Data;
 using Lieferliste_WPF.Data.Models;
 using System.ComponentModel;
-
-using Windows.UI.Composition;
 using System.Windows.Media;
 using System.Windows.Data;
 using System.Collections.ObjectModel;
@@ -84,7 +82,7 @@ namespace Lieferliste_WPF.Planning
         public String Name { get; set; }
         public String Description { get; set; }
         public String InventNo { get; private set; }
-        public WorkArea WorkArea { get; set; }
+        public WorkArea? WorkArea { get; set; }
         public int[] CostUnits { get; set; }
         public string[] ArbPlSAPs { get; set; }
         protected MachinePlanViewModel Owner { get; private set; }

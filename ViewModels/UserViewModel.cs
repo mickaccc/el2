@@ -1,33 +1,18 @@
 ﻿using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Data;
 using Lieferliste_WPF.Data.Models;
-using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.CodeDom;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Windows.Globalization.DateTimeFormatting;
-using Windows.Media.ClosedCaptioning;
 
 namespace Lieferliste_WPF.ViewModels
 {

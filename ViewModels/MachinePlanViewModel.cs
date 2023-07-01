@@ -39,7 +39,7 @@ namespace Lieferliste_WPF.ViewModels
         private readonly ICollectionView _ressCV;
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
-        static readonly DataContext _db = new();
+        
         private string _masterFilterText = "";
         private string _searchFilterText = "";
         internal CollectionViewSource ProcessViewSource { get; private set; } = new();
@@ -53,13 +53,13 @@ namespace Lieferliste_WPF.ViewModels
 
             LoadData();
             _ressCV = CollectionViewSource.GetDefaultView(Machines);
-            _ressCV.Filter = f => (f as PlanMachine).WorkArea.WorkAreaId == WorkAreas.First().WorkAreaId;
+            _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == WorkAreas?.First().WorkAreaId;
             _ressCV.MoveCurrentToFirst();           
             ProcessViewSource.Source = Priv_processes;
             ProcessViewSource.Filter += ProcessCV_Filter;
 
             ParkingViewSource.Source = Priv_parking;
-            ParkingCV.Filter = f => (f as Vorgang).ArbPlSapNavigation.Ressource.WorkAreaId == WorkAreas.First().WorkAreaId;
+            ParkingCV.Filter = f => (f as Vorgang)?.ArbPlSapNavigation?.Ressource?.WorkAreaId == WorkAreas?.First().WorkAreaId;
             _masterFilterText = WorkAreas.First().WorkAreaId.ToString();
             ProcessCV.Refresh();
         
@@ -69,20 +69,20 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
-            return _db.ChangeTracker.HasChanges();
+            return Dbctx.ChangeTracker.HasChanges();
             
         }
 
         private void OnSaveExecuted(object obj)
         {
-            _db.SaveChanges();
+            Dbctx.SaveChanges();
         }
 
         private void LoadData()
         {
  
 
-            var qp = _db.Vorgangs
+            var qp = Dbctx.Vorgangs
                 .Include(x => x.AidNavigation)
                 .ThenInclude(x => x.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
@@ -96,7 +96,7 @@ namespace Lieferliste_WPF.ViewModels
 
       
 
-            var work = _db.WorkAreas
+            var work = Dbctx.WorkAreas
                 .Include(x => x.UserWorkAreas)
                 .Where(x => x.UserWorkAreas.Any(x => x.UserId.Equals(AppStatic.User.UserIdent)));
 
@@ -105,7 +105,7 @@ namespace Lieferliste_WPF.ViewModels
             if (AppStatic.User != null)
             {
 
-                var re = _db.Ressources
+                var re = Dbctx.Ressources
                     .Include(x => x.RessourceCostUnits)
                     .Include(x => x.WorkArea)
                     .Include(x => x.WorkSaps)
@@ -121,7 +121,7 @@ namespace Lieferliste_WPF.ViewModels
                         {
                             WorkArea = q.WorkArea,
                             CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
-                            Description = q.Info,
+                            Description = q.Info ?? String.Empty,
                             ArbPlSAPs = q.WorkSaps.Select(x => x.WorkSapId).ToArray()
                                                      
                         };
@@ -222,7 +222,7 @@ namespace Lieferliste_WPF.ViewModels
             { 
                 if (sel.AddedItems[0] is WorkArea wa)
                 {                  
-                    _ressCV.Filter = f => (f as PlanMachine).WorkArea.WorkAreaId == wa.WorkAreaId;
+                    _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == wa.WorkAreaId;
                     
                     _masterFilterText = wa.WorkAreaId.ToString();
                     ProcessCV.Refresh();
@@ -244,22 +244,18 @@ namespace Lieferliste_WPF.ViewModels
         private void ProcessCV_Filter(object sender, FilterEventArgs e)
         {
             Vorgang v = (Vorgang)e.Item;
-            if (v.ArbPlSapNavigation.Ressource.WorkAreaId.ToString() == _masterFilterText)
+            e.Accepted = false;
+            if (v.ArbPlSapNavigation?.Ressource?.WorkAreaId?.ToString() == _masterFilterText)
             {
                 e.Accepted = true;
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))
                 {
-                    if (v.Aid.ToUpper().Contains(_searchFilterText.ToUpper()) ||
-                        v.AidNavigation.Material.ToUpper().Contains(_searchFilterText.ToUpper()) ||
-                        v.AidNavigation.MaterialNavigation.Bezeichng.ToUpper().Contains(_searchFilterText.ToUpper()))
-                    {
-                        e.Accepted = true;
-                    }
-                    else e.Accepted = false;
+                    _searchFilterText = _searchFilterText.ToUpper();
+                    if (!(e.Accepted = v.Aid.ToUpper().Contains(_searchFilterText)))
+                        if (!(e.Accepted = v.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
+                            e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
                 }
-
             }
-            else { e.Accepted = false; }
         }
         public void DragOver(IDropInfo dropInfo)
         {
@@ -272,20 +268,20 @@ namespace Lieferliste_WPF.ViewModels
 
         internal void Exit()
         {
-            _db.SaveChanges();
+            Dbctx.SaveChanges();
         }
 
         public void Drop(IDropInfo dropInfo)
 
         {
-            string name = dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) as string;
+            string? name = dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) as string;
             if (dropInfo.Data is Vorgang vrg)
             {
                 if (name == "parking")
                 {
                     vrg.Rid = -1;
                 }
-                if (name == "UnPlaned")
+                else
                 {
                     vrg.Rid = null;
                 }
