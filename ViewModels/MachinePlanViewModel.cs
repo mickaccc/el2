@@ -22,6 +22,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
+    
     internal class MachinePlanViewModel : Base.ViewModelBase, IDropTarget
     {      
         private RelayCommand selectionChangeCommand;

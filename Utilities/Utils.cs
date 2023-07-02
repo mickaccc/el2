@@ -763,7 +763,8 @@ namespace Lieferliste_WPF.Utilities
         public static ObservableCollection<T> ToObservableCollection<T>
              (this IEnumerable<T> en)
         {
-            return new ObservableCollection<T>(en);
+            var ob = new ObservableCollection<T>(en);
+            return ob;
         }
     }
     //public static T GetChildOfType<T>(this DependencyObject depObj)

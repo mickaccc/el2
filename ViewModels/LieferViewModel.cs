@@ -61,6 +61,7 @@ namespace Lieferliste_WPF.ViewModels
         
     public LieferViewModel()
         {
+
             LoadData();
             //var collectionWrapper = new ObservableCollectionWrapper<object>(collection, this.Dispatcher);
             //var defaultView = CollectionViewSource.GetDefaultView(collectionWrapper);
@@ -74,34 +75,23 @@ namespace Lieferliste_WPF.ViewModels
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             ShowRtbEditor = new ActionCommand(OnShowRtbEditorExecuted, OnSchowRtbEditorCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-
             //addFilterCriteria("Ausgebl", "false");
+            
         }
 
         private void OrdersView_Filter(object sender, FilterEventArgs e)
         {
             TblAuftrag ord = (TblAuftrag)e.Item;
 
-                e.Accepted = true;
-            String mat = (ord.Material != null) ? ord.Material.ToString() : String.Empty;
-            String matText = String.Empty;
-            if (ord.MaterialNavigation != null)
-            {
-                matText = (ord.MaterialNavigation.Bezeichng != null) ? ord.MaterialNavigation.Bezeichng.ToString() : String.Empty;
-            }
+            e.Accepted = true;
 
             if (!string.IsNullOrWhiteSpace(_searchFilterText))
             {
-                if (ord.Aid.ToUpper().Contains(_searchFilterText.ToUpper()) ||
-                    mat.ToUpper().Contains(_searchFilterText.ToUpper()) ||
-                    matText.ToUpper().Contains(_searchFilterText.ToUpper()))
-                {
-                    e.Accepted = true;
-                }
-                else e.Accepted = false;
+                _searchFilterText = _searchFilterText.ToUpper();
+                if (!(e.Accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
+                    if (!(e.Accepted = ord.Material?.ToUpper().Contains(_searchFilterText) ?? false))
+                        e.Accepted = ord.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
             }
-            else e.Accepted = true;
-
         }
 
         public string ToolTip
@@ -178,12 +168,12 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnSaveExecuted(object obj)
         {
-            Dbctx.SaveChanges();
+           Dbctx.SaveChangesAsync();
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-            return Dbctx.ChangeTracker.HasChanges();
+            return Dbctx.ChangeTracker.HasChanges();           
         }
 
         private bool OnSchowRtbEditorCanExecute(object arg)
@@ -272,28 +262,19 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void LoadData()
         {
-
-            try
-            {
-                _orders = Dbctx.TblAuftrags
+ 
+            IList<TblAuftrag>? result =null;
+            
+                result = Dbctx.TblAuftrags
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)
                 .Include(v => v.Vorgangs.Where(v => v.Aktuell))
                 .ThenInclude(a => a.ArbPlSapNavigation)
-                    .ToObservableCollection();
+                .ToList();
+
+                 _orders = new ObservableCollection<TblAuftrag>(result);
                 
-                
-            }
-            catch (DataException e)
-            {
-                DialogProvider.ErrorMessage("ERROR on load Data: " + e.ToString());
-            }
-            catch (SqlNullValueException e)
-            {
-                DialogProvider.ErrorMessage("ERROR on load Data: " + e.ToString());
-            }           
-            isLoaded = true;
+            isLoaded = true;                         
         }
-        
     }
 }
