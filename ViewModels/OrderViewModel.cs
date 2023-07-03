@@ -15,14 +15,13 @@ namespace Lieferliste_WPF.ViewModels
 
         private IEnumerable<TblAuftrag>? _order;
         public IEnumerable<TblAuftrag>? Order { get; private set; }
-        private readonly DataContext _db = new();
 
         #region Constructor
         public OrderViewModel() { } 
         #endregion
         public void LoadData(string AID)
         {
-            _order = _db.TblAuftrags
+            _order = Dbctx.TblAuftrags
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)
                 .Include(v => v.Vorgangs)

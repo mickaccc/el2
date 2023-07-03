@@ -9,7 +9,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Collections.Specialized;
 using System.Windows.Controls;
-using System.Windows.Forms.Automation;
 using System.Windows.Input;
 using Lieferliste_WPF.Commands;
 

@@ -282,7 +282,7 @@ namespace Lieferliste_WPF.UserControls
             RichTextEditor rtb = new RichTextEditor();
             TextBox txt = (TextBox)e.OriginalSource;
             MemoryStream memoryStream = new MemoryStream();
-            memoryStream.AsInputStream();
+            //memoryStream.AsInputStream();
             memoryStream.Position = 0;
             
             rtb.DataContext = txt.Text;

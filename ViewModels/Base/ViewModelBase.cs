@@ -1,12 +1,14 @@
 ﻿namespace Lieferliste_WPF.ViewModels.Base
 {
+    using Microsoft.EntityFrameworkCore;
     using System;
     using System.ComponentModel;
     using System.Linq.Expressions;
+    using Lieferliste_WPF.Data;
 
     public class ViewModelBase : INotifyPropertyChanged
     {
-
+        protected DataContext Dbctx { get; } = new();
         protected void OnChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

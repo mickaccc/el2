@@ -1,33 +1,18 @@
 ﻿using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Data;
 using Lieferliste_WPF.Data.Models;
-using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.CodeDom;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Windows.Globalization.DateTimeFormatting;
-using Windows.Media.ClosedCaptioning;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -55,8 +40,6 @@ namespace Lieferliste_WPF.ViewModels
         
         public static ObservableCollection<Wpart> Wo { get; private set; }
         public static ObservableCollection<Wpart> Cost { get; private set; }
-
-        private static readonly DataContext _db = new();
 
 
         public UserViewModel()
@@ -97,9 +80,13 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                if (_db.ChangeTracker.HasChanges()) _db.ChangeTracker.Clear();
-                ///FIXME: DataContext Instance///
-                
+                if (Dbctx.ChangeTracker.HasChanges())
+                {
+                    MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
+                        , MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
+
+                }
                 ob.Close();
                
             }
@@ -120,8 +107,8 @@ namespace Lieferliste_WPF.ViewModels
             var u = _usrCV.CurrentItem;
             if (u is User usr)
             { 
-            Users.Remove(usr);
-            _db.Users.Remove(usr);
+            Users?.Remove(usr);
+            Dbctx.Users.Remove(usr);
                 OnSaveExecuted(usr);
             }
         }
@@ -134,7 +121,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnNewExecuted(object obj)
         {
             User u = new User();
-            Users.Add(u);
+            Users?.Add(u);
             
             _usrCV.MoveCurrentTo(u);
             _isLocked = true;
@@ -149,30 +136,30 @@ namespace Lieferliste_WPF.ViewModels
         {
             try
             {
-                var added = Users.Except(_db.Users);
+                var added = Users.Except(Dbctx.Users);
                 User us = _usrCV.CurrentItem as User;
                 int error = 0;
                 string errMsg ="";
                 if (_isNew)
                 {
-                    if (_db.Users.Where(x => x.UserIdent == us.UserIdent).Count() == 0 &&
-                        _db.Users.Where(x => x.UsrName == us.UsrName).Count() == 0)
+                    if (Dbctx.Users.Where(x => x.UserIdent == us.UserIdent).Count() == 0 &&
+                        Dbctx.Users.Where(x => x.UsrName == us.UsrName).Count() == 0)
                     {
-                        _db.Users.Add(us);
+                        Dbctx.Users.Add(us);
                         foreach (Wpart wp in Ro.Where(x => x.Check))
                         {
                             UserRole ur = new() { RoleId = wp.Id, UserIdent = us.UserIdent };
-                            _db.UserRoles.Add(ur);
+                            Dbctx.UserRoles.Add(ur);
                         }
                         foreach (Wpart wp in Wo.Where(x => x.Check))
                         {
                             UserWorkArea uw = new() { WorkAreaId = wp.Id, UserId = us.UserIdent };
-                            _db.UserWorkAreas.Add(uw);
+                            Dbctx.UserWorkAreas.Add(uw);
                         }
                         foreach (Wpart wp in Cost.Where(x => x.Check))
                         {
                             UserCost uc = new() { CostId = wp.Id, UsrIdent = us.UserIdent };
-                            _db.UserCosts.Add(uc);
+                            Dbctx.UserCosts.Add(uc);
                         }
 
                     }
@@ -185,7 +172,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (error != 0) errMsg = "\n" + error + " neue Datensätze sind Fehlerhaft.\n" +
                         "Name oder User sind leer oder nicht eindeutig.\n" +
                         "diese Datensätze wurden nicht gespeichert!";
-                int result = _db.SaveChanges();
+                int result = Dbctx.SaveChanges();
                 if (result > 0)
                 {
                     MessageBox.Show("Es wurden " + result + " Datensätze gespeichert", "Nachricht" + errMsg, MessageBoxButton.OK);
@@ -209,7 +196,7 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnSaveCanExecute(object arg)
         {
 
-            return _isNew || _db.ChangeTracker.HasChanges();
+            return _isNew || Dbctx.ChangeTracker.HasChanges();
         }
 
 
@@ -242,9 +229,9 @@ namespace Lieferliste_WPF.ViewModels
             }         
         }
 
-        private static void LoadData()
+        private void LoadData()
         {
-            Users = _db.Users
+            Users = Dbctx.Users
                 .Include(x => x.UserWorkAreas)
                 .Include(y => y.UserRoles)
                 .ThenInclude(c => c.Role)
@@ -255,7 +242,7 @@ namespace Lieferliste_WPF.ViewModels
                 .ToObservableCollection();
  
             var us = Users.Cast<User>().First();
-            foreach (Costunit cost in _db.Costunits)
+            foreach (Costunit cost in Dbctx.Costunits)
             {
                 Cost.Add(new Wpart()
                 {
@@ -267,7 +254,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             Cost.OrderBy(o => o.Id);
 
-            foreach (WorkArea work in _db.WorkAreas)
+            foreach (WorkArea work in Dbctx.WorkAreas)
             {
                 Wo.Add(new Wpart() { Id = work.WorkAreaId, Name = work.Bereich, Type = "WORKAREA",
                     Check = us.UserWorkAreas.Any(x => x.WorkAreaId == work.WorkAreaId)});
@@ -277,7 +264,7 @@ namespace Lieferliste_WPF.ViewModels
             
             
             int usrlvl = (int)Users.First(x => x.UserIdent == AppStatic.User.UserIdent).UserRoles.Max(y => y.Role.Rolelevel);
-            foreach (Role ro in _db.Roles.Where(x => x.Rolelevel <= usrlvl))
+            foreach (Role ro in Dbctx.Roles.Where(x => x.Rolelevel <= usrlvl))
             {
                 Ro.Add(new Wpart()
                 {
@@ -293,7 +280,7 @@ namespace Lieferliste_WPF.ViewModels
             _loaded = true;
         }
 
-        public class Wpart: INotifyPropertyChanged
+        public class Wpart: ViewModels.Base.ViewModelBase, INotifyPropertyChanged
         {
 
             public int Id { get; set; }
@@ -323,17 +310,17 @@ namespace Lieferliste_WPF.ViewModels
                             Debug.WriteLine("Change ROLE");
                             if (_check)
                             {
-                                UserRole ur = _db.UserRoles.FirstOrDefault(x => x.RoleId == Id && x.UserIdent == us.UserIdent);
+                                UserRole ur = Dbctx.UserRoles.FirstOrDefault(x => x.RoleId == Id && x.UserIdent == us.UserIdent);
                                 if (ur == null)
                                 {
-                                    _db.UserRoles.Add(new UserRole() { RoleId = Id, UserIdent = us.UserIdent });
+                                    Dbctx.UserRoles.Add(new UserRole() { RoleId = Id, UserIdent = us.UserIdent });
                                     Debug.WriteLine("Added ROLE");
                                 }
                             }
                             else
                             {
-                                UserRole ur = _db.UserRoles.FirstOrDefault(x => x.RoleId == Id && x.UserIdent == us.UserIdent);
-                                if (ur != null) _db.UserRoles.Remove(ur);
+                                UserRole ur = Dbctx.UserRoles.FirstOrDefault(x => x.RoleId == Id && x.UserIdent == us.UserIdent);
+                                if (ur != null) Dbctx.UserRoles.Remove(ur);
                             }
                             break;
 
@@ -341,16 +328,16 @@ namespace Lieferliste_WPF.ViewModels
                             Debug.WriteLine("Change WORKAREA");
                             if (_check)
                             {
-                                UserWorkArea uw = _db.UserWorkAreas.FirstOrDefault(x => x.WorkAreaId == Id && x.UserId == us.UserIdent);
+                                UserWorkArea uw = Dbctx.UserWorkAreas.FirstOrDefault(x => x.WorkAreaId == Id && x.UserId == us.UserIdent);
                                 if (uw == null)
                                 {
-                                    _db.UserWorkAreas.Add(new UserWorkArea() { WorkAreaId = Id, UserId = us.UserIdent });
+                                    Dbctx.UserWorkAreas.Add(new UserWorkArea() { WorkAreaId = Id, UserId = us.UserIdent });
                                     Debug.WriteLine("Added WORKAREA");
                                 }
                             }
                             else
                             {
-                                UserWorkArea uw = _db.UserWorkAreas.FirstOrDefault(x => x.WorkAreaId == Id && x.UserId == us.UserIdent);
+                                UserWorkArea uw = Dbctx.UserWorkAreas.FirstOrDefault(x => x.WorkAreaId == Id && x.UserId == us.UserIdent);
                                 if (uw != null) us.UserWorkAreas.Remove(uw);
                             }
                             break;
@@ -359,21 +346,21 @@ namespace Lieferliste_WPF.ViewModels
                             Debug.WriteLine("Cahnge COST");
                             if (_check)
                             {
-                                UserCost uw = _db.UserCosts.FirstOrDefault(x => x.CostId == Id && x.UsrIdent == us.UserIdent);
+                                UserCost uw = Dbctx.UserCosts.FirstOrDefault(x => x.CostId == Id && x.UsrIdent == us.UserIdent);
                                 if (uw == null)
                                 {
-                                    _db.UserCosts.Add(new UserCost() { CostId = Id, UsrIdent = us.UserIdent });
+                                    Dbctx.UserCosts.Add(new UserCost() { CostId = Id, UsrIdent = us.UserIdent });
                                     Debug.WriteLine("Added COST");
                                 }
                             }
                             else
                             {
-                                UserCost uw = _db.UserCosts.FirstOrDefault(x => x.CostId == Id && x.UsrIdent == us.UserIdent);
-                                if (uw != null) _db.UserCosts.Remove(uw);
+                                UserCost uw = Dbctx.UserCosts.FirstOrDefault(x => x.CostId == Id && x.UsrIdent == us.UserIdent);
+                                if (uw != null) Dbctx.UserCosts.Remove(uw);
                             }
                             break;
                     }
-                    _db.ChangeTracker.DetectChanges();
+                    Dbctx.ChangeTracker.DetectChanges();
                 }
                 
             }

@@ -82,7 +82,6 @@
                     IsSelected = true                   
                 };
                 TbControl.Items.Add(tabItem);
-
             }
         }
         
@@ -194,7 +193,6 @@
         private void TabControl_Enter(object sender, DragEventArgs e)
         {
             this.Background = Brushes.Turquoise;
-
         }
         #endregion
 

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Lieferliste_WPF": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

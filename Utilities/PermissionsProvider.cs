@@ -11,12 +11,10 @@ using Microsoft.EntityFrameworkCore.Internal;
 namespace Lieferliste_WPF.Utilities
 {
 
-    public sealed class PermissionsProvider
+    public sealed class PermissionsProvider : ViewModels.Base.ViewModelBase
     {
         private static PermissionsProvider _instance;
-        private readonly DataContext _db = new();
-
-
+        
         private static readonly List<string> _permissions = new();
         
 
@@ -28,7 +26,7 @@ namespace Lieferliste_WPF.Utilities
                 string user = Environment.UserName;
                 _instance = new PermissionsProvider();
                 
-                _permissions.AddRange(_instance.GetPermissions(user));
+                _permissions.AddRange(_instance.LoadPermissions(user));
                 return _instance;
             }
             return _instance;
@@ -39,29 +37,27 @@ namespace Lieferliste_WPF.Utilities
         {
             return _permissions;
         }
-        public List<string> GetPermissions(string user)
+        private List<string> LoadPermissions(string user)
         {
             List<string> result = new();
             try
             {
-                var query = (from p in _db.PermissionRoles                            
-                             join r in _db.Roles on p.RoleKey equals r.Id
-                             join ur in _db.UserRoles on r.Id equals ur.RoleId
+                var query = (from p in Dbctx.PermissionRoles                            
+                             join r in Dbctx.Roles on p.RoleKey equals r.Id
+                             join ur in Dbctx.UserRoles on r.Id equals ur.RoleId
                              where ur.UserIdent == user                            
                              select p.PermissionKey.Trim()).ToList();
 
-
                                   
                 result.AddRange((IEnumerable<string>)query);
-                return result;
-                
+                           
             }
             catch (Exception e)
             {
                 System.Windows.MessageBox.Show("Fehler beim laden vom Berechtigungssystem!\n" + e.Message + "\n" + e.InnerException,
-                    "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                return result;
+                    "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);              
             }
+            return result;
         }
 
         public bool GetUserPermission(string permission)
