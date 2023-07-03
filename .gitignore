@@ -363,3 +363,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/.vscode/extensions.json
+/.vscode/launch.json
+/.vscode/msbuild-tools.json
+/Properties/launchSettings.json
