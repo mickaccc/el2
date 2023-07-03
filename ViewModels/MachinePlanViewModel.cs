@@ -253,7 +253,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     _searchFilterText = _searchFilterText.ToUpper();
                     if (!(e.Accepted = v.Aid.ToUpper().Contains(_searchFilterText)))
-                        if (!(e.Accepted = v.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
+                        if (!(e.Accepted = v.AidNavigation?.Material?.ToUpper().Contains(_searchFilterText) ?? false))
                             e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
                 }
             }

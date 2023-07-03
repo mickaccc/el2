@@ -170,25 +170,25 @@
         }
         private void TabControl_Leave(object sender, DragEventArgs e)
         {
-            e.Effects = DragDropEffects.Move;
+            //e.Effects = DragDropEffects.Move;
 
-            var tabItemSource = (TabItem)e.Data.GetData(typeof(TabItem));
-            TabControl tabCrt = (TabControl)sender;
-            Window wnd = new Tabable
-            {
-                Owner = this,
-                Title = tabItemSource.Header.ToString(),
-                Content = tabItemSource.Content,
-                Tag = "MPL"
+            //var tabItemSource = (TabItem)e.Data.GetData(typeof(TabItem));
+            //TabControl tabCrt = (TabControl)sender;
+            //Window wnd = new Tabable
+            //{
+            //    Owner = this,
+            //    Title = tabItemSource.Header.ToString(),
+            //    Content = tabItemSource.Content,
+            //    Tag = "MPL"
 
-            };
-            MainWindowViewModel mv = DataContext as MainWindowViewModel;
-            mv.WindowTitles.Add((Page)tabItemSource.Content);
-            tabCrt.Items.Remove(tabItemSource);
+            //};
+            //MainWindowViewModel mv = DataContext as MainWindowViewModel;
+            //mv.WindowTitles.Add((Page)tabItemSource.Content);
+            //tabCrt.Items.Remove(tabItemSource);
 
-            wnd.Show();
+            //wnd.Show();
 
-            this.Background = Brushes.White;
+            //this.Background = Brushes.White;
         }
         private void TabControl_Enter(object sender, DragEventArgs e)
         {

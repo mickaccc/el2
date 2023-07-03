@@ -44,7 +44,7 @@ namespace Lieferliste_WPF.ViewModels
 
 
 
-        private ObservableCollection<TblAuftrag> _orders { get; set; }
+        private ObservableCollection<Vorgang> _orders { get; set; }
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand ShowRtbEditor { get; private set; }
@@ -73,7 +73,7 @@ namespace Lieferliste_WPF.ViewModels
             
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
-            ShowRtbEditor = new ActionCommand(OnShowRtbEditorExecuted, OnSchowRtbEditorCanExecute);
+            //ShowRtbEditor = new ActionCommand(OnShowRtbEditorExecuted, OnSchowRtbEditorCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             //addFilterCriteria("Ausgebl", "false");
             
@@ -81,7 +81,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OrdersView_Filter(object sender, FilterEventArgs e)
         {
-            TblAuftrag ord = (TblAuftrag)e.Item;
+            Vorgang ord = (Vorgang)e.Item;
 
             e.Accepted = true;
 
@@ -89,8 +89,8 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _searchFilterText = _searchFilterText.ToUpper();
                 if (!(e.Accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
-                    if (!(e.Accepted = ord.Material?.ToUpper().Contains(_searchFilterText) ?? false))
-                        e.Accepted = ord.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
+                    if (!(e.Accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
+                        e.Accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
             }
         }
 
@@ -263,16 +263,18 @@ namespace Lieferliste_WPF.ViewModels
         private void LoadData()
         {
  
-            IList<TblAuftrag>? result =null;
+            IList<Vorgang>? result =null;
             
-                result = Dbctx.TblAuftrags
-                .Include(m => m.MaterialNavigation)
-                .Include(d => d.DummyMatNavigation)
-                .Include(v => v.Vorgangs.Where(v => v.Aktuell))
-                .ThenInclude(a => a.ArbPlSapNavigation)
+                result = Dbctx.Vorgangs
+                .Include(m => m.ArbPlSapNavigation)
+                .Include(d => d.RidNavigation)
+                .Include(v => v.AidNavigation)
+                .ThenInclude(x => x.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Where(x => x.Aktuell)
                 .ToList();
 
-                 _orders = new ObservableCollection<TblAuftrag>(result);
+                 _orders = new ObservableCollection<Vorgang>(result);
                 
             isLoaded = true;                         
         }
