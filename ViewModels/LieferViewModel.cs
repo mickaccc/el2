@@ -31,25 +31,31 @@ using Microsoft.IdentityModel.Tokens;
 using System.Windows.Input;
 using System.Windows.Controls;
 using Microsoft.VisualBasic;
+using System.Windows.Threading;
+using Lieferliste_WPF.ViewModels.Base;
+using HandlebarsDotNet.Helpers;
+using NUnit.Framework.Interfaces;
+using System.Collections.Specialized;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class LieferViewModel : Base.ViewModelBase
+    class LieferViewModel : ViewModelBase
     {
 
 
         private IDialogProvider DialogProvider { get; set; }
-        public ICollectionView OrdersView { get { return ordersViewSource.View; } }
+        public ICollectionView OrdersView { get; }
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
 
 
-        private ObservableCollection<Vorgang> _orders { get; set; }
+        private ObservableCollection<Vorgang> _orders { get; } = new();
+        public List<Vorgang> PrioOrders { get; } = new(20);
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
-        public ActionCommand ShowRtbEditor { get; private set; }
+        public ActionCommand OrderViewCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
-
+  
         public String HasMouse { get; set; }
         private static bool isLoaded = false;
         private Dictionary<String, String> _filterCriterias;
@@ -58,40 +64,45 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand textSearchCommand;
         private string _searchFilterText;
         internal CollectionViewSource ordersViewSource {get; private set;} = new();
-        
-    public LieferViewModel()
-        {
 
+        public LieferViewModel()
+        {
+            LoadDataFast();
             LoadData();
-            //var collectionWrapper = new ObservableCollectionWrapper<object>(collection, this.Dispatcher);
-            //var defaultView = CollectionViewSource.GetDefaultView(collectionWrapper);
-            //OrdersView = CollectionViewSource.GetDefaultView(_orders);
-            //OrdersView.MoveCurrentToFirst();
-            ordersViewSource.Filter += OrdersView_Filter;
-            ordersViewSource.Source = _orders;
-            _filterCriterias = new();
+            Debug.WriteLine("Orders {0}", _orders?.Count ?? -1);
+            Debug.WriteLine("PrioOrders {0}", PrioOrders?.Count ?? -1);
+            OrdersView = CollectionViewSource.GetDefaultView(_orders);
+            OrdersView.Filter += OrdersView_FilterPredicate;
             
+            _filterCriterias = new();
+
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
+            OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             //ShowRtbEditor = new ActionCommand(OnShowRtbEditorExecuted, OnSchowRtbEditorCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            //addFilterCriteria("Ausgebl", "false");
-            
+
+
+
+
         }
 
-        private void OrdersView_Filter(object sender, FilterEventArgs e)
-        {
-            Vorgang ord = (Vorgang)e.Item;
 
-            e.Accepted = true;
+
+        private bool OrdersView_FilterPredicate(object value)
+        {
+            Vorgang ord = (Vorgang)value;
+
+            bool accepted = true;
 
             if (!string.IsNullOrWhiteSpace(_searchFilterText))
             {
                 _searchFilterText = _searchFilterText.ToUpper();
-                if (!(e.Accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
-                    if (!(e.Accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
-                        e.Accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
+                if (!(accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
+                    if (!(accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
+                        accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
             }
+            return accepted;
         }
 
         public string ToolTip
@@ -115,38 +126,7 @@ namespace Lieferliste_WPF.ViewModels
                 return toolTip.ToString();
             }
         }
-        public override void addFilterCriteria(string PropertyName, string CriteriaValue)
-        {
-            int repeat = 0;
 
-            if (PropertyName == "alle") repeat = 3;
-
-            do
-            {
-                switch (repeat)
-                {
-                    case 3: PropertyName = "TTNR"; break;
-                    case 2: PropertyName = "Teil"; break;
-                    case 1: PropertyName = "Auftrag"; break;
-                }
-                repeat--;
-                if (PropertyName == "TTNR") PropertyName = "Material";
-                if (PropertyName == "Teil") PropertyName = "Teil";
-                if (PropertyName == "Auftrag") PropertyName = "AID";
-                if (_filterCriterias.ContainsKey(PropertyName))
-                {
-                    _filterCriterias[PropertyName] = CriteriaValue;
-                }
-                else
-                {
-                    _filterCriterias.Add(PropertyName, CriteriaValue);
-                }
-
-            } while (repeat > 0);
-
-            RaisePropertyChanged("ToolTip");
-            OrdersView.Refresh();
-        }
 
         private void OnTextSearch(object commandParameter)
         {
@@ -156,59 +136,48 @@ namespace Lieferliste_WPF.ViewModels
 
                 _searchFilterText = tb.Text;
                 var uiContext = SynchronizationContext.Current;
-                uiContext?.Send(x => ordersViewSource.View.Refresh(), null);
-            }
+                uiContext?.Send(x => OrdersView.Refresh(),null);           }
         }
-        public override void removeFilterCriteria(string PropertyName)
+        #region Commands
+        private bool OnOrderViewCanExecute(object arg)
         {
-            _filterCriterias.Remove(PropertyName);
-            RaisePropertyChanged("ToolTip");
-            OrdersView.Refresh();
-
+            return PermissionsProvider.GetInstance().GetUserPermission("OOPEN01");
+        }
+        private void OnOrderViewExecuted(object parameter)
+        {
+            if (parameter is Vorgang vrg)
+            {
+                OrderView ov = new(vrg.Aid);
+                Window wnd = new();
+                wnd.Owner = Application.Current.MainWindow;
+                wnd.Content = ov;
+                wnd.Show();
+            }
         }
         private void OnSaveExecuted(object obj)
         {
-           Dbctx.SaveChangesAsync();
+            Dbctx.SaveChangesAsync();
         }
-
         private bool OnSaveCanExecute(object arg)
         {
-            return Dbctx.ChangeTracker.HasChanges();           
+            return Dbctx.ChangeTracker.HasChanges();
         }
-
-        private bool OnSchowRtbEditorCanExecute(object arg)
+        private bool OnDescSortCanEcecute(object parameter)
         {
-            return true;
-        }
-
-        private void OnShowRtbEditorExecuted(object obj)
-        {
-            RichTextEditor w = new RichTextEditor();
-            
-            w.Show();
-        }
-
-        bool OnDescSortCanEcecute(object parameter)
-        { 
             return !HasMouse.IsNullOrEmpty();
 
         }
-
         private void OnDescSortExecuted(object parameter)
         {
-
+            
             if (OrdersView != null)
             {
-                string v = Translate();
-
-
-                if (v != String.Empty)
+                
+                if (parameter is LieferlisteControl lvc)
                 {
-                    
                     ordersViewSource.SortDescriptions.Clear();
-                    ordersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Descending));
-                    var uiContext = SynchronizationContext.Current;
-                    uiContext?.Send(x => ordersViewSource.View.Refresh(), null);
+                    ordersViewSource.SortDescriptions.Add(new SortDescription(lvc.HasMouseOver, ListSortDirection.Descending));
+                    OrdersView.Refresh();
                 }
             }
         }
@@ -217,7 +186,7 @@ namespace Lieferliste_WPF.ViewModels
         {
 
             return !HasMouse.IsNullOrEmpty();
-        
+
         }
 
         private void OnAscSortExecuted(object parameter)
@@ -232,10 +201,11 @@ namespace Lieferliste_WPF.ViewModels
                     ordersViewSource.SortDescriptions.Clear();
                     ordersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
                     var uiContext = SynchronizationContext.Current;
-                    uiContext?.Send(x => ordersViewSource.View.Refresh(), null);
+                    uiContext?.Send(x => OrdersView.Refresh(), null);
                 }
             }
-        }
+        } 
+        #endregion
         private string Translate()
         {
             string v = HasMouse switch
@@ -260,23 +230,44 @@ namespace Lieferliste_WPF.ViewModels
             return v;
             
         }
-        private void LoadData()
+        private async void LoadData()
         {
- 
-            IList<Vorgang>? result =null;
             
-                result = Dbctx.Vorgangs
-                .Include(m => m.ArbPlSapNavigation)
-                .Include(d => d.RidNavigation)
-                .Include(v => v.AidNavigation)
-                .ThenInclude(x => x.MaterialNavigation)
-                .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Where(x => x.Aktuell)
-                .ToList();
+           var r = await Dbctx.Vorgangs
+           .Include(m => m.ArbPlSapNavigation)
+           .Include(d => d.RidNavigation)
+           .Include(v => v.AidNavigation)
+           .ThenInclude(x => x.MaterialNavigation)
+           .Include(x => x.AidNavigation.DummyMatNavigation)
+           .Where(x => x.Aktuell)
+           .ToListAsync();
 
-                 _orders = new ObservableCollection<Vorgang>(result);
+            _orders.Clear();
+            foreach(var item in r)
+            {
+                _orders.Add(item);
+            }
                 
-            isLoaded = true;                         
+            isLoaded = true;
+           
+        }
+        private void LoadDataFast()
+        {
+            var vrg = Dbctx.Vorgangs
+            .Include(m => m.ArbPlSapNavigation)
+            .Include(d => d.RidNavigation)
+            .Include(v => v.AidNavigation)
+            .ThenInclude(x => x.MaterialNavigation)
+            .Include(x => x.AidNavigation.DummyMatNavigation)
+            .Where(x => x.Aktuell)
+            .Take(20)
+            .ToList();
+
+            PrioOrders.Clear();
+            foreach (var item in vrg)
+            {
+                PrioOrders.Add(item);
+            }
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Lieferliste_WPF.Planning
 
 
         #region Constructors
-        public PlanMachine() { }
+        public PlanMachine() { Initialize(); }
         public PlanMachine(int RID, string name, string inventarNo, MachinePlanViewModel owner)
         {
             Initialize();
@@ -74,20 +74,20 @@ namespace Lieferliste_WPF.Planning
             get { return (ImmutableArray<Shape>)GetValue(BulletsProperty); }
             set { SetValue(BulletsProperty, value); }
         }
-        public ICommand SetMarkerCommand { get; private set; }
-        public ICommand ChangeProcessesCommand { get; private set; }
+        public ICommand? SetMarkerCommand { get; private set; }
+        public ICommand? ChangeProcessesCommand { get; private set; }
         private int _rId;
 
         public int RID { get { return _rId; } }
-        public String Name { get; set; }
-        public String Description { get; set; }
-        public String InventNo { get; private set; }
+        public String? Name { get; set; }
+        public String? Description { get; set; }
+        public String? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
-        public int[] CostUnits { get; set; }
-        public string[] ArbPlSAPs { get; set; }
-        protected MachinePlanViewModel Owner { get; private set; }
+        public int[]? CostUnits { get; set; }
+        public string[]? ArbPlSAPs { get; set; }
+        protected MachinePlanViewModel? Owner { get; private set; }
 
-        public ObservableCollection<Vorgang> Processes { get; set; }
+        public ObservableCollection<Vorgang>? Processes { get; set; }
         
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();

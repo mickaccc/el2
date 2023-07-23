@@ -13,6 +13,8 @@
     using Lieferliste_WPF.View.Dialogs;
     using System.CodeDom;
     using System.Diagnostics;
+    using GongSolutions.Wpf.DragDrop.Utilities;
+    using Gat.Controls.Framework;
 
 
     /// <summary>
@@ -29,111 +31,16 @@
             TbControl.SelectedIndex = 0;
 
         }
-        void HandleMainWindowLoaded(object sender, RoutedEventArgs e)
-        {
-            CommandBindings.Add(new CommandBinding(
-                ELCommands.ShowUserMgmt, HandleMenageUserExecuted,
-                HandelMenageUserCanExecute));
-            CommandBindings.Add(new CommandBinding(
-                ELCommands.ShowMachinePlan, HandleMachinePlanExecuted, HandleMachinePlanCanExecute));
 
-        }
         #region Events
-        private void HandleMachinePlanCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = PermissionsProvider.GetInstance().GetUserPermission("MP00");
-        }
-
-        private void HandleMachinePlanExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            bool mp = false;
-            Window? window = null;
-            
-            foreach (Window wnd in this.OwnedWindows)
-            {
-                if (wnd.Name=="tabable")
-                {
-                    window = (wnd.Tag.ToString() == "MPL") ? wnd : null;                  
-                }
-            }
-            if (window == null)
-            {
-                foreach (TabItem item in TbControl.Items)
-                {
-                    if (item.Name == "MPL") { TbControl.Items.MoveCurrentTo(item); mp = true; break; }
-                }
-                
-            }
-            else  window?.Activate();
-            
-            if(window == null && !mp)
-            {
-                Frame frame = new()
-                {
-                    Source = new Uri("/View/MachinePlan.xaml", UriKind.Relative),
-                    Name="MPL"
-                    
-                };
-                TabItem tabItem = new()
-                {
-                    Name="MPL",
-                    Header = "Maschinen Zuteilung",
-                    Content = frame,
-                    IsSelected = true                   
-                };
-                TbControl.Items.Add(tabItem);
-            }
-        }
-        
-        private void HandelMenageUserCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = PermissionsProvider.GetInstance().GetUserPermission("UM00");
-        }
-
-        private void HandleMenageUserExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            UserEdit usr = new UserEdit();
-            usr.Owner = this;
-            usr.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            usr.Show();
-        }
-        
+           
         private void About_Click(object sender, RoutedEventArgs e)
         {
             WPFAboutBox about = new WPFAboutBox(this);
             about.ShowDialog();
         }
 
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-        {
-            //using (var db = new DB_COS_LIEFERLISTE_SQLEntities())
-            //{
-            //    DeliveryListViewModel persp = null;
-            //    foreach (var l in (this.DataContext as ToolCase).LeaderPanes)
-            //    {
-            //        if (l.GetType() == (typeof(DeliveryListViewModel)))
-            //            persp = l as DeliveryListViewModel;
 
-            //        //if (persp != null)
-            //        //{
-
-
-            //        //    foreach (var lie in db.lieferlistes)
-            //        //    {
-            //        //        lie.Bem_M = persp.Processes.Find(y => y.VID == lie.VID).Bem_M;
-            //        //        lie.Bem_MA = persp.Processes.Find(y => y.VID == lie.VID).Bem_MA;
-            //        //        lie.Bem_T = persp.Processes.Find(y => y.VID == lie.VID).Bem_T;
-            //        //        lie.Dringend = persp.Processes.Find(y => y.VID == lie.VID).Dringend;
-            //        //        lie.Bemerkung = persp.Processes.Find(y => y.VID == lie.VID).Bemerkung;
-            //        //        lie.Mappe = persp.Processes.Find(y => y.VID == lie.VID).Mappe;
-            //        //    }
-            //        //}
-
-            //    }
-            //    db.SaveChanges();
-            //}
-            base.OnClosing(e);
-        }
 
         private void TabItem_Drag(object sender, MouseEventArgs e)
         {
@@ -141,8 +48,8 @@
 
             if (e.Source is TabItem tabItem)
             {
-                //if (Mouse.PrimaryDevice.LeftButton == MouseButtonState.Pressed)
-                    //DragDrop.DoDragDrop(tabItem, tabItem, DragDropEffects.Move);
+                if (Mouse.PrimaryDevice.LeftButton == MouseButtonState.Pressed)
+                    DragDrop.DoDragDrop(tabItem, tabItem, DragDropEffects.Move);
             }
         }
 
@@ -170,25 +77,29 @@
         }
         private void TabControl_Leave(object sender, DragEventArgs e)
         {
-            //e.Effects = DragDropEffects.Move;
+            e.Effects = DragDropEffects.Move;
 
-            //var tabItemSource = (TabItem)e.Data.GetData(typeof(TabItem));
-            //TabControl tabCrt = (TabControl)sender;
-            //Window wnd = new Tabable
-            //{
-            //    Owner = this,
-            //    Title = tabItemSource.Header.ToString(),
-            //    Content = tabItemSource.Content,
-            //    Tag = "MPL"
+            var tabItemSource = (TabItem)e.Data.GetData(typeof(TabItem));
+            if (tabItemSource != null)
+            {
+                TabControl tabCrt = (TabControl)sender;
+                Window wnd = new Tabable
+                {
+                    Owner = this,
+                    Title = tabItemSource.Header.ToString(),
+                    Content = tabItemSource.Content,
+                    Tag = "MPL"
 
-            //};
-            //MainWindowViewModel mv = DataContext as MainWindowViewModel;
-            //mv.WindowTitles.Add((Page)tabItemSource.Content);
-            //tabCrt.Items.Remove(tabItemSource);
+                };
+                
+                MainWindowViewModel mv = DataContext as MainWindowViewModel;
+                mv.WindowTitles.Add(tabItemSource);
+                mv.TabTitles.Remove(tabItemSource);
 
-            //wnd.Show();
+                wnd.Show();
 
-            //this.Background = Brushes.White;
+                this.Background = Brushes.White;
+            }
         }
         private void TabControl_Enter(object sender, DragEventArgs e)
         {
@@ -224,6 +135,48 @@
             return null;
         }
 
+        private void TbControl_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (e.MiddleButton == MouseButtonState.Pressed)
+                {
+                    TabControl tabCrt = (TabControl)sender;
+                    TabItem tabItemSource = (TabItem)tabCrt.SelectedItem;
+                    Window wnd = new Tabable
+                    {
+                        Owner = this,
+                        Title = (string)tabItemSource.Header
 
+                    };
+
+                    (wnd as Tabable).Tabable_TabControl.Items.Add(tabItemSource);
+                    MainWindowViewModel mv = DataContext as MainWindowViewModel;
+                    mv.TabTitles.Remove(tabItemSource);
+                    mv.WindowTitles.Add(tabItemSource);
+
+                    wnd.Show();
+                }
+            }
+            
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message,"Fehlermeldung",MessageBoxButton.OK,MessageBoxImage.Error);
+            }
+        }
+
+        private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MainWindowViewModel vm = (MainWindowViewModel)DataContext;
+            if (vm != null)
+            {
+                if (vm.CheckChanges())
+                {
+                    MessageBoxResult r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
+                        "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                    if (r == MessageBoxResult.Yes) vm.SaveChanges();
+                }
+            }
+        }
     }
 }

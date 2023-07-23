@@ -5,15 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:Lieferliste_WPF.View"
+        xmlns:dd="urn:gong-wpf-dragdrop"
         mc:Ignorable="d"
-        Title="Tabable" Height="450" Width="800" x:Name="tabable" >
-    <Window.Resources>
-        <!--<Style TargetType="Grid">
-            <EventSetter Event="PreviewMouseDown" Handler="FrameworkElement_MouseDown"/>
-        </Style>-->
-        
-    </Window.Resources>
-    
+        Height="450" Width="800" x:Name="tabable" >
+
     <Grid >
+        <TabControl x:Name="Tabable_TabControl"
+                    dd:DragDrop.IsDragSource="True">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <HeaderedContentControl Header="{Binding Title, ElementName=tabable}"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Frame Content="{Binding}"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
     </Grid>
 </Window>

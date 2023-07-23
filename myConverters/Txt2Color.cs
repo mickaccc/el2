@@ -15,7 +15,7 @@ namespace Lieferliste_WPF.myConverters
             try
             {
                 
-                ColorConverter converter = new ColorConverter();
+                ColorConverter converter = new();
                 if(value == null) return (Color)converter.ConvertFromInvariantString("#FFFFFFFF");
                 Color color = (Color)converter.ConvertFromInvariantString(value.ToString());
 

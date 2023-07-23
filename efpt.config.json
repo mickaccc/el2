@@ -141,6 +141,10 @@
       {
          "Name": "[dbo].[WorkSap]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[LieferView]",
+         "ObjectType": 3
       }
    ],
    "UiHint": "DESKTOP-MEMDFDP\\SQLEXPRESS.DB_COS_LIEFERLISTE_SQL",

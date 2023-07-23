@@ -52,10 +52,14 @@ namespace Lieferliste_WPF.Utilities
                 result.AddRange((IEnumerable<string>)query);
                            
             }
-            catch (Exception e)
+            catch (NullReferenceException e)
             {
                 System.Windows.MessageBox.Show("Fehler beim laden vom Berechtigungssystem!\n" + e.Message + "\n" + e.InnerException,
-                    "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);              
+                   "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+            catch (Exception)
+            {
+                 
             }
             return result;
         }

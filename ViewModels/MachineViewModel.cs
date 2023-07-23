@@ -37,11 +37,6 @@ namespace Lieferliste_WPF.ViewModels
 
         }
 
-        private void LoadData()
-        {
-            
-
-        }
         protected override void GetData()
         {
             

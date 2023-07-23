@@ -107,8 +107,6 @@
     <Reference Include="CodeReason.Reports">
       <HintPath>res\CodeReason.Reports.dll</HintPath>
     </Reference>
-    <Reference Include="System.Security" />
-    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
@@ -257,6 +255,7 @@
     <PackageReference Include="log4net">
       <Version>2.0.15</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.6.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
@@ -288,12 +287,6 @@
       <Version>4.5.4</Version>
     </PackageReference>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.410601">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.4" />
   </ItemGroup>
   <ItemGroup>
@@ -311,6 +304,7 @@
     <None Remove="Images\collapse.png" />
     <None Remove="Images\delete.jpg" />
     <None Remove="Images\hide.png" />
+    <None Remove="Images\SplashPic.png" />
     <Page Remove="Templates\AllocationReport.xaml" />
     <Page Remove="UserControls\AllocationWorkingList.xaml" />
   </ItemGroup>
@@ -324,5 +318,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="Images\SplashPic.png" />
   </ItemGroup>
 </Project>

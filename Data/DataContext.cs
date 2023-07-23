@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Lieferliste_WPF.Data.Models;
-using Lieferliste_WPF.Properties;
 
 namespace Lieferliste_WPF.Data
 {
     public partial class DataContext : DbContext
     {
         public virtual DbSet<Costunit> Costunits { get; set; } = null!;
+        public virtual DbSet<LieferView> LieferViews { get; set; } = null!;
         public virtual DbSet<Machine> Machines { get; set; } = null!;
         public virtual DbSet<Permission> Permissions { get; set; } = null!;
         public virtual DbSet<PermissionRole> PermissionRoles { get; set; } = null!;
@@ -54,8 +54,8 @@ namespace Lieferliste_WPF.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(Settings.Default.ConnectionString);
-                //optionsBuilder.UseSqlServer("Data Source=DESKTOP-MEMDFDP\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Trust Server Certificate=True;Command Timeout=300");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Data Source=DESKTOP-MEMDFDP\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Trust Server Certificate=True;Command Timeout=300");
             }
         }
 
@@ -64,6 +64,29 @@ namespace Lieferliste_WPF.Data
             modelBuilder.Entity<Costunit>(entity =>
             {
                 entity.Property(e => e.CostunitId).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<LieferView>(entity =>
+            {
+                entity.ToView("LieferView");
+
+                entity.Property(e => e.Aid).IsUnicode(false);
+
+                entity.Property(e => e.ArbPlSap).IsUnicode(false);
+
+                entity.Property(e => e.BemM).IsUnicode(false);
+
+                entity.Property(e => e.BemMa).IsUnicode(false);
+
+                entity.Property(e => e.BemT).IsUnicode(false);
+
+                entity.Property(e => e.CommentMach).IsUnicode(false);
+
+                entity.Property(e => e.Marker).IsFixedLength();
+
+                entity.Property(e => e.ProcessingUom).IsFixedLength();
+
+                entity.Property(e => e.VorgangId).IsUnicode(false);
             });
 
             modelBuilder.Entity<Machine>(entity =>
