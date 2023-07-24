@@ -6,11 +6,12 @@
     xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
     xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
     xmlns:util="clr-namespace:Lieferliste_WPF.Utilities"
+    xmlns:dd="urn:gong-wpf-dragdrop"
     mc:Ignorable="av"
     x:Class="Lieferliste_WPF.View.MainWindow"
  
         x:Name="mainWindow"
-        Title="LieferListe El2" Height="600" Loaded="HandleMainWindowLoaded">
+        Title="LieferListe El2" Height="500" Closing="mainWindow_Closing" >
 
     <Window.Resources>
         <conv:PermissionConverter x:Key="permission"/>
@@ -52,7 +53,6 @@
 
                 <MenuItem Header="Hilfe" >
                     <MenuItem Header="About" /> <!-- Click="About_Click"/>-->
-                    <MenuItem Header="OrderView" Command="{Binding ShowOrderView, Mode=OneWay, Source={StaticResource elCmd}}"/>
                     <MenuItem Header="Archiv" Command="{Binding ShowArchive, Mode=OneWay, Source={StaticResource elCmd}}"/>
                 </MenuItem>
             </Menu>
@@ -169,23 +169,18 @@
                     <ComboBox x:Name="cmbUnion" Height="23" ItemsSource="{Binding}" DisplayMemberPath="Bereich" SelectedValuePath="BID" SelectedIndex="0" />
 
                 </ToolBar>
-
             </ToolBarTray>
 
         </DockPanel>
-        <TabControl x:Name="TbControl" Grid.Row="1" AllowDrop="True" ItemsSource="{Binding TabTitles}">
-            <TabControl.Resources>
-                <Style TargetType="TabItem">
-                    <Setter Property="AllowDrop" Value="True"/>
-                    <EventSetter Event="PreviewMouseMove" Handler="TabItem_Drag"/>
-                    <EventSetter Event="Drop" Handler="TabItem_Drop"/>
-                </Style>
-                <Style TargetType="TabControl">
-                    <EventSetter Event="DragLeave" Handler="TabControl_Leave"/>
-                    
-                </Style>
-            </TabControl.Resources>
-            
+        <TabControl x:Name="TbControl" Grid.Row="1" AllowDrop="True" HorizontalAlignment="Stretch"
+                    ItemsSource="{Binding TabTitles}"
+                    MouseDown="TbControl_MouseDown"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding}"
+                    dd:DragDrop.UseDefaultDragAdorner="True"
+                    dd:DragDrop.UseDefaultEffectDataTemplate="True">
+
             <TabControl.ContentTemplate>
                 <DataTemplate>
                     <Frame Content="{Binding}"/>
@@ -193,7 +188,5 @@
             </TabControl.ContentTemplate>
 
         </TabControl>
-
-
     </Grid>
 </Window>

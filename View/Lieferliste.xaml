@@ -15,8 +15,8 @@
     x:Name="lieferListe"
     x:Class="Lieferliste_WPF.View.Lieferliste"
       mc:Ignorable="d" 
-      d:DesignHeight="450"
-      Title="Lieferliste" Width="1399" Loaded="lieferListe_Loaded">
+      d:DesignHeight="450" WindowWidth="1400"
+      Title="Lieferliste" >
     <Page.Resources>
         <conv:DateConverter x:Key="DateConverter"/>
         <conv:TTNR_Converter x:Key="TTNR-Converter"/>
@@ -49,6 +49,11 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </WpfCustomControlLibrary:ClearableHintTextBox>
+            <ComboBox x:Name="cmb_filters" Width="100" >
+                <ComboBoxItem IsSelected="True">kein</ComboBoxItem>
+                <ComboBoxItem>zum Ablegen</ComboBoxItem>
+                <ComboBoxItem>ausgeblendet</ComboBoxItem>
+            </ComboBox>
             <StackPanel Orientation="Horizontal"  DockPanel.Dock="Right" Background="DarkBlue" TextElement.Foreground="Beige"
                         TextElement.FontSize="20">
                 <TextBlock Text="Anzahl Vorgänge:" Margin="5,0,5,0"
@@ -60,23 +65,22 @@
         <ScrollViewer Grid.Row="1">
             <ItemsControl x:Name="Lieferlist"
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                          ItemsSource="{Binding OrdersView , Source={StaticResource LieferViewModel}}"
-                          ScrollViewer.CanContentScroll="True"  >
+                          ScrollViewer.CanContentScroll="True" >
+                
+                <ItemsControl.ItemsSource>
+                    <PriorityBinding>
+                        <Binding Source="{StaticResource LieferViewModel}" Path="OrdersView" IsAsync="True"/>
+                        <Binding Source="{StaticResource LieferViewModel}" Path="PrioOrders" IsAsync="False"/>
+                    </PriorityBinding>
+
+                </ItemsControl.ItemsSource>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border CornerRadius="5" BorderBrush="Black" Background="LightGreen" BorderThickness="1" Margin="2" >
+                        <Border x:Name="border" CornerRadius="5" BorderBrush="Black" Background="LightGreen" BorderThickness="1" Margin="2" >
+
                             <StackPanel Height="100">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand, Source={StaticResource LieferViewModel}}" />
-                                        <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand, Source={StaticResource LieferViewModel}}"
-                                                  />
-                                        <!--CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource FindAncestor,
-                                            AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.InputBindings}"/>-->
-                                        <MenuItem Header="RTB" Command="{Binding ShowRtbEditor, Source={StaticResource LieferViewModel}}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+
                                 <UserControls:LieferlisteControl x:Name="ucLiefer" 
                             Aid="{Binding Aid}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
@@ -95,8 +99,19 @@
                             Invisible="{Binding Ausgebl, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}"
-                            HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource LieferViewModel}}"/>
-                                
+                            HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource LieferViewModel}}">
+                                    <UserControls:LieferlisteControl.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand, Source={StaticResource LieferViewModel}}"
+                                                      CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
+                                            <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand, Source={StaticResource LieferViewModel}}"
+                                                      CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
+                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand, Source={StaticResource LieferViewModel}}"
+                                                  CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
+                                        </ContextMenu>
+                                    </UserControls:LieferlisteControl.ContextMenu>
+                                </UserControls:LieferlisteControl>
+
                             </StackPanel>
                         </Border>
                     </DataTemplate>

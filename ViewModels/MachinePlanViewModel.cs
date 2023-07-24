@@ -66,8 +66,6 @@ namespace Lieferliste_WPF.ViewModels
         
         }
 
-
-
         private bool OnSaveCanExecute(object arg)
         {
             return Dbctx.ChangeTracker.HasChanges();
@@ -82,7 +80,6 @@ namespace Lieferliste_WPF.ViewModels
         private void LoadData()
         {
  
-
             var qp = Dbctx.Vorgangs
                 .Include(x => x.AidNavigation)
                 .ThenInclude(x => x.MaterialNavigation)
@@ -150,72 +147,6 @@ namespace Lieferliste_WPF.ViewModels
 
         }
 
-
-        //public bool DragProcess(String VID,int RID)
-        //{
-        //    if(_db.ChangeTracker.HasChanges()) { _db.SaveChanges(); }
-            
-        //    var pro = Processes.FirstOrDefault(x => x.VorgangId == VID);
-        //    var proB = _processesAll.First(x => x.v.VorgangId == VID);
-            
-
-        //        PlanMachine? p_new = Machines.FirstOrDefault(x => x.RID == RID);
-        //        if (pro != null) //new planning
-        //        {
-        //            RessourceVorgang rv_new = new() { Vid = VID, Rid = RID };
-                    
-        //            Processes.Remove(pro);
-        //            _db.RessourceVorgangs.Add(rv_new);
-        //            p_new.Processes.Add(pro);
-                    
-        //            _processCV.Refresh();
-                    
-        //            return true;
-        //        }
-        //        else if(proB.r.RessourceId == RID) //sort in same machine
-        //        {
-
-        //        }
-        //        else if(proB.r.RessourceId == 999999) //parking
-        //        {
-
-        //        }
-        //        else if(RID == 0 && proB.resv != null)//remove from machine
-        //        {
-        //            int r = proB.resv.Rid;
-        //            PlanMachine plm = Machines.First(x => x.RID == proB.resv.Rid);
-                    
-        //            RessourceVorgang rv_old = _db.RessourceVorgangs.First(x => x.Vid == VID && x.Rid == r);
-                    
-        //            plm.Processes.Remove(proB);
-        //            _db.RessourceVorgangs.Attach(rv_old);
-        //            _db.RessourceVorgangs.Remove(rv_old);
-                    
-        //            Processes.Add(proB);
-        //            _processCV.Refresh();
-                    
-        //            return true;
-        //        }
-        //        else if(proB.resv != null) //drag to another machine
-        //        {
-        //            if (proB.resv.Rid != RID && RID != 0 && RID != 999999)
-        //            {
-        //                int r = proB.resv.Rid;
-        //                PlanMachine p_old = Machines.First(x => x.RID == r);
-        //                RessourceVorgang rv_new = new() { Vid=VID, Rid=RID };
-        //                RessourceVorgang rv_old = _db.RessourceVorgangs.First(x => x.Vid == VID && x.Rid == r);
-        //                _db.RessourceVorgangs.Attach(rv_old);
-        //                _db.RessourceVorgangs.Remove(rv_old);
-        //                _db.RessourceVorgangs.Add(rv_new);
-        //                p_old.Processes.Remove(proB);
-        //                p_new.Processes.Add(proB);
-
-        //                return true;
-        //            }
-        //        }
-            
-        //    return false;
-        //}
 
         private void SelectionChange(object commandParameter)
         {

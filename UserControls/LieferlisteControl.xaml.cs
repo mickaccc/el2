@@ -245,23 +245,22 @@ namespace Lieferliste_WPF.UserControls
         public static readonly DependencyProperty ArchivatedProperty =
             DependencyProperty.Register("Archivated", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
 
+            
+        public string SelectedValue
+        {
+            get { return (string)GetValue(SelectedValueProperty); }
+            set { SetValue(SelectedValueProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SelectedValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedValueProperty =
+            DependencyProperty.Register("SelectedValue", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
 
         #endregion
 
 
-        private void LieferlisteControl_Loaded(object sender, RoutedEventArgs e)
-        {
 
-            // Do not load your data at design time.
-            if (!System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
-            {
-                //Load your data here and assign the result to the CollectionViewSource.
-                //System.Windows.Data.CollectionViewSource myCollectionViewSource = (System.Windows.Data.CollectionViewSource)this.Resources["Resource Key for CollectionViewSource"];
-                //.Source = (LieferViewModel)this.DataContext;
-             }
-
-        }
         void HandleLieferlisteControlLoaded(object sender, RoutedEventArgs e)
         {
             CommandBindings.Add(new CommandBinding(
@@ -363,6 +362,23 @@ namespace Lieferliste_WPF.UserControls
         private void btnToArchiv_Click(object sender, RoutedEventArgs e)
         {
             SetValue(ArchivatedProperty, true);
+        }
+
+
+
+        private void txtCommetMa_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void txtCommetM_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void chkInvis_Checked(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 
