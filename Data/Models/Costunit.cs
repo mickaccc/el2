@@ -11,7 +11,6 @@ namespace Lieferliste_WPF.Data.Models
     {
         public Costunit()
         {
-            Machines = new HashSet<Machine>();
             RessourceCostUnits = new HashSet<RessourceCostUnit>();
             UserCosts = new HashSet<UserCost>();
         }
@@ -24,8 +23,6 @@ namespace Lieferliste_WPF.Data.Models
         [Column("plan_relevance")]
         public bool PlanRelevance { get; set; }
 
-        [InverseProperty(nameof(Machine.CostUnitNavigation))]
-        public virtual ICollection<Machine> Machines { get; set; }
         [InverseProperty(nameof(RessourceCostUnit.Cost))]
         public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; }
         [InverseProperty(nameof(UserCost.Cost))]

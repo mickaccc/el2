@@ -69,8 +69,6 @@ namespace Lieferliste_WPF.ViewModels
         {
             LoadDataFast();
             LoadData();
-            Debug.WriteLine("Orders {0}", _orders?.Count ?? -1);
-            Debug.WriteLine("PrioOrders {0}", PrioOrders?.Count ?? -1);
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
             
@@ -81,9 +79,6 @@ namespace Lieferliste_WPF.ViewModels
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             //ShowRtbEditor = new ActionCommand(OnShowRtbEditorExecuted, OnSchowRtbEditorCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-
-
-
 
         }
 
