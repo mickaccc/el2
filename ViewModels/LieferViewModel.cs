@@ -43,10 +43,8 @@ namespace Lieferliste_WPF.ViewModels
     {
 
 
-        private IDialogProvider DialogProvider { get; set; }
         public ICollectionView OrdersView { get; }
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
-
 
 
         private ObservableCollection<Vorgang> _orders { get; } = new();
@@ -56,21 +54,21 @@ namespace Lieferliste_WPF.ViewModels
         public ActionCommand OrderViewCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
   
-        public String HasMouse { get; set; }
+        public String HasMouse { get; set; } = String.Empty;
         private static bool isLoaded = false;
         private Dictionary<String, String> _filterCriterias;
-        private String _sortField;
-        private String _sortDirection;
+        private String _sortField = String.Empty;
+        private String _sortDirection = String.Empty;
         private RelayCommand textSearchCommand;
-        private string _searchFilterText;
-        internal CollectionViewSource ordersViewSource {get; private set;} = new();
+        private string _searchFilterText = String.Empty;
+        internal CollectionViewSource OrdersViewSource {get; private set;} = new();
 
         public LieferViewModel()
         {
+           
             LoadDataFast();
             LoadData();
-            Debug.WriteLine("Orders {0}", _orders?.Count ?? -1);
-            Debug.WriteLine("PrioOrders {0}", PrioOrders?.Count ?? -1);
+
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
             
@@ -79,12 +77,7 @@ namespace Lieferliste_WPF.ViewModels
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
-            //ShowRtbEditor = new ActionCommand(OnShowRtbEditorExecuted, OnSchowRtbEditorCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-
-
-
-
         }
 
 
@@ -175,8 +168,8 @@ namespace Lieferliste_WPF.ViewModels
                 
                 if (parameter is LieferlisteControl lvc)
                 {
-                    ordersViewSource.SortDescriptions.Clear();
-                    ordersViewSource.SortDescriptions.Add(new SortDescription(lvc.HasMouseOver, ListSortDirection.Descending));
+                    OrdersViewSource.SortDescriptions.Clear();
+                    OrdersViewSource.SortDescriptions.Add(new SortDescription(lvc.HasMouseOver, ListSortDirection.Descending));
                     OrdersView.Refresh();
                 }
             }
@@ -198,8 +191,8 @@ namespace Lieferliste_WPF.ViewModels
 
                 if (v != String.Empty)
                 {
-                    ordersViewSource.SortDescriptions.Clear();
-                    ordersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
+                    OrdersViewSource.SortDescriptions.Clear();
+                    OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
                     var uiContext = SynchronizationContext.Current;
                     uiContext?.Send(x => OrdersView.Refresh(), null);
                 }

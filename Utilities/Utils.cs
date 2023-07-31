@@ -55,18 +55,7 @@ namespace Lieferliste_WPF.Utilities
         }
     }
 
-    public static class LinkedListExtensions
-    {
-        public static IEnumerable<LinkedListNode<T>> EnumerateNodes<T>(this LinkedList<T> list)
-        {
-            var node = list.First;
-            while (node != null)
-            {
-                yield return node;
-                node = node.Next;
-            }
-        }
-    }
+
 
     public class ObservableList<T> : IList<T>, IList, INotifyCollectionChanged, INotifyPropertyChanged
     {
@@ -159,18 +148,9 @@ namespace Lieferliste_WPF.Utilities
             if (CollectionChanged != null)
                 CollectionChanged(this, args);
         }
-        //private void OnCollectionChanged(NotifyCollectionChangedEventArgs args)
-        //{
-        //    var handler = CollectionChanged;
-        //    if (handler != null)
-        //        handler(this, args);
-        //}
 
-        private void OnPropertyChanged()
-        {
 
-            OnPropertyChanged("startTime");
-        }
+
         protected virtual void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
@@ -767,19 +747,5 @@ namespace Lieferliste_WPF.Utilities
             return ob;
         }
     }
-    //public static T GetChildOfType<T>(this DependencyObject depObj)
-    //where T : DependencyObject
-    //{
-    //    if (depObj == null) return null;
-
-    //    for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
-    //    {
-    //        var child = VisualTreeHelper.GetChild(depObj, i);
-
-    //        var result = (child as T) ?? GetChildOfType<T>(child);
-    //        if (result != null) return result;
-    //    }
-    //    return null;
-    //}
 
 }

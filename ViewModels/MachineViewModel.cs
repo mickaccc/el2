@@ -24,7 +24,6 @@ namespace Lieferliste_WPF.ViewModels
 
         public ObservableCollection<DayLine> KappaLine { get; private set; }
         public ObservableLinkedList<Process> Processes { get; private set; }
-        public MachineContainerViewModel MachineContainerViewModel { get; set; }
         public String Title { get { return Machine.MachineName; } }
 
         public Int32 RID { get { return Machine.RID; } }

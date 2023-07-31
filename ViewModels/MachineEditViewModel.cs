@@ -4,6 +4,7 @@ using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.SqlClient;
@@ -16,45 +17,31 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    public class UserViewModel : Base.ViewModelBase, IDataErrorInfo
+    public class MachineEditViewModel : Base.ViewModelBase, IDataErrorInfo
     {
         
-  
-        public ICommand SelectionChangedCommand { get; private set; }
+
         public ICommand SaveCommand { get; private set; }
-        public ICommand NewCommand { get; private set; }
-        public ICommand DeleteCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
 
 
-        private static ICollectionView _usrCV;
+        private static ICollectionView _ressCV;
         private static bool _isLocked = false;
         private static bool _loaded = false;
         private static bool _isNew = false;
-        public static ObservableCollection<User>? Users { get; private set; }
-        
-        public static ObservableCollection<Wpart> Ro { get; private set; }
-        
-        public static ObservableCollection<Wpart> Wo { get; private set; }
-        public static ObservableCollection<Wpart> Cost { get; private set; }
-
-
-        public UserViewModel()
+        public static ImmutableList<Ressource>? Ressources { get; private set; }
+        public List<WorkArea> WorkAreas { get; private set; } = new List<WorkArea>();
+        public MachineEditViewModel()
         {
-            Wo = new();
-            Ro = new();
-            Cost = new();
 
             LoadData();
 
-            _usrCV = CollectionViewSource.GetDefaultView(Users);
-            SelectionChangedCommand = new ActionCommand(OnSelectionChangeExecuted, OnSelectionChangeCanExecute);
+            _ressCV = CollectionViewSource.GetDefaultView(Ressources);
+
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            NewCommand = new ActionCommand(OnNewExecuted, OnNewCanExecute);
-            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
             
-            _usrCV.MoveCurrentToFirst();
+            _ressCV.MoveCurrentToFirst();
 
         }
 
@@ -64,7 +51,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             get
             {
-                User us = (User)_usrCV.CurrentItem;
+                User us = (User)_ressCV.CurrentItem;
                 string result = null;
                 if (columnName == nameof(User.UsrName))
                 {
@@ -94,40 +81,7 @@ namespace Lieferliste_WPF.ViewModels
             return true;
         }
 
-        private bool OnDeleteCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission("UM03");
-        }
 
-        private void OnDeleteExecuted(object obj)
-        {
-            var u = _usrCV.CurrentItem;
-            if (u is User usr)
-            { 
-            Users?.Remove(usr);
-            Dbctx.Users.Remove(usr);
-                OnSaveExecuted(usr);
-            }
-        }
-
-        private bool OnNewCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission("UM01") && !_isNew;
-        }
-
-        private void OnNewExecuted(object obj)
-        {
-            User u = new User();
-            Users?.Add(u);
-            
-            _usrCV.MoveCurrentTo(u);
-            _isLocked = true;
-            foreach(Wpart w in Ro) { w.Check = false; }
-            foreach(Wpart w in Wo) { w.Check = false; }
-            foreach(Wpart w in Cost) { w.Check=false; }
-            _isLocked = false;
-            _isNew = true;
-        }
 
         private void OnSaveExecuted(object obj)
         {
@@ -135,36 +89,9 @@ namespace Lieferliste_WPF.ViewModels
             {
                 int error = 0;
                 string errMsg ="";
-                if (_usrCV.CurrentItem is User us)
+                if (_ressCV.CurrentItem is User us)
                 {
-                    if (_isNew)
-                    {
-                        if (!Dbctx.Users.Where(x => x.UserIdent == us.UserIdent).Any() &&
-                            !Dbctx.Users.Where(x => x.UsrName == us.UsrName).Any())
-                        {
-                            Dbctx.Users.Add(us);
-                            foreach (Wpart wp in Ro.Where(x => x.Check))
-                            {
-                                UserRole ur = new() { RoleId = wp.Id, UserIdent = us.UserIdent };
-                                Dbctx.UserRoles.Add(ur);
-                            }
-                            foreach (Wpart wp in Wo.Where(x => x.Check))
-                            {
-                                UserWorkArea uw = new() { WorkAreaId = wp.Id, UserId = us.UserIdent };
-                                Dbctx.UserWorkAreas.Add(uw);
-                            }
-                            foreach (Wpart wp in Cost.Where(x => x.Check))
-                            {
-                                UserCost uc = new() { CostId = wp.Id, UsrIdent = us.UserIdent };
-                                Dbctx.UserCosts.Add(uc);
-                            }
-
-                        }
-                        else
-                        {
-                            error++;
-                        }
-                    }
+    
                 }
                 if (error != 0) errMsg = "\n" + error + " neue Datensätze sind Fehlerhaft.\n" +
                         "Name oder User sind leer oder nicht eindeutig.\n" +
@@ -197,82 +124,17 @@ namespace Lieferliste_WPF.ViewModels
         }
 
 
-        private static bool OnSelectionChangeCanExecute(object arg)
-        {
-            User? user = (User)_usrCV.CurrentItem;
-            return !user.UsrName.IsNullOrEmpty() &&
-                !user.UserIdent.IsNullOrEmpty();
-        }
-
-        private static void OnSelectionChangeExecuted(object obj)
-        {
-            _isLocked = true;
-            if (obj is User us)
-            {
-                foreach (Wpart wpart in Ro)
-                {
-                    wpart.Check = us.UserRoles.Any(x => x.RoleId == wpart.Id);
-                }
-                foreach (Wpart wpart in Wo)
-                {
-                    wpart.Check = us.UserWorkAreas.Any(x => x.WorkAreaId == wpart.Id);
-                }
-                foreach (Wpart wpart in Cost)
-                {
-                    wpart.Check = us.UserCosts.Any(x => x.CostId == wpart.Id);
-                }
-
-                _isLocked = false;                           
-            }         
-        }
 
         private void LoadData()
         {
-            Users = Dbctx.Users
-                .Include(x => x.UserWorkAreas)
-                .Include(y => y.UserRoles)
-                .ThenInclude(c => c.Role)
-                .Include(x => x.UserCosts)
-                .ThenInclude(x => x.Cost)
-                .Where(x => x.Exited == false)
-                .OrderBy(o => o.UsrName)
-                .ToObservableCollection();
- 
-            var us = Users.Cast<User>().First();
-            foreach (Costunit cost in Dbctx.Costunits)
-            {
-                Cost.Add(new Wpart()
-                {
-                    Id = cost.CostunitId,
-                    Name = cost.Description,
-                    Type = "COST",
-                    Check = us.UserCosts.Any(y => y.CostId == cost.CostunitId)
-                });
-            }
-            Cost.OrderBy(o => o.Id);
+            Ressources = Dbctx.Ressources
+                .Include(y => y.RessourceCostUnits)
+                .Where(y => y.Inventarnummer != null)
+                .ToImmutableList();
 
-            foreach (WorkArea work in Dbctx.WorkAreas)
-            {
-                Wo.Add(new Wpart() { Id = work.WorkAreaId, Name = work.Bereich, Type = "WORKAREA",
-                    Check = us.UserWorkAreas.Any(x => x.WorkAreaId == work.WorkAreaId)});
-                
-            }
-            Wo.OrderBy(x => x.Name);
-            
-            
-            int usrlvl = (int)Users.First(x => x.UserIdent == AppStatic.User.UserIdent).UserRoles.Max(y => y.Role.Rolelevel);
-            foreach (Role ro in Dbctx.Roles.Where(x => x.Rolelevel <= usrlvl))
-            {
-                Ro.Add(new Wpart()
-                {
-                    Id = ro.Id,
-                    Name = ro.Description,
-                    Type = "ROLE",
-                    Check = us.UserRoles.Any(x => x.RoleId == ro.Id)
-                });
-            }
-            _ = Ro.OrderBy(o => o.Name);
-
+            WorkAreas = Dbctx.WorkAreas
+                .OrderBy(x => x.Bereich)
+                .ToList();
 
             _loaded = true;
         }
@@ -300,7 +162,7 @@ namespace Lieferliste_WPF.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
                 if (propertyName == nameof(Check) && _loaded && !_isLocked)
                 {
-                    User us = (User)_usrCV.CurrentItem;
+                    User us = (User)_ressCV.CurrentItem;
                     switch (Type)
                     {
                         case "ROLE":
@@ -363,7 +225,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
     }
-    public class UserNameValidationRule:ValidationRule
+    public class MachineNameValidationRule:ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {

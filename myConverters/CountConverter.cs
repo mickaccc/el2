@@ -9,9 +9,9 @@ namespace Lieferliste_WPF.myConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            String suffix = null;
-            string p = parameter as String;
-            if (p != null)
+            String suffix = String.Empty;
+            
+            if (parameter is String p)
             {
                 String[] par = p.Split(new char[] { ';' });
 

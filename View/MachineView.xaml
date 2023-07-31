@@ -6,9 +6,9 @@
         xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
         xmlns:WpfCustom="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
         xmlns:dd="urn:gong-wpf-dragdrop"
-        xmlns:local="clr-namespace:Lieferliste_WPF.View"
-        
-        xmlns:UC="clr-namespace:Lieferliste_WPF.UserControls" x:Class="Lieferliste_WPF.View.MachineView"
+        xmlns:local="clr-namespace:Lieferliste_WPF.View"      
+        xmlns:UC="clr-namespace:Lieferliste_WPF.UserControls" 
+        x:Class="Lieferliste_WPF.View.MachineView"
         
         mc:Ignorable="d"
         Title="MachineView" Height="450" Width="800" >
@@ -60,13 +60,13 @@
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"
                   dd:DragDrop.DropHandler="{Binding}" >
-            <!--<DataGrid.ContextMenu>
+            <DataGrid.ContextMenu>
                 <ContextMenu Width="Auto">
                     <MenuItem x:Name="BulletDel" Header="Markierung  löschen" Command="{Binding SetMarkerCommand}" >
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiObject}">
                                 <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedValue"/>
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
@@ -77,7 +77,7 @@
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiObject}">
                                 <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedValue"/>
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
@@ -90,7 +90,7 @@
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiObject}">
                                 <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedValue"/>
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
@@ -102,7 +102,7 @@
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiObject}">
                                 <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedValue"/>
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
@@ -114,7 +114,7 @@
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiObject}">
                                 <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedValue"/>
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type DataGrid}}" />
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
@@ -123,7 +123,7 @@
                     </MenuItem>
 
                 </ContextMenu>
-            </DataGrid.ContextMenu>-->
+            </DataGrid.ContextMenu>
 
             <DataGrid.Columns>
                 

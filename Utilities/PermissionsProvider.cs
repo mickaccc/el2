@@ -13,7 +13,7 @@ namespace Lieferliste_WPF.Utilities
 
     public sealed class PermissionsProvider : ViewModels.Base.ViewModelBase
     {
-        private static PermissionsProvider _instance;
+        private static PermissionsProvider? _instance;
         
         private static readonly List<string> _permissions = new();
         

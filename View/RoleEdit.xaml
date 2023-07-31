@@ -1,0 +1,83 @@
+﻿<Page
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
+        xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
+        xmlns:lib="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+        xmlns:UserControls="clr-namespace:Lieferliste_WPF.UserControls"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+        x:Class="Lieferliste_WPF.View.RoleEdit"
+        mc:Ignorable="d"
+        Title="Role Editor" MinHeight="250" MinWidth="800" 
+        x:Name="ROLE_Editor">
+    <Page.Resources>
+        <vm:RoleEditViewModel x:Key="roleVM"/>
+        
+    </Page.Resources>
+
+    <Grid Margin="10,10,0,0" DataContext="{StaticResource roleVM}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="4">
+            <Menu DockPanel.Dock="Top" Height="23">
+                <MenuItem Header="_Speichern" Command="{Binding SaveCommand}"/>
+
+            </Menu>
+        </DockPanel>
+        <lib:HintTextBox x:Name="R01" Grid.Row="1" Grid.Column="0" TabIndex="0" HintText="Name der angezeigt werden soll" 
+                         ShowText="{Binding Roles/Description, Mode=TwoWay,
+            UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+
+
+
+
+        <ListBox x:Name="ListRoles" Grid.Row="4" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Roles}"
+                  SelectedIndex="0" SelectionChanged="ListUsers_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Description}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"
+                                           CommandParameter="{Binding SelectedItem, ElementName=ListRoles}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+        </ListBox>
+        <DataGrid Grid.Row="4" Grid.Column="1" ItemsSource="{Binding PermissionsInter}"
+                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
+                  dd:DragDrop.IsDragSource="True"
+                  dd:DragDrop.IsDropTarget="True"
+                  dd:DragDrop.DropHandler="{Binding}"/>
+
+        <DataGrid x:Name="ListPermission" Grid.Row="4" Grid.Column="2" ItemsSource="{Binding PermissionsAvail}"
+                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
+                  dd:DragDrop.IsDragSource="True"
+                  dd:DragDrop.IsDropTarget="True"
+                  dd:DragDrop.DropHandler="{Binding}" />
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
+
+            <Button x:Name="btnSave" Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,0,0,0" />
+            <Button x:Name="BtnCancel" Content="Abbrechen" Command="{Binding CloseCommand}"
+                    CommandParameter="{Binding ElementName=USERWindow}"  HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</Page>

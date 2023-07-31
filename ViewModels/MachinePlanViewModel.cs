@@ -129,7 +129,7 @@ namespace Lieferliste_WPF.ViewModels
                             foreach (var vrg in VrgList)
                             {
                                 if (vrg.VorgangId.Length > 0)
-                                    plm.Processes.Add(vrg);
+                                    plm.Processes?.Add(vrg);
                             }
                           
                     Machines.Add(plm);

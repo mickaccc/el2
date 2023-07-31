@@ -15,6 +15,7 @@ using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Data.Models;
 using System.Collections;
 using System.Windows.Data;
+using Lieferliste_WPF.View;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -26,6 +27,9 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMachinePlanCommand { get; private set; }
         public ICommand OpenLieferlisteCommand { get; private set; }
         public ICommand OpenSettingsCommand { get; private set; }
+        public ICommand OpenUserMgmtCommand { get; private set; }
+        public ICommand OpenRoleMgmtCommand { get; private set; }
+        public ICommand OpenMachineMgmtCommand { get; private set; }
         private ObservableCollection<TabItem> _tabTitles;
         private List<TabItem> _windowTitles;
 
@@ -35,8 +39,67 @@ namespace Lieferliste_WPF.ViewModels
             WindowTitles = new List<TabItem>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
             OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
-            OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute); 
+            OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
+            OpenUserMgmtCommand = new ActionCommand(OnOpenUserMgmtExecuted, OnOpenUserMgmtCanExecute);
+            OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
+            OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
         }
+
+        private void OnOpenMachineMgmtExecuted(object obj)
+        {
+            TabItem tabItem = new TabItem
+            {
+                Content = new MachineEdit(),
+                Header = contentTitle.MachineEdit,
+                Tag = Location.TAB,
+                IsSelected = true
+            };
+
+            TabTitles.Add(tabItem);
+        }
+
+        private bool OnOpenMachineMgmtCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission("MA00");
+        }
+
+        private void OnOpenRoleMgmtExecuted(object obj)
+        {
+            TabItem tabItem = new TabItem
+            {
+                Content = new RoleEdit(),
+                Header = contentTitle.RoleEdit,
+                Tag = Location.TAB,
+                IsSelected = true
+            };
+
+            TabTitles.Add(tabItem);
+        }
+
+        private bool OnOpenRoleMgmtCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission("RM00");
+        }
+
+        private void OnOpenUserMgmtExecuted(object obj)
+        {
+            TabItem tabItem = new TabItem
+            {
+                Content = new UserEdit(),
+                Header = contentTitle.UserEdit,
+                Tag = Location.TAB,
+                IsSelected = true
+            };
+
+            TabTitles.Add(tabItem);
+
+        }
+
+        private bool OnOpenUserMgmtCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission("UM00");
+        }
+
         public enum Location
         {
             TAB,
@@ -47,6 +110,10 @@ namespace Lieferliste_WPF.ViewModels
             public const string Settings = "Einstellungen";
             public const string Deliverylist = "Lieferliste";
             public const string Planning = "Einplanung";
+            public const string RoleEdit = "Rollen Management";
+            public const string MachineEdit = "Maschinen Management";
+            public const string UserEdit = "User Managment";
+
         }
         private void OnOpenSettingsExecuted(object obj)
         {

@@ -14,14 +14,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Lieferliste_WPF.View.Dialogs
+namespace Lieferliste_WPF.View
 {
     /// <summary>
-    /// Interaction logic for UserEdit.xaml
+    /// Interaction logic for MachineEdit.xaml
     /// </summary>
-    public partial class UserEdit : Window
+    public partial class MachineEdit : Page
     {
-        public UserEdit()
+        public MachineEdit()
         {
             InitializeComponent();
 
@@ -41,14 +41,18 @@ namespace Lieferliste_WPF.View.Dialogs
             e.CanExecute = true;
         }
 
-        private void HandleCloseExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
-            this.Close();
-        }
 
-        private void ListUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            
+            if(e.PropertyName == "RessourceId"
+                || e.PropertyName == "Sort")
+            {
+                e.Cancel = true;
+            }
+            else if(e.PropertyName == "RessName")
+            {
+                e.Column.Header = "Name";
+            }
         }
     }
 }

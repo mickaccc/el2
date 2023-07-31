@@ -32,7 +32,6 @@ namespace Lieferliste_WPF.UserControls
 
         }
   
-        GroupFilter gf = new GroupFilter();
 
 
         #region Properties

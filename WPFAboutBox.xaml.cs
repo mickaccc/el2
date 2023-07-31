@@ -48,7 +48,7 @@ namespace Lieferliste_WPF
 
         #region AboutData Provider
         #region Member data
-        private XmlDocument xmlDoc = null;
+        private XmlDocument xmlDoc;
 
         private const string propertyNameTitle = "Title";
         private const string propertyNameDescription = "Description";
@@ -79,7 +79,7 @@ namespace Lieferliste_WPF
                 if (string.IsNullOrEmpty(result))
                 {
                     // otherwise, just get the name of the assembly itself.
-                    result = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+                    result = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location) ?? String.Empty;
                 }
                 return result;
             }
@@ -95,7 +95,7 @@ namespace Lieferliste_WPF
                 string result = string.Empty;
                 // first, try to get the version string from the assembly.
 
-                Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                Version? version = Assembly.GetExecutingAssembly().GetName().Version;
                 if (version != null)
                 {
                     result = "Assembly " + version.ToString();
@@ -103,7 +103,7 @@ namespace Lieferliste_WPF
                 else
                 {
                     // if that fails, try to get the version from a resource in the Application.
-                    result = GetLogicalResourceString(xPathVersion);
+                    result = GetLogicalResourceString(xPathVersion) ?? String.Empty;
                 }
                 return result;
             }
@@ -114,7 +114,8 @@ namespace Lieferliste_WPF
         /// </summary>
         public string Description
         {
-            get { return CalculatePropertyValue<AssemblyDescriptionAttribute>(propertyNameDescription, xPathDescription); }
+            get { return CalculatePropertyValue<AssemblyDescriptionAttribute>(propertyNameDescription, xPathDescription)
+                    ?? String.Empty; }
         }
 
         /// <summary>
@@ -122,7 +123,8 @@ namespace Lieferliste_WPF
         /// </summary>
         public string Product
         {
-            get { return CalculatePropertyValue<AssemblyProductAttribute>(propertyNameProduct, xPathProduct); }
+            get { return CalculatePropertyValue<AssemblyProductAttribute>(propertyNameProduct, xPathProduct) 
+                    ?? String.Empty; }
         }
 
         /// <summary>
@@ -130,7 +132,8 @@ namespace Lieferliste_WPF
         /// </summary>
         public string Copyright
         {
-            get { return CalculatePropertyValue<AssemblyCopyrightAttribute>(propertyNameCopyright, xPathCopyright); }
+            get { return CalculatePropertyValue<AssemblyCopyrightAttribute>(propertyNameCopyright, xPathCopyright) 
+                    ?? String.Empty; }
         }
 
         /// <summary>
@@ -138,7 +141,8 @@ namespace Lieferliste_WPF
         /// </summary>
         public string Company
         {
-            get { return CalculatePropertyValue<AssemblyCompanyAttribute>(propertyNameCompany, xPathCompany); }
+            get { return CalculatePropertyValue<AssemblyCompanyAttribute>(propertyNameCompany, xPathCompany)
+                    ?? String.Empty; }
         }
 
         /// <summary>
@@ -146,7 +150,7 @@ namespace Lieferliste_WPF
         /// </summary>
         public string LinkText
         {
-            get { return GetLogicalResourceString(xPathLink); }
+            get { return GetLogicalResourceString(xPathLink) ?? String.Empty; }
         }
 
         /// <summary>
@@ -154,7 +158,7 @@ namespace Lieferliste_WPF
         /// </summary>
         public string LinkUri
         {
-            get { return GetLogicalResourceString(xPathLinkUri); }
+            get { return GetLogicalResourceString(xPathLinkUri) ?? String.Empty; }
         }
         #endregion
 
@@ -175,10 +179,10 @@ namespace Lieferliste_WPF
             if (attributes.Length > 0)
             {
                 T attrib = (T)attributes[0];
-                PropertyInfo property = attrib.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+                PropertyInfo? property = attrib.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
                 if (property != null)
                 {
-                    result = property.GetValue(attributes[0], null) as string;
+                    result = property.GetValue(attributes[0], null) as string ?? String.Empty;
                 }
             }
 
@@ -186,7 +190,7 @@ namespace Lieferliste_WPF
             if (result == string.Empty)
             {
                 // if that fails, try to get it from a resource.
-                result = GetLogicalResourceString(xpathQuery);
+                result = GetLogicalResourceString(xpathQuery) ?? String.Empty;
             }
             return result;
         }
@@ -194,14 +198,14 @@ namespace Lieferliste_WPF
         /// <summary>
         /// Gets the XmlDataProvider's document from the resource dictionary.
         /// </summary>
-        protected virtual XmlDocument ResourceXmlDocument
+        protected virtual XmlDocument? ResourceXmlDocument
         {
             get
             {
                 if (xmlDoc == null)
                 {
                     // if we haven't already found the resource XmlDocument, then try to find it.
-                    XmlDataProvider provider = this.TryFindResource("aboutProvider") as XmlDataProvider;
+                    XmlDataProvider? provider = this.TryFindResource("aboutProvider") as XmlDataProvider;
                     if (provider != null)
                     {
                         // save away the XmlDocument, so we don't have to get it multiple times.
@@ -222,17 +226,17 @@ namespace Lieferliste_WPF
         {
             string result = string.Empty;
             // get the About xml information from the resources.
-            XmlDocument doc = this.ResourceXmlDocument;
+            XmlDocument? doc = this.ResourceXmlDocument;
             if (doc != null)
             {
                 // if we found the XmlDocument, then look for the specified data. 
-                XmlNode node = doc.SelectSingleNode(xpathQuery);
+                XmlNode? node = doc.SelectSingleNode(xpathQuery);
                 if (node != null)
                 {
                     if (node is XmlAttribute)
                     {
                         // only an XmlAttribute has a Value set.
-                        result = node.Value;
+                        result = node.Value ?? String.Empty;
                     }
                     else
                     {

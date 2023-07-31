@@ -110,14 +110,9 @@
         #region ToArchiveCommand
         #endregion ToArchiveCommand
 
-        private void Perspective_Click(object sender, RoutedEventArgs e)
-        {
-            Button chk = sender as Button;
-            (this.DataContext as ToolCase).ChangeActivePerpective((String)chk.Content);
-        }
 
 
-        private TabItem GetTargetTabItem(object originalSource)
+        private static TabItem GetTargetTabItem(object originalSource)
         {
             var current = originalSource as DependencyObject;
 

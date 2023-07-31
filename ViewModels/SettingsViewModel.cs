@@ -29,17 +29,7 @@ namespace Lieferliste_WPF.ViewModels
                 RaisePropertyChanged("RoleIdent");
                 reloadPermissionChecked();
                 PermissionsAvail.Clear();
-                using (var ctx = new DataContext())
-                {
 
-
-
-                    //foreach (Permission p in ctx.Permissions)
-                    //{
-                    //    if (!PermissionsChecked.Any(x => x.ValidKey == p.ValidKey))
-                    //        PermissionsAvail.Add(p);
-                    //}
-                }
             }
         }
 
@@ -82,10 +72,6 @@ namespace Lieferliste_WPF.ViewModels
             {
                 Roles.Add(p);
             }
-            //foreach (var u in ctx.Users.ToList())
-            //{
-            //    Users.Add(u);
-            //}
 
 
         }

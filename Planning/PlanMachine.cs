@@ -105,13 +105,13 @@ namespace Lieferliste_WPF.Planning
 
         private bool OnSetMarkerCanExecute(object arg)
         {
-            if(arg != null)
-            {             
+            if (arg != null)
+            {
                 var values = (object[])arg;
                 if (values[1] is Vorgang)
                 {
                     return true;
-                } 
+                }
                 else return false;
             }
             return false;
