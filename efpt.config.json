@@ -19,10 +19,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Machine]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[Permission]",
          "ObjectType": 0
       },
@@ -141,18 +137,14 @@
       {
          "Name": "[dbo].[WorkSap]",
          "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[LieferView]",
-         "ObjectType": 3
       }
    ],
-   "UiHint": "DESKTOP-MEMDFDP\\SQLEXPRESS.DB_COS_LIEFERLISTE_SQL",
+   "UiHint": "hl0vm00069.DB_COS_LIEFERLISTE_SQL.dbo",
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDateOnlyTimeOnly": false,
-   "UseDbContextSplitting": false,
+   "UseDbContextSplitting": true,
    "UseFluentApiOnly": false,
    "UseHandleBars": true,
    "UseHierarchyId": false,

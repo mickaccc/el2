@@ -69,6 +69,7 @@ namespace Lieferliste_WPF.ViewModels
             LoadDataFast();
             LoadData();
 
+            Debug.WriteLine("PrioOrders {0}", PrioOrders?.Count ?? -1);
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
             
@@ -78,6 +79,10 @@ namespace Lieferliste_WPF.ViewModels
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+
+
+
+
         }
 
 
