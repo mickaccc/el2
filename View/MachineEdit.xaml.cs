@@ -54,5 +54,10 @@ namespace Lieferliste_WPF.View
                 e.Column.Header = "Name";
             }
         }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

@@ -22,10 +22,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+
         </Grid.RowDefinitions>
 
         <DockPanel >
@@ -34,30 +32,36 @@
 
             </Menu>
         </DockPanel>
-        <lib:HintTextBox x:Name="U01" Grid.Row="1" Grid.Column="0" TabIndex="0" HintText="Name der angezeigt werden soll" 
-                         ShowText="{Binding Users/UsrName, Mode=TwoWay,
-            UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Ressources}" AlternatingRowBackground="LightGray"
-                  AutoGenerateColumns="False">
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Ressources}" AlternatingRowBackground="LightGray"
+                  AutoGenerateColumns="False" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding RessName}"/>
                 <DataGridTextColumn Header="Inventarnummer" IsReadOnly="True" Binding="{Binding Inventarnummer}"/>
                 <DataGridTextColumn Header="Info" Binding="{Binding Info}" Width="4*"/>
                 <DataGridTextColumn Header="Abteilung" Binding="{Binding Abteilung}"/>
                 <DataGridTextColumn Header="WorArea" Binding="{Binding WorkAreaId}"/>
-                <DataGridComboBoxColumn Header="Bereich" Width="2*" ItemsSource="{Binding Source={StaticResource machVM}, Path=WorkAreas}"
-                                        DisplayMemberPath="{Binding Bereich}"
-                                        SelectedValuePath="{Binding WorkAreaId}"/>
+                <DataGridTextColumn Header="Bereich" Binding="{Binding WorkArea.Bereich}"/>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding Source={StaticResource machVM}, Path=WorkAreas}"
+                                      DisplayMemberPath="Bereich"
+                                      SelectedValue="WorkAreaId"
+                                      SelectedValuePath="{Binding WorkArea.Bereich}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
 
             <Button x:Name="btnSave" Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,0,0,0" />
             <Button x:Name="BtnCancel" Content="Abbrechen" Command="{Binding CloseCommand}"
-                    CommandParameter="{Binding ElementName=USERWindow}"  HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
+                     HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
         </StackPanel>
     </Grid>
 </Page>

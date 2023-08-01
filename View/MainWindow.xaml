@@ -183,16 +183,7 @@
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.DropHandler="{Binding}"
-                    dd:DragDrop.UseDefaultDragAdorner="True"
-                    dd:DragDrop.UseDefaultEffectDataTemplate="True">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Tabable}}}"/>
-                        <Button Content="X"/>
-                    </StackPanel>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
+                    dd:DragDrop.UseDefaultDragAdorner="True">
 
             <TabControl.ContentTemplate>
                 <DataTemplate>
