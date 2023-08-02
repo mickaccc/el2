@@ -23,8 +23,6 @@ namespace Lieferliste_WPF.ViewModels
          
         public ICommand SelectionChangedCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
-        public ICommand NewCommand { get; private set; }
-        public ICommand DeleteCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
 
 
@@ -132,6 +130,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     PermissionsInter.Add(new PermissionRole()
                     {
+                        Created = p.Created,
                         PermissionKey = p.PermissionKey,
                         RoleKey = p.RoleKey,
                     });
@@ -186,7 +185,7 @@ namespace Lieferliste_WPF.ViewModels
                 
                 if (r != null) 
                 {
-                    PermissionsInter.Add(new PermissionRole() { PermissionKey = p.PKey, RoleKey = r.Id });
+                    PermissionsInter.Add(new PermissionRole() { Created = DateTime.Now, PermissionKey = p.PKey, RoleKey = r.Id });
                     PermissionsAvail.Remove(p);
                 }
             }

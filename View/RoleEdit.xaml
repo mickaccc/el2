@@ -23,9 +23,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -39,14 +36,8 @@
 
             </Menu>
         </DockPanel>
-        <lib:HintTextBox x:Name="R01" Grid.Row="1" Grid.Column="0" TabIndex="0" HintText="Name der angezeigt werden soll" 
-                         ShowText="{Binding Roles/Description, Mode=TwoWay,
-            UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
 
-
-
-
-        <ListBox x:Name="ListRoles" Grid.Row="4" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Roles}"
+        <ListBox x:Name="ListRoles" Grid.Row="1" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Roles}"
                   SelectedIndex="0" SelectionChanged="ListUsers_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -61,23 +52,23 @@
             </i:Interaction.Triggers>
 
         </ListBox>
-        <DataGrid Grid.Row="4" Grid.Column="1" ItemsSource="{Binding PermissionsInter}"
+        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding PermissionsInter}"
                   AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}"/>
 
-        <DataGrid x:Name="ListPermission" Grid.Row="4" Grid.Column="2" ItemsSource="{Binding PermissionsAvail}"
+        <DataGrid x:Name="ListPermission" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding PermissionsAvail}"
                   AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}" />
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
 
             <Button x:Name="btnSave" Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,0,0,0" />
             <Button x:Name="BtnCancel" Content="Abbrechen" Command="{Binding CloseCommand}"
-                    CommandParameter="{Binding ElementName=USERWindow}"  HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
+                     HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
         </StackPanel>
     </Grid>
 </Page>
