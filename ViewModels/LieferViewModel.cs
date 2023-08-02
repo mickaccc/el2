@@ -131,10 +131,13 @@ namespace Lieferliste_WPF.ViewModels
             if (commandParameter is TextChangedEventArgs change)
             {
                 TextBox tb = (TextBox)change.OriginalSource;
-
-                _searchFilterText = tb.Text;
-                var uiContext = SynchronizationContext.Current;
-                uiContext?.Send(x => OrdersView.Refresh(),null);           }
+                if (tb.Text.Length == 0 || tb.Text.Length >= 3)
+                {
+                    _searchFilterText = tb.Text;
+                    var uiContext = SynchronizationContext.Current;
+                    uiContext?.Send(x => OrdersView.Refresh(), null);
+                }
+            }
         }
         #region Commands
         private bool OnOrderViewCanExecute(object arg)

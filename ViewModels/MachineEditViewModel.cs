@@ -2,6 +2,7 @@
 using Lieferliste_WPF.Data;
 using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Utilities;
+using Lieferliste_WPF.View;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Immutable;
@@ -23,14 +24,16 @@ namespace Lieferliste_WPF.ViewModels
 
         public ICommand SaveCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
-
+        public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
         private static ICollectionView _ressCV;
+        private RelayCommand textSearchCommand;
+        private string _searchFilterText = String.Empty;
         private static bool _isLocked = false;
-        private static bool _loaded = false;
+        private static bool _isChanged = false;
         private static bool _isNew = false;
-        public static ImmutableList<Ressource>? Ressources { get; private set; }
-        public List<WorkArea> WorkAreas { get; private set; } = new();
+        public static ObservableCollection<Ressource>? Ressources { get; private set; }
+        public static ObservableCollection<WorkArea> WorkAreas { get; private set; } = new();
         public MachineEditViewModel()
         {
 
@@ -42,8 +45,45 @@ namespace Lieferliste_WPF.ViewModels
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
             
             _ressCV.MoveCurrentToFirst();
+            _ressCV.CurrentChanged += OnChanged;
+            _ressCV.Filter += RessView_FilterPredicate;
+            
+        }
 
 
+        private bool RessView_FilterPredicate(object value)
+        {
+            Ressource res = (Ressource)value;
+
+            bool accepted = true;
+
+            if (!string.IsNullOrWhiteSpace(_searchFilterText))
+            {
+                _searchFilterText = _searchFilterText.ToUpper();
+                if (!(accepted = res.Inventarnummer?.ToUpper().StartsWith(_searchFilterText) ?? false))
+                    accepted = res.RessourceCostUnits.Any(y => y.CostId.Equals(int.Parse(_searchFilterText)));
+
+            }
+            return accepted;
+        }
+        private void OnTextSearch(object commandParameter)
+        {
+            if (commandParameter is TextChangedEventArgs change)
+            {
+                TextBox tb = (TextBox)change.OriginalSource;
+                if (tb.Text.Length >= 3 || tb.Text.Length == 0)
+                {
+                    _searchFilterText = tb.Text;
+
+                    var uiContext = SynchronizationContext.Current;
+                    uiContext?.Send(x => _ressCV.Refresh(), null);
+                }
+            }
+        }
+        private void OnChanged(object? sender, EventArgs e)
+        {
+            if(!_isLocked)
+                _isChanged = true;
         }
 
         public string Error { get { return null; } }
@@ -82,75 +122,33 @@ namespace Lieferliste_WPF.ViewModels
             return true;
         }
 
-
-
         private void OnSaveExecuted(object obj)
         {
-            try
-            {
-                int error = 0;
-                string errMsg ="";
-                if (_ressCV.CurrentItem is User us)
-                {
-    
-                }
-                if (error != 0) errMsg = "\n" + error + " neue Datensätze sind Fehlerhaft.\n" +
-                        "Name oder User sind leer oder nicht eindeutig.\n" +
-                        "diese Datensätze wurden nicht gespeichert!";
-                int result = Dbctx.SaveChanges();
-                if (result > 0)
-                {
-                    MessageBox.Show("Es wurden " + result + " Datensätze gespeichert", "Nachricht" + errMsg, MessageBoxButton.OK);
-                    
-                }
-                else if (error != 0)
-                { MessageBox.Show(errMsg, "Nachricht", MessageBoxButton.OK); }
-                else { MessageBox.Show("es wurden keine Änderungen entdeckt.", "Nachricht", MessageBoxButton.OK); }
-             
-
-            }
-            catch (SqlException ex)
-            {
-
-                MessageBox.Show(ex.Message + "\n" + ex.SqlState, "Error", MessageBoxButton.OK,MessageBoxImage.Error);
-                
-            }
-            _isNew = false;
+            Dbctx.SaveChanges();
+            _isChanged = false;
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-
-            return _isNew || Dbctx.ChangeTracker.HasChanges();
+            Dbctx.ChangeTracker.DetectChanges();
+            return Dbctx.ChangeTracker.HasChanges();
         }
-
-
 
         private void LoadData()
         {
-            
+
             Ressources = Dbctx.Ressources
                 .Include(y => y.RessourceCostUnits)
                 .Include(x => x.WorkArea)
-                .Where(y => y.WorkAreaId != null)
-                .ToImmutableList();
+                .Where(y => y.Inventarnummer != null)
+                .ToObservableCollection();
 
             WorkAreas = Dbctx.WorkAreas
                 .OrderBy(x => x.Bereich)
                 .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
-                .ToList();
+                .ToObservableCollection();
             WorkAreas.Insert(0, new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt"});
-            _loaded = true;
-        }
-        private object _selectedItem;
-        public object SelectedItem
-        {
-            get { return _selectedItem; }
-            set
-            {
-                _selectedItem = value;
-                RaisePropertyChanged();
-            }
+            _isChanged = true;
         }
 
  

@@ -14,8 +14,7 @@
          MinHeight="350" MinWidth="800"   x:Name="MachineEditor">
     <Page.Resources>
         <vm:MachineEditViewModel x:Key="machVM"/>
-        
-        
+ 
     </Page.Resources>
 
     <Grid Margin="10,10,0,0" DataContext="{StaticResource machVM}">
@@ -26,30 +25,21 @@
 
         </Grid.RowDefinitions>
 
-        <DockPanel >
-            <Menu DockPanel.Dock="Top" Height="23">
-                <MenuItem Header="_Speichern" Command="{Binding SaveCommand}"/>
-
-            </Menu>
-        </DockPanel>
-
-
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Ressources}" AlternatingRowBackground="LightGray"
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Ressources}" AlternatingRowBackground="LightGray"
                   AutoGenerateColumns="False" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding RessName}"/>
                 <DataGridTextColumn Header="Inventarnummer" IsReadOnly="True" Binding="{Binding Inventarnummer}"/>
                 <DataGridTextColumn Header="Info" Binding="{Binding Info}" Width="4*"/>
                 <DataGridTextColumn Header="Abteilung" Binding="{Binding Abteilung}"/>
-                <DataGridTextColumn Header="WorArea" Binding="{Binding WorkAreaId}"/>
-                <DataGridTextColumn Header="Bereich" Binding="{Binding WorkArea.Bereich}"/>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding Source={StaticResource machVM}, Path=WorkAreas}"
-                                      DisplayMemberPath="Bereich"
-                                      SelectedValue="WorkAreaId"
-                                      SelectedValuePath="{Binding WorkArea.Bereich}"/>
+                            <ComboBox ItemsSource="{Binding Source={StaticResource machVM}, Path=WorkAreas}" MinWidth="50"
+                                      DisplayMemberPath="Bereich"                                   
+                                      SelectedItem="WorkAreaId"
+                                      SelectedValuePath="WorkAreaId"
+                                      SelectedValue="{Binding WorkAreaId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, TargetNullValue=0}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -57,11 +47,21 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
-
-            <Button x:Name="btnSave" Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,0,0,0" />
-            <Button x:Name="BtnCancel" Content="Abbrechen" Command="{Binding CloseCommand}"
-                     HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
+        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Stretch" Height="35"  VerticalAlignment="Bottom" Background="BurlyWood" >
+            <Button  Command="{Binding SaveCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source= "/Images/3160908.png" Stretch="fill" Margin="1"/>
+                    <Label Content="Speichern"/>
+                </StackPanel>
+            </Button>
+            <lib:ClearableHintTextBox x:Name="searchBox" MinWidth="500" Margin="2,0,2,0" HorizontalAlignment="Stretch"
+                                      ClHintText="suche nach Inventarnummer oder Kostenstelle">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <i:InvokeCommandAction Command="{Binding TextSearchCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </lib:ClearableHintTextBox>
         </StackPanel>
     </Grid>
 </Page>
