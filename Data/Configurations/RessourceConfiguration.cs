@@ -15,8 +15,6 @@ namespace Lieferliste_WPF.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Ressource> entity)
         {
-            entity.Property(e => e.WorkSapId).IsUnicode(false);
-
             entity.HasOne(d => d.WorkArea)
                 .WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.WorkAreaId)

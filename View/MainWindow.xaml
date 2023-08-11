@@ -24,15 +24,15 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="70"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="21"/>
         </Grid.RowDefinitions>
         <DockPanel x:Name="MainPanel" Grid.Row="0" LastChildFill="True">
 
-            <Image x:Name="image1" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/Bosch_Anker48.png" StretchDirection="Both" />
+            <Image x:Name="image1" Stretch="Uniform"  HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/Bosch_Anker48.png" StretchDirection="Both" />
 
-            <Menu Height="23" x:Name="menubar" VerticalAlignment="Top" Margin="2,0" HorizontalAlignment="Left" DockPanel.Dock="Top">
+            <Menu Height="30" x:Name="menubar" VerticalAlignment="Top" Margin="2,0" HorizontalAlignment="Left" DockPanel.Dock="Top">
 
                 <MenuItem Header="eL² 4cos" HorizontalAlignment="Left" Padding="2" >
                     <MenuItem Header="Print" Command="ApplicationCommands.Print"/>
@@ -40,18 +40,34 @@
 
                 <MenuItem Header="Teamleiterfunktionen">
                     <MenuItem Header="Maschinenzuteilung" IsEnabled="{Binding ConverterParameter=MP00, Converter={StaticResource permission}}"
-                              Command="{Binding OpenMachinePlanCommand}"/>
+                              Command="{Binding OpenMachinePlanCommand}">
+                        <MenuItem.Icon>
+                            <Image  Source="/Images/machine-color.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Lieferliste" Command="{Binding OpenLieferlisteCommand}"/>
+                <MenuItem Header="Lieferliste" Command="{Binding OpenLieferlisteCommand}">
+                    <MenuItem.Icon>
+                        <Image  Source="/Images/plan-edit.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Einstellungen" Command="{Binding OpenSettingsCommand}" />
                 <MenuItem Header="Adminfunktionen">
                     <MenuItem Header="Usermanagment" Command="{Binding OpenUserMgmtCommand}">
                         <MenuItem.Icon>
-                            <Image Height="30" Source="/Images/CircleFull32.png" />
+                            <Image  Source="/Images/add-user.png" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Maschinenmanagment" Command="{Binding OpenMachineMgmtCommand}"/>
-                    <MenuItem Header="Rollenmanagment" Command="{Binding OpenRoleMgmtCommand}"/>
+                    <MenuItem Header="Maschinenmanagment" Command="{Binding OpenMachineMgmtCommand}">
+                        <MenuItem.Icon>
+                            <Image  Source="/Images/milling-machine.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Rollenmanagment" Command="{Binding OpenRoleMgmtCommand}">
+                        <MenuItem.Icon>
+                            <Image  Source="/Images/user-edit.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
 
                 </MenuItem>
 

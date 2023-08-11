@@ -19,6 +19,8 @@ namespace Lieferliste_WPF.Data.Configurations
 
             entity.Property(e => e.PermissionKey).IsFixedLength();
 
+            entity.Property(e => e.Created).HasDefaultValueSql("(getdate())");
+
             entity.HasOne(d => d.PermissionKeyNavigation)
                 .WithMany(p => p.PermissionRoles)
                 .HasForeignKey(d => d.PermissionKey)

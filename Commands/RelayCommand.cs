@@ -8,7 +8,7 @@
         #region Fields
 
         readonly Action<object> _execute;
-        readonly Predicate<object> _canExecute;
+        readonly Predicate<object>? _canExecute;
 
         #endregion // Fields
 
@@ -18,13 +18,10 @@
           : this(execute, null)
         {
         }
-
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+        
+        public RelayCommand(Action<object> execute, Predicate<object>? canExecute)
         {
-            if (execute == null)
-                throw new ArgumentNullException("execute");
-
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
         #endregion // Constructors

@@ -15,7 +15,9 @@ namespace Lieferliste_WPF.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> entity)
         {
-            entity.Property(e => e.Created).HasComment("Time of Create");
+            entity.Property(e => e.Created)
+                .HasDefaultValueSql("(getdate())")
+                .HasComment("Time of Create");
 
             entity.Property(e => e.Description).IsFixedLength();
 

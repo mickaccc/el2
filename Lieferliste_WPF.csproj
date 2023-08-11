@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows7.0</TargetFramework>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AssemblyName>el4</AssemblyName>
@@ -77,6 +77,7 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>False</Optimize>
@@ -120,11 +121,21 @@
     <Compile Update="View\MachineEdit.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Resource Include="Images\add-group.png" />
+    <Resource Include="Images\add-user.png" />
     <Resource Include="Images\book.png" />
     <Resource Include="Images\collapse (1).png" />
     <Resource Include="Images\collapse.png" />
+    <Resource Include="Images\Database64.png" />
+    <Resource Include="Images\DB_Y.png" />
     <Resource Include="Images\delete.jpg" />
+    <Resource Include="Images\drill.png" />
+    <Resource Include="Images\edit.png" />
+    <Resource Include="Images\group.png" />
     <Resource Include="Images\hide.png" />
+    <Resource Include="Images\machine-color.png" />
+    <Resource Include="Images\machine.png" />
+    <Resource Include="Images\milling-machine.png" />
     <Resource Include="Images\multiply-1.png" />
 
   </ItemGroup>
@@ -208,6 +219,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\left32.png" />
+    <Resource Include="Images\plan-edit.png" />
+    <Resource Include="Images\plan.png" />
+    <Resource Include="Images\planning.png" />
     <Resource Include="Images\right32.png" />
     <Resource Include="Images\check32.png" />
     <Resource Include="Images\plus32.png" />
@@ -250,6 +264,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\print1.png" />
+    <Resource Include="Images\user-profiles.png" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -266,9 +281,9 @@
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.6.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -283,7 +298,6 @@
     </PackageReference>
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="OpenDialog" Version="1.1.1" />
     <PackageReference Include="Remotion.Linq" Version="2.2.0" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
@@ -292,6 +306,7 @@
     <PackageReference Include="System.Diagnostics.DiagnosticSource">
       <Version>7.0.2</Version>
     </PackageReference>
+    <PackageReference Include="System.Linq.Parallel" Version="4.3.0" />
     <PackageReference Include="System.ObjectModel" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.5.4</Version>
@@ -334,12 +349,26 @@
     <Compile Remove="ViewModels\ToolCase.cs" />
     <Compile Remove="ViewModels\WorkingDayViewModel.cs" />
     <Compile Remove="View\Dialogs\SchDialog.xaml.cs" />
+    <None Remove="Images\add-group.png" />
+    <None Remove="Images\add-user.png" />
     <None Remove="Images\book.png" />
     <None Remove="Images\collapse %281%29.png" />
     <None Remove="Images\collapse.png" />
+    <None Remove="Images\Database64.png" />
+    <None Remove="Images\DB_Y.png" />
     <None Remove="Images\delete.jpg" />
+    <None Remove="Images\drill.png" />
+    <None Remove="Images\edit.png" />
+    <None Remove="Images\group.png" />
     <None Remove="Images\hide.png" />
+    <None Remove="Images\machine-color.png" />
+    <None Remove="Images\machine.png" />
+    <None Remove="Images\milling-machine.png" />
+    <None Remove="Images\plan-edit.png" />
+    <None Remove="Images\plan.png" />
+    <None Remove="Images\planning.png" />
     <None Remove="Images\SplashPic.png" />
+    <None Remove="Images\user-profiles.png" />
     <None Remove="net7.0-windows.7z" />
     <Page Remove="Templates\AllocationReport.xaml" />
     <Page Remove="UserControls\Allocation.xaml" />

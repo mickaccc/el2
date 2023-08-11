@@ -27,6 +27,8 @@ namespace Lieferliste_WPF.Data.Configurations
 
             entity.Property(e => e.BemT).IsUnicode(false);
 
+            entity.Property(e => e.CommentMach).IsUnicode(false);
+
             entity.Property(e => e.Marker).IsFixedLength();
 
             entity.Property(e => e.ProcessingUom).IsFixedLength();
@@ -34,17 +36,17 @@ namespace Lieferliste_WPF.Data.Configurations
             entity.HasOne(d => d.AidNavigation)
                 .WithMany(p => p.Vorgangs)
                 .HasForeignKey(d => d.Aid)
-                .HasConstraintName("FK_Vorgang_tblAuftrag");
+                .HasConstraintName("FK_tblVorgang_tblAuftrag");
 
             entity.HasOne(d => d.ArbPlSapNavigation)
                 .WithMany(p => p.Vorgangs)
                 .HasForeignKey(d => d.ArbPlSap)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Vorgang_WorkSap");
 
             entity.HasOne(d => d.RidNavigation)
                 .WithMany(p => p.Vorgangs)
                 .HasForeignKey(d => d.Rid)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Vorgang_Ressource");
 
             OnConfigurePartial(entity);

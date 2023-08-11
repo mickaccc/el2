@@ -23,11 +23,10 @@
         <conv:FillZerosConverter x:Key="Fill-Converter"/>
         <conv:PermissionConverter x:Key="Permission"/>
         <conv:KW_Converter x:Key="KW-Converter"/>
-        <vm:LieferViewModel x:Key="LieferViewModel" />
-
+        <vm:LieferViewModel x:Key="lvm"/>
 
     </Page.Resources>
-    <Grid DataContext="{Binding Mode=OneWay, Source={StaticResource LieferViewModel}}" >
+    <Grid x:Name="MainGrid" DataContext="{Binding Mode=OneWay, Source={StaticResource lvm}}" >
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
@@ -63,17 +62,17 @@
             </StackPanel>
         </DockPanel>
         <ScrollViewer Grid.Row="1">
-            <ItemsControl x:Name="Lieferlist"
+            <ItemsControl x:Name="Lieferlist" 
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                          ScrollViewer.CanContentScroll="True" >
+                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrdersView}" >
                 
-                <ItemsControl.ItemsSource>
+                <!--<ItemsControl.ItemsSource>
                     <PriorityBinding>
-                        <Binding Source="{StaticResource LieferViewModel}" Path="OrdersView" IsAsync="True"/>
-                        <Binding Source="{StaticResource LieferViewModel}" Path="PrioOrders" IsAsync="False"/>
+                        <Binding Source="{StaticResource lvm}" Path="OrdersView" IsAsync="True"/>
+                        <Binding Source="{StaticResource lvm}" Path="PrioOrders" IsAsync="False"/>
                     </PriorityBinding>
 
-                </ItemsControl.ItemsSource>
+                </ItemsControl.ItemsSource>-->
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -81,32 +80,32 @@
 
                             <StackPanel Height="100">
 
-                                <UserControls:LieferlisteControl x:Name="ucLiefer" 
-                            Aid="{Binding Aid}"
-                            MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
-                            TTNR="{Binding AidNavigation.Material}"
-                            EndDate="{Binding AidNavigation.Eckende}" 
-                            Vnr="{Binding Vnr}" 
-                            Quantity="{Binding AidNavigation.Quantity}" 
-                            QuantityYield="{Binding QuantityYield}" 
-                            QuantityScrap="{Binding QuantityScrap}" 
-                            VgText="{Binding Text}"
-                            WorkArea="{Binding ArbPlSap}"
-                            WorkAreaText="{Binding ArbPlSap}"
-                            Comment_Me="{Binding BemM, Mode=TwoWay}"
-                            Comment_Te="{Binding BemT, Mode=TwoWay}"
-                            Comment_Ma="{Binding BemMa, Mode=TwoWay}"
-                            Invisible="{Binding Ausgebl, Mode=TwoWay}"
+                                <UserControls:LieferlisteControl x:Name="ucLiefer"  
+                            Aid="{Binding Aid, IsAsync=True}"
+                            MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng, IsAsync=True}"
+                            TTNR="{Binding AidNavigation.Material, IsAsync=True}"
+                            EndDate="{Binding AidNavigation.Eckende, IsAsync=True}" 
+                            Vnr="{Binding Vnr, IsAsync=True}" 
+                            Quantity="{Binding AidNavigation.Quantity, IsAsync=True}" 
+                            QuantityYield="{Binding QuantityYield, IsAsync=True}" 
+                            QuantityScrap="{Binding QuantityScrap, IsAsync=True}" 
+                            VgText="{Binding Text, IsAsync=True}"
+                            WorkArea="{Binding ArbPlSap, IsAsync=True}"
+                            WorkAreaText="{Binding ArbPlSap, IsAsync=True}"
+                            Comment_Me="{Binding BemM, Mode=TwoWay, IsAsync=True}"
+                            Comment_Te="{Binding BemT, Mode=TwoWay, IsAsync=True}"
+                            Comment_Ma="{Binding BemMa, Mode=TwoWay, IsAsync=True}"
+                            Invisible="{Binding Ausgebl, Mode=TwoWay, IsAsync=True}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}"
-                            HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource LieferViewModel}}">
+                            HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource lvm}}">
                                     <UserControls:LieferlisteControl.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand, Source={StaticResource LieferViewModel}}"
+                                            <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand, Source={StaticResource lvm}}"
                                                       CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
-                                            <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand, Source={StaticResource LieferViewModel}}"
+                                            <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand, Source={StaticResource lvm}}"
                                                       CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
-                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand, Source={StaticResource LieferViewModel}}"
+                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand, Source={StaticResource lvm}}"
                                                   CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
                                         </ContextMenu>
                                     </UserControls:LieferlisteControl.ContextMenu>

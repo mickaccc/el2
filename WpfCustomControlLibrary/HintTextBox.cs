@@ -106,8 +106,12 @@ namespace WpfCustomControlLibrary
         }
         protected override Size MeasureOverride(Size constraint)
         {
-            FormattedText txt = GetFormattedText();
-            return new Size(txt.Width + 5, txt.Height + 5);
+            if (Text != null)
+            {
+                FormattedText txt = GetFormattedText();
+                return new Size(txt.Width + 5, txt.Height + 5);
+            }
+            return base.MeasureOverride(constraint);
         }
 
         [Obsolete]
@@ -127,8 +131,11 @@ namespace WpfCustomControlLibrary
             drawingContext.DrawRectangle(Brushes.LightGray
                 , null
                 , new Rect(this.RenderSize));
-            FormattedText txt = GetFormattedText();
-            drawingContext.DrawText(txt, new Point(2.5, 2.5));
+            if (Text != null)
+            {
+                FormattedText txt = GetFormattedText();
+                drawingContext.DrawText(txt, new Point(2.5, 2.5));
+            }
         }
         public override void OnApplyTemplate()
         {
@@ -154,6 +161,5 @@ namespace WpfCustomControlLibrary
             }
 
         }
-
     }
 }

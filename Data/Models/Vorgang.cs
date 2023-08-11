@@ -20,8 +20,6 @@ namespace Lieferliste_WPF.Data.Models
         public string Aid { get; set; } = null!;
         [Column("VNR")]
         public short Vnr { get; set; }
-        [Column("BID")]
-        public int? Bid { get; set; }
         [Column("ArbPlSAP")]
         [StringLength(255)]
         [Unicode(false)]
@@ -97,9 +95,11 @@ namespace Lieferliste_WPF.Data.Models
         public string? Bullet { get; set; }
         [Column("SPOS")]
         public int? Spos { get; set; }
+        [StringLength(50)]
+        [Unicode(false)]
+        public string? CommentMach { get; set; }
         [Column("RID")]
         public int? Rid { get; set; }
-        public byte[]? CommentMach { get; set; }
 
         [ForeignKey(nameof(Aid))]
         [InverseProperty(nameof(TblAuftrag.Vorgangs))]

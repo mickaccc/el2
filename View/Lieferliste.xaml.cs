@@ -27,7 +27,7 @@ namespace Lieferliste_WPF.View
     {
         
         public Lieferliste()
-        {
+        {         
             InitializeComponent();
         }
     }

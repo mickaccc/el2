@@ -13,7 +13,6 @@ namespace Lieferliste_WPF.Data.Models
         {
             RessourceCostUnits = new HashSet<RessourceCostUnit>();
             Vorgangs = new HashSet<Vorgang>();
-            WorkSaps = new HashSet<WorkSap>();
         }
 
         [Key]
@@ -29,9 +28,6 @@ namespace Lieferliste_WPF.Data.Models
         public string? Inventarnummer { get; set; }
         public int? Sort { get; set; }
         public int? Type { get; set; }
-        [StringLength(255)]
-        [Unicode(false)]
-        public string? WorkSapId { get; set; }
         public int? WorkAreaId { get; set; }
 
         [ForeignKey(nameof(WorkAreaId))]
@@ -41,7 +37,5 @@ namespace Lieferliste_WPF.Data.Models
         public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; }
         [InverseProperty(nameof(Vorgang.RidNavigation))]
         public virtual ICollection<Vorgang> Vorgangs { get; set; }
-        [InverseProperty(nameof(WorkSap.Ressource))]
-        public virtual ICollection<WorkSap> WorkSaps { get; set; }
     }
 }

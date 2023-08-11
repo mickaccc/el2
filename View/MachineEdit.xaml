@@ -50,7 +50,7 @@
         <StackPanel  Orientation="Horizontal" HorizontalAlignment="Stretch" Height="35"  VerticalAlignment="Bottom" Background="BurlyWood" >
             <Button  Command="{Binding SaveCommand}">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source= "/Images/3160908.png" Stretch="fill" Margin="1"/>
+                    <Image Source= "/Images/DB_Y32.png" Margin="1"/>
                     <Label Content="Speichern"/>
                 </StackPanel>
             </Button>

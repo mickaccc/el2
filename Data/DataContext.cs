@@ -44,16 +44,11 @@ namespace Lieferliste_WPF.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
-
-        public DataContext()
-        {
-        }
-
+        public DataContext() { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-
                 optionsBuilder.UseSqlServer(Properties.Settings.Default.ConnectionString);
             }
         }
@@ -67,10 +62,12 @@ namespace Lieferliste_WPF.Data
             modelBuilder.ApplyConfiguration(new Configurations.RessourceCostUnitConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TblAbfrageblattConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.TblAbfrageblattAuswahlConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TblArbeitsplatzZuteilungConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TblAuftragConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TblDummyConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TblEinstellTeilConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.TblEinstellteileTranConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TblGrunddatenConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TblMaConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.TblMazuConfiguration());

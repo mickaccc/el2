@@ -674,30 +674,7 @@ namespace Lieferliste_WPF.Utilities
         //}
 
     }
-    public static class Holiday
-    {
-        private static DateTime getGaussianEaster(int year)
-        {
 
-            int k = year / 100;
-            int tmp = (3 * k + 3) / 4;
-            int m = 15 + tmp - (8 * k + 13) / 25;
-            int s = 2 - tmp;
-            int a = year % 19;
-            int d = (19 * a + m) % 30;
-            int r = (d / 29) + (d / 28 - d / 29) * (a / 11);
-            int og = 21 + d - r;
-            int sz = 7 - (year + year / 4 + s) % 7;
-            int oe = 7 - (og - sz) % 7;
-            int os = og + oe - 1;
-
-            DateTime cal = new DateTime(year, 3, 1);
-
-            cal.AddDays(os);
-
-            return (cal);
-        }
-    }
 
     public class GroupFilter
     {

@@ -15,6 +15,8 @@ namespace Lieferliste_WPF.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<TblProjektAnhang> entity)
         {
+            entity.Property(e => e.Timestamp).HasDefaultValueSql("(getdate())");
+
             entity.HasOne(d => d.PidNavigation)
                 .WithMany(p => p.TblProjektAnhangs)
                 .HasForeignKey(d => d.Pid)

@@ -18,6 +18,8 @@ namespace Lieferliste_WPF.Data.Configurations
             entity.HasKey(e => e.UserIdent)
                 .HasName("PK__User__1C1A74760950743A");
 
+            entity.Property(e => e.Exited).HasDefaultValueSql("((0))");
+
             entity.Property(e => e.UsrName).IsUnicode(false);
 
             OnConfigurePartial(entity);

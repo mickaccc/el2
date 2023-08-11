@@ -8,114 +8,220 @@
         xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
         xmlns:lib="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
         xmlns:UserControls="clr-namespace:Lieferliste_WPF.UserControls"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:local="clr-namespace:Lieferliste_WPF.ValidationRules"
         x:Class="Lieferliste_WPF.View.UserEdit"
         mc:Ignorable="d"
         Title="UserEdit" MinHeight="450" MinWidth="800" x:Name="USER_Editor">
     <Page.Resources>
         <vm:UserViewModel x:Key="usrVM"/>
-        
+
     </Page.Resources>
 
     <Grid Margin="10,10,0,0" DataContext="{StaticResource usrVM}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200*"/>
-            <ColumnDefinition Width="200*"/>
-            <ColumnDefinition Width="200*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1.5*"/>
         </Grid.ColumnDefinitions>
-        <DockPanel Grid.Row="0" Grid.ColumnSpan="4">
+
+        <DockPanel  Grid.ColumnSpan="4">
             <Menu DockPanel.Dock="Top" Height="23">
                 <MenuItem Header="_NeuerUser" Command="{Binding NewCommand }"/>
                 <MenuItem Header="_Speichern" Command="{Binding SaveCommand}"/>
 
             </Menu>
         </DockPanel>
-        <lib:HintTextBox x:Name="U01" Grid.Row="1" Grid.Column="0" TabIndex="0" HintText="Name der angezeigt werden soll" 
-                         ShowText="{Binding Users/UsrName, Mode=TwoWay,
-            UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+        <Border Grid.Row="1" Grid.ColumnSpan="2" Background="Transparent" BorderThickness="2" BorderBrush="Black" >
 
+            <Grid Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-        <lib:HintTextBox x:Name="U02" Grid.Column="1" Grid.Row="1" HintText="User Ident lt. Windows"
-                         ShowText="{Binding Users/UserIdent, Mode=TwoWay}" TabIndex="1"/>
-        <lib:HintTextBox x:Name="U03" Grid.Row="2" Grid.Column="0" TabIndex="2" HintText="Personalnummer"
-                         ShowText="{Binding Users/Personalnumber, Mode=TwoWay}"/>
-        <lib:HintTextBox x:Name="U04" Grid.Row="3" Grid.Column="0" HintText="E-Mail"
-                         ShowText="{Binding Users/UsrEmail, Mode=TwoWay}" TabIndex="3" />
+                <lib:HintTextBox x:Name="U01"   TabIndex="0" HintText="Name der angezeigt werden soll"
+                                 Text="{Binding Users/UsrName, Mode=twoWay}" BorderBrush="Red" BorderThickness="{Binding ValidName}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:InvokeCommandAction Command="{Binding LostFocusCommand}"
+                                                   CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource FindAncestor,
+                                AncestorType={x:Type lib:HintTextBox}}}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </lib:HintTextBox>
 
- 
-        <ListBox x:Name="ListWork" Grid.Row="4" Grid.Column="1" ItemsSource="{Binding Wo}">
+                <lib:HintTextBox x:Name="U02" Grid.Column="1" HintText="User Ident lt. Windows"
+                         Text="{Binding Users/UserIdent, Mode=TwoWay}" TabIndex="1" BorderBrush="Red" BorderThickness="{Binding ValidIdent}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:InvokeCommandAction Command="{Binding LostFocusCommand}"
+                                                   CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource AncestorType=lib:HintTextBox}}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </lib:HintTextBox>
+                <lib:HintTextBox x:Name="U03" Grid.Column="2"  TabIndex="2" HintText="Personalnummer"
+                         Text="{Binding Users/Personalnumber, Mode=TwoWay}"/>
+                <lib:HintTextBox x:Name="U04" Grid.Column="3"  HintText="E-Mail"
+                         Text="{Binding Users/UsrEmail, Mode=TwoWay}" TabIndex="3" />
 
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <DockPanel MinWidth="150" InputScope="Default" >
-                        <CheckBox IsChecked="{Binding Check}" DockPanel.Dock="Left" Focusable="False"/>
-                        <TextBlock Text="{Binding Name}" DockPanel.Dock="Left"/>
-                    </DockPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <ListBox x:Name="ListUsers" Grid.Row="4" Grid.Column="0" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Users}"
-                  SelectedIndex="0" >
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding UsrName}"/>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="löschen" Command="{Binding DeleteCommand}">
-                        <MenuItem.Icon>
-                            <Image Source="/Images/delete.jpg"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </ContextMenu>
-            </ListBox.ContextMenu>
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"
+            </Grid>
+        </Border>
+        <ScrollViewer Grid.Row="2" Grid.RowSpan="2">
+            <ListBox x:Name="ListUsers" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Users}"
+                  SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding UsrName}"/>
+                    </DataTemplate>
+
+                </ListBox.ItemTemplate>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="löschen" Command="{Binding DeleteCommand}">
+                            <MenuItem.Icon>
+                                <Image Source="/Images/delete.jpg"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"
                                            CommandParameter="{Binding SelectedItem, ElementName=ListUsers}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+            </ListBox>
+        </ScrollViewer>
+        <ListBox x:Name="UsrWORKAREA" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Users/UserWorkAreas}" 
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DragHandler="{Binding}"
+                 dd:DragDrop.DropHandler="{Binding}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+            <ListBox.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Green"/>
+                    <GradientStop Color="LightGreen" Offset="1"/>
+                </LinearGradientBrush>
+            </ListBox.Background>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=WorkArea.Bereich}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
 
         </ListBox>
-        <ListBox x:Name="ListRole" Grid.Row="4" Grid.Column="2" Grid.RowSpan="3" Grid.ColumnSpan="3" ItemsSource="{Binding Ro}" >
+        <ScrollViewer Grid.Row="3" Grid.Column="1">
+            <ListBox x:Name="ListWORKAREA" ItemsSource="{Binding WorkView}" 
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DragHandler="{Binding}"
+                 dd:DragDrop.DropHandler="{Binding}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                <ListBox.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="LightGreen"/>
+                        <GradientStop Color="Green" Offset="1"/>
+                    </LinearGradientBrush>
+                </ListBox.Background>
 
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Bereich}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+        <ListBox x:Name="UsrROLE" Grid.Row="2" Grid.Column="2" ItemsSource="{Binding Users/UserRoles}" 
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DragHandler="{Binding}"
+                 dd:DragDrop.DropHandler="{Binding}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+            <ListBox.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Yellow"/>
+                    <GradientStop Color="LightYellow" Offset="1"/>
+                </LinearGradientBrush>
+            </ListBox.Background>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=Role.Description}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ScrollViewer Grid.Row="3" Grid.Column="2">
+            <ListBox x:Name="ListROLE" ItemsSource="{Binding RoleView}" 
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DragHandler="{Binding}"
+                 dd:DragDrop.DropHandler="{Binding}" >
+                <ListBox.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="LightYellow"/>
+                        <GradientStop Color="Yellow" Offset="1"/>
+                    </LinearGradientBrush>
+                </ListBox.Background>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Description}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+        <ListBox x:Name="UsrCOSTUNIT" Grid.Row="2" Grid.Column="3" ItemsSource="{Binding Users/UserCosts}"
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DragHandler="{Binding}"
+                 dd:DragDrop.DropHandler="{Binding}" >
+            <ListBox.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Blue"/>
+                    <GradientStop Color="LightBlue" Offset="1"/>
+                </LinearGradientBrush>
+            </ListBox.Background>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding Check}" Focusable="False"/>
-                        <TextBlock Text="{Binding Name}"/>
+                        <TextBlock Text="{Binding Path=Cost.CostunitId}" Margin="0,0,5,0" Background="Beige"/>
+                        <TextBlock Text="{Binding Path=Cost.Description}" TextWrapping="Wrap" Background="Beige"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <ListBox x:Name="ListCost" Grid.Row="4" Grid.Column="3" ItemsSource="{Binding Cost}" >
- 
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding Check}" Focusable="False"/>
-                        <TextBlock Text="{Binding Id}" Margin="2,0,5,0"/>
+        <ScrollViewer  Grid.Row="3" Grid.Column="3">
+            <ListBox x:Name="ListCOSTUNIT" ItemsSource="{Binding CostView}" 
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DragHandler="{Binding}"
+                 dd:DragDrop.DropHandler="{Binding}">
+                <ListBox.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="LightBlue"/>
+                        <GradientStop Color="LightSkyBlue" Offset="1"/>
+                    </LinearGradientBrush>
+                </ListBox.Background>
 
-                        <TextBlock Text="{Binding Name}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=CostunitId}" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding Path=Description}" TextWrapping="Wrap"/>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
-            <Button x:Name="btnNew" Content="Neuer Benutzer" Command="{Binding NewCommand}"/>
-            <Button x:Name="btnSave" Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,0,0,0" />
-            <Button x:Name="BtnCancel" Content="Abbrechen" Command="{Binding CloseCommand}"
-                    CommandParameter="{Binding ElementName=USERWindow}"  HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
-        </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -16,8 +16,7 @@
     <Window.Resources>
         <conv:TTNR_Converter x:Key="ttnr"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
-        <conv:Txt2Brush x:Key="txt2Brush"/>
-        <conv:Txt2Color x:Key="txt2Color"/>
+
         <Style x:Key="CellEditStyle" TargetType="{x:Type TextBox}">
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Background" Value="LightYellow"/>
@@ -62,7 +61,7 @@
                   dd:DragDrop.DropHandler="{Binding}" >
             <DataGrid.ContextMenu>
                 <ContextMenu Width="Auto">
-                    <MenuItem x:Name="BulletDel" Header="Markierung  löschen" Command="{Binding SetMarkerCommand}" >
+                    <MenuItem x:Name="DelBullet" Header="Markierung  löschen" Command="{Binding SetMarkerCommand}" >
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiObject}">
                                 <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
@@ -114,7 +113,7 @@
                         <MenuItem.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiObject}">
                                 <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type DataGrid}}" />
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem" />
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
@@ -140,7 +139,7 @@
                 <DataGridTemplateColumn >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate >
-                            <UC:BulletedItem BulletColor="{Binding Bullet, Converter={StaticResource txt2Color}}"/>
+                            <UC:BulletedItem BulletColor="{Binding Bullet, TargetNullValue='White'}"/>
                             
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

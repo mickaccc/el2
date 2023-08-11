@@ -352,10 +352,21 @@ namespace Lieferliste_WPF.UserControls
 
         private void btnExpl_Click(object sender, RoutedEventArgs e)
         {
-            Gat.Controls.OpenDialogView openDialog = new();
-            Gat.Controls.OpenDialogViewModel vm = (Gat.Controls.OpenDialogViewModel)openDialog.DataContext;
-            vm.IsDirectoryChooser = true;
-            vm.Show();           
+            // Configure open file dialog box
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.FileName = "Document"; // Default file name
+            dialog.DefaultExt = ".txt"; // Default file extension
+            dialog.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+
+            // Show open file dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                // Open document
+                string filename = dialog.FileName;
+            }          
         }
 
         private void btnToArchiv_Click(object sender, RoutedEventArgs e)

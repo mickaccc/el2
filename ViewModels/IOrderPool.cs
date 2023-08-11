@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Lieferliste_WPF.Planning
+namespace Lieferliste_WPF.ViewModels
 {
     interface IOrderPool
     {
-        List<String> Orders { get; set; }
+        List<string> Orders { get; set; }
     }
 }

@@ -17,10 +17,7 @@ namespace Lieferliste_WPF.Data.Configurations
         {
             entity.Property(e => e.WorkSapId).IsUnicode(false);
 
-            entity.HasOne(d => d.Ressource)
-                .WithMany(p => p.WorkSaps)
-                .HasForeignKey(d => d.RessourceId)
-                .HasConstraintName("FK_WorkSap_Ressource");
+            entity.Property(e => e.Created).HasDefaultValueSql("(getdate())");
 
             OnConfigurePartial(entity);
         }

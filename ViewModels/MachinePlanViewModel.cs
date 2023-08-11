@@ -6,6 +6,7 @@ using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MachinePlanViewModel : Base.ViewModelBase, IDropTarget
     {      
         private RelayCommand selectionChangeCommand;
@@ -60,8 +61,8 @@ namespace Lieferliste_WPF.ViewModels
             ProcessViewSource.Filter += ProcessCV_Filter;
 
             ParkingViewSource.Source = Priv_parking;
-            ParkingCV.Filter = f => (f as Vorgang)?.ArbPlSapNavigation?.Ressource?.WorkAreaId == WorkAreas?.First().WorkAreaId;
-            _masterFilterText = WorkAreas.First().WorkAreaId.ToString();
+            ParkingCV.Filter = f => (f as Vorgang)?.RidNavigation?.WorkAreaId == WorkAreas?.First().WorkAreaId;
+            _masterFilterText = WorkAreas?.First().WorkAreaId.ToString() ?? "";
             ProcessCV.Refresh();
         
         }
@@ -84,15 +85,13 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.AidNavigation)
                 .ThenInclude(x => x.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.ArbPlSapNavigation)
                 .Include(x => x.RidNavigation)
-                .ThenInclude(x => x.RessourceCostUnits)
                 .Where(x => !x.AidNavigation.Fertig &&
                 !x.SysStatus.Contains("RÜCK") && 
                 !x.Text.ToUpper().Contains("AUFTRAG STARTEN"))
                 .ToList();
 
-
-      
 
             var work = Dbctx.WorkAreas
                 .Include(x => x.UserWorkAreas)
@@ -106,7 +105,6 @@ namespace Lieferliste_WPF.ViewModels
                 var re = Dbctx.Ressources
                     .Include(x => x.RessourceCostUnits)
                     .Include(x => x.WorkArea)
-                    .Include(x => x.WorkSaps)
                     .Where(x => x.WorkArea != null).ToList();
 
                 var ress = re.Where(y => y.RessourceCostUnits.IntersectBy(AppStatic.User.UserCosts.Select(e => e.CostId), a => a.CostId).Any());
@@ -115,12 +113,12 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var q in ress)
                 {
 
-                        PlanMachine plm = new(q.RessourceId, q.RessName, q.Inventarnummer ,this)
+                        PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty,this)
                         {
                             WorkArea = q.WorkArea,
                             CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
                             Description = q.Info ?? String.Empty,
-                            ArbPlSAPs = q.WorkSaps.Select(x => x.WorkSapId).ToArray()
+ 
                                                      
                         };
 
@@ -137,7 +135,7 @@ namespace Lieferliste_WPF.ViewModels
                 List<Vorgang> list = new();
                 foreach(var m in Machines)
                 {
-                    list.AddRange(qp.FindAll(x => m.ArbPlSAPs.Contains(x.ArbPlSap)));
+                    list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID));
                 }
                 Priv_processes = list.FindAll(x => x.Rid == null)
                     .ToObservableCollection();
@@ -177,7 +175,8 @@ namespace Lieferliste_WPF.ViewModels
         {
             Vorgang v = (Vorgang)e.Item;
             e.Accepted = false;
-            if (v.ArbPlSapNavigation?.Ressource?.WorkAreaId?.ToString() == _masterFilterText)
+            var l = Machines.FindAll(x => x.WorkArea.WorkAreaId.ToString() == _masterFilterText);
+            if (l.Any(x => x.RID == v.ArbPlSapNavigation?.RessourceId))
             {
                 e.Accepted = true;
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))

@@ -22,9 +22,6 @@ namespace Lieferliste_WPF.Data.Models
         [Column("created", TypeName = "date")]
         public DateTime? Created { get; set; }
 
-        [ForeignKey(nameof(RessourceId))]
-        [InverseProperty("WorkSaps")]
-        public virtual Ressource? Ressource { get; set; }
         [InverseProperty(nameof(Vorgang.ArbPlSapNavigation))]
         public virtual ICollection<Vorgang> Vorgangs { get; set; }
     }

@@ -19,19 +19,31 @@ namespace Lieferliste_WPF.Data.Configurations
 
             entity.Property(e => e.Created).HasComment("Timestamp to create the Datarow");
 
-            entity.Property(e => e.End1).HasComment("Ende Schicht 1");
+            entity.Property(e => e.End1)
+                .HasDefaultValueSql("((0))")
+                .HasComment("Ende Schicht 1");
 
-            entity.Property(e => e.End2).HasComment("Ende Schicht");
+            entity.Property(e => e.End2)
+                .HasDefaultValueSql("((0))")
+                .HasComment("Ende Schicht");
 
-            entity.Property(e => e.End3).HasComment("Ende Schicht 3");
+            entity.Property(e => e.End3)
+                .HasDefaultValueSql("((0))")
+                .HasComment("Ende Schicht 3");
 
             entity.Property(e => e.Rid).HasComment("Resource ID");
 
-            entity.Property(e => e.Start1).HasComment("Start Schicht 1");
+            entity.Property(e => e.Start1)
+                .HasDefaultValueSql("((0))")
+                .HasComment("Start Schicht 1");
 
-            entity.Property(e => e.Start2).HasComment("Start Schicht 2");
+            entity.Property(e => e.Start2)
+                .HasDefaultValueSql("((0))")
+                .HasComment("Start Schicht 2");
 
-            entity.Property(e => e.Start3).HasComment("Start Schicht 3");
+            entity.Property(e => e.Start3)
+                .HasDefaultValueSql("((0))")
+                .HasComment("Start Schicht 3");
 
             OnConfigurePartial(entity);
         }

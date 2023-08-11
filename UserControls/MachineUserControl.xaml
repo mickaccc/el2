@@ -16,10 +16,7 @@
         <conv:ToIntConverter x:Key="ToIntConverter"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:TTNR_Converter x:Key="TTNR"/>
-        <conv:Txt2Brush x:Key="txt2Brush"/>
-        <conv:Txt2Color x:Key="txt2Color"/>
-        
-  
+
     </UserControl.Resources>
 
     <Grid x:Name="grid" DataContext="{Binding}">
@@ -145,7 +142,7 @@
                         <DataTemplate >
 
                             <local:BulletedItem HorizontalAlignment="Left" VerticalAlignment="Top"
-                                                BulletColor="{Binding Bullet, Converter={StaticResource txt2Color}}" />
+                                                BulletColor="{Binding Bullet, TargetNullValue='White'}" />
 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

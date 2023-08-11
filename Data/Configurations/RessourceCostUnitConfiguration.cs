@@ -26,7 +26,6 @@ namespace Lieferliste_WPF.Data.Configurations
             entity.HasOne(d => d.RidNavigation)
                 .WithMany(p => p.RessourceCostUnits)
                 .HasForeignKey(d => d.Rid)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_RessourceCostUnit_Ressource");
 
             OnConfigurePartial(entity);

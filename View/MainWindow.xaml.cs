@@ -14,7 +14,7 @@
     using System.CodeDom;
     using System.Diagnostics;
     using GongSolutions.Wpf.DragDrop.Utilities;
-    using Gat.Controls.Framework;
+
 
 
     /// <summary>

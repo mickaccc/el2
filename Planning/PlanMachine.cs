@@ -107,6 +107,7 @@ namespace Lieferliste_WPF.Planning
         {
             if (arg != null)
             {
+
                 var values = (object[])arg;
                 if (values[1] is Vorgang)
                 {

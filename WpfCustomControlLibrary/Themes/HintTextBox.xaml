@@ -11,7 +11,7 @@
                         <Grid Background="White">
                             <TextBlock x:Name="PART_PlaceHolder" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=HintText}"
                                    FontWeight="Light" Padding="5" FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"/>
-                            <TextBox x:Name="PART_TextBox" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ShowText}"
+                            <TextBox x:Name="PART_TextBox" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text}"
                                      Background="Transparent" Padding="5" FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"/>
                             
                         </Grid>

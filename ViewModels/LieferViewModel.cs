@@ -55,7 +55,6 @@ namespace Lieferliste_WPF.ViewModels
         public ActionCommand SaveCommand { get; private set; }
   
         public String HasMouse { get; set; } = String.Empty;
-        private static bool isLoaded = false;
         private Dictionary<String, String> _filterCriterias;
         private String _sortField = String.Empty;
         private String _sortDirection = String.Empty;
@@ -65,26 +64,35 @@ namespace Lieferliste_WPF.ViewModels
 
         public LieferViewModel()
         {
-           
-            LoadDataFast();
-            LoadData();
 
-            Debug.WriteLine("PrioOrders {0}", PrioOrders?.Count ?? -1);
-            OrdersView = CollectionViewSource.GetDefaultView(_orders);
-            OrdersView.Filter += OrdersView_FilterPredicate;
-            
+            // LoadDataFast();
+
+
             _filterCriterias = new();
 
+
+            //Task.Run(async () =>
+            //{
+            //    List<Vorgang> mydata = new List<Vorgang>();
+            //    await foreach (Vorgang vrg in LoadAsync())
+            //    {
+            //        mydata.Add(vrg);
+            //    }
+            //    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Normal,
+            //       new Action<object>(UpdateCollection),
+            //       new object[] {mydata});
+            //});
+
+
+
+            LoadData();
+            OrdersView = CollectionViewSource.GetDefaultView(_orders);
+            OrdersView.Filter += OrdersView_FilterPredicate;
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-
-
-
-
         }
-
 
 
         private bool OrdersView_FilterPredicate(object value)
@@ -231,32 +239,38 @@ namespace Lieferliste_WPF.ViewModels
             return v;
             
         }
-        private async void LoadData()
+        private void LoadData()
         {
-            
-           var r = await Dbctx.Vorgangs
-           .Include(m => m.ArbPlSapNavigation)
-           .Include(d => d.RidNavigation)
-           .Include(v => v.AidNavigation)
-           .ThenInclude(x => x.MaterialNavigation)
-           .Include(x => x.AidNavigation.DummyMatNavigation)
-           .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-           .ToListAsync();
 
-            _orders.Clear();
+            var r = Dbctx.Vorgangs
+            .Include(m => m.ArbPlSapNavigation)
+            .Include(v => v.AidNavigation)
+            .ThenInclude(x => x.MaterialNavigation)
+            .Include(x => x.AidNavigation.DummyMatNavigation)
+            .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
+            .ToObservableCollection();
+
             foreach(var item in r)
             {
                 _orders.Add(item);
             }
-                
-            isLoaded = true;
-           
+        }
+
+        private IList<Vorgang> LoadAsync()
+        {
+
+            return Dbctx.Vorgangs
+            .Include(m => m.ArbPlSapNavigation)
+            .Include(v => v.AidNavigation)
+            .ThenInclude(x => x.MaterialNavigation)
+            .Include(x => x.AidNavigation.DummyMatNavigation)
+            .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
+            .ToList();
         }
         private void LoadDataFast()
         {
             var vrg = Dbctx.Vorgangs
             .Include(m => m.ArbPlSapNavigation)
-            .Include(d => d.RidNavigation)
             .Include(v => v.AidNavigation)
             .ThenInclude(x => x.MaterialNavigation)
             .Include(x => x.AidNavigation.DummyMatNavigation)

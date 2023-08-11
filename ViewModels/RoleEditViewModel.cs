@@ -1,6 +1,5 @@
 ﻿using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Commands;
-using Lieferliste_WPF.Data;
 using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +15,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public class RoleEditViewModel : Base.ViewModelBase, IDropTarget
     {
          
@@ -27,8 +25,6 @@ namespace Lieferliste_WPF.ViewModels
 
 
         private static ICollectionView _roleCV;
-        private static bool _isLocked = false;
-        private static bool _loaded = false;
         private static bool _hasChanges = false;
         public static ObservableCollection<Role>? Roles { get; private set; }
         
@@ -122,7 +118,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private static void OnSelectionChangeExecuted(object obj)
         {
-            _isLocked = true;
+            
             if (obj is Role us)
             {
                 PermissionsInter.Clear();
@@ -149,7 +145,7 @@ namespace Lieferliste_WPF.ViewModels
                         });
                 }
                 _hasChanges = false;
-                _isLocked = false;                           
+                                         
             }         
         }
 
@@ -164,8 +160,6 @@ namespace Lieferliste_WPF.ViewModels
             var p = Dbctx.Permissions.ToList();
 
             _permissionsAll.AddRange(p);
-
-          _loaded = true;
         }
 
         public void DragOver(IDropInfo dropInfo)

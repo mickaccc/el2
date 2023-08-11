@@ -22,7 +22,8 @@ namespace Lieferliste_WPF.UserControls
     {
 
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("BulletText", typeof(string), typeof(BulletedItem));
-        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("BulletColor", typeof (Color), typeof(BulletedItem));
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("BulletColor", typeof (Color), typeof(BulletedItem),
+            new PropertyMetadata(Color.FromRgb(255,255,255)));
         public string BulletText
         {
             get { return (string)GetValue(TextProperty); }

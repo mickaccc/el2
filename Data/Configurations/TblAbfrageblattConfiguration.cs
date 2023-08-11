@@ -17,6 +17,8 @@ namespace Lieferliste_WPF.Data.Configurations
         {
             entity.Property(e => e.Aid).IsUnicode(false);
 
+            entity.Property(e => e.Timestamp).HasDefaultValueSql("(getdate())");
+
             entity.HasOne(d => d.Aba)
                 .WithMany(p => p.TblAbfrageblatts)
                 .HasForeignKey(d => d.Abaid)

@@ -30,8 +30,7 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand textSearchCommand;
         private string _searchFilterText = String.Empty;
         private static bool _isLocked = false;
-        private static bool _isChanged = false;
-        private static bool _isNew = false;
+
         public static ObservableCollection<Ressource>? Ressources { get; private set; }
         public static ObservableCollection<WorkArea> WorkAreas { get; private set; } = new();
         public MachineEditViewModel()
@@ -82,10 +81,9 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnChanged(object? sender, EventArgs e)
         {
-            if(!_isLocked)
-                _isChanged = true;
-        }
+            
 
+        }
         public string Error { get { return null; } }
 
         public string this[string columnName]
@@ -125,7 +123,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnSaveExecuted(object obj)
         {
             Dbctx.SaveChanges();
-            _isChanged = false;
+            
         }
 
         private bool OnSaveCanExecute(object arg)
@@ -148,7 +146,7 @@ namespace Lieferliste_WPF.ViewModels
                 .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
                 .ToObservableCollection();
             WorkAreas.Insert(0, new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt"});
-            _isChanged = true;
+            
         }
 
  

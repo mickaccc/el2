@@ -41,5 +41,9 @@ namespace Lieferliste_WPF.View
             e.CanExecute = true;
         }
 
+        private void U01_LostFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

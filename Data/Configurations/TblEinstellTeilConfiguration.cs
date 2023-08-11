@@ -15,6 +15,8 @@ namespace Lieferliste_WPF.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<TblEinstellTeil> entity)
         {
+            entity.Property(e => e.Created).HasDefaultValueSql("(getdate())");
+
             entity.Property(e => e.DummyMat).IsUnicode(false);
 
             entity.HasOne(d => d.DummyMatNavigation)

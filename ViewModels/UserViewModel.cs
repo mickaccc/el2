@@ -1,22 +1,20 @@
-﻿using Lieferliste_WPF.Commands;
-using Lieferliste_WPF.Data;
+﻿using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Globalization;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using WpfCustomControlLibrary;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    public class UserViewModel : Base.ViewModelBase, IDataErrorInfo
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    public class UserViewModel : Base.ViewModelBase, IDropTarget
     {
         
   
@@ -25,40 +23,129 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand NewCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
+        public ICommand LostFocusCommand { get; private set; }
 
 
         private static ICollectionView _usrCV;
-        private static bool _isLocked = false;
-        private static bool _loaded = false;
+
+        public ICollectionView RoleView { get { return roleSource.View; } }
+        public ICollectionView WorkView { get { return workSource.View; } }
+        public ICollectionView CostView { get { return costSource.View; } }
+
         private static bool _isNew = false;
         public static ObservableCollection<User>? Users { get; private set; }
-        
-        public static ObservableCollection<Wpart> Ro { get; private set; }
-        
-        public static ObservableCollection<Wpart> Wo { get; private set; }
-        public static ObservableCollection<Wpart> Cost { get; private set; }
+        private static HashSet<Role> Roles { get; set; } = new();
+        private static HashSet<WorkArea> WorkAreas { get; set; } = new();
+        private static HashSet<Costunit> CostUnits { get; set; } = new();
 
+        internal CollectionViewSource roleSource { get; private set; } = new();
+        internal CollectionViewSource workSource { get; private set; } = new();
+        internal CollectionViewSource costSource { get; private set; } = new();
+        private int _validName = 0;
+        private int _validIdent = 0;
+        public int ValidName
+        {
+            get { return _validName; }
+            set
+            {
+                _validName = value;
+                NotifyPropertyChanged(() => ValidName);
+            }
+        }
+        public int ValidIdent
+        {
+            get { return _validIdent; }
+            set
+            {
+                _validIdent = value;
+                NotifyPropertyChanged(() => ValidIdent);
+            }
+        }
 
         public UserViewModel()
         {
-            Wo = new();
-            Ro = new();
-            Cost = new();
+            
 
             LoadData();
-
             _usrCV = CollectionViewSource.GetDefaultView(Users);
+
             SelectionChangedCommand = new ActionCommand(OnSelectionChangeExecuted, OnSelectionChangeCanExecute);
+            LostFocusCommand = new ActionCommand(OnLostFocusExecuted, OnLostFocusCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             NewCommand = new ActionCommand(OnNewExecuted, OnNewCanExecute);
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
-            
-            _usrCV.MoveCurrentToFirst();
 
+ 
+
+            roleSource.Source = Roles;
+            workSource.Source = WorkAreas;
+            costSource.Source = CostUnits;
+
+            roleSource.Filter += RoleFilterPredicate;
+            workSource.Filter += WorkAreaFilterPredicate;
+            costSource.Filter += CostFilterPredicate;
+          
         }
 
-        public string Error { get { return null; } }
+
+
+        private bool OnLostFocusCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnLostFocusExecuted(object obj)
+        {
+            if(obj is HintTextBox textBox)
+            {
+
+                if (textBox.Name == "U01")
+                {
+                    if (String.IsNullOrWhiteSpace(textBox.Text))
+                    {
+                        ValidName = 1;
+                    }
+                    else { ValidName = 0; }
+                }
+                if (textBox.Name == "U02")
+                {
+                    if(String.IsNullOrWhiteSpace(textBox.Text))
+                    {
+                        ValidIdent = 1;
+                    }
+                    else{ ValidIdent = 0;}
+                }   
+            }
+        }
+
+        private void CostFilterPredicate(object sender, FilterEventArgs e)
+        {
+            var cost = e.Item as Costunit;
+            if (_usrCV.CurrentItem is User us)
+            {
+                e.Accepted = !us.UserCosts.Any(x => x.CostId == cost.CostunitId);
+            }
+        }
+
+        private void WorkAreaFilterPredicate(object sender, FilterEventArgs e)
+        {
+            var work = e.Item as WorkArea;
+            if (_usrCV.CurrentItem is User us)
+            {
+                e.Accepted = !us.UserWorkAreas.Any(x => x.WorkAreaId == work.WorkAreaId);
+            }
+        }
+
+        private void RoleFilterPredicate(object sender, FilterEventArgs e)
+        {
+            var role = e.Item as Role;
+            if (_usrCV.CurrentItem is User us)
+            {
+                e.Accepted = !us.UserRoles.Any(x => x.RoleId == role.Id);
+            }
+        }
+
 
         public string this[string columnName]
         {
@@ -117,113 +204,57 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnNewExecuted(object obj)
         {
-            User u = new User();
+            User u = new();
             Users?.Add(u);
             
             _usrCV.MoveCurrentTo(u);
-            _isLocked = true;
-            foreach(Wpart w in Ro) { w.Check = false; }
-            foreach(Wpart w in Wo) { w.Check = false; }
-            foreach(Wpart w in Cost) { w.Check=false; }
-            _isLocked = false;
+            RoleView.Refresh();
+            WorkView.Refresh();
+            CostView.Refresh();
             _isNew = true;
         }
 
         private void OnSaveExecuted(object obj)
         {
-            try
+            if(_isNew)
             {
-                int error = 0;
-                string errMsg ="";
-                if (_usrCV.CurrentItem is User us)
+                var user = Users.Except(Dbctx.Users).FirstOrDefault();
+                if (user != null)
                 {
-                    if (_isNew)
+                    if(user.UsrName.IsNullOrEmpty()) ValidName = 1;
+                    if(user.UserIdent.IsNullOrEmpty() || Dbctx.Users.Any(x => x.UserIdent == user.UserIdent)) ValidIdent = 1;
+                    if(ValidName == 1 || ValidIdent == 1)
                     {
-                        if (!Dbctx.Users.Where(x => x.UserIdent == us.UserIdent).Any() &&
-                            !Dbctx.Users.Where(x => x.UsrName == us.UsrName).Any())
-                        {
-                            Dbctx.Users.Add(us);
-                            foreach (Wpart wp in Ro.Where(x => x.Check))
-                            {
-                                UserRole ur = new() { RoleId = wp.Id, UserIdent = us.UserIdent };
-                                Dbctx.UserRoles.Add(ur);
-                            }
-                            foreach (Wpart wp in Wo.Where(x => x.Check))
-                            {
-                                UserWorkArea uw = new() { WorkAreaId = wp.Id, UserId = us.UserIdent };
-                                Dbctx.UserWorkAreas.Add(uw);
-                            }
-                            foreach (Wpart wp in Cost.Where(x => x.Check))
-                            {
-                                UserCost uc = new() { CostId = wp.Id, UsrIdent = us.UserIdent };
-                                Dbctx.UserCosts.Add(uc);
-                            }
-
-                        }
-                        else
-                        {
-                            error++;
-                        }
+                        MessageBox.Show("Speichern wegen ungültigen Daten nicht möglich", "Speicherfehler", 
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
                     }
+                    Dbctx.Users.Add((User)user);
                 }
-                if (error != 0) errMsg = "\n" + error + " neue Datensätze sind Fehlerhaft.\n" +
-                        "Name oder User sind leer oder nicht eindeutig.\n" +
-                        "diese Datensätze wurden nicht gespeichert!";
-                int result = Dbctx.SaveChanges();
-                if (result > 0)
-                {
-                    MessageBox.Show("Es wurden " + result + " Datensätze gespeichert", "Nachricht" + errMsg, MessageBoxButton.OK);
-                    
-                }
-                else if (error != 0)
-                { MessageBox.Show(errMsg, "Nachricht", MessageBoxButton.OK); }
-                else { MessageBox.Show("es wurden keine Änderungen entdeckt.", "Nachricht", MessageBoxButton.OK); }
-             
-
             }
-            catch (SqlException ex)
-            {
-
-                MessageBox.Show(ex.Message + "\n" + ex.SqlState, "Error", MessageBoxButton.OK,MessageBoxImage.Error);
-                
-            }
+            Dbctx.SaveChangesAsync();
             _isNew = false;
+            ValidIdent = 0;
+            ValidName = 0;
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-
-            return _isNew || Dbctx.ChangeTracker.HasChanges();
+            Dbctx.ChangeTracker.DetectChanges();
+            return Dbctx.ChangeTracker.HasChanges() || _isNew;
         }
 
 
         private static bool OnSelectionChangeCanExecute(object arg)
         {
-            User? user = (User)_usrCV.CurrentItem;
-            return !user.UsrName.IsNullOrEmpty() &&
-                !user.UserIdent.IsNullOrEmpty();
+            return true;
         }
 
-        private static void OnSelectionChangeExecuted(object obj)
+        private void OnSelectionChangeExecuted(object obj)
         {
-            _isLocked = true;
-            if (obj is User us)
-            {
-                foreach (Wpart wpart in Ro)
-                {
-                    wpart.Check = us.UserRoles.Any(x => x.RoleId == wpart.Id);
-                }
-                foreach (Wpart wpart in Wo)
-                {
-                    wpart.Check = us.UserWorkAreas.Any(x => x.WorkAreaId == wpart.Id);
-                }
-                foreach (Wpart wpart in Cost)
-                {
-                    wpart.Check = us.UserCosts.Any(x => x.CostId == wpart.Id);
-                }
-
-                _isLocked = false;                           
-            }         
+            RoleView.Refresh();
+            WorkView.Refresh();
+            CostView.Refresh();   
         }
 
         private void LoadData()
@@ -237,142 +268,94 @@ namespace Lieferliste_WPF.ViewModels
                 .Where(x => x.Exited == false)
                 .OrderBy(o => o.UsrName)
                 .ToObservableCollection();
- 
-            var us = Users.Cast<User>().First();
-            foreach (Costunit cost in Dbctx.Costunits)
-            {
-                Cost.Add(new Wpart()
-                {
-                    Id = cost.CostunitId,
-                    Name = cost.Description,
-                    Type = "COST",
-                    Check = us.UserCosts.Any(y => y.CostId == cost.CostunitId)
-                });
-            }
-            Cost.OrderBy(o => o.Id);
-
-            foreach (WorkArea work in Dbctx.WorkAreas)
-            {
-                Wo.Add(new Wpart() { Id = work.WorkAreaId, Name = work.Bereich, Type = "WORKAREA",
-                    Check = us.UserWorkAreas.Any(x => x.WorkAreaId == work.WorkAreaId)});
-                
-            }
-            Wo.OrderBy(x => x.Name);
-            
-            
-            int usrlvl = (int)Users.First(x => x.UserIdent == AppStatic.User.UserIdent).UserRoles.Max(y => y.Role.Rolelevel);
-            foreach (Role ro in Dbctx.Roles.Where(x => x.Rolelevel <= usrlvl))
-            {
-                Ro.Add(new Wpart()
-                {
-                    Id = ro.Id,
-                    Name = ro.Description,
-                    Type = "ROLE",
-                    Check = us.UserRoles.Any(x => x.RoleId == ro.Id)
-                });
-            }
-            _ = Ro.OrderBy(o => o.Name);
 
 
-            _loaded = true;
+            Roles = Dbctx.Roles.ToHashSet();
+            WorkAreas = Dbctx.WorkAreas.ToHashSet();
+            CostUnits = Dbctx.Costunits.ToHashSet();
         }
 
-        public class Wpart: Base.ViewModelBase
+        public void DragOver(IDropInfo dropInfo)
         {
-
-            public int Id { get; set; }
-            public string? Name { get; set; }
-            public string? EmployNo { get; set; }
-            private bool _check;
-            public string? Type { get; set; } = null;
-
-            public event PropertyChangedEventHandler? PropertyChanged;
-            public bool Check
+            bool allowed = false;
+            if (!dropInfo.TargetCollection.Equals(dropInfo.DragInfo.SourceCollection))
             {
-                get { return _check; }
-                set { _check = value;
-                    Changed(nameof(Check));
-                }
-            }
-
-            private void Changed(string propertyName)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-                if (propertyName == nameof(Check) && _loaded && !_isLocked)
+                if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName)
                 {
-                    User us = (User)_usrCV.CurrentItem;
-                    switch (Type)
+                    if ((dropInfo.Data.GetType() == typeof(Role)
+                        || dropInfo.Data.GetType() == typeof(UserRole))
+                        && UiName.Contains("ROLE"))
                     {
-                        case "ROLE":
-                            Debug.WriteLine("Change ROLE");
-                            if (_check)
-                            {
-                                UserRole? ur = Dbctx.UserRoles.FirstOrDefault(x => x.RoleId == Id && x.UserIdent == us.UserIdent);
-                                if (ur == null)
-                                {
-                                    Dbctx.UserRoles.Add(new UserRole() { RoleId = Id, UserIdent = us.UserIdent });
-                                    Debug.WriteLine("Added ROLE");
-                                }
-                            }
-                            else
-                            {
-                                UserRole? ur = Dbctx.UserRoles.FirstOrDefault(x => x.RoleId == Id && x.UserIdent == us.UserIdent);
-                                if (ur != null) Dbctx.UserRoles.Remove(ur);
-                            }
-                            break;
-
-                        case "WORKAREA":
-                            Debug.WriteLine("Change WORKAREA");
-                            if (_check)
-                            {
-                                UserWorkArea? uw = Dbctx.UserWorkAreas.FirstOrDefault(x => x.WorkAreaId == Id && x.UserId == us.UserIdent);
-                                if (uw == null)
-                                {
-                                    Dbctx.UserWorkAreas.Add(new UserWorkArea() { WorkAreaId = Id, UserId = us.UserIdent });
-                                    Debug.WriteLine("Added WORKAREA");
-                                }
-                            }
-                            else
-                            {
-                                UserWorkArea? uw = Dbctx.UserWorkAreas.FirstOrDefault(x => x.WorkAreaId == Id && x.UserId == us.UserIdent);
-                                if (uw != null) us.UserWorkAreas.Remove(uw);
-                            }
-                            break;
-
-                        case "COST":
-                            Debug.WriteLine("Cahnge COST");
-                            if (_check)
-                            {
-                                UserCost? uw = Dbctx.UserCosts.FirstOrDefault(x => x.CostId == Id && x.UsrIdent == us.UserIdent);
-                                if (uw == null)
-                                {
-                                    Dbctx.UserCosts.Add(new UserCost() { CostId = Id, UsrIdent = us.UserIdent });
-                                    Debug.WriteLine("Added COST");
-                                }
-                            }
-                            else
-                            {
-                                UserCost? uw = Dbctx.UserCosts.FirstOrDefault(x => x.CostId == Id && x.UsrIdent == us.UserIdent);
-                                if (uw != null) Dbctx.UserCosts.Remove(uw);
-                            }
-                            break;
+                        allowed = true;
                     }
-                    Dbctx.ChangeTracker.DetectChanges();
+                    if ((dropInfo.Data.GetType() == typeof(WorkArea)
+                        || dropInfo.Data.GetType() == typeof(UserWorkArea))
+                        && UiName.Contains("WORKAREA"))
+                    {
+                        allowed = true;
+                    }
+                    if ((dropInfo.Data.GetType() == typeof(Costunit)
+                        || dropInfo.Data.GetType() == typeof(UserCost))
+                        && UiName.Contains("COSTUNIT"))
+                    {
+                        allowed = true;
+                    }
+                    if (allowed)
+                    {
+                        dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                        dropInfo.Effects = DragDropEffects.Copy;
+                    }
                 }
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            User us = (User)_usrCV.CurrentItem;
+            Object? data = null;
+
+            if (dropInfo.Data is Role r)
+            {
+                data = new UserRole() { RoleId = r.Id, UserIdent = us.UserIdent, Role = r };
+                us.UserRoles.Add((UserRole)data);
+                RaisePropertyChanged(nameof(us.UserRoles));
+                RoleView.Refresh();
                 
             }
-        }
-    }
-    public class UserNameValidationRule:ValidationRule
-    {
-        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
-        {
-            
-            if (value is string val)
+            if (dropInfo.Data is WorkArea w)
             {
-                if (val.IsNullOrEmpty()) { return new ValidationResult(false, "Der Eintrag darf nicht leer sein"); }
+                data = new UserWorkArea() { WorkAreaId = w.WorkAreaId, UserId = us.UserIdent, WorkArea = w };
+                us.UserWorkAreas.Add((UserWorkArea)data);
+                WorkView.Refresh();
+                
             }
-            return ValidationResult.ValidResult;
+            if (dropInfo.Data is Costunit c)
+            {
+                data = new UserCost() { CostId = c.CostunitId, UsrIdent = us.UserIdent, Cost = c };
+                us.UserCosts.Add((UserCost)data);
+                CostView.Refresh();
+
+            }
+            if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName && data == null)
+            {
+                if(UiName.Contains("ROLE"))
+                {
+                    us.UserRoles.Remove((UserRole)dropInfo.Data);
+                    RoleView.Refresh();
+                }
+                if (UiName.Contains("WORKAREA"))
+                {
+                    us.UserWorkAreas.Remove((UserWorkArea)dropInfo.Data);
+                    WorkView.Refresh();
+                }
+                if (UiName.Contains("COSTUNIT"))
+                {
+                    us.UserCosts.Remove((UserCost)dropInfo.Data);
+                    CostView.Refresh();
+                }
+            }
+            
         }
+
     }
 }

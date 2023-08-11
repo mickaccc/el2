@@ -17,6 +17,8 @@ namespace Lieferliste_WPF.Data.Configurations
         {
             entity.Property(e => e.MaZuId).ValueGeneratedNever();
 
+            entity.Property(e => e.Timestamp).HasDefaultValueSql("(getdate())");
+
             entity.HasOne(d => d.Ma)
                 .WithMany(p => p.TblMazus)
                 .HasForeignKey(d => d.MaId)
