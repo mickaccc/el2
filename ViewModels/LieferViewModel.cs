@@ -36,10 +36,11 @@ using Lieferliste_WPF.ViewModels.Base;
 using HandlebarsDotNet.Helpers;
 using NUnit.Framework.Interfaces;
 using System.Collections.Specialized;
+using Lieferliste_WPF.Interfaces;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class LieferViewModel : ViewModelBase
+    class LieferViewModel : ViewModelBase, IProgressbarInfo
     {
 
 
@@ -47,7 +48,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
 
-        private ObservableCollection<Vorgang> _orders { get; } = new();
+        private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
         public List<Vorgang> PrioOrders { get; } = new(20);
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
@@ -60,40 +61,39 @@ namespace Lieferliste_WPF.ViewModels
         private String _sortDirection = String.Empty;
         private RelayCommand textSearchCommand;
         private string _searchFilterText = String.Empty;
+        private static double _progressValue;
+        private bool _progressIsBusy;
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
 
         public LieferViewModel()
-        {
-
-            // LoadDataFast();
-
-
-            _filterCriterias = new();
-
-
-            //Task.Run(async () =>
-            //{
-            //    List<Vorgang> mydata = new List<Vorgang>();
-            //    await foreach (Vorgang vrg in LoadAsync())
-            //    {
-            //        mydata.Add(vrg);
-            //    }
-            //    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Normal,
-            //       new Action<object>(UpdateCollection),
-            //       new object[] {mydata});
-            //});
-
-
-
-            LoadData();
+        {         
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+
+            _filterCriterias = new();
+            LoadDataFast();
+
+            ProgressIsBusy = true;
+            Task.Run(async () =>
+            {
+                _orders.AddRange(await LoadAsync());
+
+               await Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Normal,
+                  new Action<object>(UpdateCollection));
+            });
+
+
         }
 
+        private void UpdateCollection(object obj)
+        {
+            OrdersView.Refresh();
+            ProgressIsBusy = false;
+        }
 
         private bool OrdersView_FilterPredicate(object value)
         {
@@ -130,9 +130,22 @@ namespace Lieferliste_WPF.ViewModels
                 }
 
                 return toolTip.ToString();
+                
             }
         }
 
+        public double ProgressValue { get { return _progressValue; } 
+            set
+            {
+               _progressValue = value;
+                NotifyPropertyChanged(() => ProgressValue);
+            } }
+        public bool ProgressIsBusy { get { return _progressIsBusy; }
+            set
+            {
+                _progressIsBusy = value;
+                NotifyPropertyChanged(() => ProgressIsBusy);
+            } }
 
         private void OnTextSearch(object commandParameter)
         {
@@ -169,7 +182,16 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnSaveCanExecute(object arg)
         {
-            return Dbctx.ChangeTracker.HasChanges();
+
+            try
+            {
+                return Dbctx.ChangeTracker.HasChanges();
+            }
+            catch (InvalidOperationException e)
+            {
+                MessageBox.Show(e.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return false;
         }
         private bool OnDescSortCanEcecute(object parameter)
         {
@@ -239,24 +261,8 @@ namespace Lieferliste_WPF.ViewModels
             return v;
             
         }
-        private void LoadData()
-        {
 
-            var r = Dbctx.Vorgangs
-            .Include(m => m.ArbPlSapNavigation)
-            .Include(v => v.AidNavigation)
-            .ThenInclude(x => x.MaterialNavigation)
-            .Include(x => x.AidNavigation.DummyMatNavigation)
-            .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-            .ToObservableCollection();
-
-            foreach(var item in r)
-            {
-                _orders.Add(item);
-            }
-        }
-
-        private IList<Vorgang> LoadAsync()
+        private Task<List<Vorgang>> LoadAsync()
         {
 
             return Dbctx.Vorgangs
@@ -265,7 +271,8 @@ namespace Lieferliste_WPF.ViewModels
             .ThenInclude(x => x.MaterialNavigation)
             .Include(x => x.AidNavigation.DummyMatNavigation)
             .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-            .ToList();
+            .AsNoTracking()
+            .ToListAsync();
         }
         private void LoadDataFast()
         {
@@ -278,11 +285,12 @@ namespace Lieferliste_WPF.ViewModels
             .Take(20)
             .ToList();
 
-            PrioOrders.Clear();
-            foreach (var item in vrg)
-            {
-                PrioOrders.Add(item);
-            }
+            PrioOrders.AddRange(vrg);
+        }
+
+        public void SetProgressIsBusy()
+        {
+            throw new NotImplementedException();
         }
     }
 }

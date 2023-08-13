@@ -14,6 +14,7 @@ namespace Lieferliste_WPF.Utilities
     public static class AppStatic
     {
         public static User User { get; private set; }
+        public static String PC { get; private set; }
         private static readonly DataContext _db = new();
 
         static AppStatic()
@@ -26,6 +27,7 @@ namespace Lieferliste_WPF.Utilities
         {
             try
             {
+                PC = Environment.MachineName;
                 string us = Environment.UserName;
                 var q = _db.Users
                     .Include(x => x.UserRoles)

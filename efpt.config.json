@@ -20,6 +20,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Online]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Permission]",
          "ObjectType": 0
       },

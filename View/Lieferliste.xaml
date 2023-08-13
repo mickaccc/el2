@@ -64,15 +64,15 @@
         <ScrollViewer Grid.Row="1">
             <ItemsControl x:Name="Lieferlist" 
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrdersView}" >
+                          ScrollViewer.CanContentScroll="True" >
                 
-                <!--<ItemsControl.ItemsSource>
+                <ItemsControl.ItemsSource>
                     <PriorityBinding>
-                        <Binding Source="{StaticResource lvm}" Path="OrdersView" IsAsync="True"/>
-                        <Binding Source="{StaticResource lvm}" Path="PrioOrders" IsAsync="False"/>
+                        <Binding Source="{StaticResource lvm}" Path="OrdersView" IsAsync="True" UpdateSourceTrigger="Explicit"/>
+                        <Binding Source="{StaticResource lvm}" Path="PrioOrders" IsAsync="False" UpdateSourceTrigger="PropertyChanged"/>
                     </PriorityBinding>
 
-                </ItemsControl.ItemsSource>-->
+                </ItemsControl.ItemsSource>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

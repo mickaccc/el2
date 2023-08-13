@@ -14,6 +14,7 @@
     using System.CodeDom;
     using System.Diagnostics;
     using GongSolutions.Wpf.DragDrop.Utilities;
+    using System.Runtime.Versioning;
 
 
 
@@ -22,12 +23,11 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        MainWindowViewModel viewModel;
+        [SupportedOSPlatform("windows")]
         public MainWindow()
         {
             InitializeComponent();
-            viewModel = new();
-            DataContext = viewModel;
+            DataContext = new MainWindowViewModel();
             TbControl.SelectedIndex = 0;
 
         }
@@ -160,18 +160,5 @@
             }
         }
 
-        private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            MainWindowViewModel vm = (MainWindowViewModel)DataContext;
-            if (vm != null)
-            {
-                if (vm.CheckChanges())
-                {
-                    MessageBoxResult r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
-                        "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                    if (r == MessageBoxResult.Yes) vm.SaveChanges();
-                }
-            }
-        }
     }
 }

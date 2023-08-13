@@ -8,11 +8,13 @@
     xmlns:util="clr-namespace:Lieferliste_WPF.Utilities"
     xmlns:dd="urn:gong-wpf-dragdrop"
     xmlns:local="clr-namespace:Lieferliste_WPF.View"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     mc:Ignorable="av"
     x:Class="Lieferliste_WPF.View.MainWindow"
  
         x:Name="mainWindow"
-        Title="LieferListe El2" Height="500" Closing="mainWindow_Closing" >
+        Title="LieferListe El2" Height="500"  >
 
     <Window.Resources>
         <conv:PermissionConverter x:Key="permission"/>
@@ -20,8 +22,104 @@
         <conv:TTNR_Converter x:Key="ttnr-converter"/>
         <cmd:ELCommands x:Key="elCmd"/>
 
-    </Window.Resources>
+        <Style x:Key="{x:Type ProgressBar}"
+       TargetType="{x:Type ProgressBar}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ProgressBar}">
+                        <Grid MinHeight="14"
+              MinWidth="200"
+              Background="{TemplateBinding Background}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Determinate" />
+                                    <VisualState x:Name="Indeterminate">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Duration="00:00:00"
+                                                 Storyboard.TargetName="PART_Indicator"
+                                                 Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <SolidColorBrush>Transparent</SolidColorBrush>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
 
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="PART_Track"
+                  CornerRadius="2"
+                  BorderThickness="1">
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="{DynamicResource BorderMediumColor}" />
+                                </Border.BorderBrush>
+                            </Border>
+                            <Border x:Name="PART_Indicator"
+                  CornerRadius="2"
+                  BorderThickness="1"
+                  HorizontalAlignment="Left"
+                  Background="{TemplateBinding Foreground}"
+                  Margin="0,-1,0,1">
+                                <Border.BorderBrush>
+                                    <LinearGradientBrush StartPoint="0,0"
+                                   EndPoint="0,1">
+                                        <GradientBrush.GradientStops>
+                                            <GradientStopCollection>
+                                                <GradientStop Color="{DynamicResource BorderLightColor}"
+                                  Offset="0.0" />
+                                                <GradientStop Color="{DynamicResource BorderMediumColor}"
+                                  Offset="1.0" />
+                                            </GradientStopCollection>
+                                        </GradientBrush.GradientStops>
+                                    </LinearGradientBrush>
+
+                                </Border.BorderBrush>
+                                <Grid ClipToBounds="True"
+                  x:Name="Animation">
+                                    <Rectangle x:Name="PART_GlowRect"
+                         Width="100"
+                         HorizontalAlignment="Left"
+                         Fill="{DynamicResource ProgressBarIndicatorAnimatedFill}"
+                         Margin="-100,0,0,0" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0,1"
+                           StartPoint="0,0">
+                        <GradientStop Color="{DynamicResource ControlLightColor}"
+                      Offset="0" />
+                        <GradientStop Color="{DynamicResource ControlMediumColor}"
+                      Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1"
+                           StartPoint="0.5,0">
+                        <GradientStop Color="{DynamicResource ControlMediumColor}"
+                      Offset="0" />
+                        <GradientStop Color="{DynamicResource ControlDarkColor}"
+                      Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+    
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CloseCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>
@@ -208,5 +306,26 @@
             </TabControl.ContentTemplate>
 
         </TabControl>
+        <StatusBar Name="sbar" Grid.Row="2"
+           VerticalAlignment="Bottom" Background="Beige" >
+
+            <StatusBarItem>
+                <TextBlock>Process in Arbeit</TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <ProgressBar Width="100" Height="20" 
+                 Name="progressBar1"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock>Online</TextBlock>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Path=Onlines }" />
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <Image Source="/Images/machine-color.png" Width="16" Height="16"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

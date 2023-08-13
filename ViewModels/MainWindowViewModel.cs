@@ -17,6 +17,10 @@ using System.Collections;
 using System.Windows.Data;
 using Lieferliste_WPF.View;
 using Lieferliste_WPF.UserControls;
+using Lieferliste_WPF.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Timers;
+using System.Diagnostics;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -24,7 +28,7 @@ namespace Lieferliste_WPF.ViewModels
     /// Class for the main window's view-model.
     /// </summary>
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    public sealed class MainWindowViewModel : ViewModelBase, IDropTarget
+    public sealed class MainWindowViewModel : ViewModelBase, IDropTarget, IProgressbarInfo
     {
         public ICommand OpenMachinePlanCommand { get; private set; }
         public ICommand OpenLieferlisteCommand { get; private set; }
@@ -33,6 +37,13 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenRoleMgmtCommand { get; private set; }
         public ICommand OpenMachineMgmtCommand { get; private set; }
         public ICommand TabCloseCommand { get; private set; }
+        public ICommand CloseCommand { get; private set; }
+        private static int _onlines;
+        private static System.Timers.Timer _timer;
+        private double _progressValue;
+        private bool _progressIsBusy;
+        private readonly BackgroundWorker _worker = new();
+        
         private ObservableCollection<TabItem> _tabTitles;
         private List<TabItem> _windowTitles;
 
@@ -47,6 +58,32 @@ namespace Lieferliste_WPF.ViewModels
             OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
             OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
+            CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
+
+            //InsertMe();
+            //SetTimer();
+        }
+
+        #region Commands
+        private void OnCloseExecuted(object obj)
+        {
+            Dbctx.ChangeTracker.DetectChanges();
+            if (Dbctx.ChangeTracker.HasChanges())
+            {
+                MessageBoxResult r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
+                    "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
+            }
+
+           int del = Dbctx.Onlines.Where(x => x.UserId.Equals(AppStatic.User.UserIdent)
+            && x.PcId.Equals(AppStatic.PC)).ExecuteDelete();
+
+           Debug.WriteLine("Deleted Onlines: {0}",del);
+        }
+
+        private bool OnCloseCanExecute(object arg)
+        {
+            return true;
         }
 
         private bool OnTabCloseCanExecute(object arg)
@@ -59,7 +96,7 @@ namespace Lieferliste_WPF.ViewModels
             if (obj is TabItem o)
             {
                 var t = TabTitles.FirstOrDefault(x => x.Content == o.Content);
-                if(t != null)
+                if (t != null)
                     TabTitles.Remove(t);
             }
         }
@@ -69,8 +106,8 @@ namespace Lieferliste_WPF.ViewModels
             TabItem tabItem = new()
             {
                 Content = new MachineEdit(),
-                Header = new TabHeader() { HeaderText = contentTitle.MachineEdit },
-                Tag = contentTitle.MachineEdit,
+                Header = new TabHeader() { HeaderText = ContentTitle.MachineEdit },
+                Tag = ContentTitle.MachineEdit,
                 IsSelected = true
             };
 
@@ -80,8 +117,8 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenMachineMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("MA00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == contentTitle.MachineEdit) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == contentTitle.MachineEdit);
+                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.MachineEdit) &&
+                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.MachineEdit);
         }
 
         private void OnOpenRoleMgmtExecuted(object obj)
@@ -89,8 +126,8 @@ namespace Lieferliste_WPF.ViewModels
             TabItem tabItem = new()
             {
                 Content = new RoleEdit(),
-                Header = new TabHeader() { HeaderText = contentTitle.RoleEdit },
-                Tag = contentTitle.RoleEdit,
+                Header = new TabHeader() { HeaderText = ContentTitle.RoleEdit },
+                Tag = ContentTitle.RoleEdit,
                 IsSelected = true
             };
 
@@ -100,8 +137,8 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == contentTitle.RoleEdit) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == contentTitle.RoleEdit);
+                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.RoleEdit) &&
+                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.RoleEdit);
         }
 
         private void OnOpenUserMgmtExecuted(object obj)
@@ -109,8 +146,8 @@ namespace Lieferliste_WPF.ViewModels
             TabItem tabItem = new()
             {
                 Content = new UserEdit(),
-                Header = new TabHeader() { HeaderText = contentTitle.UserEdit },
-                Tag = contentTitle.UserEdit,
+                Header = new TabHeader() { HeaderText = ContentTitle.UserEdit },
+                Tag = ContentTitle.UserEdit,
                 IsSelected = true
             };
 
@@ -121,20 +158,20 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenUserMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("UM00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == contentTitle.UserEdit) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == contentTitle.UserEdit);
+                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.UserEdit) &&
+                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.UserEdit);
         }
 
 
         private void OnOpenSettingsExecuted(object obj)
         {
-            if (!TabTitles.Any(x => x.Header.ToString() == contentTitle.Settings))
+            if (!TabTitles.Any(x => x.Header.ToString() == ContentTitle.Settings))
             {
                 TabItem tabItem = new()
                 {
                     Content = new Settings(),
-                    Header = new TabHeader() { HeaderText = contentTitle.Settings },
-                    Tag = contentTitle.Settings,
+                    Header = new TabHeader() { HeaderText = ContentTitle.Settings },
+                    Tag = ContentTitle.Settings,
                     IsSelected = true
                 };
 
@@ -145,50 +182,87 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenSettingsCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == contentTitle.Settings) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == contentTitle.Settings); ;
+                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.Settings) &&
+                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.Settings); ;
         }
 
         private void OnOpenMachinePlanExecuted(object obj)
         {
-                TabItem tabItem = new()
-                {
-                    Content = new View.MachinePlan(),
-                    Header = new TabHeader() { HeaderText = contentTitle.Planning },
-                    Tag = contentTitle.Planning,
-                    IsSelected = true
-                    
-                };
+            TabItem tabItem = new()
+            {
+                Content = new View.MachinePlan(),
+                Header = new TabHeader() { HeaderText = ContentTitle.Planning },
+                Tag = ContentTitle.Planning,
+                IsSelected = true
 
-                TabTitles.Add(tabItem);           
+            };
+
+            TabTitles.Add(tabItem);
         }
 
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == contentTitle.Planning) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == contentTitle.Planning);
+                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.Planning) &&
+                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.Planning);
         }
 
         private void OnOpenLieferlisteExecuted(object obj)
         {
-          
             TabItem tabItem = new TabItem
             {
                 Content = new Lieferliste(),
-                Header = new TabHeader() { HeaderText = contentTitle.Deliverylist },
-                Tag = contentTitle.Deliverylist,
+                Header = new TabHeader() { HeaderText = ContentTitle.Deliverylist },
+                Tag = ContentTitle.Deliverylist,
                 IsSelected = true
             };
-                
-            TabTitles.Add(tabItem);           
+            TabTitles.Add(tabItem);
+
+        }
+
+        #endregion
+        private void SetTimer()
+        {
+            // Create a timer with a two second interval.
+            _timer = new System.Timers.Timer(10000);
+            // Hook up the Elapsed event for the timer. 
+            _timer.Elapsed += OnTimedEvent;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+        }
+        public int Onlines
+        {
+            get { return _onlines; }
+            private set
+            {
+                if(_onlines != value)
+                {
+                    _onlines = value;
+                   NotifyPropertyChanged(() => Onlines);
+                }
+            }
+        }
+        private void OnTimedEvent(object? sender, ElapsedEventArgs e)
+        {
+            
+            Onlines = Dbctx.Onlines.Count();
+        }
+
+        private void _worker_ProgressChanged(object? sender, ProgressChangedEventArgs e)
+        {
+            ProgressValue = e.ProgressPercentage;
+        }
+
+        private void _worker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+
         }
 
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("LIE00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == contentTitle.Deliverylist) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == contentTitle.Deliverylist);
+                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.Deliverylist) &&
+                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.Deliverylist);
         }
 
         public ObservableCollection<TabItem> TabTitles
@@ -209,7 +283,16 @@ namespace Lieferliste_WPF.ViewModels
                 OnPropertyChanged("WindowTitles");
             }
         }
-        private struct contentTitle
+
+        public double ProgressValue { get { return _progressValue; } set { _progressValue = value; } }
+        public bool ProgressIsBusy { get { return _progressIsBusy; }
+            private set
+            {
+                _progressIsBusy = value;
+                NotifyPropertyChanged(() => ProgressIsBusy);
+            } }
+
+        private struct ContentTitle
         {
             public const string Settings = "Einstellungen";
             public const string Deliverylist = "Lieferliste";
@@ -263,14 +346,22 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        public bool CheckChanges()
+
+        private void InsertMe()
         {
-            return Dbctx.ChangeTracker.HasChanges();
-        }
-        public void SaveChanges()
-        {
+            var onl = Dbctx.Onlines;
+            var on = new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC };
+            onl.Add(on);
             Dbctx.SaveChanges();
         }
+
+
+
+        public void SetProgressIsBusy()
+        {
+            throw new NotImplementedException();
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
     }

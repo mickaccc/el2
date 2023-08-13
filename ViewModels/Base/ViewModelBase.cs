@@ -5,10 +5,14 @@
     using System.ComponentModel;
     using System.Linq.Expressions;
     using Lieferliste_WPF.Data;
+    using Lieferliste_WPF.Interfaces;
+    using System.Windows.Navigation;
 
     public class ViewModelBase : INotifyPropertyChanged
     {
-        protected DataContext Dbctx { get; } = new();
+        protected static DataContext Dbctx { get; } = new();
+ 
+
         protected void OnChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -45,7 +49,5 @@
 
             this.RaisePropertyChanged(memberExpression.Member.Name);
         }
-        public virtual void addFilterCriteria(string PropertyName, string CriteriaValue) { }
-        public virtual void removeFilterCriteria(string PropertyName) { }
     }
 }
