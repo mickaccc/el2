@@ -1,26 +1,20 @@
-﻿using Lieferliste_WPF.ViewModels.Base;
+﻿using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Commands;
+using Lieferliste_WPF.Data.Models;
+using Lieferliste_WPF.Interfaces;
+using Lieferliste_WPF.UserControls;
 using Lieferliste_WPF.Utilities;
-using System;
+using Lieferliste_WPF.View;
+using Lieferliste_WPF.ViewModels.Base;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Collections.Specialized;
+using System.Timers;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Lieferliste_WPF.Commands;
-using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Data.Models;
-using System.Collections;
-using System.Windows.Data;
-using Lieferliste_WPF.View;
-using Lieferliste_WPF.UserControls;
-using Lieferliste_WPF.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.Timers;
-using System.Diagnostics;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -60,8 +54,8 @@ namespace Lieferliste_WPF.ViewModels
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
 
-            //InsertMe();
-            //SetTimer();
+            RegisterMe();
+            SetTimer();
         }
 
         #region Commands
@@ -224,7 +218,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetTimer()
         {
             // Create a timer with a two second interval.
-            _timer = new System.Timers.Timer(10000);
+            _timer = new System.Timers.Timer(60000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -347,7 +341,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private void InsertMe()
+        private void RegisterMe()
         {
             var onl = Dbctx.Onlines;
             var on = new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC };

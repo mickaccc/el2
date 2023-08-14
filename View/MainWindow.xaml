@@ -170,8 +170,7 @@
                 </MenuItem>
 
                 <MenuItem Header="Hilfe" >
-                    <MenuItem Header="About" />
-                    <!-- Click="About_Click"/>-->
+                    <MenuItem Header="About" Click="About_Click"/>
                     <MenuItem Header="Archiv" Command="{Binding ShowArchive, Mode=OneWay, Source={StaticResource elCmd}}"/>
                 </MenuItem>
             </Menu>

@@ -6,7 +6,8 @@ using System.Windows;
 using System.Windows.Data;
 using System.Xml;
 
-namespace Lieferliste_WPF
+namespace Lieferliste_WPF.View
+
 {
     /// <summary>
     /// Interaction logic for WPFAboutBox.xaml
@@ -38,12 +39,12 @@ namespace Lieferliste_WPF
         /// <param name="e">Navigation events arguments.</param>
         private void hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            if (e.Uri != null && string.IsNullOrEmpty(e.Uri.OriginalString) == false)
-            {
-                string uri = e.Uri.AbsoluteUri;
-                Process.Start(new ProcessStartInfo(uri));
-                e.Handled = true;
-            }
+            //if (e.Uri != null && string.IsNullOrEmpty(e.Uri.OriginalString) == false)
+            //{
+            //    string uri = e.Uri.AbsoluteUri;
+            //    Process.Start(new ProcessStartInfo(uri));
+            //    e.Handled = true;
+            //}
         }
 
         #region AboutData Provider

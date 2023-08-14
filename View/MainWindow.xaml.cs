@@ -1,20 +1,13 @@
 ﻿namespace Lieferliste_WPF.View
 {
+    using Lieferliste_WPF;
     using Lieferliste_WPF.ViewModels;
-    using Lieferliste_WPF.Utilities;
     using System;
+    using System.Runtime.Versioning;
     using System.Windows;
     using System.Windows.Controls;
-    using Lieferliste_WPF;
-    using Lieferliste_WPF.UserControls;
-    using System.Windows.Media;
     using System.Windows.Input;
-    using Lieferliste_WPF.Commands;
-    using Lieferliste_WPF.View.Dialogs;
-    using System.CodeDom;
-    using System.Diagnostics;
-    using GongSolutions.Wpf.DragDrop.Utilities;
-    using System.Runtime.Versioning;
+    using System.Windows.Media;
 
 
 

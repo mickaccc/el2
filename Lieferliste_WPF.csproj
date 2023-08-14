@@ -30,7 +30,7 @@
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
@@ -78,13 +78,17 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <Title>Lieferliste WPF</Title>
+    <Description>Feinplanung, Auftrag- und Lieferübersicht\n\nAuthor:\nMichael Schatzl\nSCM2HL DW 573nmichael.schatzl@at.bosch.com</Description>
+    <Copyright>Robert Bosch AG Hallein</Copyright>
+    <NeutralLanguage>de-AT</NeutralLanguage>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <Optimize>False</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <Optimize>False</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>
@@ -264,6 +268,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\print1.png" />
+    <Resource Include="Images\user-edit.png" />
     <Resource Include="Images\user-profiles.png" />
   </ItemGroup>
   <ItemGroup>
@@ -368,6 +373,7 @@
     <None Remove="Images\plan.png" />
     <None Remove="Images\planning.png" />
     <None Remove="Images\SplashPic.png" />
+    <None Remove="Images\user-edit.png" />
     <None Remove="Images\user-profiles.png" />
     <None Remove="net7.0-windows.7z" />
     <Page Remove="Templates\AllocationReport.xaml" />

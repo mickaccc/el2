@@ -1,12 +1,9 @@
 ﻿namespace Lieferliste_WPF.ViewModels.Base
 {
-    using Microsoft.EntityFrameworkCore;
+    using Lieferliste_WPF.Data;
     using System;
     using System.ComponentModel;
     using System.Linq.Expressions;
-    using Lieferliste_WPF.Data;
-    using Lieferliste_WPF.Interfaces;
-    using System.Windows.Navigation;
 
     public class ViewModelBase : INotifyPropertyChanged
     {
