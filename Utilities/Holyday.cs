@@ -138,17 +138,19 @@ namespace Lieferliste_WPF.Utilities
         {
             this.CurrentYear = year;
             #region fillList
-            this.holydays = new List<Holyday>();
-            this.holydays.Add(new Holyday(true, new DateTime(year, 1, 1), "Neujahr","de-DE"));
-            this.holydays.Add(new Holyday(true, new DateTime(year, 1, 6), "Heilige Drei Könige","de-DE"));
-            this.holydays.Add(new Holyday(true, new DateTime(year, 5, 1), "Tag der Arbeit", "de-DE"));
-            this.holydays.Add(new Holyday(true, new DateTime(year, 8, 15), "Mariä Himmelfahrt", "de-DE"));
-            this.holydays.Add(new Holyday(true, new DateTime(year, 10, 3), "Tag der dt. Einheit", "de-DE"));
-            this.holydays.Add(new Holyday(true, new DateTime(year, 10, 31), "Reformationstag", "de-DE"));
-            this.holydays.Add(new Holyday(true, new DateTime(year, 11, 1), "Allerheiligen", "de-DE"));
-            this.holydays.Add(new Holyday(true, new DateTime(year, 12, 25), "1. Weihnachtstag", "de-DE"));
-            this.holydays.Add(new Holyday(true, new DateTime(year, 12, 26), "2. Weihnachtstag", "de-DE"));
-            DateTime osterSonntag = GetEasterSunday();
+            this.holydays = new List<Holyday>
+            {
+                new Holyday(true, new DateTime(year, 1, 1), "Neujahr", "de-DE"),
+                new Holyday(true, new DateTime(year, 1, 6), "Heilige Drei Könige", "de-DE"),
+                new Holyday(true, new DateTime(year, 5, 1), "Tag der Arbeit", "de-DE"),
+                new Holyday(true, new DateTime(year, 8, 15), "Mariä Himmelfahrt", "de-DE"),
+                new Holyday(true, new DateTime(year, 10, 3), "Tag der dt. Einheit", "de-DE"),
+                new Holyday(true, new DateTime(year, 10, 31), "Reformationstag", "de-DE"),
+                new Holyday(true, new DateTime(year, 11, 1), "Allerheiligen", "de-DE"),
+                new Holyday(true, new DateTime(year, 12, 25), "1. Weihnachtstag", "de-DE"),
+                new Holyday(true, new DateTime(year, 12, 26), "2. Weihnachtstag", "de-DE")
+            };
+            var osterSonntag = GetEasterSunday();
             this.holydays.Add(new Holyday(false, osterSonntag, "Ostersonntag", "de-DE"));
             this.holydays.Add(new Holyday(false, osterSonntag.AddDays(-3), "Gründonnerstag", "de-DE"));
             this.holydays.Add(new Holyday(false, osterSonntag.AddDays(-2), "Karfreitag", "de-DE"));
@@ -191,8 +193,8 @@ namespace Lieferliste_WPF.Utilities
             j = (year + (year / 4) + i + 2 - c + (c / 4)) % 7;
 
             l = i - j;
-            int month = (int)(3 + ((l + 40) / 44));
-            int day = (int)(l + 28 - 31 * (month / 4));
+            var month = (int)(3 + ((l + 40) / 44));
+            var day = (int)(l + 28 - 31 * (month / 4));
 
             return new DateTime(year, month, day);
 
@@ -200,19 +202,19 @@ namespace Lieferliste_WPF.Utilities
         private static DateTime getGaussianEaster(int year)
         {
 
-            int k = year / 100;
-            int tmp = (3 * k + 3) / 4;
-            int m = 15 + tmp - (8 * k + 13) / 25;
-            int s = 2 - tmp;
-            int a = year % 19;
-            int d = (19 * a + m) % 30;
-            int r = (d / 29) + (d / 28 - d / 29) * (a / 11);
-            int og = 21 + d - r;
-            int sz = 7 - (year + year / 4 + s) % 7;
-            int oe = 7 - (og - sz) % 7;
-            int os = og + oe - 1;
+            var k = year / 100;
+            var tmp = (3 * k + 3) / 4;
+            var m = 15 + tmp - (8 * k + 13) / 25;
+            var s = 2 - tmp;
+            var a = year % 19;
+            var d = (19 * a + m) % 30;
+            var r = (d / 29) + (d / 28 - d / 29) * (a / 11);
+            var og = 21 + d - r;
+            var sz = 7 - (year + year / 4 + s) % 7;
+            var oe = 7 - (og - sz) % 7;
+            var os = og + oe - 1;
 
-            DateTime cal = new DateTime(year, 3, 1);
+            var cal = new DateTime(year, 3, 1);
 
             cal.AddDays(os);
 

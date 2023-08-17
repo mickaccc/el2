@@ -291,12 +291,14 @@ namespace Lieferliste_WPF.UserControls
 
         private void BtnMessOrder_Click(object sender, RoutedEventArgs e)
         {
-            FrameworkElement lst = e.Source as FrameworkElement;
+            var lst = e.Source as FrameworkElement;
 
-            DataRowView d = lst.DataContext as DataRowView;
-            MessauftragDialog dialog = new MessauftragDialog((String)d.Row.ItemArray[10]);
-            dialog.Owner = App.Current.Windows[0];
-            dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            var d = lst.DataContext as DataRowView;
+            MessauftragDialog dialog = new((string)d.Row.ItemArray[10])
+            {
+                Owner = Application.Current.Windows[0],
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
             dialog.ShowDialog();
         }
 

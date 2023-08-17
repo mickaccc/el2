@@ -76,15 +76,14 @@ namespace Lieferliste_WPF.Planning
         }
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? ChangeProcessesCommand { get; private set; }
-        private int _rId;
+        private readonly int _rId;
 
         public int RID { get { return _rId; } }
-        public String? Name { get; set; }
-        public String? Description { get; set; }
-        public String? InventNo { get; private set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public int[]? CostUnits { get; set; }
-        public string[]? ArbPlSAPs { get; set; }
         protected MachinePlanViewModel? Owner { get; private set; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
@@ -103,17 +102,12 @@ namespace Lieferliste_WPF.Planning
             
         }
 
-        private bool OnSetMarkerCanExecute(object arg)
+        private static bool OnSetMarkerCanExecute(object arg)
         {
             if (arg != null)
             {
-
                 var values = (object[])arg;
-                if (values[1] is Vorgang)
-                {
-                    return true;
-                }
-                else return false;
+                return (values[1] is Vorgang);
             }
             return false;
         }
@@ -143,13 +137,13 @@ namespace Lieferliste_WPF.Planning
 
         public void Drop(IDropInfo dropInfo)
         {
-            Vorgang vrg = (Vorgang)dropInfo.Data;
-            ListCollectionView s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
-            ListCollectionView t = dropInfo.TargetCollection as ListCollectionView;
-            if (s.CanRemove) s.Remove(vrg);
-            int v = dropInfo.InsertIndex;
+            var vrg = (Vorgang)dropInfo.Data;
+            var s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
+            var t = dropInfo.TargetCollection as ListCollectionView;
+            if (s?.CanRemove ?? false) s.Remove(vrg);
+            var v = dropInfo.InsertIndex;
             vrg.Rid = _rId;
-            if (v > t.Count)
+            if (v > t?.Count)
             {
                 ((IList)t.SourceCollection).Add(vrg);
             }
@@ -158,8 +152,8 @@ namespace Lieferliste_WPF.Planning
                 ((IList)t.SourceCollection).Insert(v, vrg);
                 
             }
-            Collection<Vorgang> p = t.SourceCollection as Collection<Vorgang>;
-            for(int i=0;i<p.Count;i++)
+            var p = t.SourceCollection as Collection<Vorgang>;
+            for(var i=0;i<p.Count;i++)
             {
                 p[i].Spos = i;
             }

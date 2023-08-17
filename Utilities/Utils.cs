@@ -23,16 +23,14 @@ namespace Lieferliste_WPF.Utilities
         public void Sort(IComparer<T> comparer)
         {
 
-            int i, j;
-
-            T index;
+            int i;
 
             for (i = 1; i < Count; i++)
             {
 
-                index = this[i];     //If you can't read it, it should be index = this[x], where x is i :-)
+                var index = this[i];     //If you can't read it, it should be index = this[x], where x is i :-)
 
-                j = i;
+                var j = i;
 
                 while ((j > 0) && (comparer.Compare(this[j - 1], index) == 1))
                 {
@@ -66,7 +64,6 @@ namespace Lieferliste_WPF.Utilities
         private List<T> _List
         {
             get;
-            set;
         }
 
         public T this[int index]
@@ -87,10 +84,8 @@ namespace Lieferliste_WPF.Utilities
 
         public int Count
         {
-            get
-            {
-                return _List.Count;
-            }
+            get => _List.Count;
+            
         }
 
         public bool IsReadOnly

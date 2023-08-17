@@ -191,13 +191,13 @@ namespace Lieferliste_WPF.ViewModels
             var u = _usrCV.CurrentItem;
             if (u is User usr)
             { 
-            Users?.Remove(usr);
-            Dbctx.Users.Remove(usr);
+                Users?.Remove(usr);
+                Dbctx.Users.Remove(usr);
                 OnSaveExecuted(usr);
             }
         }
 
-        private bool OnNewCanExecute(object arg)
+        private static bool OnNewCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("UM01") && !_isNew;
         }
@@ -238,7 +238,7 @@ namespace Lieferliste_WPF.ViewModels
             ValidName = 0;
         }
 
-        private bool OnSaveCanExecute(object arg)
+        private static bool OnSaveCanExecute(object arg)
         {
             Dbctx.ChangeTracker.DetectChanges();
             return Dbctx.ChangeTracker.HasChanges() || _isNew;

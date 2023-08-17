@@ -3,16 +3,14 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.Commands
 {
-    class ActionCommand : ICommand
+    internal class ActionCommand : ICommand
     {
         private readonly Action<object> _executeHandler;
         private readonly Func<object, bool> _canExecuteHandler;
 
         public ActionCommand(Action<object> execute, Func<object, bool> canExecute)
         {
-            if (execute == null)
-                throw new ArgumentNullException("Execute cannot be null");
-            _executeHandler = execute;
+            _executeHandler = execute ?? throw new ArgumentNullException("Execute cannot be null");
             _canExecuteHandler = canExecute;
         }
 

@@ -6,21 +6,21 @@ using System.Windows.Data;
 
 namespace Lieferliste_WPF.myConverters
 {
-    [ValueConversion(typeof(String), typeof(String))]
-    public sealed class TTNR_Converter : IValueConverter
+    [ValueConversion(typeof(string), typeof(string))]
+    public sealed partial class TTNR_Converter : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is String)
+            if (value is string)
             {
-                String strVal = (value as String).Trim();
+                var strVal = (value as string).Trim();
 
-                Regex regex = new Regex("([a-zA-Z0-9]{4})([a-zA-Z0-9]{3})([a-zA-Z0-9]{3})([a-zA-Z0-9]*)");
-                Match match = regex.Match(strVal);
+                var regex = MyRegex();
+                var match = regex.Match(strVal);
                 if (match.Success)
                 {
-                    String retVal;
-                    retVal = match.Groups[1] + "." + match.Groups[2] + "." + match.Groups[3];
+                    
+                    var retVal = match.Groups[1] + "." + match.Groups[2] + "." + match.Groups[3];
                     if (strVal.Length > 10)
                     {
                         retVal += "-" + match.Groups[4];
@@ -34,5 +34,8 @@ namespace Lieferliste_WPF.myConverters
         {
             throw new NotSupportedException();
         }
+
+        [GeneratedRegex("([a-zA-Z0-9]{4})([a-zA-Z0-9]{3})([a-zA-Z0-9]{3})([a-zA-Z0-9]*)")]
+        private static partial Regex MyRegex();
     }
 }

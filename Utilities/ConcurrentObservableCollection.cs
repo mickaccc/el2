@@ -11,12 +11,11 @@ namespace Lieferliste_WPF.Utilities
 {
     public class ConcurrentObservableCollection<T> : ObservableCollection<T>
     {
-        private SynchronizationContext _synchronizationContext = SynchronizationContext.Current;
+        private readonly SynchronizationContext _synchronizationContext = SynchronizationContext.Current;
 
-        private bool _suppressNotification = false;
+        private bool _suppressNotification;
 
         public ConcurrentObservableCollection()
-            : base()
         {
         }
         public ConcurrentObservableCollection(IEnumerable<T> list)
@@ -26,31 +25,29 @@ namespace Lieferliste_WPF.Utilities
 
         public void AddRange(IEnumerable<T> collection)
         {
-            if (collection != null)
-            {
-                _suppressNotification = true;
-                foreach (var item in collection)
-                {
-                    this.Add(item);
-                }
-                _suppressNotification = false;
 
-                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            _suppressNotification = true;
+            foreach (var item in collection)
+            {
+                this.Add(item);
             }
+            _suppressNotification = false;
+
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            
         }
         public void RemoveRange(IEnumerable<T> collection)
         {
-            if (collection != null)
-            {
-                _suppressNotification = true;
-                foreach (var item in collection)
-                {
-                    this.Remove(item);
-                }
-                _suppressNotification = false;
 
-                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            _suppressNotification = true;
+            foreach (var item in collection)
+            {
+                this.Remove(item);
             }
+            _suppressNotification = false;
+
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            
         }
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)

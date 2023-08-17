@@ -60,10 +60,12 @@ namespace Lieferliste_WPF.UserControls
 
         private void HandleOpenMachineExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            Window m = new MachineView();
-            m.DataContext = this.DataContext;
-            m.Title = "Inventarnummer: " + (DataContext as PlanMachine).InventNo;
-            m.Owner = App.Current.MainWindow;
+            Window m = new MachineView
+            {
+                DataContext = this.DataContext,
+                Title = "Inventarnummer: " + (DataContext as PlanMachine).InventNo,
+                Owner = App.Current.MainWindow
+            };
             m.Show();
         }
     }

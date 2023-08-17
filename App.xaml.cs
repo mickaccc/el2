@@ -1,6 +1,5 @@
 ﻿
 using System.Globalization;
-using System.Threading;
 using System.Windows;
 using System.Windows.Markup;
 namespace Lieferliste_WPF
@@ -19,9 +18,9 @@ namespace Lieferliste_WPF
         protected override void OnStartup(StartupEventArgs e)
         {
 
-            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("de-AT"); ;
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("de-AT");
 
-            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("de-AT"); ;
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("de-AT");
 
 
 

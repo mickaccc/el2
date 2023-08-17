@@ -26,15 +26,15 @@ namespace Lieferliste_WPF.ViewModels
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MachinePlanViewModel : Base.ViewModelBase, IDropTarget
     {      
-        private RelayCommand selectionChangeCommand;
-        private RelayCommand textSearchCommand;
-        public ICommand SelectionChangeCommand => selectionChangeCommand ??= new RelayCommand(SelectionChange);
-        public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
+        private RelayCommand _selectionChangeCommand;
+        private RelayCommand _textSearchCommand;
+        public ICommand SelectionChangeCommand => _selectionChangeCommand ??= new RelayCommand(SelectionChange);
+        public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
 
         public ICommand SaveCommand { get; private set; }
   
         public List<WorkArea> WorkAreas { get; private set; }
-        public List<PlanMachine> Machines { get; private set; }
+        public List<PlanMachine> Machines { get; }
         private ObservableCollection<Vorgang> Priv_processes { get; set; }
         private ObservableCollection<Vorgang> Priv_parking { get; set; }
         
@@ -42,10 +42,10 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         
-        private string _masterFilterText = "";
-        private string _searchFilterText = "";
-        internal CollectionViewSource ProcessViewSource { get; private set; } = new();
-        internal CollectionViewSource ParkingViewSource { get; private set; } = new();
+        private string _masterFilterText;
+        private string _searchFilterText;
+        internal CollectionViewSource ProcessViewSource { get; } = new();
+        internal CollectionViewSource ParkingViewSource { get; } = new();
  
         public MachinePlanViewModel() 
         {
@@ -67,13 +67,13 @@ namespace Lieferliste_WPF.ViewModels
         
         }
 
-        private bool OnSaveCanExecute(object arg)
+        private static bool OnSaveCanExecute(object arg)
         {
             return Dbctx.ChangeTracker.HasChanges();
             
         }
 
-        private void OnSaveExecuted(object obj)
+        private static void OnSaveExecuted(object obj)
         {
             Dbctx.SaveChanges();
         }
@@ -99,8 +99,6 @@ namespace Lieferliste_WPF.ViewModels
 
             WorkAreas = new List<WorkArea>(work);
 
-            if (AppStatic.User != null)
-            {
 
                 var re = Dbctx.Ressources
                     .Include(x => x.RessourceCostUnits)
@@ -113,37 +111,37 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var q in ress)
                 {
 
-                        PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty,this)
-                        {
-                            WorkArea = q.WorkArea,
-                            CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
-                            Description = q.Info ?? String.Empty,
+                    PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty,this)
+                    {
+                        WorkArea = q.WorkArea,
+                        CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
+                        Description = q.Info ?? String.Empty,
  
                                                      
-                        };
+                    };
 
-                            List<Vorgang> VrgList = qp.FindAll(x => x.Rid == q.RessourceId);
+                        List<Vorgang> VrgList = qp.FindAll(x => x.Rid == q.RessourceId);
                             
-                            foreach (var vrg in VrgList)
-                            {
-                                if (vrg.VorgangId.Length > 0)
-                                    plm.Processes?.Add(vrg);
-                            }
+                        foreach (var vrg in VrgList)
+                        {
+                            if (vrg.VorgangId.Length > 0)
+                                plm.Processes?.Add(vrg);
+                        }
                           
-                    Machines.Add(plm);
-                }
-                List<Vorgang> list = new();
-                foreach(var m in Machines)
-                {
-                    list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID));
-                }
-                Priv_processes = list.FindAll(x => x.Rid == null)
-                    .ToObservableCollection();
-                Priv_parking = list.FindAll(x => x.Rid == -1)
-                    .ToObservableCollection();
+                Machines.Add(plm);
             }
-
+            List<Vorgang> list = new();
+            foreach(var m in Machines)
+            {
+                list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID));
+            }
+            Priv_processes = list.FindAll(x => x.Rid == null)
+                .ToObservableCollection();
+            Priv_parking = list.FindAll(x => x.Rid == -1)
+                .ToObservableCollection();
         }
+
+        
 
 
         private void SelectionChange(object commandParameter)

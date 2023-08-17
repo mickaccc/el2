@@ -59,17 +59,17 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         #region Commands
-        private void OnCloseExecuted(object obj)
+        private static void OnCloseExecuted(object obj)
         {
             Dbctx.ChangeTracker.DetectChanges();
             if (Dbctx.ChangeTracker.HasChanges())
             {
-                MessageBoxResult r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
+                var r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
                     "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
                 if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
             }
 
-           int del = Dbctx.Onlines.Where(x => x.UserId.Equals(AppStatic.User.UserIdent)
+           var del = Dbctx.Onlines.Where(x => x.UserId.Equals(AppStatic.User.UserIdent)
             && x.PcId.Equals(AppStatic.PC)).ExecuteDelete();
 
            Debug.WriteLine("Deleted Onlines: {0}",del);
@@ -111,8 +111,8 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenMachineMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("MA00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.MachineEdit) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.MachineEdit);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit);
         }
 
         private void OnOpenRoleMgmtExecuted(object obj)
@@ -131,8 +131,8 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.RoleEdit) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.RoleEdit);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
         }
 
         private void OnOpenUserMgmtExecuted(object obj)
@@ -176,8 +176,8 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenSettingsCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.Settings) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.Settings); ;
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Settings) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Settings);
         }
 
         private void OnOpenMachinePlanExecuted(object obj)
@@ -203,7 +203,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenLieferlisteExecuted(object obj)
         {
-            TabItem tabItem = new TabItem
+            var tabItem = new TabItem
             {
                 Content = new Lieferliste(),
                 Header = new TabHeader() { HeaderText = ContentTitle.Deliverylist },
@@ -231,7 +231,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if(_onlines != value)
                 {
-                    _onlines = value;
+                   _onlines = value;
                    NotifyPropertyChanged(() => Onlines);
                 }
             }
@@ -255,8 +255,8 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("LIE00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.Deliverylist) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.Deliverylist);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist);
         }
 
         public ObservableCollection<TabItem> TabTitles
@@ -317,8 +317,8 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if(TabTitles.Contains(tb))
                 {
-                    int newI = dropInfo.InsertIndex - 1;
-                    int oldI = dropInfo.DragInfo.SourceIndex;
+                    var newI = dropInfo.InsertIndex - 1;
+                    var oldI = dropInfo.DragInfo.SourceIndex;
                     if (newI > TabTitles.Count-1) newI = TabTitles.Count-1;
                     if (newI < 0) newI = 0;
                     if (newI != oldI)
@@ -330,18 +330,17 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     TabTitles.Add(tb);
                     WindowTitles.Remove(tb);
-                    Window wnd = tb.FindName("tabable") as Window;
-                    if (wnd != null)
+                    if (tb.FindName("tabable") is Window wnd)
                     {
                         var o = wnd.Owner.OwnedWindows.SyncRoot;
-                        
+
                         wnd.Close();
                     }
                 }
             }
         }
 
-        private void RegisterMe()
+        private static void RegisterMe()
         {
             var onl = Dbctx.Onlines;
             var on = new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC };

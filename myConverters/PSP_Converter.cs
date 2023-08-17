@@ -5,20 +5,20 @@ using System.Windows.Data;
 
 namespace Lieferliste_WPF.myConverters
 {
-    [ValueConversion(typeof(String), typeof(String))]
-    public sealed class PSP_Converter : IValueConverter
+    [ValueConversion(typeof(string), typeof(string))]
+    public sealed partial class PSP_Converter : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
 
-            String strVal = (String)value;
-            Regex regex = new Regex("(DS)([0-9]{6})([0-9]{2})*");
-            Match match = regex.Match(strVal);
+            var strVal = (string)value;
+            var regex = MyRegex();
+            var match = regex.Match(strVal);
             if (match.Success)
             {
-                String retVal;
+                string retVal;
                 retVal = match.Groups[1] + "-" + match.Groups[2];
-                foreach (System.Text.RegularExpressions.Capture m in match.Groups[3].Captures)
+                foreach (var m in match.Groups[3].Captures.Cast<Capture>())
                 {
                     retVal += "-" + m.Value;
                 }
@@ -32,5 +32,8 @@ namespace Lieferliste_WPF.myConverters
         {
             throw new NotSupportedException();
         }
+
+        [GeneratedRegex("(DS)([0-9]{6})([0-9]{2})*")]
+        private static partial Regex MyRegex();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Lieferliste_WPF.Commands;
+using Lieferliste_WPF.Data;
 using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.UserControls;
@@ -7,6 +8,7 @@ using Lieferliste_WPF.View;
 using Lieferliste_WPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Text;
@@ -23,22 +25,22 @@ namespace Lieferliste_WPF.ViewModels
 
 
         public ICollectionView OrdersView { get; }
-        public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
+        public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
 
 
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
-        public List<Vorgang> PrioOrders { get; } = new(20);
+        private ObservableCollection<Vorgang> PrioOrders { get; } = new();
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand OrderViewCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
   
-        public String HasMouse { get; set; } = String.Empty;
-        private Dictionary<String, String> _filterCriterias;
-        private String _sortField = String.Empty;
-        private String _sortDirection = String.Empty;
-        private RelayCommand textSearchCommand;
-        private string _searchFilterText = String.Empty;
+        public string HasMouse { get; set; } = string.Empty;
+        private readonly Dictionary<string, string> _filterCriterias = new();
+        private readonly string _sortField = string.Empty;
+        private readonly string _sortDirection = string.Empty;
+        private RelayCommand _textSearchCommand;
+        private string _searchFilterText = string.Empty;
         private static double _progressValue;
         private bool _progressIsBusy;
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
@@ -47,37 +49,29 @@ namespace Lieferliste_WPF.ViewModels
         {         
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
+
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
-            _filterCriterias = new();
-            LoadDataFast();
-
             ProgressIsBusy = true;
+
+
             Task.Run(async () =>
             {
                 _orders.AddRange(await LoadAsync());
-
-               await Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Normal,
-                  new Action<object>(UpdateCollection));
+                
             });
 
-
         }
 
-        private void UpdateCollection(object obj)
-        {
-            OrdersView.Refresh();
-            ProgressIsBusy = false;
-        }
 
         private bool OrdersView_FilterPredicate(object value)
         {
-            Vorgang ord = (Vorgang)value;
+            var ord = (Vorgang)value;
 
-            bool accepted = true;
+            var accepted = true;
 
             if (!string.IsNullOrWhiteSpace(_searchFilterText))
             {
@@ -129,7 +123,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (commandParameter is TextChangedEventArgs change)
             {
-                TextBox tb = (TextBox)change.OriginalSource;
+                var tb = (TextBox)change.OriginalSource;
                 if (tb.Text.Length == 0 || tb.Text.Length >= 3)
                 {
                     _searchFilterText = tb.Text;
@@ -139,26 +133,28 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         #region Commands
-        private bool OnOrderViewCanExecute(object arg)
+        private static bool OnOrderViewCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("OOPEN01");
         }
-        private void OnOrderViewExecuted(object parameter)
+        private static void OnOrderViewExecuted(object parameter)
         {
             if (parameter is Vorgang vrg)
             {
                 OrderView ov = new(vrg.Aid);
-                Window wnd = new();
-                wnd.Owner = Application.Current.MainWindow;
-                wnd.Content = ov;
+                Window wnd = new()
+                {
+                    Owner = Application.Current.MainWindow,
+                    Content = ov
+                };
                 wnd.Show();
             }
         }
-        private void OnSaveExecuted(object obj)
+        private static void OnSaveExecuted(object obj)
         {
             Dbctx.SaveChangesAsync();
         }
-        private bool OnSaveCanExecute(object arg)
+        private static bool OnSaveCanExecute(object arg)
         {
 
             try
@@ -179,16 +175,13 @@ namespace Lieferliste_WPF.ViewModels
         private void OnDescSortExecuted(object parameter)
         {
             
-            if (OrdersView != null)
+            if (parameter is LieferlisteControl lvc)
             {
-                
-                if (parameter is LieferlisteControl lvc)
-                {
-                    OrdersViewSource.SortDescriptions.Clear();
-                    OrdersViewSource.SortDescriptions.Add(new SortDescription(lvc.HasMouseOver, ListSortDirection.Descending));
-                    OrdersView.Refresh();
-                }
+                OrdersViewSource.SortDescriptions.Clear();
+                OrdersViewSource.SortDescriptions.Add(new SortDescription(lvc.HasMouseOver, ListSortDirection.Descending));
+                OrdersView.Refresh();
             }
+            
         }
 
         private bool OnAscSortCanExecute(object parameter)
@@ -200,19 +193,17 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnAscSortExecuted(object parameter)
         {
-            if (OrdersView != null)
+
+            var v = Translate();
+
+            if (v != string.Empty)
             {
-                string v = Translate();
-
-
-                if (v != String.Empty)
-                {
-                    OrdersViewSource.SortDescriptions.Clear();
-                    OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
-                    var uiContext = SynchronizationContext.Current;
-                    uiContext?.Send(x => OrdersView.Refresh(), null);
-                }
+                OrdersViewSource.SortDescriptions.Clear();
+                OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
+                var uiContext = SynchronizationContext.Current;
+                uiContext?.Send(x => OrdersView.Refresh(), null);
             }
+            
         } 
         #endregion
         private string Translate()
@@ -233,14 +224,14 @@ namespace Lieferliste_WPF.ViewModels
                 "txtScrap" => "Vorgangs.QuantityScrap",
                 "txtOpen" => "Vorgangs.QuantityMiss",
                 "txtRessTo" => "Vorgangs.RidNavigation.RessName",
-                _ => String.Empty,
+                _ => string.Empty,
             };
             
             return v;
             
         }
 
-        private Task<List<Vorgang>> LoadAsync()
+        private static Task<List<Vorgang>> LoadAsync()
         {
 
             return Dbctx.Vorgangs
@@ -252,19 +243,7 @@ namespace Lieferliste_WPF.ViewModels
             .AsNoTracking()
             .ToListAsync();
         }
-        private void LoadDataFast()
-        {
-            var vrg = Dbctx.Vorgangs
-            .Include(m => m.ArbPlSapNavigation)
-            .Include(v => v.AidNavigation)
-            .ThenInclude(x => x.MaterialNavigation)
-            .Include(x => x.AidNavigation.DummyMatNavigation)
-            .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-            .Take(20)
-            .ToList();
 
-            PrioOrders.AddRange(vrg);
-        }
 
         public void SetProgressIsBusy()
         {
