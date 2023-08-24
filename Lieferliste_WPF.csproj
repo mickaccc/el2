@@ -44,9 +44,7 @@
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>el4-application.ico</ApplicationIcon>
-  </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
@@ -71,7 +69,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <Nullable>enable</Nullable>
-    <IsPublishable>False</IsPublishable>
+    <IsPublishable>True</IsPublishable>
     <UserSecretsId>0b5d0318-65fd-41f0-abb3-3c3607eb4cef</UserSecretsId>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>

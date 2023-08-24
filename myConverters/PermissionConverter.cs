@@ -16,11 +16,11 @@ namespace Lieferliste_WPF.myConverters
             if (p.StartsWith("!"))
             { 
                 p = p[1..];
-                return !PermissionsProvider.GetInstance().GetUserPermission(p);
+                return !PermissionsProvider.GetUserPermission(p);
             }
             else 
             {
-                return PermissionsProvider.GetInstance().GetUserPermission(p);
+                return PermissionsProvider.GetUserPermission(p);
             }
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

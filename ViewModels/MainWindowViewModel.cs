@@ -15,6 +15,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Lieferliste_WPF.Data;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -33,6 +34,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
         private static int _onlines;
+        private BackgroundWorker _backgroundWorker = new();
         private static System.Timers.Timer _timer;
         private double _progressValue;
         private bool _progressIsBusy;
@@ -72,7 +74,6 @@ namespace Lieferliste_WPF.ViewModels
            var del = Dbctx.Onlines.Where(x => x.UserId.Equals(AppStatic.User.UserIdent)
             && x.PcId.Equals(AppStatic.PC)).ExecuteDelete();
 
-           Debug.WriteLine("Deleted Onlines: {0}",del);
         }
 
         private bool OnCloseCanExecute(object arg)
@@ -110,7 +111,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenMachineMgmtCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("MA00") &&
+            return PermissionsProvider.GetUserPermission("MA00") &&
                 TabTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit);
         }
@@ -130,7 +131,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
+            return PermissionsProvider.GetUserPermission("RM00") &&
                 TabTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
         }
@@ -151,7 +152,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenUserMgmtCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("UM00") &&
+            return PermissionsProvider.GetUserPermission("UM00") &&
                 !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.UserEdit) &&
                 !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.UserEdit);
         }
@@ -175,7 +176,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenSettingsCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
+            return PermissionsProvider.GetUserPermission("SET00") &&
                 TabTitles.All(x => x.Tag.ToString() != ContentTitle.Settings) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Settings);
         }
@@ -196,23 +197,35 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
+            return PermissionsProvider.GetUserPermission("MP00") &&
                 !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.Planning) &&
                 !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.Planning);
         }
 
         private void OnOpenLieferlisteExecuted(object obj)
         {
+            var ll = new Lieferliste();
             var tabItem = new TabItem
             {
-                Content = new Lieferliste(),
+                Content = ll,
                 Header = new TabHeader() { HeaderText = ContentTitle.Deliverylist },
                 Tag = ContentTitle.Deliverylist,
                 IsSelected = true
             };
             TabTitles.Add(tabItem);
-
+            _backgroundWorker.DoWork += (o, e) =>
+            {
+                //(ll.DataContext as LieferViewModel).LoadDataSync();
+            };
+            _backgroundWorker.RunWorkerCompleted += (o, e) =>
+            {
+                
+                    //TabTitles.Add(tabItem);
+            };
+            _backgroundWorker.RunWorkerAsync();
         }
+
+ 
 
         #endregion
         private void SetTimer()
@@ -242,19 +255,10 @@ namespace Lieferliste_WPF.ViewModels
             Onlines = Dbctx.Onlines.Count();
         }
 
-        private void _worker_ProgressChanged(object? sender, ProgressChangedEventArgs e)
-        {
-            ProgressValue = e.ProgressPercentage;
-        }
-
-        private void _worker_DoWork(object? sender, DoWorkEventArgs e)
-        {
-
-        }
 
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("LIE00") &&
+            return PermissionsProvider.GetUserPermission("LIE00") &&
                 TabTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist);
         }
@@ -265,7 +269,7 @@ namespace Lieferliste_WPF.ViewModels
             set
             {
                 _tabTitles = value;
-                OnPropertyChanged("TabTitles");
+                NotifyPropertyChanged(() => TabTitles);
             }
         }
         public List<TabItem> WindowTitles
@@ -274,7 +278,7 @@ namespace Lieferliste_WPF.ViewModels
             set
             {
                 _windowTitles = value;
-                OnPropertyChanged("WindowTitles");
+                NotifyPropertyChanged(() => WindowTitles);
             }
         }
 
@@ -297,10 +301,6 @@ namespace Lieferliste_WPF.ViewModels
 
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         public void DragOver(IDropInfo dropInfo)
         {
@@ -342,10 +342,10 @@ namespace Lieferliste_WPF.ViewModels
 
         private static void RegisterMe()
         {
-            var onl = Dbctx.Onlines;
-            var on = new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC };
-            onl.Add(on);
-            Dbctx.SaveChanges();
+            DataContext db = new();
+            var onl = db.Onlines;
+            onl.Add(new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC });
+            db.SaveChangesAsync();
         }
 
 
@@ -354,8 +354,6 @@ namespace Lieferliste_WPF.ViewModels
         {
             throw new NotImplementedException();
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
     }
 

@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +30,7 @@ namespace Lieferliste_WPF.ViewModels
 
 
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
-        private ObservableCollection<Vorgang> PrioOrders { get; } = new();
+
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand OrderViewCommand { get; private set; }
@@ -57,13 +58,7 @@ namespace Lieferliste_WPF.ViewModels
 
             ProgressIsBusy = true;
 
-
-            Task.Run(async () =>
-            {
-                _orders.AddRange(await LoadAsync());
-                
-            });
-
+            LoadDataSync();
         }
 
 
@@ -135,7 +130,7 @@ namespace Lieferliste_WPF.ViewModels
         #region Commands
         private static bool OnOrderViewCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("OOPEN01");
+            return PermissionsProvider.GetUserPermission("OOPEN01");
         }
         private static void OnOrderViewExecuted(object parameter)
         {
@@ -231,20 +226,42 @@ namespace Lieferliste_WPF.ViewModels
             
         }
 
-        private static Task<List<Vorgang>> LoadAsync()
+        private static async Task<List<Vorgang>> LoadDataAsync()
         {
 
-            return Dbctx.Vorgangs
+            var  o = await Dbctx.Vorgangs
             .Include(m => m.ArbPlSapNavigation)
             .Include(v => v.AidNavigation)
             .ThenInclude(x => x.MaterialNavigation)
             .Include(x => x.AidNavigation.DummyMatNavigation)
             .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-            .AsNoTracking()
             .ToListAsync();
+
+            return o;
         }
 
+        public void LoadData()
+        {
+            
+            var t = Task.Run (async() => await LoadDataAsync());
+            t.Wait();
+            _orders.AddRange(t.Result);
+            OrdersView.Refresh();
+        }
 
+        public void LoadDataSync()
+        {
+            var o = Dbctx.Vorgangs
+                .Include(m => m.ArbPlSapNavigation)
+                .Include(v => v.AidNavigation)
+                .ThenInclude(x => x.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
+                .ToList();
+
+            _orders.AddRange(o);
+            OrdersView.Refresh();
+        }
         public void SetProgressIsBusy()
         {
             throw new NotImplementedException();
