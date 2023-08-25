@@ -130,7 +130,7 @@ namespace Lieferliste_WPF.ViewModels
         #region Commands
         private static bool OnOrderViewCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("OOPEN01");
+            return PermissionsProvider.GetInstance().GetUserPermission("OOPEN01");
         }
         private static void OnOrderViewExecuted(object parameter)
         {

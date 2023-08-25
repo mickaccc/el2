@@ -111,7 +111,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenMachineMgmtCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("MA00") &&
+            return PermissionsProvider.GetInstance().GetUserPermission("MA00") &&
                 TabTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit);
         }
@@ -131,7 +131,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("RM00") &&
+            return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
                 TabTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
         }
@@ -152,7 +152,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenUserMgmtCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("UM00") &&
+            return PermissionsProvider.GetInstance().GetUserPermission("UM00") &&
                 !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.UserEdit) &&
                 !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.UserEdit);
         }
@@ -176,7 +176,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenSettingsCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("SET00") &&
+            return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
                 TabTitles.All(x => x.Tag.ToString() != ContentTitle.Settings) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Settings);
         }
@@ -197,7 +197,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("MP00") &&
+            return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
                 !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.Planning) &&
                 !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.Planning);
         }
@@ -258,7 +258,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("LIE00") &&
+            return PermissionsProvider.GetInstance().GetUserPermission("LIE00") &&
                 TabTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist);
         }

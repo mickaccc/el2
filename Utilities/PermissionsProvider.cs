@@ -8,7 +8,7 @@ namespace Lieferliste_WPF.Utilities
     {
         private static PermissionsProvider? _instance;
 
-        private static HashSet<string> _permissions = new();
+        private HashSet<string> _permissions = new();
         
 
         public static PermissionsProvider GetInstance()
@@ -19,7 +19,7 @@ namespace Lieferliste_WPF.Utilities
                 string user = Environment.UserName;
                 _instance = new PermissionsProvider();
 
-               LoadPermissions(user);
+               _instance.LoadPermissions(user);
                 return _instance;
             }
             return _instance;
@@ -27,7 +27,7 @@ namespace Lieferliste_WPF.Utilities
 
         private PermissionsProvider(){ }
 
-        private static void LoadPermissions(string user)
+        private void LoadPermissions(string user)
         {
             using DataContext db = new();
             var query = (from p in db.PermissionRoles
@@ -42,7 +42,7 @@ namespace Lieferliste_WPF.Utilities
             }
         }
 
-        public static bool GetUserPermission(string permission)
+        public bool GetUserPermission(string permission)
         {
             return _permissions.Contains(permission);
         }

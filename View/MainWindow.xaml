@@ -14,7 +14,7 @@
     x:Class="Lieferliste_WPF.View.MainWindow"
  
         x:Name="mainWindow"
-        Title="LieferListe El2" Height="500"  >
+        Title="LieferListe El2" Height="900"  >
 
     <Window.Resources>
         <conv:PermissionConverter x:Key="permission"/>

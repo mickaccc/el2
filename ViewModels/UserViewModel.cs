@@ -183,7 +183,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnDeleteCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("UM03");
+            return PermissionsProvider.GetInstance().GetUserPermission("UM03");
         }
 
         private void OnDeleteExecuted(object obj)
@@ -199,7 +199,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private static bool OnNewCanExecute(object arg)
         {
-            return PermissionsProvider.GetUserPermission("UM01") && !_isNew;
+            return PermissionsProvider.GetInstance().GetUserPermission("UM01") && !_isNew;
         }
 
         private void OnNewExecuted(object obj)
