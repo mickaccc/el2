@@ -143,9 +143,8 @@ namespace Lieferliste_WPF.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-MEMDFDP\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Int" +
-            "egrated Security=True;Connect Timeout=5;Encrypt=False;TrustServerCertificate=Tru" +
-            "e")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=HL0VM00069;Initial Catalog=DB_COS_LIEFERLISTE_SQL;User ID=EL2;Passwor" +
+            "d=SCM7777scm!$;Connect Timeout=5;Encrypt=False;TrustServerCertificate=True")]
         public string ConnectionString {
             get {
                 return ((string)(this["ConnectionString"]));
