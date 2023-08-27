@@ -12,7 +12,7 @@ namespace Lieferliste_WPF.myConverters
         {
 
             var strVal = (string)value;
-            var regex = MyRegex();
+            Regex regex = new Regex("(DS)([0-9]{6})([0-9]{2})*");
             var match = regex.Match(strVal);
             if (match.Success)
             {
@@ -33,7 +33,5 @@ namespace Lieferliste_WPF.myConverters
             throw new NotSupportedException();
         }
 
-        [GeneratedRegex("(DS)([0-9]{6})([0-9]{2})*")]
-        private static partial Regex MyRegex();
     }
 }

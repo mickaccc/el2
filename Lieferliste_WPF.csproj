@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0-windows7.0</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AssemblyName>el4</AssemblyName>
@@ -74,12 +74,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <PlatformTarget>x64</PlatformTarget>
     <Title>Lieferliste WPF</Title>
     <Description>Feinplanung, Auftrag- und Lieferübersicht\n\nAuthor:\nMichael Schatzl\nSCM2HL DW 573nmichael.schatzl@at.bosch.com</Description>
     <Copyright>Robert Bosch AG Hallein</Copyright>
     <NeutralLanguage>de-AT</NeutralLanguage>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
@@ -247,6 +247,7 @@
     <Resource Include="Images\cut-content-button.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="Templates\" />
   </ItemGroup>
   <ItemGroup>

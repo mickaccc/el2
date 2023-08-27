@@ -15,7 +15,7 @@ namespace Lieferliste_WPF.myConverters
             {
                 var strVal = (value as string).Trim();
 
-                var regex = MyRegex();
+                Regex regex = new Regex("([a-zA-Z0-9]{4})([a-zA-Z0-9]{3})([a-zA-Z0-9]{3})([a-zA-Z0-9]*)");
                 var match = regex.Match(strVal);
                 if (match.Success)
                 {
@@ -34,8 +34,5 @@ namespace Lieferliste_WPF.myConverters
         {
             throw new NotSupportedException();
         }
-
-        [GeneratedRegex("([a-zA-Z0-9]{4})([a-zA-Z0-9]{3})([a-zA-Z0-9]{3})([a-zA-Z0-9]*)")]
-        private static partial Regex MyRegex();
     }
 }

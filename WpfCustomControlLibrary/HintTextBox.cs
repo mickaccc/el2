@@ -106,7 +106,7 @@ namespace WpfCustomControlLibrary
         }
         protected override Size MeasureOverride(Size constraint)
         {
-            if (Text != null)
+            if (Text != string.Empty)
             {
                 FormattedText txt = GetFormattedText();
                 return new Size(txt.Width + 5, txt.Height + 5);

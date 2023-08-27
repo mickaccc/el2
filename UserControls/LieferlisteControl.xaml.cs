@@ -73,6 +73,20 @@ namespace Lieferliste_WPF.UserControls
             get { return (DateTime)GetValue(EndDateProperty); }
             set { SetValue(EndDateProperty, value); }
         }
+
+
+        public DateTime? Termin
+        {
+            get { return (DateTime?)GetValue(TerminProperty); }
+            set { SetValue(TerminProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Termin.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TerminProperty =
+            DependencyProperty.Register("Termin", typeof(DateTime?)
+                , typeof(LieferlisteControl));
+
+
         public static readonly DependencyProperty VnrProperty
             = DependencyProperty.Register("Vnr"
                 , typeof(int)
