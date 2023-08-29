@@ -22,6 +22,9 @@
         <conv:BoolConverter x:Key="boolConverter" />
         <conv:KW_Converter x:Key="KWConverter"/>
         <conv:CommentConverter x:Key="CommentConverter"/>
+        <conv:DateLostToColorConverter x:Key="DateLost"/>
+        <conv:RessourceToKwConverter x:Key="RtKw"/>
+        <conv:MultiObjectConverter x:Key="MultiObject"/>
         <System:DateTime x:Key="datetime"/>
         <utils:RichTextBoxHelper x:Key="RichTextBoxH"/>
         <cmd:ELCommands x:Key="SortDescCommand"/>
@@ -94,7 +97,7 @@
 
                 <TextBlock Grid.Row="0"  Grid.Column="0" Name="txtPlanT" 
                      ToolTip="Plantermin lt. SAP"
-                     Text="{Binding EndDate, Converter={StaticResource KWConverter},ElementName=luc}"  />
+                     Text="{Binding EckEnd, Converter={StaticResource KWConverter},ElementName=luc}"  />
                 <TextBox Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1"/>
                 <TextBlock Grid.Column="1" Grid.Row="0" Name="txtProj" ToolTip="Projekt" />
                 <TextBlock Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Name="txtProjInfo" />
@@ -127,7 +130,15 @@
                 <TextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Name="txtVrgText" ToolTip="Vorgang Kurztext"  
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />
                 <TextBlock Grid.Column="8" Grid.Row="2"  Name="txtVNR"  />
-                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  Name="txtRessTo" Text="Ressource bis KW" Background="Wheat"  />
+                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  Name="txtRessTo" Background="Wheat">
+                    <TextBlock.Text>
+                        <utils:ConverterBindableParameter Binding="{Binding MachineText, ElementName=luc}"
+                                                          Converter="{StaticResource RtKw}"
+                                                          ConverterParameter="{Binding EndDate, ElementName=luc}">
+                            
+                        </utils:ConverterBindableParameter>
+                    </TextBlock.Text>
+                </TextBlock>
                 <TextBlock Grid.Column="6" Grid.Row="2"  Name="txtScrap"  ToolTip="Ausschussmenge" 
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
                 <TextBlock Grid.Column="6" Grid.Row="2"  Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25" />
@@ -157,7 +168,8 @@
                 </StackPanel>
                 <TextBox Grid.Column="7" Name="txtEnd" IsReadOnly="True"
                          AcceptsReturn="True" ToolTip="Endtermin" Grid.Row="1" 
-                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"/>
+                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
+                         Background="{Binding EndDate, ElementName=luc, Converter={StaticResource DateLost}}"/>
                 <DatePicker Grid.Column="8" Grid.Row="1" Name="txtTerm" Language="de-DE" 
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Termin"
                             SelectedDate="{Binding Termin, Mode=TwoWay, ElementName=luc}"

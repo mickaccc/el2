@@ -75,6 +75,18 @@ namespace Lieferliste_WPF.UserControls
         }
 
 
+
+        public DateTime EckEnd
+        {
+            get { return (DateTime)GetValue(EckEndProperty); }
+            set { SetValue(EckEndProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for EckEnd.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty EckEndProperty =
+            DependencyProperty.Register("EckEnd", typeof(DateTime), typeof(LieferlisteControl));
+
+
         public DateTime? Termin
         {
             get { return (DateTime?)GetValue(TerminProperty); }
@@ -163,6 +175,18 @@ namespace Lieferliste_WPF.UserControls
         // Using a DependencyProperty as the backing store for WorkAreaText.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty WorkAreaTextProperty =
             DependencyProperty.Register("WorkAreaText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata("-"));
+
+
+
+        public string MachineText
+        {
+            get { return (string)GetValue(MachineTextProperty); }
+            set { SetValue(MachineTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MachineText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MachineTextProperty =
+            DependencyProperty.Register("MachineText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
 
 

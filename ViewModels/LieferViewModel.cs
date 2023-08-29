@@ -234,6 +234,7 @@ namespace Lieferliste_WPF.ViewModels
             .Include(v => v.AidNavigation)
             .ThenInclude(x => x.MaterialNavigation)
             .Include(x => x.AidNavigation.DummyMatNavigation)
+            .Include(x => x.RidNavigation)
             .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
             .ToListAsync();
 
@@ -256,7 +257,9 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(v => v.AidNavigation)
                 .ThenInclude(x => x.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.RidNavigation)
                 .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
+                .OrderBy(x => x.SpaetEnd)
                 .ToList();
 
             _orders.AddRange(o);
