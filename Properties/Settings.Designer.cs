@@ -12,7 +12,7 @@ namespace Lieferliste_WPF.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.7.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -152,8 +152,9 @@ namespace Lieferliste_WPF.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=HL0VM00069;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Connect Timeout=5;E" +
-            "ncrypt=False;TrustServerCertificate=True;User Id=EL2;Password=SCM7777scm!$")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-MEMDFDP\\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Int" +
+            "egrated Security=True;Connect Timeout=5;Encrypt=False;TrustServerCertificate=Tru" +
+            "e")]
         public string ConnectionString {
             get {
                 return ((string)(this["ConnectionString"]));
@@ -171,10 +172,16 @@ namespace Lieferliste_WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("*.pdf;*.jpg;*.jpeg;*.png")]
-        public string ExplorerFilter {
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+  <string>Dokumente|*.pdf;*.doc</string>
+  <string>|Bild Dateien|*.jpg;*.jpeg;*.png;*bmp;*.tiff</string>
+  <string>|Excel Dateien|*.xls;*xlsx;*xlsm</string>
+  <string>|alles|*.*</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection ExplorerFilter {
             get {
-                return ((string)(this["ExplorerFilter"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["ExplorerFilter"]));
             }
             set {
                 this["ExplorerFilter"] = value;

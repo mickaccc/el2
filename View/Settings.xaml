@@ -27,7 +27,7 @@
                     </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="FileFilter"/>
-                            <TextBox x:Name="FileFiter" Text="{Binding Path=ExplorerFilter}"/>
+                            <ListBox x:Name="FileFiter" ItemsSource="{Binding Path=ExplorerFilter}"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>

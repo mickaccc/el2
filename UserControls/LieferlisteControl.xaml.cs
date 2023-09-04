@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
+using System.Text;
 
 namespace Lieferliste_WPF.UserControls
 {
@@ -397,9 +398,15 @@ namespace Lieferliste_WPF.UserControls
             dialog.InitialDirectory = Properties.Settings.Default.ExplorerPath;
             dialog.FileName = "Document"; // Default file name
             dialog.DefaultExt = ".xls"; // Default file extension
-            dialog.Filter = "Word Documents|*.doc|Excel Worksheets|*.xls|PowerPoint Presentations|*.ppt" +
-             "|Office Files|*.doc;*.xls;*.ppt|Bild Dateien|*.jpg;*.jpeg;*.png;*.bmp" +
-             "|All Files|*.*"; // Filter files by extension
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in Properties.Settings.Default.ExplorerFilter)
+            {
+                sb.Append(item);
+            }
+            dialog.Filter = sb.ToString();
+            //dialog.Filter = "Word Documents|*.doc|Excel Worksheets|*.xls|PowerPoint Presentations|*.ppt" +
+            // "|Office Files|*.doc;*.xls;*.ppt|Bild Dateien|*.jpg;*.jpeg;*.png;*.bmp" +
+            // "|All Files|*.*"; // Filter files by extension
 
             // Show open file dialog box
             bool? result = dialog.ShowDialog();

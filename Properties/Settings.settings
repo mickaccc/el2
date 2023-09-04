@@ -53,16 +53,22 @@
     <Setting Name="ConnectionString" Type="(Connection string)" Scope="Application">
       <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;SerializableConnectionString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
-  &lt;ConnectionString&gt;Data Source=HL0VM00069;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Connect Timeout=5;Encrypt=False;TrustServerCertificate=True;User Id=EL2;Password=SCM7777scm!$&lt;/ConnectionString&gt;
+  &lt;ConnectionString&gt;Data Source=DESKTOP-MEMDFDP\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Connect Timeout=5;Encrypt=False;TrustServerCertificate=True&lt;/ConnectionString&gt;
   &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
-      <Value Profile="(Default)">Data Source=HL0VM00069;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Connect Timeout=5;Encrypt=False;TrustServerCertificate=True;User Id=EL2;Password=SCM7777scm!$</Value>
+      <Value Profile="(Default)">Data Source=DESKTOP-MEMDFDP\SQLEXPRESS;Initial Catalog=DB_COS_LIEFERLISTE_SQL;Integrated Security=True;Connect Timeout=5;Encrypt=False;TrustServerCertificate=True</Value>
     </Setting>
     <Setting Name="ExplorerPath" Type="System.String" Scope="Application">
       <Value Profile="(Default)">C:\</Value>
     </Setting>
-    <Setting Name="ExplorerFilter" Type="System.String" Scope="User">
-      <Value Profile="(Default)">*.pdf;*.jpg;*.jpeg;*.png</Value>
+    <Setting Name="ExplorerFilter" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;string&gt;Dokumente|*.pdf;*.doc&lt;/string&gt;
+  &lt;string&gt;|Bild Dateien|*.jpg;*.jpeg;*.png;*bmp;*.tiff&lt;/string&gt;
+  &lt;string&gt;|Excel Dateien|*.xls;*xlsx;*xlsm&lt;/string&gt;
+  &lt;string&gt;|alles|*.*&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
     </Setting>
     <Setting Name="ExplorerExt" Type="System.String" Scope="User">
       <Value Profile="(Default)">*.pdf</Value>

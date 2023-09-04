@@ -4,13 +4,17 @@ using Lieferliste_WPF.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
+using System.ComponentModel;
 
 namespace Lieferliste_WPF.ViewModels
 {
     class SettingsViewModel : Base.ViewModelBase
     {
         string _ExplorerPath;
-        string _ExplorerFilter;
+        ObservableCollection<string> _ExplorerFilter = new();
+        public ICollectionView ExplorerFilter { get; }
         string _ExplorerExt;
         public Brush OutOfDate { get; set; }
         public Brush InOfDate { get; set; }
@@ -19,7 +23,11 @@ namespace Lieferliste_WPF.ViewModels
         {
             var br = new BrushConverter();
             ExplorerPath = Properties.Settings.Default.ExplorerPath;
-            ExplorerFilter = Properties.Settings.Default.ExplorerFilter;
+            foreach (var item in Properties.Settings.Default.ExplorerFilter)
+            {
+              _ExplorerFilter.Add(item);
+            }
+            ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
             ExplorerExt = Properties.Settings.Default.ExplorerExt;
             OutOfDate = (Brush?)br.ConvertFromString(Properties.Settings.Default.inDate.Name);
             InOfDate = (Brush?)br.ConvertFromString(Properties.Settings.Default.inDate.Name);
@@ -36,18 +44,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        public string ExplorerFilter
-        {
-            get => _ExplorerFilter;
-            set
-            {
-                if (_ExplorerFilter != value)
-                {
-                    _ExplorerFilter = value;
-                    NotifyPropertyChanged(() => ExplorerFilter);
-                }
-            }
-        }
+
         public string ExplorerExt
         {
             get => _ExplorerExt;
