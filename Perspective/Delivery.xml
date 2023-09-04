@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<root>
-  <DocumentPanes>
-    <Item Static="true" Type="DeliveryListViewModel"/>
-  </DocumentPanes>
-  <AnchorablePanes>
-    <Item Static="true" Type="OrderViewModel"/>
-  </AnchorablePanes>
-</root>

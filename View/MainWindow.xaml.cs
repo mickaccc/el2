@@ -16,7 +16,7 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("windows7.0")]
         public MainWindow()
         {
             InitializeComponent();

@@ -22,7 +22,7 @@ namespace Lieferliste_WPF.ViewModels
     /// <summary>
     /// Class for the main window's view-model.
     /// </summary>
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     public sealed class MainWindowViewModel : ViewModelBase, IDropTarget, IProgressbarInfo
     {
         public ICommand OpenMachinePlanCommand { get; private set; }
