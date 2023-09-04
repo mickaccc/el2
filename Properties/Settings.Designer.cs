@@ -50,21 +50,27 @@ namespace Lieferliste_WPF.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Red")]
         public global::System.Drawing.Color outOfDate {
             get {
                 return ((global::System.Drawing.Color)(this["outOfDate"]));
             }
+            set {
+                this["outOfDate"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("White")]
         public global::System.Drawing.Color inDate {
             get {
                 return ((global::System.Drawing.Color)(this["inDate"]));
+            }
+            set {
+                this["inDate"] = value;
             }
         }
         
@@ -131,12 +137,15 @@ namespace Lieferliste_WPF.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("EMEA\\")]
         public string Domain {
             get {
                 return ((string)(this["Domain"]));
+            }
+            set {
+                this["Domain"] = value;
             }
         }
         
@@ -149,6 +158,39 @@ namespace Lieferliste_WPF.Properties {
         public string ConnectionString {
             get {
                 return ((string)(this["ConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\")]
+        public string ExplorerPath {
+            get {
+                return ((string)(this["ExplorerPath"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("*.pdf;*.jpg;*.jpeg;*.png")]
+        public string ExplorerFilter {
+            get {
+                return ((string)(this["ExplorerFilter"]));
+            }
+            set {
+                this["ExplorerFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("*.pdf")]
+        public string ExplorerExt {
+            get {
+                return ((string)(this["ExplorerExt"]));
+            }
+            set {
+                this["ExplorerExt"] = value;
             }
         }
     }

@@ -394,9 +394,12 @@ namespace Lieferliste_WPF.UserControls
         {
             // Configure open file dialog box
             var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.InitialDirectory = Properties.Settings.Default.ExplorerPath;
             dialog.FileName = "Document"; // Default file name
-            dialog.DefaultExt = ".txt"; // Default file extension
-            dialog.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+            dialog.DefaultExt = ".xls"; // Default file extension
+            dialog.Filter = "Word Documents|*.doc|Excel Worksheets|*.xls|PowerPoint Presentations|*.ppt" +
+             "|Office Files|*.doc;*.xls;*.ppt|Bild Dateien|*.jpg;*.jpeg;*.png;*.bmp" +
+             "|All Files|*.*"; // Filter files by extension
 
             // Show open file dialog box
             bool? result = dialog.ShowDialog();

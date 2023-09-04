@@ -349,7 +349,6 @@
     <Compile Remove="ViewModels\MachineViewModel.cs" />
     <Compile Remove="ViewModels\MachineWrapper.cs" />
     <Compile Remove="ViewModels\Perspective.cs" />
-    <Compile Remove="ViewModels\SettingsViewModel.cs" />
     <Compile Remove="ViewModels\ToolCase.cs" />
     <Compile Remove="ViewModels\WorkingDayViewModel.cs" />
     <Compile Remove="View\Dialogs\SchDialog.xaml.cs" />

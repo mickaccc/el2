@@ -14,10 +14,10 @@ namespace Lieferliste_WPF.myConverters
             {
                 if (d < DateTime.Now)
                 {
-                    return Brushes.Red;
+                    return new BrushConverter().ConvertFromString(Properties.Settings.Default.outOfDate.Name);
                 }              
             }
-            return Brushes.White;
+            return new BrushConverter().ConvertFromString(Properties.Settings.Default.inDate.Name);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
