@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     public class RoleEditViewModel : Base.ViewModelBase, IDropTarget
     {
          

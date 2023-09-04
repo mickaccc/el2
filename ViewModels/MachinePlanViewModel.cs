@@ -23,7 +23,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     internal class MachinePlanViewModel : Base.ViewModelBase, IDropTarget
     {      
         private RelayCommand _selectionChangeCommand;

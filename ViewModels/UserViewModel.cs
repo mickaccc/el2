@@ -13,7 +13,7 @@ using WpfCustomControlLibrary;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     public class UserViewModel : Base.ViewModelBase, IDropTarget
     {
         

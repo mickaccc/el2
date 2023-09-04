@@ -50,12 +50,6 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>A83211E296CA84C342E8D6499A0D8EAD661C2811</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>SCM-DEPLOY.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
     <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
@@ -74,12 +68,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <Title>Lieferliste WPF</Title>
     <Description>Feinplanung, Auftrag- und Lieferübersicht\n\nAuthor:\nMichael Schatzl\nSCM2HL DW 573nmichael.schatzl@at.bosch.com</Description>
     <Copyright>Robert Bosch AG Hallein</Copyright>
     <NeutralLanguage>de-AT</NeutralLanguage>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ApplicationIcon>el4-application.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
@@ -274,48 +269,28 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
-    <PackageReference Include="Handlebars.Net" Version="2.1.4" />
-    <PackageReference Include="LightImage.DragDrop.Wpf" Version="0.5.5" />
-    <PackageReference Include="log4net">
-      <Version>2.0.15</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Build.Framework" Version="17.6.3" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.6.3" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.7.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
     <PackageReference Include="Microsoft.NETCore.Platforms">
       <Version>7.0.4</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.3</Version>
     </PackageReference>
-    <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="Remotion.Linq" Version="2.2.0" />
-    <PackageReference Include="System.Collections" Version="4.3.0" />
-    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource">
       <Version>7.0.2</Version>
     </PackageReference>
-    <PackageReference Include="System.Linq.Parallel" Version="4.3.0" />
-    <PackageReference Include="System.ObjectModel" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.5.4</Version>
     </PackageReference>
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.4" />
   </ItemGroup>
   <ItemGroup>
@@ -387,6 +362,9 @@
       <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2000/1/1" />
     </VisualStudio>
   </ProjectExtensions>
+  <ItemGroup>
+    <Content Include="el4-application.ico" />
+  </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
