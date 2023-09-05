@@ -27,10 +27,7 @@
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <System:DateTime x:Key="datetime"/>
         <utils:RichTextBoxHelper x:Key="RichTextBoxH"/>
-        <cmd:ELCommands x:Key="SortDescCommand"/>
-        <cmd:ELCommands x:Key="SortAscCommand"/>
-        <cmd:ELCommands x:Key="ShowEditor"/>
-        <cmd:ELCommands x:Key="PresentText"/>
+
 
         <Storyboard x:Key="EnterStoryBoard">
             <DoubleAnimation
@@ -131,13 +128,13 @@
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />
                 <TextBlock Grid.Column="8" Grid.Row="2"  Name="txtVNR"  />
                 <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  Name="txtRessTo" Background="Wheat">
-                    <TextBlock.Text>
-                        <utils:ConverterBindableParameter Binding="{Binding MachineText, ElementName=luc}"
+                    <!--<TextBlock.Text>
+                        <conv:ConverterBindableParameter Binding="{Binding MachineText, ElementName=luc}"
                                                           Converter="{StaticResource RtKw}"
                                                           ConverterParameter="{Binding EndDate, ElementName=luc}">
                             
-                        </utils:ConverterBindableParameter>
-                    </TextBlock.Text>
+                        </conv:ConverterBindableParameter>
+                    </TextBlock.Text>-->
                 </TextBlock>
                 <TextBlock Grid.Column="6" Grid.Row="2"  Name="txtScrap"  ToolTip="Ausschussmenge" 
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
@@ -174,7 +171,7 @@
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Termin"
                             SelectedDate="{Binding Termin, Mode=TwoWay, ElementName=luc}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"/>
-                <Button Grid.Row="2" Content="Explorer" Name="btnExpl" Click="btnExpl_Click"  />
+                <Button Grid.Row="2" Content="Explorer" Name="btnExpl" Command="{x:Static cmd:ELCommands.OpenExplorerCommand}" CommandParameter="e"  />
                 <StackPanel Grid.Row="2" Grid.Column="7" Orientation="Horizontal" >
                     <CheckBox  Name="isHighPrio" Checked="Modified"/>
                     <TextBox  Name="CommentHighPrio" Width="101" ToolTip="Priotext" />

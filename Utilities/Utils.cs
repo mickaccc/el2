@@ -4,8 +4,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
+using System.Windows.Data;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace Lieferliste_WPF.Utilities
@@ -709,6 +714,81 @@ namespace Lieferliste_WPF.Utilities
             }
         }
     }
+        public static class PathUtils
+        {
+            public static string Devide(string value, string param)
+            {
+                var p = param.Split(',');
+                StringBuilder sb = new StringBuilder(value);
+                int ind = 0;
+                foreach (var val in p)
+                {
+                    ind += int.Parse(val);
+                    if (sb.Length > ind)
+                        sb.Insert(ind, Path.DirectorySeparatorChar);
+                    ind++;
+                }
+                return sb.ToString();
+            }
+            public static string PathProvider(string path)
+            {
+                
+                
+                StringBuilder sb = new StringBuilder();
+                StringBuilder methodParam = new StringBuilder();
+                StringBuilder method = new StringBuilder();
+                foreach (var val in path)
+                {
+                    bool isString = false;
+                    bool isMethod = false;
+                    bool isMethodParam = false;
+                    if (val.Equals('"'))
+                    {
+                        isString = !isString;
+                        continue;
+                    }
+                    if (val.Equals("{"))
+                    {
+                        isMethod = true;
+                        continue;
+                    }
+                    if (val.Equals('}') || val.Equals(')'))
+                    {
+                        isMethod = false;
+                        isMethodParam = false;
+                        continue;
+                    }
+                    if (val.Equals('('))
+                    {
+                        isMethodParam = true;
+                        continue;
+                    }
+                    if (isString) sb.Append(val);
+                    if (isMethod)
+                    {
+                        if (isMethodParam)
+                        {
+                            methodParam.Append(val);
+                        }
+                        else
+                        {
+                            method.Append(val);
+                        }
+                    }
+
+                    if (!isMethod && method.Equals("Devide"))
+                    {
+                        var s = methodParam.ToString().Split(",");
+                        sb.Append(Path.DirectorySeparatorChar).Append(Devide(s[0], s[1])).Append(Path.DirectorySeparatorChar);
+                    }
+                }
+                DirectoryInfo dir = new DirectoryInfo(sb.ToString());
+                
+                return dir.FullName;
+            }
+        }
+
+
 
     public static class Helper
     {
@@ -719,5 +799,5 @@ namespace Lieferliste_WPF.Utilities
             return ob;
         }
     }
-
 }
+

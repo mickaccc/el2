@@ -27,14 +27,14 @@ namespace Lieferliste_WPF.ViewModels
 
         public ICollectionView OrdersView { get; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
-
-
+        
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
 
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand OrderViewCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
+        public ActionCommand OpenExplorerCommand { get; private set; }
   
         public string HasMouse { get; set; } = string.Empty;
         private readonly Dictionary<string, string> _filterCriterias = new();
@@ -55,7 +55,6 @@ namespace Lieferliste_WPF.ViewModels
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-
             ProgressIsBusy = true;
 
             LoadDataSync();

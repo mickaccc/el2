@@ -304,7 +304,43 @@ namespace Lieferliste_WPF.UserControls
             CommandBindings.Add(new CommandBinding(
                 ELCommands.PresentText, HandlePresentTextExecuted,
                 HandlePresentTextCanExecute));
+            CommandBindings.Add(new CommandBinding(
+                ELCommands.OpenExplorerCommand, HandleOpenExplorerExecuted,
+                HandleOpenExplorerCanExecute));
             
+        }
+
+        private void HandleOpenExplorerCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void HandleOpenExplorerExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            // Configure open file dialog box
+            //var dialog = new Microsoft.Win32.OpenFileDialog();
+            //dialog.InitialDirectory = "C:\\";
+            var p = PathUtils.PathProvider(Properties.Settings.Default.ExplorerPath);
+            //dialog.DefaultExt = ".xls"; // Default file extension
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in Properties.Settings.Default.ExplorerFilter)
+            {
+                sb.Append(item);
+            }
+            //dialog.Filter = sb.ToString();
+            //dialog.Filter = "Word Documents|*.doc|Excel Worksheets|*.xls|PowerPoint Presentations|*.ppt" +
+            // "|Office Files|*.doc;*.xls;*.ppt|Bild Dateien|*.jpg;*.jpeg;*.png;*.bmp" +
+            // "|All Files|*.*"; // Filter files by extension
+
+            // Show open file dialog box
+            //bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            //if (result == true)
+            //{
+            //    // Open document
+            //    string filename = dialog.FileName;
+            //}
         }
 
         private void HandlePresentTextCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -389,34 +425,6 @@ namespace Lieferliste_WPF.UserControls
         private void NotTextBlock_MouseEnter(object sender, MouseEventArgs e)
         {
             SetValue(HasMouseOverProperty, String.Empty);
-        }
-
-        private void btnExpl_Click(object sender, RoutedEventArgs e)
-        {
-            // Configure open file dialog box
-            var dialog = new Microsoft.Win32.OpenFileDialog();
-            dialog.InitialDirectory = Properties.Settings.Default.ExplorerPath;
-            dialog.FileName = "Document"; // Default file name
-            dialog.DefaultExt = ".xls"; // Default file extension
-            StringBuilder sb = new StringBuilder();
-            foreach (var item in Properties.Settings.Default.ExplorerFilter)
-            {
-                sb.Append(item);
-            }
-            dialog.Filter = sb.ToString();
-            //dialog.Filter = "Word Documents|*.doc|Excel Worksheets|*.xls|PowerPoint Presentations|*.ppt" +
-            // "|Office Files|*.doc;*.xls;*.ppt|Bild Dateien|*.jpg;*.jpeg;*.png;*.bmp" +
-            // "|All Files|*.*"; // Filter files by extension
-
-            // Show open file dialog box
-            bool? result = dialog.ShowDialog();
-
-            // Process open file dialog box results
-            if (result == true)
-            {
-                // Open document
-                string filename = dialog.FileName;
-            }          
         }
 
         private void btnToArchiv_Click(object sender, RoutedEventArgs e)

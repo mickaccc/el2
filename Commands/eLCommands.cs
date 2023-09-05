@@ -7,7 +7,7 @@ namespace Lieferliste_WPF.Commands
         private static RoutedUICommand showOrderView;
         private static RoutedUICommand toArchive;
         private static RoutedUICommand showArchive;
-        private static RoutedUICommand showRtbEditor;
+        private static RoutedUICommand openExplorerCommand;
   
         private static RoutedUICommand showUserMgmt;
         private static RoutedUICommand selectionChanged;
@@ -32,8 +32,8 @@ namespace Lieferliste_WPF.Commands
             //newFriend.InputGestures.Add(new MouseGesture(MouseAction.LeftDoubleClick, ModifierKeys.Alt | ModifierKeys.Control));
             showArchive = new RoutedUICommand("Archiv anzeigen", "NewImage", typeof(ELCommands));
             showArchive.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Alt | ModifierKeys.Control));
-            showRtbEditor = new RoutedUICommand("Editor öffnen","RtbEditor",typeof(ELCommands));
-            showRtbEditor.InputGestures.Add(new MouseGesture(MouseAction.LeftDoubleClick));
+            openExplorerCommand = new RoutedUICommand("Explorer öffnen","Explorer",typeof(ELCommands));
+            openExplorerCommand.InputGestures.Add(new MouseGesture(MouseAction.LeftDoubleClick));
             presentText = new RoutedUICommand("Textbox vergrössern", "PresentText", typeof(ELCommands));
             presentText.InputGestures.Add(new MouseGesture(MouseAction.LeftClick));
 
@@ -68,9 +68,9 @@ namespace Lieferliste_WPF.Commands
         {
             get { return showArchive; }
         }
-        public static RoutedUICommand ShowRtbEditor
+        public static RoutedUICommand OpenExplorerCommand
         {
-            get { return showRtbEditor; }
+            get { return openExplorerCommand; }
         }
         public static RoutedUICommand PresentText
         {
