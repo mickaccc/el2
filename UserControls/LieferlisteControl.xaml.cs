@@ -295,6 +295,18 @@ namespace Lieferliste_WPF.UserControls
             DependencyProperty.Register("SelectedValue", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
 
+
+        public ViewModelBase ViewModel
+        {
+            get { return (ViewModelBase)GetValue(ViewModelProperty); }
+            set { SetValue(ViewModelProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(ViewModelBase), typeof(LieferlisteControl));
+
+
         #endregion
 
 
@@ -317,30 +329,10 @@ namespace Lieferliste_WPF.UserControls
 
         private void HandleOpenExplorerExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            // Configure open file dialog box
-            //var dialog = new Microsoft.Win32.OpenFileDialog();
-            //dialog.InitialDirectory = "C:\\";
-            var p = PathUtils.PathProvider(Properties.Settings.Default.ExplorerPath);
-            //dialog.DefaultExt = ".xls"; // Default file extension
-            StringBuilder sb = new StringBuilder();
-            foreach (var item in Properties.Settings.Default.ExplorerFilter)
-            {
-                sb.Append(item);
-            }
-            //dialog.Filter = sb.ToString();
-            //dialog.Filter = "Word Documents|*.doc|Excel Worksheets|*.xls|PowerPoint Presentations|*.ppt" +
-            // "|Office Files|*.doc;*.xls;*.ppt|Bild Dateien|*.jpg;*.jpeg;*.png;*.bmp" +
-            // "|All Files|*.*"; // Filter files by extension
+            LieferViewModel lvm = (LieferViewModel)this.DataContext;
+            lvm.OpenExplorerCommand.Execute(this);
+            
 
-            // Show open file dialog box
-            //bool? result = dialog.ShowDialog();
-
-            // Process open file dialog box results
-            //if (result == true)
-            //{
-            //    // Open document
-            //    string filename = dialog.FileName;
-            //}
         }
 
         private void HandlePresentTextCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -447,6 +439,14 @@ namespace Lieferliste_WPF.UserControls
         private void chkInvis_Checked(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void btnExpl_Click(object sender, RoutedEventArgs e)
+        {
+            
+
+            LieferViewModel lvm = (LieferViewModel)this.ViewModel;
+            lvm.OpenExplorerCommand.Execute(this);
         }
     }
 

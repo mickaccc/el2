@@ -171,7 +171,7 @@
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Termin"
                             SelectedDate="{Binding Termin, Mode=TwoWay, ElementName=luc}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"/>
-                <Button Grid.Row="2" Content="Explorer" Name="btnExpl" Command="{x:Static cmd:ELCommands.OpenExplorerCommand}" CommandParameter="e"  />
+                <Button Grid.Row="2" Content="Explorer" Name="btnExpl" Click="btnExpl_Click" />
                 <StackPanel Grid.Row="2" Grid.Column="7" Orientation="Horizontal" >
                     <CheckBox  Name="isHighPrio" Checked="Modified"/>
                     <TextBox  Name="CommentHighPrio" Width="101" ToolTip="Priotext" />

@@ -90,21 +90,25 @@
     <Compile Remove="Printing\**" />
     <Compile Remove="res\**" />
     <Compile Remove="WpfCustomControlLibrary\**" />
+    <Compile Remove="WPF_Explorer_Tree\**" />
     <EmbeddedResource Remove="View\Dialogs\CustomControls\**" />
     <EmbeddedResource Remove="MigrationBackup\**" />
     <EmbeddedResource Remove="Printing\**" />
     <EmbeddedResource Remove="res\**" />
     <EmbeddedResource Remove="WpfCustomControlLibrary\**" />
+    <EmbeddedResource Remove="WPF_Explorer_Tree\**" />
     <None Remove="View\Dialogs\CustomControls\**" />
     <None Remove="MigrationBackup\**" />
     <None Remove="Printing\**" />
     <None Remove="res\**" />
     <None Remove="WpfCustomControlLibrary\**" />
+    <None Remove="WPF_Explorer_Tree\**" />
     <Page Remove="View\Dialogs\CustomControls\**" />
     <Page Remove="MigrationBackup\**" />
     <Page Remove="Printing\**" />
     <Page Remove="res\**" />
     <Page Remove="WpfCustomControlLibrary\**" />
+    <Page Remove="WPF_Explorer_Tree\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
@@ -269,11 +273,12 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BionicFileExplorer.Net.Wpf" Version="1.0.2" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.7.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.11" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
     <PackageReference Include="Microsoft.NETCore.Platforms">
       <Version>7.0.4</Version>
@@ -291,7 +296,7 @@
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.5.4</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.4" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.5" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="DayLine.cs" />

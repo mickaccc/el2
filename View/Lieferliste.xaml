@@ -97,6 +97,7 @@
                             Invisible="{Binding Ausgebl, Mode=TwoWay, IsAsync=True}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}"
+                            ViewModel="{Binding Mode=OneWay, Source={StaticResource lvm}}"
                             HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource lvm}}">
                                     <UserControls:LieferlisteControl.ContextMenu>
                                         <ContextMenu>

@@ -27,20 +27,22 @@ namespace Lieferliste_WPF.ViewModels
 
         public ICollectionView OrdersView { get; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
-        
+        public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
+
+
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
 
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand OrderViewCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
-        public ActionCommand OpenExplorerCommand { get; private set; }
   
         public string HasMouse { get; set; } = string.Empty;
         private readonly Dictionary<string, string> _filterCriterias = new();
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
         private RelayCommand _textSearchCommand;
+        private RelayCommand _openExplorerCommand;
         private string _searchFilterText = string.Empty;
         private static double _progressValue;
         private bool _progressIsBusy;
@@ -125,6 +127,34 @@ namespace Lieferliste_WPF.ViewModels
                     uiContext?.Send(x => OrdersView.Refresh(), null);
                 }
             }
+        }
+        private void OnOpenExplorer(object obj)
+        {
+            // Configure open file dialog box
+           // var dialog = new WPF_Explorer_Tree.Window1();
+            //dialog.InitialDirectory = "C:\\";
+            var p = PathUtils.PathProvider(Properties.Settings.Default.ExplorerPath);
+            
+            //dialog.DefaultExt = ".xls"; // Default file extension
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in Properties.Settings.Default.ExplorerFilter)
+            {
+                sb.Append(item);
+            }
+            //dialog.Filter = sb.ToString();
+            //dialog.Filter = "Word Documents|*.doc|Excel Worksheets|*.xls|PowerPoint Presentations|*.ppt" +
+            // "|Office Files|*.doc;*.xls;*.ppt|Bild Dateien|*.jpg;*.jpeg;*.png;*.bmp" +
+            // "|All Files|*.*"; // Filter files by extension
+
+            // Show open file dialog box
+//bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            //if (result == true)
+            //{
+            //    // Open document
+            //    string filename = dialog.FileName;
+            //}
         }
         #region Commands
         private static bool OnOrderViewCanExecute(object arg)
