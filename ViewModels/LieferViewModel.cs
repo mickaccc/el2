@@ -133,7 +133,7 @@ namespace Lieferliste_WPF.ViewModels
             // Configure open file dialog box
            // var dialog = new WPF_Explorer_Tree.Window1();
             //dialog.InitialDirectory = "C:\\";
-            var p = PathUtils.PathProvider(Properties.Settings.Default.ExplorerPath);
+            var p = PathUtils.PathProvider(@Properties.Settings.Default.ExplorerRoot + Properties.Settings.Default.ExplorerPath);
             
             //dialog.DefaultExt = ".xls"; // Default file extension
             StringBuilder sb = new StringBuilder();
@@ -147,7 +147,7 @@ namespace Lieferliste_WPF.ViewModels
             // "|All Files|*.*"; // Filter files by extension
 
             // Show open file dialog box
-//bool? result = dialog.ShowDialog();
+            //bool? result = dialog.ShowDialog();
 
             // Process open file dialog box results
             //if (result == true)
@@ -155,6 +155,8 @@ namespace Lieferliste_WPF.ViewModels
             //    // Open document
             //    string filename = dialog.FileName;
             //}
+            Debug.WriteLine(p);
+            Process.Start("explorer.exe", @p);
         }
         #region Commands
         private static bool OnOrderViewCanExecute(object arg)

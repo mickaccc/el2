@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Lieferliste_WPF.Utilities
@@ -32,6 +34,16 @@ namespace Lieferliste_WPF.Utilities
             StringBuilder sb = new StringBuilder();
             StringBuilder methodParam = new StringBuilder();
             StringBuilder method = new StringBuilder();
+            Regex reg = new Regex(@"^(\w{4})(\w{3})(\w+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            Match match = reg.Match("F00BJ80555");
+
+            StringBuilder regSb = new StringBuilder();
+           
+            foreach (Group g in match.Groups.Values.Where(x => x.Index >= 0))
+            {
+                regSb.Append(g.Value).Append(Path.DirectorySeparatorChar);  
+            }
+            Debug.WriteLine(regSb.ToString());
             foreach (var val in path)
             {
 
@@ -58,7 +70,7 @@ namespace Lieferliste_WPF.Utilities
                     isMethodParam = true;
                     continue;
                 }
-                if (isString) sb.Append(val);
+
                 if (isMethod)
                 {
                     if (isMethodParam)
@@ -74,7 +86,7 @@ namespace Lieferliste_WPF.Utilities
 
             }
             DirectoryInfo dir = new DirectoryInfo(sb.ToString());
-            while (!dir.Exists) { dir.MoveTo(dir.Parent.ToString()); }
+           // while (!dir.Exists) { dir.MoveTo(dir.Parent.ToString()); }
             
             return dir.FullName;
         }
