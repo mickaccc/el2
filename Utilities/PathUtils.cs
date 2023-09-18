@@ -39,7 +39,7 @@ namespace Lieferliste_WPF.Utilities
 
             StringBuilder regSb = new StringBuilder();
            
-            foreach (Group g in match.Groups.Values.Where(x => x.Index >= 0))
+            foreach (Group g in match.Groups)
             {
                 regSb.Append(g.Value).Append(Path.DirectorySeparatorChar);  
             }
