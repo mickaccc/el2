@@ -139,26 +139,28 @@
                 <TextBlock Grid.Column="6" Grid.Row="2"  Name="txtScrap"  ToolTip="Ausschussmenge" 
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
                 <TextBlock Grid.Column="6" Grid.Row="2"  Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25" />
-                <StackPanel Grid.Column="9" Background="Aqua" Grid.RowSpan="3" Margin="5"  >
+                <StackPanel Grid.Column="9" Background="{StaticResource Background2}" Grid.RowSpan="3" Margin="5"  >
                     <Label x:Name="label1" Height="25" Content="{Binding Comment_Me, ElementName=luc, Converter={StaticResource CommentConverter},
-                        ConverterParameter=I}" Background="LightYellow" BorderBrush="Bisque" />
-                    <TextBox Height="60" Name="txtCommetM" Width="{Binding ActualWidth, ElementName=label1, Mode=OneWay}" Background="#FFFBE1E1" TextWrapping="Wrap" 
-                         HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Comment_Me, ElementName=luc, Mode=TwoWay,
+                        ConverterParameter=I}" Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
+                    <TextBox Height="60" Name="txtCommetM" Width="{Binding ActualWidth, ElementName=label1, Mode=OneWay}"
+                             Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
+                         HorizontalAlignment="Left" VerticalAlignment="Center"
+                             Text="{Binding Comment_Me, ElementName=luc, Mode=TwoWay,
                     Converter={StaticResource CommentConverter}, ConverterParameter=S}"
                     IsReadOnly="{Binding ConverterParameter=!COM-ME, Converter={StaticResource Permission}}" TextChanged="txtCommetM_TextChanged"/>
                 </StackPanel>
                 <StackPanel x:Name="stackPanel1" Grid.Column="10" Grid.RowSpan="3" Background="Aqua"  Margin="5">
                     <Label x:Name="label" Height="25" Content="{Binding Comment_Te, ElementName=luc, Converter={StaticResource CommentConverter},
-                        ConverterParameter=I}" Background="LightYellow" BorderBrush="Bisque"/>
-                    <TextBox Height="60" Name="txtCommetT" Background="#FFFBE1E1" TextWrapping="Wrap" 
+                        ConverterParameter=I}" Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque"/>
+                    <TextBox Height="60" Name="txtCommetT" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
                          HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Comment_Te, ElementName=luc, Mode=TwoWay,
                     Converter={StaticResource CommentConverter}, ConverterParameter=S}"
                     IsReadOnly="{Binding ConverterParameter=!COM-TE, Converter={StaticResource Permission}}" Width="{Binding ActualWidth, ElementName=stackPanel1, Mode=OneWay}"/>
                 </StackPanel>
                 <StackPanel x:Name="stackPanel" Grid.Column="11" Grid.RowSpan="3" Background="Aqua" Margin="5" >
                     <Label Height="25" Content="{Binding Comment_Ma, ElementName=luc, Converter={StaticResource CommentConverter},
-                        ConverterParameter=I}" Background="LightYellow" BorderBrush="Bisque" />
-                    <TextBox Height="60" Name="txtCommetMa" Background="#FFFBE1E1" TextWrapping="Wrap" 
+                        ConverterParameter=I}" Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
+                    <TextBox Height="60" Name="txtCommetMa" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
                          HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Comment_Ma, ElementName=luc, Mode=TwoWay,
                     Converter={StaticResource CommentConverter}, ConverterParameter=S}"
                     IsReadOnly="{Binding ConverterParameter=!COM-MA, Converter={StaticResource Permission}}" Width="{Binding ActualWidth, ElementName=stackPanel, Mode=OneWay}" TextChanged="txtCommetMa_TextChanged"/>
@@ -171,10 +173,11 @@
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Termin"
                             SelectedDate="{Binding Termin, Mode=TwoWay, ElementName=luc}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"/>
-                <Button Grid.Row="2" Content="Explorer" Name="btnExpl" Click="btnExpl_Click" />
+                <Button Grid.Row="2" Content="Explorer" Name="btnExpl" Command="{Binding ExplorerCommand,ElementName=luc}"
+                        CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"/>
                 <StackPanel Grid.Row="2" Grid.Column="7" Orientation="Horizontal" >
                     <CheckBox  Name="isHighPrio" Checked="Modified"/>
-                    <TextBox  Name="CommentHighPrio" Width="101" ToolTip="Priotext" />
+                    <TextBox  Name="CommentHighPrio" Width="101" ToolTip="Priotext" TextChanged="CommentHighPrio_TextChanged" />
                 </StackPanel>
 
                 <Button Grid.Column="13" Grid.Row="2" Content="ablegen" Name="btnToArchiv"

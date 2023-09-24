@@ -19,10 +19,13 @@
         <conv:FillZerosConverter x:Key="Fill-Converter"/>
         <conv:PermissionConverter x:Key="Permission"/>
         <conv:KW_Converter x:Key="KW-Converter"/>
+        <conv:EnumToCollectionConverter x:Key="EnumConv"/>
         <vm:LieferViewModel x:Key="lvm"/>
-
     </Page.Resources>
-    <Grid x:Name="MainGrid" DataContext="{Binding Mode=OneWay, Source={StaticResource lvm}}" >
+    <Page.DataContext>
+        <vm:LieferViewModel/>
+    </Page.DataContext>
+    <Grid x:Name="MainGrid" >
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
@@ -44,11 +47,13 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </WpfCustomControlLibrary:ClearableHintTextBox>
-            <ComboBox x:Name="cmb_filters" Width="100" >
-                <ComboBoxItem IsSelected="True">kein</ComboBoxItem>
-                <ComboBoxItem>zum Ablegen</ComboBoxItem>
-                <ComboBoxItem>ausgeblendet</ComboBoxItem>
-            </ComboBox>
+            <ComboBox x:Name="cmb_filters" Width="100"
+                      ItemsSource="{Binding Path=SelectedFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
+                      SelectedValue="{Binding Path=SelectedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      DisplayMemberPath="Description"
+                      SelectedValuePath="Value"/>
+
+
             <StackPanel Orientation="Horizontal"  DockPanel.Dock="Right" Background="DarkBlue" TextElement.Foreground="Beige"
                         TextElement.FontSize="20">
                 <TextBlock Text="Anzahl Vorgänge:" Margin="5,0,5,0"
@@ -97,15 +102,15 @@
                             Invisible="{Binding Ausgebl, Mode=TwoWay, IsAsync=True}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}"
-                            ViewModel="{Binding Mode=OneWay, Source={StaticResource lvm}}"
+                            ExplorerCommand="{Binding Path=OpenExplorerCommand, Source={StaticResource lvm}}"
                             HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource lvm}}">
                                     <UserControls:LieferlisteControl.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand, Source={StaticResource lvm}}"
+                                            <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}"
                                                       CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
-                                            <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand, Source={StaticResource lvm}}"
+                                            <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand}"
                                                       CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
-                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand, Source={StaticResource lvm}}"
+                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand}"
                                                   CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
                                         </ContextMenu>
                                     </UserControls:LieferlisteControl.ContextMenu>

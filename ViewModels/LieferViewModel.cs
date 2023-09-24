@@ -1,4 +1,5 @@
-﻿using Lieferliste_WPF.Commands;
+﻿using BionicCode.Utilities.Net.Core.Wpf.Extensions;
+using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Data;
 using Lieferliste_WPF.Data.Models;
 using Lieferliste_WPF.Interfaces;
@@ -12,7 +13,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -28,8 +33,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView OrdersView { get; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
         public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
-
-
+        public ICommand FilterCommand => _filterCommand ??= new RelayCommand(OnFilter);
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
 
         public ActionCommand SortAscCommand { get; private set; }
@@ -43,11 +47,37 @@ namespace Lieferliste_WPF.ViewModels
         private readonly string _sortDirection = string.Empty;
         private RelayCommand _textSearchCommand;
         private RelayCommand _openExplorerCommand;
+        private RelayCommand _filterCommand;
         private string _searchFilterText = string.Empty;
         private static double _progressValue;
         private bool _progressIsBusy;
+        private CmbFilter _cmbFilter;
+        
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
 
+        public enum CmbFilter
+        {
+            [Description("")]
+            NOT_SET = 0,
+            [Description("ausgeblendet")]
+            INVISIBLE,
+            [Description("zum ablegen")]
+            READY
+        }
+        public CmbFilter SelectedFilter
+        {
+            get { return _cmbFilter; }
+            set
+            {
+                if (_cmbFilter != value)
+                {
+                    _cmbFilter = value;
+                    NotifyPropertyChanged(() => SelectedFilter);
+                    OrdersView.Refresh();
+                }
+            }
+        }
+        
         public LieferViewModel()
         {         
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
@@ -76,6 +106,8 @@ namespace Lieferliste_WPF.ViewModels
                     if (!(accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
                         accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
             }
+            if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = ord.Ausgebl;
+            if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
             return accepted;
         }
 
@@ -128,37 +160,66 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+
+
+        #region Commands
         private void OnOpenExplorer(object obj)
         {
-            // Configure open file dialog box
-           // var dialog = new WPF_Explorer_Tree.Window1();
-            //dialog.InitialDirectory = "C:\\";
-            var p = PathUtils.PathProvider(@Properties.Settings.Default.ExplorerRoot + Properties.Settings.Default.ExplorerPath);
-            
-            //dialog.DefaultExt = ".xls"; // Default file extension
-            StringBuilder sb = new StringBuilder();
-            foreach (var item in Properties.Settings.Default.ExplorerFilter)
+            if (obj is Dictionary<string, object> dic)
             {
-                sb.Append(item);
+                StringBuilder sb = new();
+                String exp = Properties.Settings.Default.ExplorerPath;
+                string[] pa = exp.Split(',');
+
+                Regex reg2 = new(@"(?<=\[)(.*?)(?=\])");
+
+
+                for (int i = 0; i < pa.Length; i += 2)
+                {
+                    StringBuilder nsb = new StringBuilder();
+                    if (!pa[i].IsNullOrEmpty())
+                    {
+                        Regex reg3 = new(pa[i]);
+                        object? val;
+
+                        if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
+                        {
+                            if (val is string s)
+                            {
+                                Match match2 = reg3.Match(s);
+                                foreach (Group ma in match2.Groups.Values)
+                                {
+                                    if (ma.Value != val.ToString())
+                                        nsb.Append(ma.Value.ToString()).Append(Path.DirectorySeparatorChar);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        object? val;
+                        if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
+                            nsb.Append(val.ToString()).Append(Path.DirectorySeparatorChar);
+                    }
+                    sb.Append(nsb.ToString());
+                }
+
+                var p = PathUtils.PathProvider(@Properties.Settings.Default.ExplorerRoot, sb.ToString());
+
+                if (p.IsNullOrEmpty())
+                {
+                    MessageBox.Show(String.Format("Der Hauptpfad '{0}'\nwurde nicht gefunden!", Properties.Settings.Default.ExplorerRoot)
+                        , "Error", MessageBoxButton.OK);
+                    return;
+                }
+                Process.Start("explorer.exe", @p);
             }
-            //dialog.Filter = sb.ToString();
-            //dialog.Filter = "Word Documents|*.doc|Excel Worksheets|*.xls|PowerPoint Presentations|*.ppt" +
-            // "|Office Files|*.doc;*.xls;*.ppt|Bild Dateien|*.jpg;*.jpeg;*.png;*.bmp" +
-            // "|All Files|*.*"; // Filter files by extension
-
-            // Show open file dialog box
-            //bool? result = dialog.ShowDialog();
-
-            // Process open file dialog box results
-            //if (result == true)
-            //{
-            //    // Open document
-            //    string filename = dialog.FileName;
-            //}
-            Debug.WriteLine(p);
-            Process.Start("explorer.exe", @p);
         }
-        #region Commands
+        private void OnFilter(object obj)
+        {
+            _cmbFilter = (CmbFilter) obj;
+            OrdersView.Refresh();
+        }
         private static bool OnOrderViewCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("OOPEN01");
@@ -291,7 +352,7 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.RidNavigation)
                 .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
                 .OrderBy(x => x.SpaetEnd)
-                .ToList();
+                .ToList().AsParallel();
 
             _orders.AddRange(o);
             OrdersView.Refresh();

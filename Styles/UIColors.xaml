@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="Background1" Color="AliceBlue"/>
+    <SolidColorBrush x:Key="Background2" Color="Beige"/>
+
+<!--#region LieferUserControl-->
+    <SolidColorBrush x:Key="CommentInfoBackground" Color="LightYellow"/>
+    <SolidColorBrush x:Key="CommentBackground" Color="#FFE7BEF7"/>
+    
+    <!--#endregion-->
+</ResourceDictionary>

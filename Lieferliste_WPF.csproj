@@ -273,7 +273,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BionicFileExplorer.Net.Wpf" Version="1.0.2" />
+    <PackageReference Include="Caliburn.Micro" Version="4.0.212" />
+    <PackageReference Include="Caliburn.Micro.Core" Version="4.0.212" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.7.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

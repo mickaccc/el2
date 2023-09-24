@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Text;
+using System.Diagnostics;
 
 namespace Lieferliste_WPF.UserControls
 {
@@ -40,7 +41,8 @@ namespace Lieferliste_WPF.UserControls
         public static readonly DependencyProperty AidProperty
             = DependencyProperty.Register("Aid"
                 , typeof(string)
-                , typeof(LieferlisteControl));
+                , typeof(LieferlisteControl),
+                new PropertyMetadata("",OnPropertyChanged));
         public String Aid
         {
             get { return (string)GetValue(AidProperty); }
@@ -49,7 +51,8 @@ namespace Lieferliste_WPF.UserControls
         public static readonly DependencyProperty TtnrProperty
             = DependencyProperty.Register("TTNR"
                 , typeof(string)
-                , typeof(LieferlisteControl));
+                , typeof(LieferlisteControl),
+                new PropertyMetadata("",OnPropertyChanged));
         public string TTNR
         {
             get { return (string)GetValue(TtnrProperty); }
@@ -58,7 +61,8 @@ namespace Lieferliste_WPF.UserControls
         public static readonly DependencyProperty MatTextProperty
             = DependencyProperty.Register("MatText"
                 , typeof(string)
-                , typeof(LieferlisteControl));
+                , typeof(LieferlisteControl),
+                new PropertyMetadata("",OnPropertyChanged));
         public string MatText
         {
             get { return (string)GetValue(MatTextProperty); }
@@ -103,7 +107,8 @@ namespace Lieferliste_WPF.UserControls
         public static readonly DependencyProperty VnrProperty
             = DependencyProperty.Register("Vnr"
                 , typeof(int)
-                , typeof(LieferlisteControl));
+                , typeof(LieferlisteControl),
+                new PropertyMetadata(0,OnPropertyChanged));
         public int Vnr
         {
             get { return (int)GetValue(VnrProperty); }
@@ -112,7 +117,8 @@ namespace Lieferliste_WPF.UserControls
         public static readonly DependencyProperty VgTextProperty
             = DependencyProperty.Register("VgText"
                 , typeof(string)
-                , typeof(LieferlisteControl));
+                , typeof(LieferlisteControl),
+                new PropertyMetadata("",OnPropertyChanged));
         public string VgText
         {
             get { return (string)GetValue(VgTextProperty); }
@@ -164,7 +170,9 @@ namespace Lieferliste_WPF.UserControls
 
         // Using a DependencyProperty as the backing store for WorkArea.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty WorkAreaProperty =
-            DependencyProperty.Register("WorkArea", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+            DependencyProperty.Register("WorkArea", typeof(string), typeof(LieferlisteControl),
+                new PropertyMetadata("",OnPropertyChanged));
+
 
 
         public string WorkAreaText
@@ -294,22 +302,53 @@ namespace Lieferliste_WPF.UserControls
         public static readonly DependencyProperty SelectedValueProperty =
             DependencyProperty.Register("SelectedValue", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
-
-
-        public ViewModelBase ViewModel
+        public static readonly DependencyProperty ExplorerCommandProperty = DependencyProperty.Register("ExplorerCommand", typeof(ICommand), typeof(LieferlisteControl));
+        public ICommand ExplorerCommand
         {
-            get { return (ViewModelBase)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+            get { return (ICommand)GetValue(ExplorerCommandProperty); }
+            set { SetValue(ExplorerCommandProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(ViewModelBase), typeof(LieferlisteControl));
+        public static readonly DependencyProperty ExplorerCommandParameterProperty = DependencyProperty.Register("ExplorerCommandParameter", typeof(object), typeof(LieferlisteControl));
+        public object ExplorerCommandParameter
+        {
+            get { return (object)GetValue(ExplorerCommandParameterProperty); }
+            set { SetValue(ExplorerCommandParameterProperty, value); }
+        }
 
+
+
+        public Dictionary<string,object> AvailableItems
+        {
+            get { return (Dictionary<string,object>)GetValue(AvailableItemsProperty); }
+            set { SetValue(AvailableItemsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for AvailableItems.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty AvailableItemsProperty =
+            DependencyProperty.Register("AvailableItems", typeof(Dictionary<string,object>), typeof(LieferlisteControl));
 
         #endregion
 
-
+        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var newValue = e.NewValue;
+            object? val;
+            LieferlisteControl? lc = d as LieferlisteControl;
+            if (lc != null)
+            { 
+                if(lc.AvailableItems == null) lc.AvailableItems = new Dictionary<string,object>();
+                if (lc.AvailableItems.TryGetValue(e.Property.Name.ToLower(), out val))
+                {
+                    lc.AvailableItems[e.Property.Name.ToLower()] = newValue;
+                }
+                else
+                {
+                    lc.AvailableItems.Add(e.Property.Name.ToLower(), newValue);
+                }
+            }
+            
+        }
 
         void HandleLieferlisteControlLoaded(object sender, RoutedEventArgs e)
         {
@@ -441,12 +480,9 @@ namespace Lieferliste_WPF.UserControls
 
         }
 
-        private void btnExpl_Click(object sender, RoutedEventArgs e)
+        private void CommentHighPrio_TextChanged(object sender, TextChangedEventArgs e)
         {
-            
 
-            LieferViewModel lvm = (LieferViewModel)this.ViewModel;
-            lvm.OpenExplorerCommand.Execute(this);
         }
     }
 

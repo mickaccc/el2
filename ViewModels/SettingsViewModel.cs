@@ -12,47 +12,60 @@ namespace Lieferliste_WPF.ViewModels
 {
     class SettingsViewModel : Base.ViewModelBase
     {
-        string _ExplorerPath;
+        string _ExplorerPathPattern;
         ObservableCollection<string> _ExplorerFilter = new();
         public ICollectionView ExplorerFilter { get; }
-        string _ExplorerExt;
+        string _ExplorerRoot;
         public Brush OutOfDate { get; set; }
         public Brush InOfDate { get; set; }
 
         public SettingsViewModel()
         {
             var br = new BrushConverter();
-            ExplorerPath = Properties.Settings.Default.ExplorerPath;
+            ExplorerPathPattern = Properties.Settings.Default.ExplorerPath;
             foreach (var item in Properties.Settings.Default.ExplorerFilter)
             {
               _ExplorerFilter.Add(item);
             }
             ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
             ExplorerExt = Properties.Settings.Default.ExplorerExt;
-            OutOfDate = (Brush?)br.ConvertFromString(Properties.Settings.Default.inDate.Name);
+            ExplorerRoot = Properties.Settings.Default.ExplorerRoot;
+            OutOfDate = (Brush?)br.ConvertFromString(Properties.Settings.Default.outOfDate.Name);
             InOfDate = (Brush?)br.ConvertFromString(Properties.Settings.Default.inDate.Name);
         }
-        public string ExplorerPath
+        public string ExplorerPathPattern
         {
-            get { return _ExplorerPath; }
+            get { return _ExplorerPathPattern; }
             set
             {
-                if (_ExplorerPath != value)
+                if (_ExplorerPathPattern != value)
                 {
-                    _ExplorerPath = value;
-                    NotifyPropertyChanged(() => ExplorerPath);
+                    _ExplorerPathPattern = value;
+                    NotifyPropertyChanged(() => ExplorerPathPattern);
                 }
             }
         }
 
         public string ExplorerExt
         {
-            get => _ExplorerExt;
+            get => _ExplorerRoot;
             set
             {
-                if (_ExplorerExt != value)
-                { _ExplorerExt = value;
+                if (_ExplorerRoot != value)
+                { _ExplorerRoot = value;
                     NotifyPropertyChanged(() => ExplorerExt);
+                }
+            }
+        }
+        public string ExplorerRoot
+        {
+            get => _ExplorerRoot;
+            set
+            {
+                if (value != _ExplorerRoot)
+                {
+                    _ExplorerRoot = value;
+                    NotifyPropertyChanged(() => ExplorerRoot);
                 }
             }
         }

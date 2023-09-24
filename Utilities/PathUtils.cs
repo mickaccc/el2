@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -25,70 +26,23 @@ namespace Lieferliste_WPF.Utilities
             }
             return sb.ToString();
         }
-        public static string PathProvider(string path)
+        public static string PathProvider(string root,string path)
         {
-            bool isString = false;
-            bool isMethod = false;
-            bool isMethodParam = false;
+            string resPath = Path.Combine(root);
 
-            StringBuilder sb = new StringBuilder();
-            StringBuilder methodParam = new StringBuilder();
-            StringBuilder method = new StringBuilder();
-            Regex reg = new Regex(@"^(\w{4})(\w{3})(\w+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Match match = reg.Match("F00BJ80555");
+            if(!Directory.Exists(resPath)) { return String.Empty; }
 
-            StringBuilder regSb = new StringBuilder();
-           
-            foreach (Group g in match.Groups)
-            {
-                regSb.Append(g.Value).Append(Path.DirectorySeparatorChar);  
-            }
-            Debug.WriteLine(regSb.ToString());
-            foreach (var val in path)
-            {
-
-                if (val == '"')
-                {
-                    isString = !isString;
-                    continue;
-                }
-                if (val == '{')
-                {
-                    isMethod = true;
-                    continue;
-                }
-                if (val == '}' || val == ')')
-                {
-                    isMethod = false;
-                    isMethodParam = false;
-                    var s = methodParam.ToString().Split(";");
-                    sb.Append(Path.DirectorySeparatorChar).Append(Devide(s[0], s[1])).Append(Path.DirectorySeparatorChar);
-                    continue;
-                }
-                if (val == '(')
-                {
-                    isMethodParam = true;
-                    continue;
-                }
-
-                if (isMethod)
-                {
-                    if (isMethodParam)
-                    {
-                        methodParam.Append(val);
-                    }
-                    else
-                    {
-                        method.Append(val);
-                    }
-                }
-
-
-            }
-            DirectoryInfo dir = new DirectoryInfo(sb.ToString());
-           // while (!dir.Exists) { dir.MoveTo(dir.Parent.ToString()); }
+            string[] subdir = path.Split('\\');
             
-            return dir.FullName;
+            foreach(var subdir2 in subdir)
+            {
+                if (Directory.Exists(Path.Combine(resPath, subdir2)) && subdir2 != String.Empty)
+                {
+                    resPath = Path.Combine(resPath, subdir2);
+                }
+                else { break; }
+            }
+            return resPath;
         }
     }
 
