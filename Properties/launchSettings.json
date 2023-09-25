@@ -3,7 +3,8 @@
     "Lieferliste_WPF": {
       "commandName": "Project",
       "nativeDebugging": true,
-      "hotReloadEnabled": true
+      "hotReloadEnabled": true,
+      "jsWebView2Debugging": true
     }
   }
 }

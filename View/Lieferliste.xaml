@@ -110,7 +110,7 @@
                                                       CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
                                             <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand}"
                                                       CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
-                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand}"
+                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand, Source={StaticResource lvm}}"
                                                   CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
                                         </ContextMenu>
                                     </UserControls:LieferlisteControl.ContextMenu>

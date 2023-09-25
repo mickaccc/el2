@@ -25,7 +25,7 @@ namespace Lieferliste_WPF.View
             InitializeComponent();
             var vm = new OrderViewModel();
             vm.LoadData(arg);
-            this.DataContext = vm.Order;
+            this.DataContext = vm;
             
         }
 
