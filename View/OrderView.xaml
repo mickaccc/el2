@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lieferliste_WPF.View"
-        xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
+        xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
         xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
-        xmlns:ViewModels="clr-namespace:Lieferliste_WPF.ViewModels" xmlns:UserControls="clr-namespace:Lieferliste_WPF.UserControls"
+        xmlns:ViewModels="clr-namespace:Lieferliste_WPF.ViewModels"
+        xmlns:UserControls="clr-namespace:Lieferliste_WPF.UserControls"
         x:Class="Lieferliste_WPF.View.OrderView"
         mc:Ignorable="d"
         Title="OrderView" d:DesignHeight="450" d:DesignWidth="800">
@@ -17,7 +18,7 @@
         <conv:PermissionConverter x:Key="Permission" />
         <conv:NullVisibilityConverter x:Key="NullVisibilityConverter1" />
         <conv:PermissionVisibilityConverter x:Key="PermissionVisibilityConverter1" />
-        <conv:FillZerosConverter x:Key="FillZerosConverter1" />
+        
     </Page.Resources>
     <Grid Name="MainGrid"  >
 
@@ -120,7 +121,7 @@
                     <Grid>
                         <Canvas HorizontalAlignment="Left" Name="canvas1" VerticalAlignment="Top" Background="#FFDBDBA0" MinWidth="1200" MinHeight="80"  Margin="5,10">
                             <TextBlock Canvas.Left="6" Canvas.Top="6" Height="23" Name="txtVorgang" Width="65" 
-                                       Text="{Binding Path=Vnr, Converter={StaticResource FillZerosConverter1}, ConverterParameter=0000}" Uid="PLT" 
+                                       Text="{Binding Path=Vnr, StringFormat=\{0:D4\}}" Uid="PLT" 
                                        ToolTip="Plantermin lt. SAP" AutomationProperties.HelpText="Vorgangsnummer" />
                             <TextBox Canvas.Left="6" Canvas.Top="35" Height="23" Name="txtArbPlNr" Width="65"
                                        Text="{Binding Path=ArbPlSap, Mode=OneWay, ValidatesOnExceptions=true, NotifyOnValidationError=true}"

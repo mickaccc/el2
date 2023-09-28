@@ -5,7 +5,7 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
-    xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
+    xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
     xmlns:util="clr-namespace:Lieferliste_WPF.Utilities"
     xmlns:dd="urn:gong-wpf-dragdrop"
     mc:Ignorable="av"

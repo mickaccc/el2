@@ -30,7 +30,6 @@
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
@@ -85,24 +84,32 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="El2UserControls\**" />
+    <Compile Remove="El2Utilities\**" />
     <Compile Remove="View\Dialogs\CustomControls\**" />
     <Compile Remove="MigrationBackup\**" />
     <Compile Remove="Printing\**" />
     <Compile Remove="res\**" />
     <Compile Remove="WpfCustomControlLibrary\**" />
     <Compile Remove="WPF_Explorer_Tree\**" />
+    <EmbeddedResource Remove="El2UserControls\**" />
+    <EmbeddedResource Remove="El2Utilities\**" />
     <EmbeddedResource Remove="View\Dialogs\CustomControls\**" />
     <EmbeddedResource Remove="MigrationBackup\**" />
     <EmbeddedResource Remove="Printing\**" />
     <EmbeddedResource Remove="res\**" />
     <EmbeddedResource Remove="WpfCustomControlLibrary\**" />
     <EmbeddedResource Remove="WPF_Explorer_Tree\**" />
+    <None Remove="El2UserControls\**" />
+    <None Remove="El2Utilities\**" />
     <None Remove="View\Dialogs\CustomControls\**" />
     <None Remove="MigrationBackup\**" />
     <None Remove="Printing\**" />
     <None Remove="res\**" />
     <None Remove="WpfCustomControlLibrary\**" />
     <None Remove="WPF_Explorer_Tree\**" />
+    <Page Remove="El2UserControls\**" />
+    <Page Remove="El2Utilities\**" />
     <Page Remove="View\Dialogs\CustomControls\**" />
     <Page Remove="MigrationBackup\**" />
     <Page Remove="Printing\**" />
@@ -302,6 +309,7 @@
   <ItemGroup>
     <Compile Remove="DayLine.cs" />
     <Compile Remove="myConverters\ActiveDocumentConverter.cs" />
+    <Compile Remove="myConverters\DateLostToColorConverter.cs" />
     <Compile Remove="NodeListView.cs" />
     <Compile Remove="Planning\IMachine.cs" />
     <Compile Remove="Planning\IMachineFactory.cs" />
@@ -315,6 +323,7 @@
     <Compile Remove="Properties\Settings2.Designer.cs" />
     <Compile Remove="UserControls\Allocation.xaml.cs" />
     <Compile Remove="UserControls\AllocationWorkingList.xaml.cs" />
+    <Compile Remove="UserControls\LieferlisteControl.xaml.cs" />
     <Compile Remove="UserControls\PlannerControl.xaml.cs" />
     <Compile Remove="UserControls\UserControlDayView.xaml.cs" />
     <Compile Remove="UserControls\UserControlweekView.xaml.cs" />
@@ -358,6 +367,7 @@
     <Page Remove="Templates\AllocationReport.xaml" />
     <Page Remove="UserControls\Allocation.xaml" />
     <Page Remove="UserControls\AllocationWorkingList.xaml" />
+    <Page Remove="UserControls\LieferlisteControl.xaml" />
     <Page Remove="UserControls\PlannerControl.xaml" />
     <Page Remove="UserControls\UserControlDayView.xaml" />
     <Page Remove="UserControls\UserControlweekView.xaml" />
@@ -375,6 +385,9 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="El2UserControls\El2UserControls.csproj" />
+    <ProjectReference Include="El2Utilities\El2Utilities.csproj" />
+    <ProjectReference Include="Statics\Statics.csproj" />
     <ProjectReference Include="WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
   </ItemGroup>
   <ItemGroup>

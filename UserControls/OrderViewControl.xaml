@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:my="clr-namespace:Lieferliste_WPF"
              xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
-             xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
+             xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="1220">
     <UserControl.Resources>
@@ -15,7 +15,7 @@
         <conv:PermissionConverter x:Key="Permission" />
         <conv:NullVisibilityConverter x:Key="NullVisibilityConverter1" />
         <conv:PermissionVisibilityConverter x:Key="PermissionVisibilityConverter1" />
-        <conv:FillZerosConverter x:Key="FillZerosConverter1" />
+        
     </UserControl.Resources>
     <Grid Name="MainGrid" IsEnabled="False">
         <Grid.RowDefinitions>
@@ -95,7 +95,7 @@
                 <DataTemplate>
                     <Grid>
                         <Canvas HorizontalAlignment="Left" Name="canvas1" VerticalAlignment="Top" Background="#FFDBDBA0" MinWidth="1200" Height="80"  Margin="5,10">
-                            <TextBox Canvas.Left="6" Canvas.Top="6" Height="23" Name="txtVorgang" Width="65" Text="{Binding Path=Vnr, Converter={StaticResource FillZerosConverter1}, ConverterParameter=0000}" AcceptsReturn="True" AcceptsTab="True" Uid="PLT" ToolTip="Plantermin lt. SAP" AutomationProperties.HelpText="Vorgangsnummer" />
+                            <TextBox Canvas.Left="6" Canvas.Top="6" Height="23" Name="txtVorgang" Width="65" Text="{Binding Path=Vnr, StringFormat=\{0:D4\}}" AcceptsReturn="True" AcceptsTab="True" Uid="PLT" ToolTip="Plantermin lt. SAP" AutomationProperties.HelpText="Vorgangsnummer" />
                             <TextBox Canvas.Left="6" Canvas.Top="35" Height="23" Name="txtArbPlNr" Width="65" Text="{Binding Path=ArbPlSap, Mode=OneWay, ValidatesOnExceptions=true, NotifyOnValidationError=true}" ToolTip="Liefertermin lt. Meister" Uid="LFT" AutomationProperties.HelpText="Arbeitsplatz SAP" />
                             <TextBox Canvas.Left="72" Canvas.Top="35" Height="23" Name="txtArbPlatz" Width="300" IsReadOnly="True" Text="{Binding Path=Arbeitsplatz, Mode=OneWay, ValidatesOnExceptions=true, NotifyOnValidationError=true}" />
                             <TextBox Canvas.Left="6" Canvas.Top="65" Height="23" Name="txtRessBis" Width="365" Text="Ressource bis KW" IsReadOnly="True" />

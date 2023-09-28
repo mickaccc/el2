@@ -6,7 +6,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
       xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
-      xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
+      xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
       xmlns:control="clr-namespace:Lieferliste_WPF.UserControls"
       xmlns:local="clr-namespace:Lieferliste_WPF.View"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"

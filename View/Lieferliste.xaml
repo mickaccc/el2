@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:conv="clr-namespace:Lieferliste_WPF.myConverters"
-    xmlns:UserControls="clr-namespace:Lieferliste_WPF.UserControls"
+    xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
+    xmlns:UserControls="clr-namespace:El2UserControls;assembly=El2UserControls"
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     xmlns:WpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     x:Name="lieferListe"
@@ -14,9 +14,9 @@
       d:DesignHeight="450" WindowWidth="1400"
       Title="Lieferliste" >
     <Page.Resources>
+        <conv:CommentConverter x:Key="CommentConverter"/>
         <conv:DateConverter x:Key="DateConverter"/>
         <conv:TTNR_Converter x:Key="TTNR-Converter"/>
-        <conv:FillZerosConverter x:Key="Fill-Converter"/>
         <conv:PermissionConverter x:Key="Permission"/>
         <conv:KW_Converter x:Key="KW-Converter"/>
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
