@@ -1,5 +1,5 @@
 ﻿
-using Statics;
+using El2Utilities.Utils;
 using System;
 using System.Globalization;
 using System.Windows.Data;

@@ -1,0 +1,153 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
+        xmlns:WpfCustom="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:local="clr-namespace:Lieferliste_WPF.View"      
+        xmlns:UC="clr-namespace:El2UserControls;assembly=El2UserControls"
+        x:Class="Lieferliste_WPF.View.MachineView"
+        
+        mc:Ignorable="d"
+        Title="MachineView" Height="450" Width="800" >
+
+    <Window.Resources>
+        <conv:TTNR_Converter x:Key="ttnr"/>
+        <conv:MultiObjectConverter x:Key="MultiObject"/>
+
+        <Style x:Key="CellEditStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="LightYellow"/>
+            <Setter Property="Padding" Value="2"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+                            Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=" 80"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <DockPanel Background="RosyBrown">
+
+            <ListBox x:Name="cost" DockPanel.Dock="Right" VerticalAlignment="Top" ItemsSource="{Binding CostUnits}"
+                     AutomationProperties.LabeledBy="{Binding ElementName=costLabel, Mode=OneWay}" />
+            <Label x:Name="costLabel" Content="Kostenstellen" DockPanel.Dock="Right" VerticalAlignment="Stretch" RenderTransformOrigin="0.5,0.5" >
+                <Label.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Label.RenderTransform>
+            </Label>
+            <TextBox Text="{Binding Name}" DockPanel.Dock="Top" FontSize="30" FontWeight="Bold" Background="Transparent"/>
+            <TextBox Text="{Binding Description}" DockPanel.Dock="Bottom" FontSize="20" Background="Transparent"/>
+            
+        </DockPanel>
+        <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding ProcessesCV}" AutoGenerateColumns="False"
+                  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" IsSynchronizedWithCurrentItem="True"
+                  dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" SelectionMode="Single" SelectionUnit="CellOrRowHeader"
+                  dd:DragDrop.IsDropTarget="True"
+                  dd:DragDrop.DragHandler="{Binding}"
+                  dd:DragDrop.DropHandler="{Binding}" >
+            <DataGrid.ContextMenu>
+                <ContextMenu Width="Auto">
+                    <MenuItem x:Name="DelBullet" Header="Markierung  löschen" Command="{Binding SetMarkerCommand}" >
+                        <MenuItem.CommandParameter>
+                            <MultiBinding Converter="{StaticResource MultiObject}">
+                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>
+                        <MenuItem.Icon>
+                            <UC:BulletedItem BulletColor="White"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem x:Name="Bullet1" Header="roter Punkt"  Command="{Binding SetMarkerCommand}">
+                        <MenuItem.CommandParameter>
+                            <MultiBinding Converter="{StaticResource MultiObject}">
+                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>
+                        <MenuItem.Icon>
+                            <UC:BulletedItem BulletColor="Red"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem Header="grüner Punkt" Command="{Binding SetMarkerCommand}"
+                              x:Name="Bullet2">
+                        <MenuItem.CommandParameter>
+                            <MultiBinding Converter="{StaticResource MultiObject}">
+                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>
+                        <MenuItem.Icon>
+                            <UC:BulletedItem BulletColor="Green"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="gelber Punkt" Command="{Binding SetMarkerCommand}"
+                              x:Name="Bullet3" >
+                        <MenuItem.CommandParameter>
+                            <MultiBinding Converter="{StaticResource MultiObject}">
+                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>
+                        <MenuItem.Icon>
+                            <UC:BulletedItem BulletColor="Yellow"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="blauer Punkt" Command="{Binding SetMarkerCommand}"
+                              x:Name="Bullet4" >
+                        <MenuItem.CommandParameter>
+                            <MultiBinding Converter="{StaticResource MultiObject}">
+                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
+                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem" />
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>
+                        <MenuItem.Icon>
+                            <UC:BulletedItem BulletColor="Blue"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+
+            <DataGrid.Columns>
+                
+                <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Bezeichnung" Binding="{Binding AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Bemerkung" Binding="{Binding CommentT, ValidatesOnExceptions=True}"
+                                    EditingElementStyle="{StaticResource CellEditStyle}"/>
+                
+                <DataGridTemplateColumn >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate >
+                            <UC:BulletedItem BulletColor="{Binding Bullet, TargetNullValue='White'}"/>
+                            
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+
+    </Grid>
+</Window>

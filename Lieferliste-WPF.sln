@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "El2UserControls", "El2UserC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "El2Utilities", "El2Utilities\El2Utilities.csproj", "{FFB56A31-DA39-4370-97DA-AD0B21EC2D72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statics", "Statics\Statics.csproj", "{B6FAC6DF-9973-4CE1-B307-5588C4247D97}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,25 +71,13 @@ Global
 		{FFB56A31-DA39-4370-97DA-AD0B21EC2D72}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FFB56A31-DA39-4370-97DA-AD0B21EC2D72}.Release|x86.ActiveCfg = Release|Any CPU
 		{FFB56A31-DA39-4370-97DA-AD0B21EC2D72}.Release|x86.Build.0 = Release|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Debug|x86.Build.0 = Debug|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Release|x86.ActiveCfg = Release|Any CPU
-		{B6FAC6DF-9973-4CE1-B307-5588C4247D97}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_StartDate = 2000/1/1
-		BuildVersion_UseGlobalSettings = True
 		SolutionGuid = {14DC33B3-CB6D-4C03-B495-13C1F02BE944}
+		BuildVersion_UseGlobalSettings = True
+		BuildVersion_StartDate = 2000/1/1
 	EndGlobalSection
 EndGlobal

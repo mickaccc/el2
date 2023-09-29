@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "sterin.msbuild-tools",
+        "ms-dotnettools.vscode-dotnet-sdk",
+        "matijarmk.dotnet-core-commands",
+        "kishoreithadi.dotnet-core-essentials"
+    ]
+}

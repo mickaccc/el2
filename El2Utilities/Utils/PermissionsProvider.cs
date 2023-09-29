@@ -1,6 +1,6 @@
-﻿using Statics;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace El2Utilities.Utils
 {
@@ -30,8 +30,7 @@ namespace El2Utilities.Utils
 
         private void LoadPermissions(string user)
         {
-            
-
+            Debug.WriteLine("RoleCount {0} {1}", AppStatic.User.Role.Count, AppStatic.User.Role.ToString());         
             foreach (var item in AppStatic.User.Role)
             {
                 foreach(var permission in item.PermissionRoles)
