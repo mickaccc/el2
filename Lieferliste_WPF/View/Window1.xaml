@@ -1,0 +1,23 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Lieferliste_WPF.View"
+        xmlns:WpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary" x:Class="Lieferliste_WPF.View.Window1"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800">
+    <Grid HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        
+        <CheckBox x:Name="cmbCheckbox" Content="Is Loading" HorizontalAlignment="Center" Margin="10" Grid.Row="0"/>
+        <WpfCustomControlLibrary:HintTextBox HorizontalAlignment="Left" Margin="10" Grid.Row="2" TextWrapping="Wrap" Text="HintTextBox" VerticalAlignment="Top" Width="94"/>
+        <WpfCustomControlLibrary:LoadingSpinner HorizontalAlignment="Center" Margin="10" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>

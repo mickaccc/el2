@@ -1,6 +1,0 @@
-{
-    "solution": "${workspaceRoot}/Lieferliste-WPF.sln",
-    "variables":{
-        "MSBUILD":"C:/Windows/Microsoft.NET/Framework64/v3.5/MSBuild.exe"
-    }
-}

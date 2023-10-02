@@ -1,0 +1,197 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <NeutralLanguage>de-AT</NeutralLanguage>
+    <ApplicationIcon>el4-application.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Planning\ParkMachine.cs" />
+    <Compile Remove="Planning\ParkMachineFactory.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Images\1602309.png" />
+    <None Remove="Images\3160908.png" />
+    <None Remove="Images\AboutLogo.png" />
+    <None Remove="Images\add-group.png" />
+    <None Remove="Images\add-user.png" />
+    <None Remove="Images\book.png" />
+    <None Remove="Images\BOSCH2.jpg" />
+    <None Remove="Images\Bosch_Anker-Transparent.png" />
+    <None Remove="Images\Bosch_Anker.jpg" />
+    <None Remove="Images\Bosch_Anker48.png" />
+    <None Remove="Images\check128.png" />
+    <None Remove="Images\check32.png" />
+    <None Remove="Images\CircleFull128.png" />
+    <None Remove="Images\CircleFull32.png" />
+    <None Remove="Images\CircleRound128.png" />
+    <None Remove="Images\CircleRound32.png" />
+    <None Remove="Images\collapse.png" />
+    <None Remove="Images\copy.png" />
+    <None Remove="Images\copy16.png" />
+    <None Remove="Images\cut-content-button.png" />
+    <None Remove="Images\Database32.png" />
+    <None Remove="Images\Database64.png" />
+    <None Remove="Images\DB_Y.png" />
+    <None Remove="Images\DB_Y32.png" />
+    <None Remove="Images\delete.jpg" />
+    <None Remove="Images\drill.png" />
+    <None Remove="Images\edit.png" />
+    <None Remove="Images\eraser.png" />
+    <None Remove="Images\format_text_bold.png" />
+    <None Remove="Images\format_text_italic.png" />
+    <None Remove="Images\format_text_underline.png" />
+    <None Remove="Images\group.png" />
+    <None Remove="Images\hide.png" />
+    <None Remove="Images\left32.png" />
+    <None Remove="Images\machine-color.png" />
+    <None Remove="Images\machine.png" />
+    <None Remove="Images\man.png" />
+    <None Remove="Images\milling-machine.png" />
+    <None Remove="Images\minus128.png" />
+    <None Remove="Images\minus32.png" />
+    <None Remove="Images\multiply-1.png" />
+    <None Remove="Images\OrangeCross32.png" />
+    <None Remove="Images\paste-from-clipboard.png" />
+    <None Remove="Images\paste.png" />
+    <None Remove="Images\paste16.png" />
+    <None Remove="Images\plan-edit.png" />
+    <None Remove="Images\plan.png" />
+    <None Remove="Images\planning.png" />
+    <None Remove="Images\plus128.png" />
+    <None Remove="Images\plus32.png" />
+    <None Remove="Images\print.png" />
+    <None Remove="Images\print1.png" />
+    <None Remove="Images\refresh.png" />
+    <None Remove="Images\right32.png" />
+    <None Remove="Images\sort%282%29.png" />
+    <None Remove="Images\sort-by-attributes-Asc16 %282%29.png" />
+    <None Remove="Images\sort-by-attributes-Asc16.png" />
+    <None Remove="Images\sort-by-attributes-Desc16 %282%29.png" />
+    <None Remove="Images\sort-by-attributes-Desc16.png" />
+    <None Remove="Images\sort-by-attributes-interface-button-option.png" />
+    <None Remove="Images\sort-by-attributes.png" />
+    <None Remove="Images\spacing.png" />
+    <None Remove="Images\SplashPic.png" />
+    <None Remove="Images\user-edit.png" />
+    <None Remove="Images\user-profiles %281%29.png" />
+    <None Remove="Images\user-profiles.png" />
+    <None Remove="Images\waste.jpg" />
+    <None Remove="Images\waste2.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="el4-application.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.11" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\el2\El2UserControls\El2UserControls.csproj" />
+    <ProjectReference Include="..\..\el2\El2Utilities\El2Utilities.csproj" />
+    <ProjectReference Include="..\..\el2\WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="View\Dialogs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\1602309.png" />
+    <Resource Include="Images\3160908.png" />
+    <Resource Include="Images\AboutLogo.png" />
+    <Resource Include="Images\add-group.png" />
+    <Resource Include="Images\add-user.png" />
+    <Resource Include="Images\book.png" />
+    <Resource Include="Images\BOSCH2.jpg" />
+    <Resource Include="Images\Bosch_Anker-Transparent.png" />
+    <Resource Include="Images\Bosch_Anker.jpg" />
+    <Resource Include="Images\Bosch_Anker48.png" />
+    <Resource Include="Images\check128.png" />
+    <Resource Include="Images\check32.png" />
+    <Resource Include="Images\CircleFull128.png" />
+    <Resource Include="Images\CircleFull32.png" />
+    <Resource Include="Images\CircleRound128.png" />
+    <Resource Include="Images\CircleRound32.png" />
+    <Resource Include="Images\collapse.png" />
+    <Resource Include="Images\copy.png" />
+    <Resource Include="Images\copy16.png" />
+    <Resource Include="Images\cut-content-button.png" />
+    <Resource Include="Images\Database32.png" />
+    <Resource Include="Images\Database64.png" />
+    <Resource Include="Images\DB_Y.png" />
+    <Resource Include="Images\DB_Y32.png" />
+    <Resource Include="Images\delete.jpg" />
+    <Resource Include="Images\drill.png" />
+    <Resource Include="Images\edit.png" />
+    <Resource Include="Images\eraser.png" />
+    <Resource Include="Images\format_text_bold.png" />
+    <Resource Include="Images\format_text_italic.png" />
+    <Resource Include="Images\format_text_underline.png" />
+    <Resource Include="Images\group.png" />
+    <Resource Include="Images\hide.png" />
+    <Resource Include="Images\left32.png" />
+    <Resource Include="Images\machine-color.png" />
+    <Resource Include="Images\machine.png" />
+    <Resource Include="Images\man.png" />
+    <Resource Include="Images\milling-machine.png" />
+    <Resource Include="Images\minus128.png" />
+    <Resource Include="Images\minus32.png" />
+    <Resource Include="Images\multiply-1.png" />
+    <Resource Include="Images\OrangeCross32.png" />
+    <Resource Include="Images\paste-from-clipboard.png" />
+    <Resource Include="Images\paste.png" />
+    <Resource Include="Images\paste16.png" />
+    <Resource Include="Images\plan-edit.png" />
+    <Resource Include="Images\plan.png" />
+    <Resource Include="Images\planning.png" />
+    <Resource Include="Images\plus128.png" />
+    <Resource Include="Images\plus32.png" />
+    <Resource Include="Images\print.png" />
+    <Resource Include="Images\print1.png" />
+    <Resource Include="Images\refresh.png" />
+    <Resource Include="Images\right32.png" />
+    <Resource Include="Images\sort(2).png" />
+    <Resource Include="Images\sort-by-attributes-Asc16 (2).png" />
+    <Resource Include="Images\sort-by-attributes-Asc16.png" />
+    <Resource Include="Images\sort-by-attributes-Desc16 (2).png" />
+    <Resource Include="Images\sort-by-attributes-Desc16.png" />
+    <Resource Include="Images\sort-by-attributes-interface-button-option.png" />
+    <Resource Include="Images\sort-by-attributes.png" />
+    <Resource Include="Images\spacing.png" />
+    <Resource Include="Images\user-edit.png" />
+    <Resource Include="Images\user-profiles (1).png" />
+    <Resource Include="Images\user-profiles.png" />
+    <Resource Include="Images\waste.jpg" />
+    <Resource Include="Images\waste2.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Images\SplashPic.png" />
+  </ItemGroup>
+
+</Project>
