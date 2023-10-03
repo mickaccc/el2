@@ -95,12 +95,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\el2\El2UserControls\El2UserControls.csproj" />
-    <ProjectReference Include="..\..\el2\El2Utilities\El2Utilities.csproj" />
-    <ProjectReference Include="..\..\el2\WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -118,6 +112,12 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="View\Dialogs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\El2UserControls\El2UserControls.csproj" />
+    <ProjectReference Include="..\El2Utilities\El2Utilities.csproj" />
+    <ProjectReference Include="..\WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "El2Utilities": {
+      "commandName": "Project",
+      "sqlDebugging": false
+    }
+  }
+}
