@@ -37,11 +37,9 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
         private static int _onlines;
-        private BackgroundWorker _backgroundWorker = new();
         private static System.Timers.Timer _timer;
         private double _progressValue;
         private bool _progressIsBusy;
-        private readonly BackgroundWorker _worker = new();
         
         private ObservableCollection<TabItem> _tabTitles;
         private List<TabItem> _windowTitles;

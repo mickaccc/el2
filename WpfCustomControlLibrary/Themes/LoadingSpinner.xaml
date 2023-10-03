@@ -11,34 +11,36 @@
                         <BooleanToVisibilityConverter x:Key="BooleanToVisibiltyConverter"/>
                         <conv:DiameterAndThicknessToStrokeDashArrayConverter x:Key="DiaAndThickToDash"/>
                     </ControlTemplate.Resources>
-                    <Ellipse
+                    <Grid>
+                        <Ellipse
                         Width="{TemplateBinding Diameter}"
                         Height="{TemplateBinding Diameter}"                     
                         Stroke="{TemplateBinding Color}"
                         StrokeThickness="{TemplateBinding Thickness}"
                         Visibility="Visible">
-                        <Ellipse.StrokeDashArray>
-                            <MultiBinding Converter="{StaticResource DiaAndThickToDash}">
-                                <Binding Path="Diameter" RelativeSource="{RelativeSource TemplateParent}" />
-                                <Binding Path="Thickness" RelativeSource="{RelativeSource TemplateParent}"/>
-                            </MultiBinding>
-                        </Ellipse.StrokeDashArray>
-                        <Ellipse.RenderTransform>
-                            <RotateTransform x:Name="Rotation" Angle="0"/>
-                        </Ellipse.RenderTransform>
-                        <Ellipse.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard RepeatBehavior="Forever">
-                                        <DoubleAnimation
+                            <Ellipse.StrokeDashArray>
+                                <MultiBinding Converter="{StaticResource DiaAndThickToDash}">
+                                    <Binding Path="Diameter" RelativeSource="{RelativeSource TemplateParent}" />
+                                    <Binding Path="Thickness" RelativeSource="{RelativeSource TemplateParent}"/>
+                                </MultiBinding>
+                            </Ellipse.StrokeDashArray>
+                            <Ellipse.RenderTransform>
+                                <RotateTransform x:Name="Rotation" Angle="0"/>
+                            </Ellipse.RenderTransform>
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation
                                             Storyboard.TargetName="Rotation"
                                             Storyboard.TargetProperty="Angle"
                                             From="0" To="360"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Ellipse.Triggers>
-                    </Ellipse>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

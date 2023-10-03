@@ -17,7 +17,7 @@
         
         <CheckBox x:Name="cmbCheckbox" Content="Is Loading" HorizontalAlignment="Center" Margin="10" Grid.Row="0"/>
         <WpfCustomControlLibrary:HintTextBox HorizontalAlignment="Left" Margin="10" Grid.Row="2" TextWrapping="Wrap" Text="HintTextBox" VerticalAlignment="Top" Width="94"/>
-        <WpfCustomControlLibrary:LoadingSpinner HorizontalAlignment="Center" Margin="10" VerticalAlignment="Top"/>
+        <WpfCustomControlLibrary:LoadingSpinner HorizontalAlignment="Center" Margin="10" VerticalAlignment="Top" Grid.Row="1" IsLoading="{Binding IsChecked, ElementName=cmbCheckbox}"/>
 
     </Grid>
 </Window>

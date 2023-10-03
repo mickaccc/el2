@@ -8,6 +8,7 @@
     xmlns:UserControls="clr-namespace:El2UserControls;assembly=El2UserControls"
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     xmlns:WpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    xmlns:matDesign="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
     x:Name="lieferListe"
     x:Class="Lieferliste_WPF.View.Lieferliste"
       mc:Ignorable="d" 
@@ -22,6 +23,7 @@
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <vm:LieferViewModel x:Key="lvm"/>
+        
     </Page.Resources>
     <Page.DataContext>
         <vm:LieferViewModel/>
@@ -79,6 +81,10 @@
             </Grid.ColumnDefinitions>
             <Label>Datum</Label>
             <Label Grid.Column="1">D</Label>
+            <ProgressBar
+                 IsIndeterminate="True"
+                 Style="{StaticResource MaterialDesignCircularProgressBar}"
+                 Value="0" Visibility="{Binding Path=OrderTask.IsNotCompleted, Converter={StaticResource BoolToVis}}" />
         </Grid>
         <ScrollViewer Grid.Row="2" >
             

@@ -151,5 +151,11 @@
                 MessageBox.Show(ex.Message,"Fehlermeldung",MessageBoxButton.OK,MessageBoxImage.Error);
             }
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Window w = new Window1();
+            w.Show();
+        }
     }
 }
