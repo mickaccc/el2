@@ -5,11 +5,15 @@ using System.Collections.Generic;
 
 namespace El2Utilities.Models;
 
-public partial class TblDummy
+public partial class Project
 {
-    public string Aid { get; set; } = null!;
+    public string Project1 { get; set; } = null!;
 
-    public string? Mattext { get; set; }
+    public string? ProjectType { get; set; }
+
+    public string? ProjectInfo { get; set; }
+
+    public string? ProjectColor { get; set; }
 
     public virtual ICollection<OrderRb> OrderRbs { get; set; } = new List<OrderRb>();
 }

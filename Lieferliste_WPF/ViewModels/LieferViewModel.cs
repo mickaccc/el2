@@ -87,8 +87,8 @@ namespace Lieferliste_WPF.ViewModels
         
         public LieferViewModel()
         {
-            OrderTask = new NotifyTaskCompletion<ObservableCollection<Vorgang>>(LoadDataAsync());
-            OrderTask.PropertyChanged += OnaddOrderAsync;
+            //OrderTask = new NotifyTaskCompletion<ObservableCollection<Vorgang>>(LoadDataAsync());
+            //OrderTask.PropertyChanged += OnaddOrderAsync;
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
 
@@ -96,7 +96,7 @@ namespace Lieferliste_WPF.ViewModels
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-                                               
+            LoadDataSync();                           
         }
 
         private async void OnaddOrderAsync(object? sender, PropertyChangedEventArgs e)

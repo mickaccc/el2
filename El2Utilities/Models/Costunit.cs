@@ -13,8 +13,6 @@ public partial class Costunit
 
     public bool PlanRelevance { get; set; }
 
-    public virtual ICollection<Machine> Machines { get; set; } = new List<Machine>();
-
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
     public virtual ICollection<UserCost> UserCosts { get; set; } = new List<UserCost>();

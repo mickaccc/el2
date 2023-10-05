@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
+    <Page Remove="Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Planning\ParkMachine.cs" />
     <Compile Remove="Planning\ParkMachineFactory.cs" />
   </ItemGroup>
@@ -111,7 +118,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
     <Folder Include="View\Dialogs\" />
   </ItemGroup>
 

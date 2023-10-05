@@ -11,5 +11,5 @@ public partial class TblMaterial
 
     public string? Bezeichng { get; set; }
 
-    public virtual ICollection<TblAuftrag> TblAuftrags { get; set; } = new List<TblAuftrag>();
+    public virtual ICollection<OrderRb> OrderRbs { get; set; } = new List<OrderRb>();
 }

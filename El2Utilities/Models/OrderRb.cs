@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace El2Utilities.Models;
 
-public partial class TblAuftrag
+public partial class OrderRb
 {
     public string Aid { get; set; } = null!;
 
@@ -21,7 +21,7 @@ public partial class TblAuftrag
 
     public string? DummyMat { get; set; }
 
-    public int? ProId { get; set; }
+    public string? ProId { get; set; }
 
     public DateTime? Iststart { get; set; }
 
@@ -53,15 +53,17 @@ public partial class TblAuftrag
 
     public string? OrderType { get; set; }
 
+    public string? ProduktionSupervisor { get; set; }
+
     public string? OrderCategory { get; set; }
 
-    public string? ProductionSupervisor { get; set; }
+    public string? Wbselement { get; set; }
 
     public virtual TblDummy? DummyMatNavigation { get; set; }
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
 
-    public virtual TblProjekt? Pro { get; set; }
+    public virtual Project? Pro { get; set; }
 
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 }

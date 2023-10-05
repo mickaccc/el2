@@ -10,7 +10,7 @@ namespace El2Utilities.Utils
     public static class AppStatic
     {
         public static User User { get; private set; }
-        public static String PC { get; private set; }
+        public static String PC { get; }
 
         static AppStatic()
         {

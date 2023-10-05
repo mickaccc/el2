@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using El2Utilities.Models;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -36,6 +38,9 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMachineMgmtCommand { get; private set; }
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
+        public NotifyTaskCompletion<TabItem?> LieferTask { get; private set; }
+        private delegate void LieferTaskCompletedEventHandler();
+        private Dispatcher Dispatcher { get; set; }
         private static int _onlines;
         private static System.Timers.Timer _timer;
         private double _progressValue;
@@ -46,6 +51,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public MainWindowViewModel()
         {
+            Dispatcher = Dispatcher.CurrentDispatcher;
             TabTitles = new ObservableCollection<TabItem>();
             WindowTitles = new List<TabItem>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
@@ -212,8 +218,16 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenLieferlisteExecuted(object obj)
         {
+            
+            //LieferTask = new NotifyTaskCompletion<TabItem?>(CreateTabItemAsync());
+            Dispatcher.BeginInvoke( DispatcherPriority.Normal, new LieferTaskCompletedEventHandler(OnComplete));
+        }
+
+        private void OnComplete()
+        {
             var ll = new Lieferliste();
-            var tabItem = new TabItem
+            TabItem? tabItem = null;
+            tabItem = new TabItem
             {
                 Content = ll,
                 Header = new TabHeader() { HeaderText = ContentTitle.Deliverylist },
@@ -221,10 +235,8 @@ namespace Lieferliste_WPF.ViewModels
                 IsSelected = true
             };
             TabTitles.Add(tabItem);
- 
         }
 
- 
 
         #endregion
         private void SetTimer()
@@ -335,7 +347,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             using DB_COS_LIEFERLISTE_SQLContext db = new();
             var onl = db.Onlines;
-            onl.Add(new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC });
+            onl.Add(new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC,Login = DateTime.Now });
             db.SaveChanges();
             
         }
