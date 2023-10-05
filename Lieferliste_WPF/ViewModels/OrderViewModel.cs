@@ -17,9 +17,9 @@ namespace Lieferliste_WPF.ViewModels
     class OrderViewModel :Base.ViewModelBase
     {
 
-        private TblAuftrag? _order;
+        private OrderRb? _order;
         private ConcurrentObservableCollection<Vorgang> _vorgangs = new();
-        public TblAuftrag? Order { get; private set; }
+        public OrderRb? Order { get; private set; }
         public ICollectionView VorgangCV { get; private set; }
 
         #region Constructor
@@ -27,7 +27,7 @@ namespace Lieferliste_WPF.ViewModels
         #endregion
         public void LoadData(string AID)
         {
-            _order = Dbctx.TblAuftrags
+            _order = Dbctx.OrderRbs
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)
                 .Include(v => v.Vorgangs)

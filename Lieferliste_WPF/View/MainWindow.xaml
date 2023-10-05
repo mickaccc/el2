@@ -31,9 +31,36 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>-->
-       
 
-        <Style x:Key="{x:Type ProgressBar}"
+            <DataTemplate x:Key="TabItemHeaderTemplate">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Title}"/>
+                    <Image Source="/Images/OrangeCross32.png"/>
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate x:Key="TabItemContentTemplate">
+                <Frame Content="{Binding}"/>
+            </DataTemplate>
+        <DataTemplate x:Key="LoadingTemplate">
+            <StackPanel>
+                <TextBlock Text="Loading..."/>
+            </StackPanel>
+        </DataTemplate>
+            <Style x:Key="TabItemContainerStyle" TargetType="TabItem">
+                <Setter Property="Header" Value="{Binding}"/>
+                <Setter Property="HeaderTemplate" 
+                    Value="{StaticResource TabItemHeaderTemplate}"/>
+                <Setter Property="Content" Value="{Binding}"/>
+                <Setter Property="ContentTemplate" 
+                    Value="{StaticResource TabItemContentTemplate}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding LieferTask.IsNotCompleted, Mode=OneWay}" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource LoadingTemplate}"/>
+                </DataTrigger>
+            </Style.Triggers>
+            </Style>
+
+            <Style x:Key="{x:Type ProgressBar}"
        TargetType="{x:Type ProgressBar}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -306,18 +333,18 @@
 
         </DockPanel>
         <TabControl x:Name="TbControl" Grid.Row="1" AllowDrop="True" HorizontalAlignment="Stretch"
-                    ItemsSource="{Binding Path=TabTitles}"
+                    ItemsSource="{Binding Path=TabTitles}" ItemContainerStyle="{StaticResource TabItemContainerStyle}"
                     MouseDown="TbControl_MouseDown"
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.DropHandler="{Binding}"
                     dd:DragDrop.UseDefaultDragAdorner="True">
 
-            <TabControl.ContentTemplate>
+            <!--<TabControl.ContentTemplate>
                 <DataTemplate>
                     <Frame Content="{Binding}"/>
                 </DataTemplate>
-            </TabControl.ContentTemplate>
+            </TabControl.ContentTemplate>-->
    
         </TabControl>
         <StatusBar x:Name="sbar" Grid.Row="2"

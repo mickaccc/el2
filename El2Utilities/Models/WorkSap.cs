@@ -13,7 +13,5 @@ public partial class WorkSap
 
     public DateTime? Created { get; set; }
 
-    public virtual Ressource? Ressource { get; set; }
-
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 }

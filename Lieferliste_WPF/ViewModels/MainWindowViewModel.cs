@@ -38,22 +38,23 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMachineMgmtCommand { get; private set; }
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
-        public NotifyTaskCompletion<TabItem?> LieferTask { get; private set; }
+        public NotifyTaskCompletion<Page?> LieferTask { get; private set; }
         private delegate void LieferTaskCompletedEventHandler();
         private Dispatcher Dispatcher { get; set; }
         private static int _onlines;
         private static System.Timers.Timer _timer;
         private double _progressValue;
-        private bool _progressIsBusy;
+        private bool _isLoading;
         
-        private ObservableCollection<TabItem> _tabTitles;
-        private List<TabItem> _windowTitles;
+        private ObservableCollection<Page> _tabTitles;
+        private List<Page> _windowTitles;
+        private static Page ll;
 
         public MainWindowViewModel()
         {
             Dispatcher = Dispatcher.CurrentDispatcher;
-            TabTitles = new ObservableCollection<TabItem>();
-            WindowTitles = new List<TabItem>();
+            TabTitles = new ObservableCollection<Page>();
+            WindowTitles = new List<Page>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
             OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
             OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
@@ -95,7 +96,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnTabCloseExecuted(object obj)
         {
-            if (obj is TabItem o)
+            if (obj is Page o)
             {
                 var t = TabTitles.FirstOrDefault(x => x.Content == o.Content);
                 if (t != null)
@@ -105,136 +106,131 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenMachineMgmtExecuted(object obj)
         {
-            TabItem tabItem = new()
+ 
+            var me = new MachineEdit()
             {
-                Content = new MachineEdit(),
-                Header = new TabHeader() { HeaderText = ContentTitle.MachineEdit },
-                Tag = ContentTitle.MachineEdit,
-                IsSelected = true
+                Title = ContentTitle.MachineEdit,
+                Tag = ContentTitle.MachineEdit
             };
-
-            TabTitles.Add(tabItem);
+            TabTitles.Add(me);
         }
 
         private bool OnOpenMachineMgmtCanExecute(object arg)
         {          
             return PermissionsProvider.GetInstance().GetUserPermission("MA00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit) &&
-                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit);
+                TabTitles.All(x => (string)x.Tag != ContentTitle.MachineEdit) &&
+                WindowTitles.All(x => (string)x.Tag != ContentTitle.MachineEdit);
         }
 
         private void OnOpenRoleMgmtExecuted(object obj)
         {
-            TabItem tabItem = new()
+  
+            var re = new RoleEdit()
             {
-                Content = new RoleEdit(),
-                Header = new TabHeader() { HeaderText = ContentTitle.RoleEdit },
-                Tag = ContentTitle.RoleEdit,
-                IsSelected = true
+                Title = ContentTitle.RoleEdit,
+                Tag = ContentTitle.RoleEdit
             };
-
-            TabTitles.Add(tabItem);
+            TabTitles.Add(re);
         }
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit) &&
-                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
+                TabTitles.All(x => (string)x.Tag != ContentTitle.RoleEdit) &&
+                WindowTitles.All(x => (string)x.Tag != ContentTitle.RoleEdit);
         }
 
         private void OnOpenUserMgmtExecuted(object obj)
         {
-            TabItem tabItem = new()
-            {
-                Content = new UserEdit(),
-                Header = new TabHeader() { HeaderText = ContentTitle.UserEdit },
-                Tag = ContentTitle.UserEdit,
-                IsSelected = true
-            };
 
-            TabTitles.Add(tabItem);
+            var ue = new UserEdit()
+            {
+                Title = ContentTitle.UserEdit,
+                Tag = ContentTitle.UserEdit
+            };
+            TabTitles.Add(ue);
 
         }
 
         private bool OnOpenUserMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("UM00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.UserEdit) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.UserEdit);
+                !TabTitles.Any(x => (string)x.Tag == ContentTitle.UserEdit) &&
+                !WindowTitles.Any(x => (string)x.Tag == ContentTitle.UserEdit);
         }
 
 
         private void OnOpenSettingsExecuted(object obj)
         {
-            if (!TabTitles.Any(x => x.Header.ToString() == ContentTitle.Settings))
+ 
+            var sett = new Settings()
             {
-                TabItem tabItem = new()
-                {
-                    Content = new Settings(),
-                    Header = new TabHeader() { HeaderText = ContentTitle.Settings },
-                    Tag = ContentTitle.Settings,
-                    IsSelected = true
-                };
-
-                TabTitles.Add(tabItem);
-            }
+                Title = ContentTitle.Settings,
+                Tag = ContentTitle.Settings
+            };
+                TabTitles.Add(sett);
+            
         }
 
         private bool OnOpenSettingsCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Settings) &&
-                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Settings);
+                TabTitles.All(x => (string)x.Tag != ContentTitle.Settings) &&
+                WindowTitles.All(x => (string)x.Tag != ContentTitle.Settings);
         }
 
         private void OnOpenMachinePlanExecuted(object obj)
         {
-            TabItem tabItem = new()
+
+            var mp = new MachinePlan
             {
-                Content = new View.MachinePlan(),
-                Header = new TabHeader() { HeaderText = ContentTitle.Planning },
-                Tag = ContentTitle.Planning,
-                IsSelected = true
-
+                Title = ContentTitle.Planning,
+                Tag = ContentTitle.Planning
             };
-
-            TabTitles.Add(tabItem);
+            TabTitles.Add(mp);
         }
 
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
-                !TabTitles.Any(x => x.Tag.ToString() == ContentTitle.Planning) &&
-                !WindowTitles.Any(x => x.Tag.ToString() == ContentTitle.Planning);
+                !TabTitles.Any(x => (string)x.Tag == ContentTitle.Planning) &&
+                !WindowTitles.Any(x => (string)x.Tag == ContentTitle.Planning);
         }
 
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("LIE00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist) &&
-                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist);
+            return PermissionsProvider.GetInstance().GetUserPermission("LIE00");
 
         }
         private void OnOpenLieferlisteExecuted(object obj)
         {
-            
-            //LieferTask = new NotifyTaskCompletion<TabItem?>(CreateTabItemAsync());
-            Dispatcher.BeginInvoke( DispatcherPriority.Normal, new LieferTaskCompletedEventHandler(OnComplete));
+            IsLoading = true;
+            LieferTask = new NotifyTaskCompletion<Page?>(OnLoadAsync());
+            //var ll = Dispatcher.BeginInvoke( DispatcherPriority.Normal, new LieferTaskCompletedEventHandler(OnComplete));
+            //if (ll.Result != null )
+            if (LieferTask.IsSuccessfullyCompleted)
+            TabTitles.Add(LieferTask.Result);
         }
-
+        private static async Task<Page> OnLoadAsync()
+        {
+            var ll;
+          await Task.Run(() =>
+            {
+                ll = new Lieferliste()
+                {
+                    Title = ContentTitle.Deliverylist,
+                    Tag = ContentTitle.Deliverylist
+                };
+            });
+            return ll;
+        }
         private void OnComplete()
         {
-            var ll = new Lieferliste();
-            TabItem? tabItem = null;
-            tabItem = new TabItem
+            var ll = new Lieferliste()
             {
-                Content = ll,
-                Header = new TabHeader() { HeaderText = ContentTitle.Deliverylist },
-                Tag = ContentTitle.Deliverylist,
-                IsSelected = true
+                Title = ContentTitle.Deliverylist,
+                Tag = ContentTitle.Deliverylist
             };
-            TabTitles.Add(tabItem);
         }
 
 
@@ -266,7 +262,7 @@ namespace Lieferliste_WPF.ViewModels
             Onlines = Dbctx.Onlines.Count();
         }
 
-        public ObservableCollection<TabItem> TabTitles
+        public ObservableCollection<Page> TabTitles
         {
             get { return _tabTitles; }
             set
@@ -275,7 +271,7 @@ namespace Lieferliste_WPF.ViewModels
                 NotifyPropertyChanged(() => TabTitles);
             }
         }
-        public List<TabItem> WindowTitles
+        public List<Page> WindowTitles
         {
             get { return _windowTitles; }
             set
@@ -286,12 +282,18 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         public double ProgressValue { get { return _progressValue; } set { _progressValue = value; } }
-        public bool ProgressIsBusy { get { return _progressIsBusy; }
+        public bool IsLoading { get { return _isLoading; }
             private set
             {
-                _progressIsBusy = value;
-                NotifyPropertyChanged(() => ProgressIsBusy);
-            } }
+                if (_isLoading != value)
+                { 
+                    _isLoading = value;
+                    NotifyPropertyChanged(() => IsLoading);
+                }
+            }
+        }
+
+        
 
         private struct ContentTitle
         {
@@ -316,9 +318,9 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            if(dropInfo.Data is TabItem tb)
+            if(dropInfo.Data is Page pg)
             {
-                if(TabTitles.Contains(tb))
+                if(TabTitles.Contains(pg))
                 {
                     var newI = dropInfo.InsertIndex - 1;
                     var oldI = dropInfo.DragInfo.SourceIndex;
@@ -331,9 +333,9 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else
                 {
-                    TabTitles.Add(tb);
-                    WindowTitles.Remove(tb);
-                    if (tb.FindName("tabable") is Window wnd)
+                    TabTitles.Add(pg);
+                    WindowTitles.Remove(pg);
+                    if (pg.FindName("tabable") is Window wnd)
                     {
                         var o = wnd.Owner.OwnedWindows.SyncRoot;
 

@@ -71,15 +71,15 @@
         {
             e.Effects = DragDropEffects.Move;
 
-            var tabItemSource = (TabItem)e.Data.GetData(typeof(TabItem));
+            var tabItemSource = (Page)e.Data.GetData(typeof(Page));
             if (tabItemSource != null)
             {
                 TabControl tabCrt = (TabControl)sender;
                 Window wnd = new Tabable
                 {
                     Owner = this,
-                    Title = tabItemSource.Header.ToString(),
-                    Content = tabItemSource.Content,
+                    Title = tabItemSource.Title,
+                    Content = tabItemSource,
                     Tag = "MPL"
 
                 };
@@ -139,8 +139,8 @@
 
                     (wnd as Tabable).Tabable_TabControl.Items.Add(tabItemSource);
                     MainWindowViewModel mv = DataContext as MainWindowViewModel;
-                    mv.TabTitles.Remove(tabItemSource);
-                    mv.WindowTitles.Add(tabItemSource);
+                    mv.TabTitles.Remove((Page)tabItemSource.Content);
+                    mv.WindowTitles.Add((Page)tabItemSource.Content);
 
                     wnd.Show();
                 }

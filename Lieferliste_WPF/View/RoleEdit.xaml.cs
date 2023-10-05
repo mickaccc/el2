@@ -9,6 +9,8 @@ namespace Lieferliste_WPF.View
     /// </summary>
     public partial class RoleEdit : Page
     {
+        public bool IsLoading { get; set; }
+        public string Ident { get; set; }
         public RoleEdit()
         {
             InitializeComponent();

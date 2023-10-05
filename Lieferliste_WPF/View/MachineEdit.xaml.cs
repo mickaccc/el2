@@ -8,6 +8,8 @@ namespace Lieferliste_WPF.View
     /// </summary>
     public partial class MachineEdit : Page
     {
+        public bool IsLoading { get; set; }
+        public string Ident { get; set; }
         public MachineEdit()
         {
             InitializeComponent();

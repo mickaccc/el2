@@ -53,17 +53,15 @@ public partial class OrderRb
 
     public string? OrderType { get; set; }
 
-    public string? ProduktionSupervisor { get; set; }
-
     public string? OrderCategory { get; set; }
+
+    public string? ProductionSupervisor { get; set; }
 
     public string? Wbselement { get; set; }
 
     public virtual TblDummy? DummyMatNavigation { get; set; }
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
-
-    public virtual Project? Pro { get; set; }
 
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 }

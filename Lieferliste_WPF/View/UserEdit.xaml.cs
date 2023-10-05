@@ -21,6 +21,8 @@ namespace Lieferliste_WPF.View
     /// </summary>
     public partial class UserEdit : Page
     {
+        public bool IsLoading { get; set; }
+        public string Ident { get; set; }
         public UserEdit()
         {
             InitializeComponent();

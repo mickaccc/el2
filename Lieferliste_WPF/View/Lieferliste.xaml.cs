@@ -25,7 +25,8 @@ namespace Lieferliste_WPF.View
     /// </summary>
     public partial class Lieferliste : Page
     {
-        
+        public bool IsLoading { get; set; }
+        public string Ident { get; set; }
         public Lieferliste()
         {         
             InitializeComponent();

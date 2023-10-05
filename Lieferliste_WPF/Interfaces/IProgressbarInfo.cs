@@ -9,7 +9,7 @@ namespace Lieferliste_WPF.Interfaces
     interface IProgressbarInfo
     {
         static double ProgressValue { get; set; }
-        private static bool ProgressIsBusy { get; set; }
+        private static bool IsLoading { get; set; }
         void SetProgressIsBusy();
     }
 }
