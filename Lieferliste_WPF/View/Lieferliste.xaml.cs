@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -16,7 +17,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using El2UserControls;
+using Lieferliste_WPF.Interfaces;
+using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
+using Lieferliste_WPF.ViewModels.Base;
 
 namespace Lieferliste_WPF.View
 {
@@ -27,6 +31,9 @@ namespace Lieferliste_WPF.View
     {
         public bool IsLoading { get; set; }
         public string Ident { get; set; }
+
+       
+
         public Lieferliste()
         {         
             InitializeComponent();

@@ -1,13 +1,19 @@
 ﻿namespace Lieferliste_WPF.ViewModels.Base
 {
     using El2Utilities.Models;
+    using Lieferliste_WPF.Interfaces;
+    using Lieferliste_WPF.Utilities;
     using System;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq.Expressions;
+    using System.Windows.Controls;
 
     public class ViewModelBase : INotifyPropertyChanged
     {
         protected static DB_COS_LIEFERLISTE_SQLContext Dbctx { get; } = new();
+        
+
         protected void OnChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

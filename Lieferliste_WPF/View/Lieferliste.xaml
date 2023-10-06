@@ -84,7 +84,7 @@
             <ProgressBar
                  IsIndeterminate="True"
                  Style="{StaticResource MaterialDesignCircularProgressBar}"
-                 Value="0" Visibility="{Binding Path=OrderTask.IsNotCompleted, Converter={StaticResource BoolToVis}}" />
+                 Value="0" Visibility="{Binding Path=LieferTask.IsNotCompleted, Converter={StaticResource BoolToVis}}" />
         </Grid>
         <ScrollViewer Grid.Row="2" >
             

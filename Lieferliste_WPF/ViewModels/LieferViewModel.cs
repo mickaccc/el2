@@ -31,7 +31,7 @@ namespace Lieferliste_WPF.ViewModels
     {
 
 
-        public ICollectionView OrdersView { get; }
+        public ICollectionView OrdersView { get; private set; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
         public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
         public ICommand FilterCommand => _filterCommand ??= new RelayCommand(OnFilter);
@@ -88,9 +88,9 @@ namespace Lieferliste_WPF.ViewModels
         public LieferViewModel()
         {
             //OrderTask = new NotifyTaskCompletion<ObservableCollection<Vorgang>>(LoadDataAsync());
+            //_orders = (ConcurrentObservableCollection<Vorgang>?)OrderTask.Result;
             //OrderTask.PropertyChanged += OnaddOrderAsync;
-            OrdersView = CollectionViewSource.GetDefaultView(_orders);
-            OrdersView.Filter += OrdersView_FilterPredicate;
+
 
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
@@ -107,6 +107,8 @@ namespace Lieferliste_WPF.ViewModels
                 if (e.PropertyName == nameof(OrderTask.IsSuccessfullyCompleted))
                 {
                     _orders.AddRange(OrderTask.Result);
+                    OrdersView = CollectionViewSource.GetDefaultView(_orders);
+                    OrdersView.Filter += OrdersView_FilterPredicate;
                 }
             });
         }
@@ -154,7 +156,6 @@ namespace Lieferliste_WPF.ViewModels
                 
             }
         }
-
 
         private void OnTextSearch(object commandParameter)
         {

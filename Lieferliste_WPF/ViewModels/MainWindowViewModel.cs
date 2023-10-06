@@ -40,7 +40,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand CloseCommand { get; private set; }
         public NotifyTaskCompletion<Page?> LieferTask { get; private set; }
         private delegate void LieferTaskCompletedEventHandler();
-        private Dispatcher Dispatcher { get; set; }
+        private static Dispatcher Dispatcher { get; set; }
         private static int _onlines;
         private static System.Timers.Timer _timer;
         private double _progressValue;
@@ -48,7 +48,6 @@ namespace Lieferliste_WPF.ViewModels
         
         private ObservableCollection<Page> _tabTitles;
         private List<Page> _windowTitles;
-        private static Page ll;
 
         public MainWindowViewModel()
         {
@@ -200,29 +199,47 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("LIE00");
-
         }
         private void OnOpenLieferlisteExecuted(object obj)
         {
             IsLoading = true;
             LieferTask = new NotifyTaskCompletion<Page?>(OnLoadAsync());
+            LieferTask.PropertyChanged += TaskChanged;
             //var ll = Dispatcher.BeginInvoke( DispatcherPriority.Normal, new LieferTaskCompletedEventHandler(OnComplete));
             //if (ll.Result != null )
-            if (LieferTask.IsSuccessfullyCompleted)
-            TabTitles.Add(LieferTask.Result);
+            //Lieferliste ll = new Lieferliste()
+            //{
+            //    Title = ContentTitle.Deliverylist,
+            //    Tag = ContentTitle.Deliverylist
+            //};
+            //TaskComplete = ll.TaskCompletion;
+            //TaskComplete.PropertyChanged += TaskChanged;
+                     
         }
+
+        private void TaskChanged(object? sender, PropertyChangedEventArgs e)
+        {
+
+                if (LieferTask.IsSuccessfullyCompleted)
+                {
+                    TabTitles.Add(LieferTask.Result);
+                }
+            
+        }
+
         private static async Task<Page> OnLoadAsync()
         {
-            var ll;
-          await Task.Run(() =>
+            
+            return await Task.Run(() =>
             {
-                ll = new Lieferliste()
+                var ll = new Lieferliste()
                 {
                     Title = ContentTitle.Deliverylist,
                     Tag = ContentTitle.Deliverylist
                 };
-            });
-            return ll;
+                return ll;
+           });
+            
         }
         private void OnComplete()
         {
@@ -293,7 +310,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        
+        public NotifyTaskCompletion<ObservableCollection<ViewModelBase>> TaskComplete { get; private set; }
 
         private struct ContentTitle
         {
