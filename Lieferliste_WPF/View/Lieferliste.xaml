@@ -13,7 +13,7 @@
     x:Class="Lieferliste_WPF.View.Lieferliste"
       mc:Ignorable="d" 
       d:DesignHeight="450" WindowWidth="1400"
-      Title="Lieferliste" >
+      Title="Lieferliste"  >
     <Page.Resources>
         <conv:CommentConverter x:Key="CommentConverter"/>
         <conv:DateConverter x:Key="DateConverter"/>
@@ -25,9 +25,7 @@
         <vm:LieferViewModel x:Key="lvm"/>
         
     </Page.Resources>
-    <Page.DataContext>
-        <vm:LieferViewModel/>
-    </Page.DataContext>
+
     <Grid x:Name="MainGrid" >
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -81,10 +79,7 @@
             </Grid.ColumnDefinitions>
             <Label>Datum</Label>
             <Label Grid.Column="1">D</Label>
-            <ProgressBar
-                 IsIndeterminate="True"
-                 Style="{StaticResource MaterialDesignCircularProgressBar}"
-                 Value="0" Visibility="{Binding Path=LieferTask.IsNotCompleted, Converter={StaticResource BoolToVis}}" />
+ 
         </Grid>
         <ScrollViewer Grid.Row="2" >
             

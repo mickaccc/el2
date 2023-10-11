@@ -28,8 +28,6 @@ namespace Lieferliste_WPF.View
     /// </summary>
     public partial class MachinePlan : Page
     {
-        public bool IsLoading { get; set; }
-        public string Ident { get; set; }
         
         public MachinePlan()
         {
@@ -96,6 +94,9 @@ namespace Lieferliste_WPF.View
             else e.Accepted = false;            
         }
 
+        private void UnPlaned_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
 
+        }
     }
 }

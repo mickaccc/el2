@@ -1,26 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Lieferliste_WPF.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using El2UserControls;
-using Lieferliste_WPF.Interfaces;
-using Lieferliste_WPF.Utilities;
-using Lieferliste_WPF.ViewModels;
-using Lieferliste_WPF.ViewModels.Base;
 
 namespace Lieferliste_WPF.View
 {
@@ -29,14 +10,18 @@ namespace Lieferliste_WPF.View
     /// </summary>
     public partial class Lieferliste : Page
     {
-        public bool IsLoading { get; set; }
-        public string Ident { get; set; }
-
-       
+      private LieferViewModel _viewModel = new();
 
         public Lieferliste()
         {         
             InitializeComponent();
+            Loaded += Lieferliste_Loaded;
+            DataContext = _viewModel;
+        }
+
+        private async void Lieferliste_Loaded(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.LoadDataAsync();
         }
     }
 }

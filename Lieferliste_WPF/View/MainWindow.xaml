@@ -32,7 +32,7 @@
                     </Style.Triggers>
                 </Style>-->
 
-            <DataTemplate x:Key="TabItemHeaderTemplate">
+            <!--<DataTemplate x:Key="TabItemHeaderTemplate">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Title}"/>
                     <Image Source="/Images/OrangeCross32.png"/>
@@ -42,9 +42,7 @@
                 <Frame Content="{Binding}"/>
             </DataTemplate>
         <DataTemplate x:Key="LoadingTemplate">
-            <StackPanel>
-                <TextBlock Text="Loading..."/>
-            </StackPanel>
+            <Frame Content="Loading..."/>
         </DataTemplate>
             <Style x:Key="TabItemContainerStyle" TargetType="TabItem">
                 <Setter Property="Header" Value="{Binding}"/>
@@ -58,7 +56,7 @@
                     <Setter Property="ContentTemplate" Value="{StaticResource LoadingTemplate}"/>
                 </DataTrigger>
             </Style.Triggers>
-            </Style>
+            </Style>-->
 
             <Style x:Key="{x:Type ProgressBar}"
        TargetType="{x:Type ProgressBar}">
@@ -156,7 +154,7 @@
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
-
+ 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding CloseCommand}" />
@@ -326,26 +324,80 @@
                     </Grid>
                 </ToolBar>
                 <ToolBar Band="1" BandIndex="5" x:Name="Toolbar_selector" Visibility="Collapsed">
-                    <ComboBox x:Name="cmbUnion" Height="23" ItemsSource="{Binding}" DisplayMemberPath="Bereich" SelectedValuePath="BID" SelectedIndex="0" />
+                    
 
                 </ToolBar>
             </ToolBarTray>
 
         </DockPanel>
         <TabControl x:Name="TbControl" Grid.Row="1" AllowDrop="True" HorizontalAlignment="Stretch"
-                    ItemsSource="{Binding Path=TabTitles}" ItemContainerStyle="{StaticResource TabItemContainerStyle}"
+                   ItemsSource="{Binding TabTitles}" 
                     MouseDown="TbControl_MouseDown"
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.DropHandler="{Binding}"
                     dd:DragDrop.UseDefaultDragAdorner="True">
+            <TabControl.Resources>
 
-            <!--<TabControl.ContentTemplate>
-                <DataTemplate>
-                    <Frame Content="{Binding}"/>
-                </DataTemplate>
-            </TabControl.ContentTemplate>-->
-   
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabItem}">
+                                <Grid>
+                                    <Border Name="Border" Background="#FF6E6C67" Margin="2,2,-8,0" BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="10">
+                                        <ContentPresenter x:Name="ContentSite" ContentSource="Title" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2,2,12,2" RecognizesAccessKey="True"/>
+                                    </Border>
+                                    <Rectangle Height="10" Width="100" Margin="0,0,-10,0" Stroke="Black" VerticalAlignment="Bottom" HorizontalAlignment="Right" StrokeThickness="0" Fill="#FFD4D0C8"/>
+                                    <Image Source="/Images/OrangeCross32.png" Width="30" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                        <Setter TargetName="ContentSite" Property="Height" Value="30" />
+                                        <Setter TargetName="Border" Property="Background" Value="#FFD4D0C8" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="Border" Property="Background" Value="#FF6E6C67" />
+                                        <Setter TargetName="ContentSite" Property="Height" Value="20"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+ 
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Background" Value="#FFE5E5E5" />
+                    <Setter Property="Margin" Value="6,10,10,10" />
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Frame Content="{Binding}"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+      
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Background" Value="#FF6E6C67" />
+                    <Setter Property="Height" Value="50" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="FontFamily" Value="DokChampa" />
+                    <Setter Property="FontSize" Value="16" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="UseLayoutRounding" Value="False" />
+                </Style>
+ 
+            </TabControl.Resources>
+
         </TabControl>
         <StatusBar x:Name="sbar" Grid.Row="2"
            VerticalAlignment="Bottom" Background="Beige" >

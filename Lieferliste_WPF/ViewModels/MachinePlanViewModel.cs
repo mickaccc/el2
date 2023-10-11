@@ -25,25 +25,27 @@ namespace Lieferliste_WPF.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     internal class MachinePlanViewModel : Base.ViewModelBase, IDropTarget
-    {      
-        private RelayCommand _selectionChangeCommand;
-        private RelayCommand _textSearchCommand;
+    {
+        private RelayCommand? _selectionChangeCommand;
+        private RelayCommand? _textSearchCommand;
         public ICommand SelectionChangeCommand => _selectionChangeCommand ??= new RelayCommand(SelectionChange);
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
 
         public ICommand SaveCommand { get; private set; }
   
-        public List<WorkArea> WorkAreas { get; private set; }
+        public List<WorkArea>? WorkAreas { get; private set; }
         public List<PlanMachine> Machines { get; }
-        private ObservableCollection<Vorgang> Priv_processes { get; set; }
-        private ObservableCollection<Vorgang> Priv_parking { get; set; }
+        private ObservableCollection<Vorgang>? Priv_processes { get; set; }
+        private ObservableCollection<Vorgang>? Priv_parking { get; set; }
         
         private readonly ICollectionView _ressCV;
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         
         private string _masterFilterText;
-        private string _searchFilterText;
+        private string? _searchFilterText;
+        
+
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
  

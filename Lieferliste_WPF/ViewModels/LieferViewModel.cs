@@ -27,7 +27,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class LieferViewModel : ViewModelBase, IProgressbarInfo
+    class LieferViewModel : ViewModelBase
     {
 
 
@@ -46,13 +46,12 @@ namespace Lieferliste_WPF.ViewModels
         private readonly Dictionary<string, string> _filterCriterias = new();
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
-        private RelayCommand _textSearchCommand;
-        private RelayCommand _openExplorerCommand;
-        private RelayCommand _filterCommand;
+        private RelayCommand? _textSearchCommand;
+        private RelayCommand? _openExplorerCommand;
+        private RelayCommand? _filterCommand;
         private string _searchFilterText = string.Empty;
-        private bool isReady;
         private CmbFilter _cmbFilter;
-        public NotifyTaskCompletion<ObservableCollection<Vorgang>> OrderTask { get; private set; }
+        public NotifyTaskCompletion<ObservableCollection<Vorgang>>? OrderTask { get; private set; }
         
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
 
@@ -96,7 +95,9 @@ namespace Lieferliste_WPF.ViewModels
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            LoadDataSync();                           
+            OrdersView = CollectionViewSource.GetDefaultView(_orders);
+            OrdersView.Filter += OrdersView_FilterPredicate;
+                                     
         }
 
         private async void OnaddOrderAsync(object? sender, PropertyChangedEventArgs e)
@@ -129,8 +130,8 @@ namespace Lieferliste_WPF.ViewModels
             if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = ord.Ausgebl;
             if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
             if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text.ToUpper().Contains("STARTEN");
-            if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.AidNavigation.Mrpcontroller == "VDT";
-            if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.AidNavigation.Mrpcontroller == "EDT";
+            if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
+            if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
             return accepted;
         }
 
@@ -328,7 +329,7 @@ namespace Lieferliste_WPF.ViewModels
             
         }
 
-        private static async Task<ObservableCollection<Vorgang>> LoadDataAsync()
+        public async Task LoadDataAsync()
         {
 
             var  o = await Dbctx.Vorgangs
@@ -337,11 +338,12 @@ namespace Lieferliste_WPF.ViewModels
             .ThenInclude(x => x.MaterialNavigation)
             .Include(x => x.AidNavigation.DummyMatNavigation)
             .Include(x => x.RidNavigation)
+            .Include(x => x.AidNavigation.Pro)
             .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
             .OrderBy(x => x.SpaetEnd)
             .ToListAsync().ConfigureAwait(false);
 
-            return new ObservableCollection<Vorgang>(o);
+            _orders.AddRange(o);           
         }
 
 
@@ -353,6 +355,7 @@ namespace Lieferliste_WPF.ViewModels
                 .ThenInclude(x => x.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.RidNavigation)
+                .Include(x => x.AidNavigation.Pro)
                 .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
                 .OrderBy(x => x.SpaetEnd)
                 .ToList().AsParallel();
@@ -360,9 +363,23 @@ namespace Lieferliste_WPF.ViewModels
             _orders.AddRange(o);
             OrdersView.Refresh();
         }
-        public void SetProgressIsBusy()
-        {
-            throw new NotImplementedException();
-        }
+ 
+
+        //public async Task<IViewModel> LoadDataAsnc()
+        //{
+        //    var o = await Dbctx.Vorgangs
+        //     .Include(m => m.ArbPlSapNavigation)
+        //     .Include(v => v.AidNavigation)
+        //     .ThenInclude(x => x.MaterialNavigation)
+        //     .Include(x => x.AidNavigation.DummyMatNavigation)
+        //     .Include(x => x.RidNavigation)
+        //     .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
+        //     .OrderBy(x => x.SpaetEnd)
+        //     .ToListAsync().ConfigureAwait(false);
+
+        //    _orders.AddRange(o);
+        //    OrdersView.Refresh();
+        //    return this;
+        //}
     }
 }

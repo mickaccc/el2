@@ -12,6 +12,7 @@ namespace Lieferliste_WPF.Interfaces
 {
     internal interface IViewModel
     {
-        public NotifyTaskCompletion<ObservableCollection<ViewModelBase>> TaskCompletion { get; }
+
+        public Task<IViewModel> LoadDataAsnc();
     }
 }

@@ -16,11 +16,13 @@
       Title="MachinePlan" x:Name="MPL" Unloaded="MPL_Unloaded"  >
 
     <Page.Resources>
-        <vm:MachinePlanViewModel x:Key="mp"/>
         <conv:TTNR_Converter x:Key="ttnr"/>
         <CollectionViewSource x:Key="UnPlanedCVS" Filter="UnPlanedCVS_Filter"/>
     </Page.Resources>
-    <Grid x:Name="Main" DataContext="{Binding Mode=OneWay, Source={StaticResource mp}}" >
+    <Page.DataContext>
+        <vm:MachinePlanViewModel/>
+    </Page.DataContext>
+    <Grid x:Name="Main" >
         <Grid.Resources>
             <CollectionViewSource x:Key="UnPlanedCVS" Source="{Binding ProcessCV}" Filter="UnPlanedCVS_Filter"/>
         </Grid.Resources>
@@ -98,7 +100,7 @@
         <DataGrid x:Name="UnPlaned" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
                   CanUserAddRows="False" CanUserDeleteRows="False" HorizontalContentAlignment="Center" ColumnWidth="Auto"
-                  IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False">
+                  IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" SelectionChanged="UnPlaned_SelectionChanged">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Auftrag" Binding="{Binding Path=Aid}"/>
