@@ -16,6 +16,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -90,7 +91,7 @@ namespace Lieferliste_WPF.ViewModels
             //_orders = (ConcurrentObservableCollection<Vorgang>?)OrderTask.Result;
             //OrderTask.PropertyChanged += OnaddOrderAsync;
 
-
+            LoadDataSync();
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
@@ -349,19 +350,39 @@ namespace Lieferliste_WPF.ViewModels
 
         public void LoadDataSync()
         {
-            var o = Dbctx.Vorgangs
-                .Include(m => m.ArbPlSapNavigation)
-                .Include(v => v.AidNavigation)
-                .ThenInclude(x => x.MaterialNavigation)
-                .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Include(x => x.RidNavigation)
-                .Include(x => x.AidNavigation.Pro)
-                .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-                .OrderBy(x => x.SpaetEnd)
-                .ToList().AsParallel();
+            //var o = Dbctx.Vorgangs
+            //    .Include(m => m.ArbPlSapNavigation)
+            //    .Include(v => v.AidNavigation)
+            //    .ThenInclude(x => x.MaterialNavigation)
+            //    .Include(x => x.AidNavigation.DummyMatNavigation)
+            //    .Include(x => x.RidNavigation)
+            //    .Include(x => x.AidNavigation.Pro)
+            //    .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
+            //    .OrderBy(x => x.SpaetEnd)
+            //    .ToList().AsParallel();
 
-            _orders.AddRange(o);
-            OrdersView.Refresh();
+            var a = Dbctx.OrderRbs
+                .Include(v => v.Vorgangs)
+                .Include(m => m.MaterialNavigation)
+                .Include(d => d.DummyMatNavigation)
+                .Where(x => x.Abgeschlossen == false)
+                .ToList() .AsParallel();
+            List<Vorgang> ol = new List<Vorgang>();
+            foreach (var v in a)
+            {
+                ol.Clear();
+                bool relev = false;
+                foreach (var x in v.Vorgangs.OrderBy(x => x.SpaetEnd))
+                {                  
+                    ol.Add(x);
+                    if (int.TryParse(x.ArbPlSap[..3], out int c))
+                    if (AppStatic.User.UserCosts.Any(y => y.CostId == c))                       
+                    {
+                            relev = true; 
+                    }
+                }
+                if(relev) _orders.AddRange(ol.Where(x => x.Aktuell));
+            }          
         }
  
 

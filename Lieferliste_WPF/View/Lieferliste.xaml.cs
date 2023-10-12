@@ -14,14 +14,10 @@ namespace Lieferliste_WPF.View
 
         public Lieferliste()
         {         
-            InitializeComponent();
-            Loaded += Lieferliste_Loaded;
+            InitializeComponent();          
             DataContext = _viewModel;
         }
 
-        private async void Lieferliste_Loaded(object sender, RoutedEventArgs e)
-        {
-            await _viewModel.LoadDataAsync();
-        }
+ 
     }
 }
