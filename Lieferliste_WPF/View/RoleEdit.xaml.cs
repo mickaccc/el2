@@ -7,7 +7,7 @@ namespace Lieferliste_WPF.View
     /// <summary>
     /// Interaction logic for RoleEdit.xaml
     /// </summary>
-    public partial class RoleEdit : Page
+    public partial class RoleEdit : Grid
     {
         public bool IsLoading { get; set; }
         public string Ident { get; set; }

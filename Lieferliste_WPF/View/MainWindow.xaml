@@ -337,11 +337,12 @@
                     dd:DragDrop.DropHandler="{Binding}"
                     dd:DragDrop.UseDefaultDragAdorner="True">
             <TabControl.Resources>
-
+      
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type TabItem}">
+                                <StackPanel Orientation="Horizontal">
                                 <Grid>
                                     <Border Name="Border" Background="#FF6E6C67" Margin="2,2,-8,0"
                                             BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="10">
@@ -352,9 +353,12 @@
                                     <Rectangle Height="10" Width="100" Margin="0,0,-10,0" Stroke="Black"
                                                VerticalAlignment="Bottom" HorizontalAlignment="Right"
                                                StrokeThickness="0" Fill="#FFD4D0C8"/>
-                                    <Image Source="/Images/OrangeCross32.png" Width="30"
-                                           VerticalAlignment="Top" HorizontalAlignment="Right"/>
+ 
                                 </Grid>
+                                    <Button x:Name="tabClose" Width="26" Height="26">
+                                        <Image Source="/Images/OrangeCross32.png" />
+                                    </Button>
+                                </StackPanel>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter Property="FontWeight" Value="Bold" />
@@ -378,18 +382,12 @@
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
-                                <Frame Content="{Binding}"/>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-      
-                    <Setter Property="HeaderTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
                                 <ContentPresenter Content="{TemplateBinding Content}"/>
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
+                    <Setter Property="Header" Value="{Binding Name}"/>
+ 
                     <Setter Property="Background" Value="#FF6E6C67" />
                     <Setter Property="Height" Value="50" />
                     <Setter Property="Margin" Value="0" />

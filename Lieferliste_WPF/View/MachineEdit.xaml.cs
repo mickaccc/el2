@@ -6,7 +6,7 @@ namespace Lieferliste_WPF.View
     /// <summary>
     /// Interaction logic for MachineEdit.xaml
     /// </summary>
-    public partial class MachineEdit : Page
+    public partial class MachineEdit : Grid
     {
         public bool IsLoading { get; set; }
         public string Ident { get; set; }

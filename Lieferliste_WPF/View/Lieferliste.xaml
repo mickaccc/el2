@@ -1,4 +1,4 @@
-﻿<Page
+﻿<Grid
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,9 +12,8 @@
     x:Name="lieferListe"
     x:Class="Lieferliste_WPF.View.Lieferliste"
       mc:Ignorable="d" 
-      d:DesignHeight="450" WindowWidth="1400"
-      Title="Lieferliste"  >
-    <Page.Resources>
+      d:DesignHeight="450" Width="1400"  >
+    <Grid.Resources>
         <conv:CommentConverter x:Key="CommentConverter"/>
         <conv:DateConverter x:Key="DateConverter"/>
         <conv:TTNR_Converter x:Key="TTNR-Converter"/>
@@ -24,13 +23,14 @@
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <vm:LieferViewModel x:Key="lvm"/>
         
-    </Page.Resources>
-
-    <Grid x:Name="MainGrid" >
+    </Grid.Resources>
+    <Grid.DataContext>
+        <vm:LieferViewModel/>
+    </Grid.DataContext>
+    
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="90"/>
-            <RowDefinition/>
+        <RowDefinition Height="30"/>
+        <RowDefinition/>
         </Grid.RowDefinitions>
         <DockPanel LastChildFill="False">
             <DockPanel.Background>
@@ -64,28 +64,12 @@
                            Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
             </StackPanel>
         </DockPanel>
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-            <Label>Datum</Label>
-            <Label Grid.Column="1">D</Label>
  
-        </Grid>
-        <ScrollViewer Grid.Row="2" >
+        <ScrollViewer Grid.Row="1" >
             
             <ItemsControl x:Name="Lieferlist" 
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrdersView, IsAsync=True}">
+                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrdersView}">
                 
                 <!--<ItemsControl.ItemsSource>
                     <PriorityBinding>
@@ -102,27 +86,27 @@
                             <StackPanel Height="100">
 
                                 <UserControls:LieferlisteControl x:Name="ucLiefer"  
-                            Aid="{Binding Aid, IsAsync=True}"
-                            MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng, IsAsync=True}"
-                            TTNR="{Binding AidNavigation.Material, IsAsync=True}"
-                            EndDate="{Binding SpaetEnd, IsAsync=True}"
+                            Aid="{Binding Aid}"
+                            MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
+                            TTNR="{Binding AidNavigation.Material}"
+                            EndDate="{Binding SpaetEnd}"
                             EckEnd="{Binding AidNavigation.Eckende}"
                             Termin="{Binding Termin, Mode=TwoWay}"
-                            Vnr="{Binding Vnr, IsAsync=True}" 
-                            Quantity="{Binding AidNavigation.Quantity, IsAsync=True}" 
-                            QuantityYield="{Binding QuantityYield, IsAsync=True}" 
-                            QuantityScrap="{Binding QuantityScrap, IsAsync=True}" 
-                            VgText="{Binding Text, IsAsync=True}"
-                            WorkArea="{Binding ArbPlSap, IsAsync=True}"
-                            WorkAreaText="{Binding ArbPlSap, IsAsync=True}"
+                            Vnr="{Binding Vnr}" 
+                            Quantity="{Binding AidNavigation.Quantity}" 
+                            QuantityYield="{Binding QuantityYield}" 
+                            QuantityScrap="{Binding QuantityScrap}" 
+                            VgText="{Binding Text}"
+                            WorkArea="{Binding ArbPlSap}"
+                            WorkAreaText="{Binding ArbPlSap}"
                             MachineText="{Binding RidNavigation.RessName}"
-                            Comment_Me="{Binding BemM, Mode=TwoWay, IsAsync=True}"
-                            Comment_Te="{Binding BemT, Mode=TwoWay, IsAsync=True}"
-                            Comment_Ma="{Binding BemMa, Mode=TwoWay, IsAsync=True}"
-                            Invisible="{Binding Ausgebl, Mode=TwoWay, IsAsync=True}"
+                            Comment_Me="{Binding BemM, Mode=TwoWay}"
+                            Comment_Te="{Binding BemT, Mode=TwoWay}"
+                            Comment_Ma="{Binding BemMa, Mode=TwoWay}"
+                            Invisible="{Binding Ausgebl, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}"
-                            ExplorerCommand="{Binding Path=OpenExplorerCommand, Source={StaticResource lvm}}"
+                            ExplorerCommand="{Binding Path=OpenExplorerCommand,Source={StaticResource lvm}}"
                             HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource lvm}}">
                                     <UserControls:LieferlisteControl.ContextMenu>
                                         <ContextMenu>
@@ -130,7 +114,7 @@
                                                       CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
                                             <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand}"
                                                       CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
-                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand, Source={StaticResource lvm}}"
+                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand}"
                                                   CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
                                         </ContextMenu>
                                     </UserControls:LieferlisteControl.ContextMenu>
@@ -143,5 +127,5 @@
 
             </ItemsControl>
         </ScrollViewer>
-    </Grid>
-</Page>
+ 
+</Grid>

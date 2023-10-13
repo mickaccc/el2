@@ -8,16 +8,13 @@ namespace Lieferliste_WPF.View
     /// <summary>
     /// Interaktionslogik für Lieferliste.xaml
     /// </summary>
-    public partial class Lieferliste : Page
+    public partial class Lieferliste : Grid
     {
-      private LieferViewModel _viewModel = new();
 
         public Lieferliste()
         {         
-            InitializeComponent();          
-            DataContext = _viewModel;
+            InitializeComponent();                    
         }
 
- 
     }
 }

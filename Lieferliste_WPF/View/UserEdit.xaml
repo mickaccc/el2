@@ -1,4 +1,4 @@
-﻿<Page
+﻿<Grid
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,11 +9,11 @@
     xmlns:dd="urn:gong-wpf-dragdrop"
     x:Class="Lieferliste_WPF.View.UserEdit"
         mc:Ignorable="d"
-        Title="UserEdit" MinHeight="450" MinWidth="800" x:Name="USER_Editor">
-    <Page.Resources>
+        MinHeight="450" MinWidth="800" >
+    <Grid.Resources>
         <vm:UserViewModel x:Key="usrVM"/>
 
-    </Page.Resources>
+    </Grid.Resources>
 
     <Grid Margin="10,10,0,0" DataContext="{StaticResource usrVM}">
         <Grid.RowDefinitions>
@@ -221,4 +221,4 @@
             </ListBox>
         </ScrollViewer>
     </Grid>
-</Page>
+</Grid>

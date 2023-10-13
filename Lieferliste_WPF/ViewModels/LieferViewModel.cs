@@ -91,14 +91,14 @@ namespace Lieferliste_WPF.ViewModels
             //_orders = (ConcurrentObservableCollection<Vorgang>?)OrderTask.Result;
             //OrderTask.PropertyChanged += OnaddOrderAsync;
 
-            LoadDataSync();
+            
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
-                                     
+            LoadDataSync();
         }
 
         private async void OnaddOrderAsync(object? sender, PropertyChangedEventArgs e)
@@ -350,24 +350,15 @@ namespace Lieferliste_WPF.ViewModels
 
         public void LoadDataSync()
         {
-            //var o = Dbctx.Vorgangs
-            //    .Include(m => m.ArbPlSapNavigation)
-            //    .Include(v => v.AidNavigation)
-            //    .ThenInclude(x => x.MaterialNavigation)
-            //    .Include(x => x.AidNavigation.DummyMatNavigation)
-            //    .Include(x => x.RidNavigation)
-            //    .Include(x => x.AidNavigation.Pro)
-            //    .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-            //    .OrderBy(x => x.SpaetEnd)
-            //    .ToList().AsParallel();
+
 
             var a = Dbctx.OrderRbs
                 .Include(v => v.Vorgangs)
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)
                 .Where(x => x.Abgeschlossen == false)
-                .ToList() .AsParallel();
-            List<Vorgang> ol = new List<Vorgang>();
+                .ToList();
+            HashSet<Vorgang> ol = new();
             foreach (var v in a)
             {
                 ol.Clear();
@@ -375,32 +366,19 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var x in v.Vorgangs.OrderBy(x => x.SpaetEnd))
                 {                  
                     ol.Add(x);
-                    if (int.TryParse(x.ArbPlSap[..3], out int c))
-                    if (AppStatic.User.UserCosts.Any(y => y.CostId == c))                       
+                    if (x.ArbPlSap.Length >= 3)
                     {
-                            relev = true; 
+                        if (int.TryParse(x.ArbPlSap[..3], out int c))
+                            if (AppStatic.User.UserCosts.Any(y => y.CostId == c))
+                            {
+                                relev = true;
+                            }
                     }
                 }
                 if(relev) _orders.AddRange(ol.Where(x => x.Aktuell));
+                
             }          
         }
  
-
-        //public async Task<IViewModel> LoadDataAsnc()
-        //{
-        //    var o = await Dbctx.Vorgangs
-        //     .Include(m => m.ArbPlSapNavigation)
-        //     .Include(v => v.AidNavigation)
-        //     .ThenInclude(x => x.MaterialNavigation)
-        //     .Include(x => x.AidNavigation.DummyMatNavigation)
-        //     .Include(x => x.RidNavigation)
-        //     .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-        //     .OrderBy(x => x.SpaetEnd)
-        //     .ToListAsync().ConfigureAwait(false);
-
-        //    _orders.AddRange(o);
-        //    OrdersView.Refresh();
-        //    return this;
-        //}
     }
 }

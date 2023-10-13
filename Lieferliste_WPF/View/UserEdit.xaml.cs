@@ -19,7 +19,7 @@ namespace Lieferliste_WPF.View
     /// <summary>
     /// Interaction logic for UserEdit.xaml
     /// </summary>
-    public partial class UserEdit : Page
+    public partial class UserEdit : Grid
     {
         public bool IsLoading { get; set; }
         public string Ident { get; set; }

@@ -26,7 +26,7 @@ namespace Lieferliste_WPF.View
     /// <summary>
     /// Interaction logic for MachinePlan.xaml
     /// </summary>
-    public partial class MachinePlan : Page
+    public partial class MachinePlan : Grid
     {
         
         public MachinePlan()
