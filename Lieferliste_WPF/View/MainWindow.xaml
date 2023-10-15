@@ -8,6 +8,7 @@
     xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
     xmlns:util="clr-namespace:El2Utilities.Utils;assembly=El2Utilities"
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
+    xmlns:local="clr-namespace:Lieferliste_WPF.View"
     xmlns:dd="urn:gong-wpf-dragdrop"
     mc:Ignorable="av"
     x:Class="Lieferliste_WPF.View.MainWindow"
@@ -21,9 +22,10 @@
         <conv:PSP_Converter x:Key="psp-converter"/>
         <conv:TTNR_Converter x:Key="ttnr-converter"/>
         <cmd:ELCommands x:Key="elCmd"/>
+        <vm:MainWindowViewModel x:Key="mainVm"/>
 
 
-                <!--<Style TargetType="{x:Type ContentControl}">
+        <!--<Style TargetType="{x:Type ContentControl}">
                     <Setter Property="ContentTemplate" Value="{StaticResource TabContentTemplate}" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsLoading}" Value="True">
@@ -155,11 +157,7 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
  
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="{Binding CloseCommand}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
+ 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>
@@ -329,51 +327,48 @@
             </ToolBarTray>
 
         </DockPanel>
-        <TabControl x:Name="TbControl" Grid.Row="1" AllowDrop="True" HorizontalAlignment="Stretch"
-                   ItemsSource="{Binding TabTitles}" 
-                    MouseDown="TbControl_MouseDown"
-                    dd:DragDrop.IsDragSource="True"
-                    dd:DragDrop.IsDropTarget="True"
-                    dd:DragDrop.DropHandler="{Binding}"
-                    dd:DragDrop.UseDefaultDragAdorner="True">
-            <TabControl.Resources>
-      
-                <Style TargetType="{x:Type TabItem}">
+        <local:CloseableTabControl ItemsSource="{Binding TabTitles}" Grid.Row="1" SelectedIndex="{Binding SelectedTab}">
+            <local:CloseableTabControl.ItemContainerStyle>
+                <Style TargetType="local:CloseableTabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                    <Setter Property="CloseCommand" Value="{Binding DataContext.TabCloseCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                     <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type TabItem}">
-                                <StackPanel Orientation="Horizontal">
-                                <Grid>
-                                    <Border Name="Border" Background="#FF6E6C67" Margin="2,2,-8,0"
-                                            BorderBrush="Black" BorderThickness="1,1,1,1" CornerRadius="10">
+                            <ControlTemplate TargetType="{x:Type local:CloseableTabItem}">
+                                <Border x:Name="TaBorder" Width="auto" Height="auto"
+                      Background="LightGray" CornerRadius="4,4,0,0" Margin="0,2,3,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="20" />
+                                        </Grid.ColumnDefinitions>
                                         <ContentPresenter x:Name="ContentSite" ContentSource="Header"
-                                                          VerticalAlignment="Center" HorizontalAlignment="Left"
-                                                          Margin="2,2,12,2" RecognizesAccessKey="True"/>
-                                    </Border>
-                                    <Rectangle Height="10" Width="100" Margin="0,0,-10,0" Stroke="Black"
-                                               VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                                               StrokeThickness="0" Fill="#FFD4D0C8"/>
- 
-                                </Grid>
-                                    <Button x:Name="tabClose" Width="26" Height="26">
-                                        <Image Source="/Images/OrangeCross32.png" />
-                                    </Button>
-                                </StackPanel>
+                                                         VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                         Margin="2,2,12,2" RecognizesAccessKey="True"/>
+                                        <Button x:Name="CloseButton" Grid.Column="1" Width="26" Height="26"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Command="{TemplateBinding CloseCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=local:CloseableTabItem},Path=Header}"
+                            BorderThickness="0">
+                                            <Image Source="/Images/OrangeCross32.png" VerticalAlignment="Bottom" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter Property="FontWeight" Value="Bold" />
                                         <Setter TargetName="ContentSite" Property="Height" Value="30" />
-                                        <Setter TargetName="Border" Property="Background" Value="#FFD4D0C8" />
+                                        <Setter TargetName="TaBorder" Property="Background" Value="#FFD4D0C8" />
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="False">
-                                        <Setter TargetName="Border" Property="Background" Value="#FF6E6C67" />
+                                        <Setter TargetName="TaBorder" Property="Background" Value="#FF6E6C67" />
                                         <Setter TargetName="ContentSite" Property="Height" Value="20"/>
                                     </Trigger>
                                     <Trigger Property="IsMouseOver" Value="true">
                                         <Setter Property="FontWeight" Value="Bold" />
                                     </Trigger>
+
                                 </ControlTemplate.Triggers>
- 
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -386,8 +381,7 @@
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
-                    <Setter Property="Header" Value="{Binding Name}"/>
- 
+                    <Setter Property="Header" Value="{Binding Tag}"/>
                     <Setter Property="Background" Value="#FF6E6C67" />
                     <Setter Property="Height" Value="50" />
                     <Setter Property="Margin" Value="0" />
@@ -398,10 +392,11 @@
                     <Setter Property="HorizontalAlignment" Value="Right" />
                     <Setter Property="UseLayoutRounding" Value="False" />
                 </Style>
- 
-            </TabControl.Resources>
+            </local:CloseableTabControl.ItemContainerStyle>
+            <TabControl.Items>
+            </TabControl.Items>
+        </local:CloseableTabControl>
 
-        </TabControl>
         <StatusBar x:Name="sbar" Grid.Row="2"
            VerticalAlignment="Bottom" Background="Beige" >
 

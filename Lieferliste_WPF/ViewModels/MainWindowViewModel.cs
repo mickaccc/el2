@@ -1,25 +1,21 @@
-﻿using GongSolutions.Wpf.DragDrop;
+﻿using El2Utilities.Models;
+using El2Utilities.Utils;
+using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Interfaces;
-using El2UserControls;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.View;
 using Lieferliste_WPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using El2Utilities.Utils;
-using System.Collections.Generic;
-using System.Linq;
-using System;
-using El2Utilities.Models;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace Lieferliste_WPF.ViewModels
@@ -39,6 +35,19 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
         public NotifyTaskCompletion<Page?> LieferTask { get; private set; }
+        private int _selectedTab;
+        public int SelectedTab
+        {
+            get { return _selectedTab; }
+            set
+            {
+                if (_selectedTab != value)
+                {
+                    _selectedTab = value;
+                    NotifyPropertyChanged(() => SelectedTab);
+                }
+            }
+        }
         private delegate void LieferTaskCompletedEventHandler();
         private Dispatcher dispatcher = Application.Current.Dispatcher;
         private static int _onlines;
@@ -95,11 +104,14 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnTabCloseExecuted(object obj)
         {
-            if (obj is Grid o)
+            if (obj is String o)
             {
-                var t = TabTitles.FirstOrDefault(x => x.Name == o.Name);
+                var t = TabTitles.FirstOrDefault(x => x.Tag.ToString() == o);
                 if (t != null)
+                {
                     TabTitles.Remove(t);
+                    SelectedTab = TabTitles.Count;
+                }
             }
         }
 
@@ -108,17 +120,18 @@ namespace Lieferliste_WPF.ViewModels
 
             var me = new MachineEdit()
             {
-                Name = ContentTitle.MachineEdit
+                Tag = ContentTitle.MachineEdit
   
             };
             TabTitles.Add(me);
+            SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenMachineMgmtCanExecute(object arg)
         {          
             return PermissionsProvider.GetInstance().GetUserPermission("MA00") &&
-                TabTitles.All(x => x.Name != ContentTitle.MachineEdit) &&
-                WindowTitles.All(x => x.Name != ContentTitle.MachineEdit);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit);
         }
 
         private void OnOpenRoleMgmtExecuted(object obj)
@@ -126,16 +139,17 @@ namespace Lieferliste_WPF.ViewModels
 
             var re = new RoleEdit()
             {
-                Name = ContentTitle.RoleEdit
+                Tag = ContentTitle.RoleEdit
             };
             TabTitles.Add(re);
+            SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
-                TabTitles.All(x => x.Name != ContentTitle.RoleEdit) &&
-                WindowTitles.All(x => x.Name != ContentTitle.RoleEdit);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
         }
 
         private void OnOpenUserMgmtExecuted(object obj)
@@ -143,17 +157,17 @@ namespace Lieferliste_WPF.ViewModels
 
             var ue = new UserEdit()
             {
-                Name = ContentTitle.UserEdit
+                Tag = ContentTitle.UserEdit
             };
             TabTitles.Add(ue);
-
+            SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenUserMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("UM00") &&
-                TabTitles.All(x => x.Name != ContentTitle.UserEdit) &&
-                WindowTitles.All(x => x.Name != ContentTitle.UserEdit);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.UserEdit) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.UserEdit);
         }
 
 
@@ -162,17 +176,17 @@ namespace Lieferliste_WPF.ViewModels
 
             var sett = new Settings()
             {
-                Name = ContentTitle.Settings
+                Tag = ContentTitle.Settings
             };
             TabTitles.Add(sett);
-
+            SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenSettingsCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
-                TabTitles.All(x => x.Name != ContentTitle.Settings) &&
-                WindowTitles.All(x => x.Name != ContentTitle.Settings);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Settings) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Settings);
         }
 
         private void OnOpenMachinePlanExecuted(object obj)
@@ -180,34 +194,35 @@ namespace Lieferliste_WPF.ViewModels
 
             var mp = new MachinePlan
             {
-                Name = ContentTitle.Planning
+                Tag = ContentTitle.Planning
             };
             TabTitles.Add(mp);
+            SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
-                TabTitles.All(x => x.Name != ContentTitle.Planning) &&
-                WindowTitles.All(x => x.Name != ContentTitle.Planning);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Planning) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Planning);
         }
 
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("LIE00") &&
-                TabTitles.All(x => x.Name != ContentTitle.Deliverylist) &&
-                WindowTitles.All(x => x.Name != ContentTitle.Deliverylist);
+                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist) &&
+                WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist);
         }
         private void OnOpenLieferlisteExecuted(object obj)
         {
        
-                var ll = new Lieferliste()
-                {
-                    Name = ContentTitle.Deliverylist
-                };
-                TabTitles.Add(ll);
- 
-            
+            var ll = new Lieferliste()
+            {
+                Tag = ContentTitle.Deliverylist
+            };
+            TabTitles.Add(ll);
+            SelectedTab = TabTitles.Count;
+
             //LieferTask = new NotifyTaskCompletion<Page?>(OnLoadAsync(ll));
 
             //var ll = Dispatcher.BeginInvoke( DispatcherPriority.Normal, new LieferTaskCompletedEventHandler(OnComplete));
@@ -219,7 +234,7 @@ namespace Lieferliste_WPF.ViewModels
             //};
             //TaskComplete = ll.TaskCompletion;
             //TaskComplete.PropertyChanged += TaskChanged;
-                     
+
         }
 
         private void TaskChanged(object? sender, PropertyChangedEventArgs e)
@@ -231,15 +246,6 @@ namespace Lieferliste_WPF.ViewModels
                 //}
             
         }
-
-        private static async Task<Page?> OnLoadAsync(Page view)
-        {
-
-            IViewModel vm = (IViewModel)view.DataContext;
-            vm.LoadDataAsnc();
-            return (Page?)vm;
-        }
-
 
 
         #endregion
@@ -307,10 +313,10 @@ namespace Lieferliste_WPF.ViewModels
         {
             public const string Settings = "Einstellungen";
             public const string Deliverylist = "Lieferliste";
-            public const string Planning = "Teamleiter_Zuteilung";
-            public const string RoleEdit = "Rollen_Management";
-            public const string MachineEdit = "Maschinen_Management";
-            public const string UserEdit = "User_Managment";
+            public const string Planning = "Teamleiter Zuteilung";
+            public const string RoleEdit = "Rollen Management";
+            public const string MachineEdit = "Maschinen Management";
+            public const string UserEdit = "User Managment";
 
         }
 

@@ -16,6 +16,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.RightsManagement;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -52,7 +53,8 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand? _filterCommand;
         private string _searchFilterText = string.Empty;
         private CmbFilter _cmbFilter;
-        public NotifyTaskCompletion<ObservableCollection<Vorgang>>? OrderTask { get; private set; }
+        private static object _lock = new object();
+        public NotifyTaskCompletion<HashSet<Vorgang>>? OrderTask { get; private set; }
         
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
 
@@ -87,10 +89,6 @@ namespace Lieferliste_WPF.ViewModels
         
         public LieferViewModel()
         {
-            //OrderTask = new NotifyTaskCompletion<ObservableCollection<Vorgang>>(LoadDataAsync());
-            //_orders = (ConcurrentObservableCollection<Vorgang>?)OrderTask.Result;
-            //OrderTask.PropertyChanged += OnaddOrderAsync;
-
             
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
@@ -98,9 +96,10 @@ namespace Lieferliste_WPF.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
-            LoadDataSync();
+            
+            LoadDataAsync();           
         }
-
+       
         private async void OnaddOrderAsync(object? sender, PropertyChangedEventArgs e)
         {
 
@@ -301,8 +300,7 @@ namespace Lieferliste_WPF.ViewModels
                 OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
                 var uiContext = SynchronizationContext.Current;
                 uiContext?.Send(x => OrdersView.Refresh(), null);
-            }
-            
+            }          
         } 
         #endregion
         private string Translate()
@@ -330,7 +328,7 @@ namespace Lieferliste_WPF.ViewModels
             
         }
 
-        public async Task LoadDataAsync()
+        public async Task LoadDataAsync2()
         {
 
             var  o = await Dbctx.Vorgangs
@@ -348,10 +346,13 @@ namespace Lieferliste_WPF.ViewModels
         }
 
 
-        public void LoadDataSync()
+        public async void LoadDataAsync()
         {
-
-
+            HashSet<Vorgang> result = new();
+            _ = result.OrderBy(x => x.SpaetEnd);
+            BindingOperations.EnableCollectionSynchronization(_orders, _lock);
+            await Task.Factory.StartNew(() =>
+            {
             var a = Dbctx.OrderRbs
                 .Include(v => v.Vorgangs)
                 .Include(m => m.MaterialNavigation)
@@ -359,25 +360,33 @@ namespace Lieferliste_WPF.ViewModels
                 .Where(x => x.Abgeschlossen == false)
                 .ToList();
             HashSet<Vorgang> ol = new();
-            foreach (var v in a)
-            {
-                ol.Clear();
-                bool relev = false;
-                foreach (var x in v.Vorgangs.OrderBy(x => x.SpaetEnd))
-                {                  
-                    ol.Add(x);
-                    if (x.ArbPlSap.Length >= 3)
+                foreach (var v in a)
+                {
+                    ol.Clear();
+                    bool relev = false;
+                    foreach (var x in v.Vorgangs)
                     {
-                        if (int.TryParse(x.ArbPlSap[..3], out int c))
-                            if (AppStatic.User.UserCosts.Any(y => y.CostId == c))
-                            {
-                                relev = true;
-                            }
+                        ol.Add(x);
+                        if (x.ArbPlSap.Length >= 3)
+                        {
+                            if (int.TryParse(x.ArbPlSap[..3], out int c))
+                                if (AppStatic.User.UserCosts.Any(y => y.CostId == c))
+                                {
+                                    relev = true;
+                                }
+                        }
+                    }
+                    if (relev)
+                    {
+                        foreach (var r in ol.Where(x => x.Aktuell))
+                        {
+                            result.Add(r);
+                        }
                     }
                 }
-                if(relev) _orders.AddRange(ol.Where(x => x.Aktuell));
-                
-            }          
+                _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
+            });
+            
         }
  
     }

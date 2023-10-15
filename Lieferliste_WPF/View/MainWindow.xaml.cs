@@ -20,7 +20,7 @@
         public MainWindow()
         {
             InitializeComponent();
-            TbControl.SelectedIndex = 0;
+
 
         }
 

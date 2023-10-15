@@ -109,8 +109,8 @@
                            Text="{Binding Aid, ElementName=luc}" ToolTip="Auftragsnummer" Grid.ColumnSpan="2"  />
                 <TextBlock Grid.Column="3" Grid.Row="1" Name="txtVnr"  ToolTip="Vorgangsnummer" 
                      Text="{Binding Vnr, StringFormat=\{0:D4\},  ElementName=luc}" />
-                <TextBlock Grid.Column="7" Name="txtQuant" ToolTip="Auftragsmenge" 
-                     Text="{Binding Quantity, ElementName=luc}" />
+                <TextBlock Grid.Column="10" Name="txtQuant" ToolTip="Auftragsmenge" 
+                     Text="{Binding Quantity, ElementName=luc}" Grid.ColumnSpan="2" Margin="158,344,134,-339" Grid.Row="2" />
                 <TextBlock Grid.Column="8" Name="txtQuantYield" ToolTip="zurückgemeldete Menge"
                      Text="{Binding QuantityYield, ElementName=luc}" />
                 <TextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Name="txtVrgText" ToolTip="Vorgang Kurztext"  
@@ -163,7 +163,7 @@
                 </StackPanel>
                 <TextBlock Grid.Column="7" Name="txtEnd" 
                          ToolTip="Endtermin" Grid.Row="1" 
-                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
+                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\},ConverterCulture=de-AT}"
                          Background="{Binding EndDate, ElementName=luc, Converter={StaticResource DateLost}}"/>
                 <DatePicker Grid.Column="8" Grid.Row="1" Name="txtTerm" Language="de-DE" 
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Termin"

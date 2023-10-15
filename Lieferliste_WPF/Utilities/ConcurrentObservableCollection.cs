@@ -26,7 +26,7 @@ namespace Lieferliste_WPF.Utilities
 
         public void AddRange(IEnumerable<T> collection)
         {
-
+            if (collection == null) return;
             _suppressNotification = true;
             foreach (var item in collection)
             {
