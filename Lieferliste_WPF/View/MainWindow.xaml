@@ -413,7 +413,7 @@
                 <TextBlock><Run Text="Online"/></TextBlock>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding Onlines}" />
+                <TextBlock Text="{Binding OnlineTask.Result}" />
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <Image Source="/Images/machine-color.png" Width="16" Height="16"/>

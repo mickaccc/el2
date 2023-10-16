@@ -55,7 +55,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<WorkSap> WorkSaps { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["Lieferliste_WPF.Properties.Settings.ConnectionHome"].ConnectionString);
+        => optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["Lieferliste_WPF.Properties.Settings.ConnectionBosch"].ConnectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

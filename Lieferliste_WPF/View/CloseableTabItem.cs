@@ -9,7 +9,7 @@ using System.Windows.Controls;
 
 namespace Lieferliste_WPF.View
 {
-    class CloseableTabItem: TabItem
+    sealed class CloseableTabItem: TabItem
     {
         public static readonly DependencyProperty CloseCommandProperty = DependencyProperty.Register("CloseCommand", typeof(ICommand), typeof(CloseableTabItem), new PropertyMetadata(null));
         public ICommand CloseCommand

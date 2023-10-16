@@ -244,7 +244,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private static bool OnSaveCanExecute(object arg)
         {
-            Dbctx.ChangeTracker.DetectChanges();
+            
             return Dbctx.ChangeTracker.HasChanges() || _isNew;
         }
 

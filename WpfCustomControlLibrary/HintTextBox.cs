@@ -64,15 +64,7 @@ namespace WpfCustomControlLibrary
                new FrameworkPropertyMetadata(11.0,
                    FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-            TextProperty = DependencyProperty.Register(nameof(Text),
-                typeof(string), typeof(HintTextBox),
-                new FrameworkPropertyMetadata("",
-                   FrameworkPropertyMetadataOptions.AffectsMeasure));
-        }
-        public string Text
-        {
-            get => (string)GetValue(TextProperty); 
-            set => SetValue(TextProperty, value); 
+
         }
 
 
@@ -102,7 +94,6 @@ namespace WpfCustomControlLibrary
             return base.MeasureOverride(constraint);
         }
 
-        [Obsolete]
         private FormattedText GetFormattedText()
         {
             return
@@ -111,7 +102,8 @@ namespace WpfCustomControlLibrary
                 , FlowDirection.LeftToRight
                 , new Typeface("Arial")
                 , this.FontSize
-                , Brushes.Black);
+                , Brushes.Black
+                , VisualTreeHelper.GetDpi(this).PixelsPerDip);
         }
         protected override void OnRender(DrawingContext drawingContext)
         {

@@ -35,6 +35,19 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
         public NotifyTaskCompletion<Page?> LieferTask { get; private set; }
+        private NotifyTaskCompletion<int> _onlineTask;
+        public NotifyTaskCompletion<int> OnlineTask
+        {
+            get { return _onlineTask; }
+            set
+            {
+                if (_onlineTask != value)
+                {
+                    _onlineTask = value;
+                    NotifyPropertyChanged(() => OnlineTask);
+                }
+            }
+        }
         private int _selectedTab;
         public int SelectedTab
         {
@@ -273,7 +286,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
             
-            Onlines = Dbctx.Onlines.Count();
+            OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
         }
 
         public ObservableCollection<Grid> TabTitles

@@ -349,7 +349,6 @@ namespace Lieferliste_WPF.ViewModels
         public async void LoadDataAsync()
         {
             HashSet<Vorgang> result = new();
-            _ = result.OrderBy(x => x.SpaetEnd);
             BindingOperations.EnableCollectionSynchronization(_orders, _lock);
             await Task.Factory.StartNew(() =>
             {
