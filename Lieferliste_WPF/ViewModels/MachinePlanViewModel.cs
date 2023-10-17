@@ -66,35 +66,38 @@ namespace Lieferliste_WPF.ViewModels
 
         private static bool OnSaveCanExecute(object arg)
         {
+            using var Dbctx = ContextFactory.CreateDbContext();
             return Dbctx.ChangeTracker.HasChanges();
-            
+
         }
 
         private static void OnSaveExecuted(object obj)
         {
-            Dbctx.SaveChanges();
+            using var Dbctx = ContextFactory.CreateDbContext();
+                Dbctx.SaveChanges();
         }
 
         private void LoadData()
         {
- 
-            var qp = Dbctx.Vorgangs
+            using (var Dbctx = ContextFactory.CreateDbContext())
+            {
+                var qp = Dbctx.Vorgangs
                 .Include(x => x.AidNavigation)
                 .ThenInclude(x => x.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.ArbPlSapNavigation)
                 .Include(x => x.RidNavigation)
                 .Where(x => !x.AidNavigation.Fertig &&
-                !x.SysStatus.Contains("RÜCK") && 
+                !x.SysStatus.Contains("RÜCK") &&
                 !x.Text.ToUpper().Contains("AUFTRAG STARTEN"))
                 .ToList();
 
 
-            var work = Dbctx.WorkAreas
-                .Include(x => x.UserWorkAreas)
-                .Where(x => x.UserWorkAreas.Any(x => x.UserId.Equals(AppStatic.User.UserIdent)));
+                var work = Dbctx.WorkAreas
+                    .Include(x => x.UserWorkAreas)
+                    .Where(x => x.UserWorkAreas.Any(x => x.UserId.Equals(AppStatic.User.UserIdent)));
 
-            WorkAreas = new List<WorkArea>(work);
+                WorkAreas = new List<WorkArea>(work);
 
 
                 var re = Dbctx.Ressources
@@ -103,39 +106,40 @@ namespace Lieferliste_WPF.ViewModels
                     .Where(x => x.WorkArea != null).ToList();
 
                 var ress = re.Where(y => y.RessourceCostUnits.IntersectBy(AppStatic.User.UserCosts.Select(e => e.CostId), a => a.CostId).Any());
-                    
-               
+
+
                 foreach (var q in ress)
                 {
 
-                    PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty,this)
+                    PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty, this)
                     {
                         WorkArea = q.WorkArea,
                         CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
                         Description = q.Info ?? String.Empty,
- 
-                                                     
+
+
                     };
 
-                        List<Vorgang> VrgList = qp.FindAll(x => x.Rid == q.RessourceId);
-                            
-                        foreach (var vrg in VrgList)
-                        {
-                            if (vrg.VorgangId.Length > 0)
-                                plm.Processes?.Add(vrg);
-                        }
-                          
-                Machines.Add(plm);
+                    List<Vorgang> VrgList = qp.FindAll(x => x.Rid == q.RessourceId);
+
+                    foreach (var vrg in VrgList)
+                    {
+                        if (vrg.VorgangId.Length > 0)
+                            plm.Processes?.Add(vrg);
+                    }
+
+                    Machines.Add(plm);
+                }
+                List<Vorgang> list = new();
+                foreach (var m in Machines)
+                {
+                    list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID));
+                }
+                Priv_processes = list.FindAll(x => x.Rid == null)
+                    .ToObservableCollection();
+                Priv_parking = list.FindAll(x => x.Rid == -1)
+                    .ToObservableCollection();
             }
-            List<Vorgang> list = new();
-            foreach(var m in Machines)
-            {
-                list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID));
-            }
-            Priv_processes = list.FindAll(x => x.Rid == null)
-                .ToObservableCollection();
-            Priv_parking = list.FindAll(x => x.Rid == -1)
-                .ToObservableCollection();
         }
 
         
@@ -194,6 +198,7 @@ namespace Lieferliste_WPF.ViewModels
 
         internal void Exit()
         {
+            using var Dbctx = ContextFactory.CreateDbContext();
             Dbctx.SaveChanges();
         }
 

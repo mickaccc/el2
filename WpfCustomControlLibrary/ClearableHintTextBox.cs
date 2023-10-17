@@ -77,18 +77,7 @@ namespace WpfCustomControlLibrary
                 new FrameworkPropertyMetadata(11.0,
                     FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-             TextProperty = DependencyProperty.Register(nameof(Text),
-                 typeof(string), typeof(ClearableHintTextBox),
-                 new FrameworkPropertyMetadata("",
-                    FrameworkPropertyMetadataOptions.AffectsMeasure));
     }
-
-
-        public string Text
-        {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
-        }
 
 
         public new double FontSize
@@ -114,7 +103,7 @@ namespace WpfCustomControlLibrary
             return new Size(txt.Width+5, txt.Height+5);
         }
 
-        [Obsolete]
+
         private FormattedText GetFormattedText()
         {
             return
@@ -123,7 +112,8 @@ namespace WpfCustomControlLibrary
                 , FlowDirection.LeftToRight
                 , new Typeface("Arial")
                 , this.FontSize
-                , Brushes.Black);
+                , Brushes.Black
+                , VisualTreeHelper.GetDpi(this).PixelsPerDip);
         }
         protected override void OnRender(DrawingContext drawingContext)
         {

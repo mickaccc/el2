@@ -250,6 +250,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private static void OnSaveExecuted(object obj)
         {
+            using var Dbctx = ContextFactory.CreateDbContext();
             Dbctx.SaveChangesAsync();
         }
         private static bool OnSaveCanExecute(object arg)
@@ -257,6 +258,7 @@ namespace Lieferliste_WPF.ViewModels
 
             try
             {
+                using var Dbctx = ContextFactory.CreateDbContext();
                 return Dbctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
@@ -331,18 +333,18 @@ namespace Lieferliste_WPF.ViewModels
         public async Task LoadDataAsync2()
         {
 
-            var  o = await Dbctx.Vorgangs
-            .Include(m => m.ArbPlSapNavigation)
-            .Include(v => v.AidNavigation)
-            .ThenInclude(x => x.MaterialNavigation)
-            .Include(x => x.AidNavigation.DummyMatNavigation)
-            .Include(x => x.RidNavigation)
-            .Include(x => x.AidNavigation.Pro)
-            .Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-            .OrderBy(x => x.SpaetEnd)
-            .ToListAsync().ConfigureAwait(false);
+            //var  o = await Dbctx.Vorgangs
+            //.Include(m => m.ArbPlSapNavigation)
+            //.Include(v => v.AidNavigation)
+            //.ThenInclude(x => x.MaterialNavigation)
+            //.Include(x => x.AidNavigation.DummyMatNavigation)
+            //.Include(x => x.RidNavigation)
+            //.Include(x => x.AidNavigation.Pro)
+            //.Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
+            //.OrderBy(x => x.SpaetEnd)
+            //.ToListAsync().ConfigureAwait(false);
 
-            _orders.AddRange(o);           
+            //_orders.AddRange(o);           
         }
 
 
@@ -352,38 +354,41 @@ namespace Lieferliste_WPF.ViewModels
             BindingOperations.EnableCollectionSynchronization(_orders, _lock);
             await Task.Factory.StartNew(() =>
             {
-            var a = Dbctx.OrderRbs
-                .Include(v => v.Vorgangs)
-                .Include(m => m.MaterialNavigation)
-                .Include(d => d.DummyMatNavigation)
-                .Where(x => x.Abgeschlossen == false)
-                .ToList();
-            HashSet<Vorgang> ol = new();
-                foreach (var v in a)
+                using (var Dbctx = ContextFactory.CreateDbContext())
                 {
-                    ol.Clear();
-                    bool relev = false;
-                    foreach (var x in v.Vorgangs)
+                    var a = Dbctx.OrderRbs
+                        .Include(v => v.Vorgangs)
+                        .Include(m => m.MaterialNavigation)
+                        .Include(d => d.DummyMatNavigation)
+                        .Where(x => x.Abgeschlossen == false)
+                        .ToList();
+                    HashSet<Vorgang> ol = new();
+                    foreach (var v in a)
                     {
-                        ol.Add(x);
-                        if (x.ArbPlSap.Length >= 3)
+                        ol.Clear();
+                        bool relev = false;
+                        foreach (var x in v.Vorgangs)
                         {
-                            if (int.TryParse(x.ArbPlSap[..3], out int c))
-                                if (AppStatic.User.UserCosts.Any(y => y.CostId == c))
-                                {
-                                    relev = true;
-                                }
+                            ol.Add(x);
+                            if (x.ArbPlSap.Length >= 3)
+                            {
+                                if (int.TryParse(x.ArbPlSap[..3], out int c))
+                                    if (AppStatic.User.UserCosts.Any(y => y.CostId == c))
+                                    {
+                                        relev = true;
+                                    }
+                            }
+                        }
+                        if (relev)
+                        {
+                            foreach (var r in ol.Where(x => x.Aktuell))
+                            {
+                                result.Add(r);
+                            }
                         }
                     }
-                    if (relev)
-                    {
-                        foreach (var r in ol.Where(x => x.Aktuell))
-                        {
-                            result.Add(r);
-                        }
-                    }
+                    _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
                 }
-                _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
             });
             
         }

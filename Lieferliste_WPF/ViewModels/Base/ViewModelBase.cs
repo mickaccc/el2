@@ -3,6 +3,8 @@
     using El2Utilities.Models;
     using Lieferliste_WPF.Interfaces;
     using Lieferliste_WPF.Utilities;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Internal;
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
@@ -11,8 +13,8 @@
 
     public class ViewModelBase : INotifyPropertyChanged
     {
-        protected static DB_COS_LIEFERLISTE_SQLContext Dbctx { get; } = new();
-        
+
+        public static MyDbContextFactory ContextFactory { get; }  = new MyDbContextFactory();
 
         protected void OnChanged(string propertyName)
         {

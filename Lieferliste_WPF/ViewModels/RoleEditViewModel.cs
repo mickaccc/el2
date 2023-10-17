@@ -77,12 +77,15 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                if (Dbctx.ChangeTracker.HasChanges())
+                using (var Dbctx = ContextFactory.CreateDbContext())
                 {
-                    MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
-                        , MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
+                    if (Dbctx.ChangeTracker.HasChanges())
+                    {
+                        MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
+                            , MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
 
+                    }
                 }
                 ob.Close();
                
@@ -98,13 +101,16 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (_roleCV.CurrentItem is Role role)
             {
-                var inserts = PermissionsInter.ExceptBy(role.PermissionRoles.Select(x => x.PermissionKey), y => y.PermissionKey);
-                var removes = role.PermissionRoles.ExceptBy(PermissionsInter.Select(x => x.PermissionKey), y => y.PermissionKey);
-                if (inserts.Any()) Dbctx.PermissionRoles.AddRange(inserts);
-                if (removes.Any()) Dbctx.PermissionRoles.RemoveRange(removes);
+                using (var Dbctx = ContextFactory.CreateDbContext())
+                {
+                    var inserts = PermissionsInter.ExceptBy(role.PermissionRoles.Select(x => x.PermissionKey), y => y.PermissionKey);
+                    var removes = role.PermissionRoles.ExceptBy(PermissionsInter.Select(x => x.PermissionKey), y => y.PermissionKey);
+                    if (inserts.Any()) Dbctx.PermissionRoles.AddRange(inserts);
+                    if (removes.Any()) Dbctx.PermissionRoles.RemoveRange(removes);
 
-                Dbctx.SaveChanges();
-                _hasChanges = false;
+                    Dbctx.SaveChanges();
+                    _hasChanges = false;
+                }
             }
         }
 
@@ -154,15 +160,18 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            Roles = Dbctx.Roles
+            using (var Dbctx = ContextFactory.CreateDbContext())
+            {
+                Roles = Dbctx.Roles
                 .Include(x => x.PermissionRoles)
                 .ThenInclude(x => x.PermissionKeyNavigation)
                 .ToObservableCollection();
 
 
-            var p = Dbctx.Permissions.ToList();
+                var p = Dbctx.Permissions.ToList();
 
-            _permissionsAll.AddRange(p);
+                _permissionsAll.AddRange(p);
+            }
         }
 
         public void DragOver(IDropInfo dropInfo)

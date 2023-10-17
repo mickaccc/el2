@@ -168,12 +168,15 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                if (Dbctx.ChangeTracker.HasChanges())
+                using (var Dbctx = ContextFactory.CreateDbContext())
                 {
-                    MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
-                        , MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
+                    if (Dbctx.ChangeTracker.HasChanges())
+                    {
+                        MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
+                            , MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
 
+                    }
                 }
                 ob.Close();
                
@@ -193,11 +196,15 @@ namespace Lieferliste_WPF.ViewModels
         private void OnDeleteExecuted(object obj)
         {
             var u = _usrCV.CurrentItem;
+
             if (u is User usr)
-            { 
-                Users?.Remove(usr);
-                Dbctx.Users.Remove(usr);
-                OnSaveExecuted(usr);
+            {
+                using (var Dbctx = ContextFactory.CreateDbContext())
+                {
+                    Users?.Remove(usr);
+                    Dbctx.Users.Remove(usr);
+                    OnSaveExecuted(usr);
+                }
             }
         }
 
@@ -220,32 +227,38 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            if(_isNew)
+            if (_isNew)
             {
-                var user = Users.Except(Dbctx.Users).FirstOrDefault();
-                if (user != null)
+                using (var Dbctx = ContextFactory.CreateDbContext())
                 {
-                    if(user.UsrName.IsNullOrEmpty()) ValidName = 1;
-                    if(user.UserIdent.IsNullOrEmpty() || Dbctx.Users.Any(x => x.UserIdent == user.UserIdent)) ValidIdent = 1;
-                    if(ValidName == 1 || ValidIdent == 1)
+                    var user = Users.Except(Dbctx.Users).FirstOrDefault();
+                    if (user != null)
                     {
-                        MessageBox.Show("Speichern wegen ungültigen Daten nicht möglich", "Speicherfehler", 
-                            MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
+                        if (user.UsrName.IsNullOrEmpty()) ValidName = 1;
+                        if (user.UserIdent.IsNullOrEmpty() || Dbctx.Users.Any(x => x.UserIdent == user.UserIdent)) ValidIdent = 1;
+                        if (ValidName == 1 || ValidIdent == 1)
+                        {
+                            MessageBox.Show("Speichern wegen ungültigen Daten nicht möglich", "Speicherfehler",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        Dbctx.Users.Add((User)user);
                     }
-                    Dbctx.Users.Add((User)user);
+                }
+                using (var Dbctx = ContextFactory.CreateDbContext())
+                {
+                    Dbctx.SaveChangesAsync();
+                    _isNew = false;
+                    ValidIdent = 0;
+                    ValidName = 0;
                 }
             }
-            Dbctx.SaveChangesAsync();
-            _isNew = false;
-            ValidIdent = 0;
-            ValidName = 0;
         }
 
         private static bool OnSaveCanExecute(object arg)
         {
-            
-            return Dbctx.ChangeTracker.HasChanges() || _isNew;
+            using var Dbctx = ContextFactory.CreateDbContext();
+                return Dbctx.ChangeTracker.HasChanges() || _isNew;
         }
 
 
@@ -263,6 +276,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
+            using var Dbctx = ContextFactory.CreateDbContext();
             Users = Dbctx.Users
                 .Include(x => x.UserWorkAreas)
                 .Include(y => y.UserRoles)

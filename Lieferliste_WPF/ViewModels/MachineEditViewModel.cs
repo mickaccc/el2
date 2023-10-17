@@ -28,7 +28,7 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand textSearchCommand;
         private string _searchFilterText = String.Empty;
         private static bool _isLocked = false;
-
+        private readonly IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
         public static ObservableCollection<Ressource>? Ressources { get; private set; }
         public static ObservableCollection<WorkArea> WorkAreas { get; private set; } = new();
         public MachineEditViewModel()
@@ -101,12 +101,15 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                if (Dbctx.ChangeTracker.HasChanges())
+                using (var Dbctx = _dbContextFactory.CreateDbContext())
                 {
-                    MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
-                        , MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
+                    if (Dbctx.ChangeTracker.HasChanges())
+                    {
+                        MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
+                            , MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
 
+                    }
                 }
                 ob.Close();
                
@@ -120,29 +123,33 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
+            using var Dbctx = _dbContextFactory.CreateDbContext();
             Dbctx.SaveChanges();
             
         }
 
         private bool OnSaveCanExecute(object arg)
         {
+            using var Dbctx = _dbContextFactory.CreateDbContext();
             return Dbctx.ChangeTracker.HasChanges();
         }
 
         private void LoadData()
         {
+            using (var Dbctx = _dbContextFactory.CreateDbContext())
+            {
+                Ressources = Dbctx.Ressources
+                    .Include(y => y.RessourceCostUnits)
+                    .Include(x => x.WorkArea)
+                    .Where(y => y.Inventarnummer != null)
+                    .ToObservableCollection();
 
-            Ressources = Dbctx.Ressources
-                .Include(y => y.RessourceCostUnits)
-                .Include(x => x.WorkArea)
-                .Where(y => y.Inventarnummer != null)
-                .ToObservableCollection();
-
-            WorkAreas = Dbctx.WorkAreas
-                .OrderBy(x => x.Bereich)
-                .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
-                .ToObservableCollection();
-            WorkAreas.Insert(0, new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt"});
+                WorkAreas = Dbctx.WorkAreas
+                    .OrderBy(x => x.Bereich)
+                    .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
+                    .ToObservableCollection();
+                WorkAreas.Insert(0, new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" });
+            }
             
         }
 

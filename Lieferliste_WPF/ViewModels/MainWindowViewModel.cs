@@ -7,6 +7,7 @@ using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.View;
 using Lieferliste_WPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,6 +35,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMachineMgmtCommand { get; private set; }
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
+        private readonly IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
         public NotifyTaskCompletion<Page?> LieferTask { get; private set; }
         private NotifyTaskCompletion<int> _onlineTask;
         public NotifyTaskCompletion<int> OnlineTask
@@ -73,7 +75,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public MainWindowViewModel()
         {
-
+            AppStatic.SetContextFactory(_dbContextFactory);
             TabTitles = new ObservableCollection<Grid>();
             WindowTitles = new List<Grid>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
@@ -88,21 +90,27 @@ namespace Lieferliste_WPF.ViewModels
             RegisterMe();
             SetTimer();
         }
+        public MainWindowViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
+        {
+            _dbContextFactory = contextFactory;         
+        }
 
         #region Commands
-        private static void OnCloseExecuted(object obj)
+        private void OnCloseExecuted(object obj)
         {
-            Dbctx.ChangeTracker.DetectChanges();
-            if (Dbctx.ChangeTracker.HasChanges())
+            using (var Dbctx = ContextFactory.CreateDbContext())
             {
-                var r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
-                    "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
+                Dbctx.ChangeTracker.DetectChanges();
+                if (Dbctx.ChangeTracker.HasChanges())
+                {
+                    var r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
+                        "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                    if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
+                }
+
+                var del = Dbctx.Onlines.Where(x => x.UserId.Equals(AppStatic.User.UserIdent)
+                 && x.PcId.Equals(AppStatic.PC)).ExecuteDelete();
             }
-
-           var del = Dbctx.Onlines.Where(x => x.UserId.Equals(AppStatic.User.UserIdent)
-            && x.PcId.Equals(AppStatic.PC)).ExecuteDelete();
-
         }
 
         private bool OnCloseCanExecute(object arg)
@@ -285,8 +293,8 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            
-            OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
+            using (var Dbctx = ContextFactory.CreateDbContext())
+                OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
         }
 
         public ObservableCollection<Grid> TabTitles
@@ -372,12 +380,14 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private static void RegisterMe()
+        private  void RegisterMe()
         {
-            using DB_COS_LIEFERLISTE_SQLContext db = new();
-            var onl = db.Onlines;
-            onl.Add(new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC,Login = DateTime.Now });
-            db.SaveChanges();
+            using (var db = ContextFactory.CreateDbContext())
+            {
+                var onl = db.Onlines;
+                onl.Add(new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC, Login = DateTime.Now });
+                db.SaveChanges();
+            }
         }
 
 

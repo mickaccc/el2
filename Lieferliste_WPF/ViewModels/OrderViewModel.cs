@@ -27,7 +27,8 @@ namespace Lieferliste_WPF.ViewModels
         #endregion
         public void LoadData(string AID)
         {
-            _order = Dbctx.OrderRbs
+            using var Dbctx = ContextFactory.CreateDbContext();
+                _order = Dbctx.OrderRbs
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)
                 .Include(v => v.Vorgangs)
