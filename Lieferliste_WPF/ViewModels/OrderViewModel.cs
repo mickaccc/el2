@@ -19,15 +19,19 @@ namespace Lieferliste_WPF.ViewModels
 
         private OrderRb? _order;
         private ConcurrentObservableCollection<Vorgang> _vorgangs = new();
+        private IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
         public OrderRb? Order { get; private set; }
         public ICollectionView VorgangCV { get; private set; }
 
         #region Constructor
-        public OrderViewModel() {} 
+        public OrderViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory) 
+        {
+            _dbContextFactory = dbContextFactory;
+        } 
         #endregion
         public void LoadData(string AID)
         {
-            using var Dbctx = ContextFactory.CreateDbContext();
+            using var Dbctx = _dbContextFactory.CreateDbContext();
                 _order = Dbctx.OrderRbs
                 .Include(m => m.MaterialNavigation)
                 .Include(d => d.DummyMatNavigation)

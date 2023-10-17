@@ -29,6 +29,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private static ICollectionView _roleCV;
         private static bool _hasChanges = false;
+        private IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
         public static ObservableCollection<Role>? Roles { get; private set; }
         
         public static ObservableCollection<Permission> PermissionsAvail { get; private set; } = new();
@@ -38,8 +39,9 @@ namespace Lieferliste_WPF.ViewModels
 
 
 
-        public RoleEditViewModel()
+        public RoleEditViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory)
         {
+            _dbContextFactory = dbContextFactory;
 
             LoadData();
 
@@ -77,7 +79,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                using (var Dbctx = ContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContextFactory.CreateDbContext())
                 {
                     if (Dbctx.ChangeTracker.HasChanges())
                     {
@@ -101,7 +103,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (_roleCV.CurrentItem is Role role)
             {
-                using (var Dbctx = ContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContextFactory.CreateDbContext())
                 {
                     var inserts = PermissionsInter.ExceptBy(role.PermissionRoles.Select(x => x.PermissionKey), y => y.PermissionKey);
                     var removes = role.PermissionRoles.ExceptBy(PermissionsInter.Select(x => x.PermissionKey), y => y.PermissionKey);
@@ -160,7 +162,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            using (var Dbctx = ContextFactory.CreateDbContext())
+            using (var Dbctx = _dbContextFactory.CreateDbContext())
             {
                 Roles = Dbctx.Roles
                 .Include(x => x.PermissionRoles)

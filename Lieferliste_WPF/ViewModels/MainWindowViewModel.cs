@@ -73,9 +73,10 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<Grid> _tabTitles;
         private List<Grid> _windowTitles;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
         {
-            AppStatic.SetContextFactory(_dbContextFactory);
+            _dbContextFactory = contextFactory;
+            
             TabTitles = new ObservableCollection<Grid>();
             WindowTitles = new List<Grid>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
@@ -90,15 +91,11 @@ namespace Lieferliste_WPF.ViewModels
             RegisterMe();
             SetTimer();
         }
-        public MainWindowViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
-        {
-            _dbContextFactory = contextFactory;         
-        }
-
+ 
         #region Commands
         private void OnCloseExecuted(object obj)
         {
-            using (var Dbctx = ContextFactory.CreateDbContext())
+            using (var Dbctx = _dbContextFactory.CreateDbContext())
             {
                 Dbctx.ChangeTracker.DetectChanges();
                 if (Dbctx.ChangeTracker.HasChanges())
@@ -293,7 +290,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            using (var Dbctx = ContextFactory.CreateDbContext())
+            using (var Dbctx = _dbContextFactory.CreateDbContext())
                 OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
         }
 
@@ -382,7 +379,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private  void RegisterMe()
         {
-            using (var db = ContextFactory.CreateDbContext())
+            using (var db = _dbContextFactory.CreateDbContext())
             {
                 var onl = db.Onlines;
                 onl.Add(new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC, Login = DateTime.Now });

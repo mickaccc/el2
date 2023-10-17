@@ -1,5 +1,6 @@
 ﻿using El2Utilities.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Linq;
 using System.Windows;
@@ -7,21 +8,17 @@ using System.Windows;
 namespace El2Utilities.Utils
 
 {
-    public static class AppStatic
+    public class AppStatic : IGlobals
     {
         public static User User { get; private set; }
-        public static String PC { get; }
+        public static String PC { get; private set; }
         private static IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext>? _contextFactory;
-        static AppStatic()
+        public AppStatic(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
         {
-            
+            _contextFactory = contextFactory;
             PC = Environment.MachineName;
             LoadData();
             User ??= new();
-        }
-        public static void SetContextFactory(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
-        {
-            _contextFactory = contextFactory;
         }
         private static void LoadData()
         {

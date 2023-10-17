@@ -1,7 +1,10 @@
 ﻿namespace Lieferliste_WPF.View
 {
+    using El2Utilities.Models;
     using Lieferliste_WPF;
     using Lieferliste_WPF.ViewModels;
+    using Microsoft.EntityFrameworkCore.Internal;
+    using Microsoft.EntityFrameworkCore;
     using System;
     using System.Runtime.Versioning;
     using System.Windows;
@@ -17,11 +20,10 @@
     public partial class MainWindow : Window
     {
         [SupportedOSPlatform("windows7.0")]
-        public MainWindow()
+        public MainWindow(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
         {
             InitializeComponent();
-
-
+            DataContext = new MainWindowViewModel(contextFactory);
         }
 
         #region Events

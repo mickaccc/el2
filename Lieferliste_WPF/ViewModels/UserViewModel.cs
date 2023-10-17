@@ -41,7 +41,7 @@ namespace Lieferliste_WPF.ViewModels
         private static HashSet<Role> Roles { get; set; } = new();
         private static HashSet<WorkArea> WorkAreas { get; set; } = new();
         private static HashSet<Costunit> CostUnits { get; set; } = new();
-
+        private IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
         internal CollectionViewSource roleSource { get; private set; } = new();
         internal CollectionViewSource workSource { get; private set; } = new();
         internal CollectionViewSource costSource { get; private set; } = new();
@@ -66,9 +66,9 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public UserViewModel()
+        public UserViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory)
         {
-            
+            _dbContextFactory = dbContextFactory;
 
             LoadData();
             _usrCV = CollectionViewSource.GetDefaultView(Users);
@@ -168,7 +168,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                using (var Dbctx = ContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContextFactory.CreateDbContext())
                 {
                     if (Dbctx.ChangeTracker.HasChanges())
                     {
@@ -199,7 +199,7 @@ namespace Lieferliste_WPF.ViewModels
 
             if (u is User usr)
             {
-                using (var Dbctx = ContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContextFactory.CreateDbContext())
                 {
                     Users?.Remove(usr);
                     Dbctx.Users.Remove(usr);
@@ -229,7 +229,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (_isNew)
             {
-                using (var Dbctx = ContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContextFactory.CreateDbContext())
                 {
                     var user = Users.Except(Dbctx.Users).FirstOrDefault();
                     if (user != null)
@@ -245,7 +245,7 @@ namespace Lieferliste_WPF.ViewModels
                         Dbctx.Users.Add((User)user);
                     }
                 }
-                using (var Dbctx = ContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContextFactory.CreateDbContext())
                 {
                     Dbctx.SaveChangesAsync();
                     _isNew = false;
@@ -255,9 +255,9 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private static bool OnSaveCanExecute(object arg)
+        private bool OnSaveCanExecute(object arg)
         {
-            using var Dbctx = ContextFactory.CreateDbContext();
+            using var Dbctx = _dbContextFactory.CreateDbContext();
                 return Dbctx.ChangeTracker.HasChanges() || _isNew;
         }
 
@@ -276,7 +276,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            using var Dbctx = ContextFactory.CreateDbContext();
+            using var Dbctx = _dbContextFactory.CreateDbContext();
             Users = Dbctx.Users
                 .Include(x => x.UserWorkAreas)
                 .Include(y => y.UserRoles)

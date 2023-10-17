@@ -34,7 +34,7 @@
                     </Style.Triggers>
                 </Style>-->
 
-            <!--<DataTemplate x:Key="TabItemHeaderTemplate">
+        <!--<DataTemplate x:Key="TabItemHeaderTemplate">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Title}"/>
                     <Image Source="/Images/OrangeCross32.png"/>
@@ -60,7 +60,7 @@
             </Style.Triggers>
             </Style>-->
 
-            <Style x:Key="{x:Type ProgressBar}"
+        <Style x:Key="{x:Type ProgressBar}"
        TargetType="{x:Type ProgressBar}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -153,11 +153,7 @@
 
     </Window.Resources>
 
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
- 
- 
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>

@@ -32,7 +32,7 @@ namespace Lieferliste_WPF.ViewModels
         public List<PlanMachine> Machines { get; }
         private ObservableCollection<Vorgang>? Priv_processes { get; set; }
         private ObservableCollection<Vorgang>? Priv_parking { get; set; }
-        
+        private IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
         private readonly ICollectionView _ressCV;
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
@@ -44,9 +44,10 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
  
-        public MachinePlanViewModel() 
+        public MachinePlanViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory) 
         {
-            
+            _dbContextFactory = dbContextFactory;
+
             Machines = new List<PlanMachine>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
@@ -64,22 +65,22 @@ namespace Lieferliste_WPF.ViewModels
         
         }
 
-        private static bool OnSaveCanExecute(object arg)
+        private bool OnSaveCanExecute(object arg)
         {
-            using var Dbctx = ContextFactory.CreateDbContext();
+            using var Dbctx = _dbContextFactory.CreateDbContext();
             return Dbctx.ChangeTracker.HasChanges();
 
         }
 
-        private static void OnSaveExecuted(object obj)
+        private void OnSaveExecuted(object obj)
         {
-            using var Dbctx = ContextFactory.CreateDbContext();
+            using var Dbctx = _dbContextFactory.CreateDbContext();
                 Dbctx.SaveChanges();
         }
 
         private void LoadData()
         {
-            using (var Dbctx = ContextFactory.CreateDbContext())
+            using (var Dbctx = _dbContextFactory.CreateDbContext())
             {
                 var qp = Dbctx.Vorgangs
                 .Include(x => x.AidNavigation)
@@ -198,7 +199,7 @@ namespace Lieferliste_WPF.ViewModels
 
         internal void Exit()
         {
-            using var Dbctx = ContextFactory.CreateDbContext();
+            using var Dbctx = _dbContextFactory.CreateDbContext();
             Dbctx.SaveChanges();
         }
 

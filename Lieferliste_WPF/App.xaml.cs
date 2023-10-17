@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using El2Utilities;
-using System.Windows;
-using El2Utilities.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using El2Utilities.Models;
+using El2Utilities.Utils;
+using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Properties;
+using Lieferliste_WPF.View;
+using Lieferliste_WPF.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.IO;
+using System.Windows;
 
 namespace Lieferliste_WPF
 {
@@ -18,12 +18,40 @@ namespace Lieferliste_WPF
     /// </summary>
     public partial class App : Application
     {
-        public static void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ServiceProvider { get; private set; }
+
+        public IConfiguration Configuration { get; private set; }
+
+        protected override void OnStartup(StartupEventArgs e)
         {
-            string defaultConnection = Settings.Default.ConnectionBosch;
+            var builder = new ConfigurationBuilder()
+             .SetBasePath(Directory.GetCurrentDirectory())
+             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            Configuration = builder.Build();
+
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection);
+
+            ServiceProvider = serviceCollection.BuildServiceProvider();
+
+            ServiceProvider.GetRequiredService<AppStatic>();
+            ServiceProvider.GetRequiredService<LieferViewModel>();
+
+            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+        }
+        public void ConfigureServices(IServiceCollection services)
+        {
+            string defaultConnection = Configuration.GetConnectionString("ConnectionHome");
             services.AddDbContextFactory<DB_COS_LIEFERLISTE_SQLContext>(
                 options =>
                     options.UseSqlServer(defaultConnection));
+
+ 
+            services.AddTransient(typeof(MainWindow));
+            services.AddSingleton<AppStatic>();
+            services.AddSingleton<LieferViewModel>();
            
         }
        

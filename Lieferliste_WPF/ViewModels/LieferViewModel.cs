@@ -54,6 +54,7 @@ namespace Lieferliste_WPF.ViewModels
         private string _searchFilterText = string.Empty;
         private CmbFilter _cmbFilter;
         private static object _lock = new object();
+        private IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
         public NotifyTaskCompletion<HashSet<Vorgang>>? OrderTask { get; private set; }
         
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
@@ -87,8 +88,9 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         
-        public LieferViewModel()
+        public LieferViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory)
         {
+            _dbContextFactory = dbContextFactory;
             
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
@@ -248,17 +250,17 @@ namespace Lieferliste_WPF.ViewModels
                 wnd.Show();
             }
         }
-        private static void OnSaveExecuted(object obj)
+        private void OnSaveExecuted(object obj)
         {
-            using var Dbctx = ContextFactory.CreateDbContext();
+            using var Dbctx = _dbContextFactory.CreateDbContext();
             Dbctx.SaveChangesAsync();
         }
-        private static bool OnSaveCanExecute(object arg)
+        private bool OnSaveCanExecute(object arg)
         {
 
             try
             {
-                using var Dbctx = ContextFactory.CreateDbContext();
+                using var Dbctx = _dbContextFactory.CreateDbContext();
                 return Dbctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
@@ -354,7 +356,7 @@ namespace Lieferliste_WPF.ViewModels
             BindingOperations.EnableCollectionSynchronization(_orders, _lock);
             await Task.Factory.StartNew(() =>
             {
-                using (var Dbctx = ContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContextFactory.CreateDbContext())
                 {
                     var a = Dbctx.OrderRbs
                         .Include(v => v.Vorgangs)

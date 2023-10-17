@@ -14,8 +14,6 @@
     public class ViewModelBase : INotifyPropertyChanged
     {
 
-        public static MyDbContextFactory ContextFactory { get; }  = new MyDbContextFactory();
-
         protected void OnChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
