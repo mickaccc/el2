@@ -20,10 +20,10 @@
     public partial class MainWindow : Window
     {
         [SupportedOSPlatform("windows7.0")]
-        public MainWindow(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
+        public MainWindow(MainWindowViewModel viewmodel)
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel(contextFactory);
+            DataContext = viewmodel;
         }
 
         #region Events

@@ -12,7 +12,7 @@ namespace Lieferliste_WPF.Interfaces
 {
     internal interface IViewModel
     {
-
-        public Task<IViewModel> LoadDataAsnc();
+        public string Key { get; }
+        public string Title { get; }
     }
 }

@@ -36,14 +36,21 @@ namespace Lieferliste_WPF
             ServiceProvider = serviceCollection.BuildServiceProvider();
 
             ServiceProvider.GetRequiredService<AppStatic>();
+            ServiceProvider.GetRequiredService<MainWindowViewModel>();
             ServiceProvider.GetRequiredService<LieferViewModel>();
+            ServiceProvider.GetRequiredService<MachineEditViewModel>();
+            _ = ServiceProvider.GetRequiredService<MachinePlanViewModel>();
+            ServiceProvider.GetRequiredService<RoleEditViewModel>();
+            ServiceProvider.GetRequiredService<UserViewModel>();
+            ServiceProvider.GetRequiredService<SettingsViewModel>();
+
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            string defaultConnection = Configuration.GetConnectionString("ConnectionHome");
+            string defaultConnection = Configuration.GetConnectionString("ConnectionBosch");
             services.AddDbContextFactory<DB_COS_LIEFERLISTE_SQLContext>(
                 options =>
                     options.UseSqlServer(defaultConnection));
@@ -51,7 +58,14 @@ namespace Lieferliste_WPF
  
             services.AddTransient(typeof(MainWindow));
             services.AddSingleton<AppStatic>();
+            services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<LieferViewModel>();
+            services.AddSingleton<MachineEditViewModel>();
+            services.AddSingleton<RoleEditViewModel>();
+            services.AddSingleton<UserViewModel>();
+            services.AddSingleton<MachinePlanViewModel>();
+            services.AddSingleton<SettingsViewModel>();
+
            
         }
        

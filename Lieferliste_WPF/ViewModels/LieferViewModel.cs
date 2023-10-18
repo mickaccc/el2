@@ -29,7 +29,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class LieferViewModel : ViewModelBase
+    class LieferViewModel : ViewModelBase, IViewModel
     {
 
 
@@ -43,7 +43,10 @@ namespace Lieferliste_WPF.ViewModels
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand OrderViewCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
-  
+        public string Key { get; } = "lie";
+
+        public string Title { get; } = "Lieferliste";
+
         public string HasMouse { get; set; } = string.Empty;
         private readonly Dictionary<string, string> _filterCriterias = new();
         private readonly string _sortField = string.Empty;
@@ -159,6 +162,8 @@ namespace Lieferliste_WPF.ViewModels
                 
             }
         }
+
+ 
 
         private void OnTextSearch(object commandParameter)
         {

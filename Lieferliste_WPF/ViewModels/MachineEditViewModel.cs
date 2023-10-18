@@ -31,8 +31,9 @@ namespace Lieferliste_WPF.ViewModels
         private readonly IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
         public static ObservableCollection<Ressource>? Ressources { get; private set; }
         public static ObservableCollection<WorkArea> WorkAreas { get; private set; } = new();
-        public MachineEditViewModel()
+        public MachineEditViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory)
         {
+            _dbContextFactory = dbContextFactory;
 
             LoadData();
 

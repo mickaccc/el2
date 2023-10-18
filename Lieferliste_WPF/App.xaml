@@ -1,7 +1,8 @@
 ﻿<Application x:Class="Lieferliste_WPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Lieferliste_WPF">
+             xmlns:local="clr-namespace:Lieferliste_WPF"
+             xmlns:View="clr-namespace:Lieferliste_WPF.View">
     <Application.Resources>
         
         <ResourceDictionary>
@@ -9,7 +10,23 @@
                 <ResourceDictionary Source="/Styles/AnimColors.xaml"/>
                 <ResourceDictionary Source="/Styles/UIColors.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="lieferliste">
+                <View:Lieferliste/>
+            </DataTemplate>
+            <DataTemplate x:Key="machineEdit">
+                <View:MachineEdit/>
+            </DataTemplate>
+            <DataTemplate x:Key="userEdit">
+                <View:UserEdit/>
+            </DataTemplate>
+            <DataTemplate x:Key="settings">
+                <View:UserSettings/>
+            </DataTemplate>
+            <DataTemplate x:Key="roleEdit">
+                <View:RoleEdit/>
+            </DataTemplate>
         </ResourceDictionary>
-         
+ 
+        
     </Application.Resources>
 </Application>

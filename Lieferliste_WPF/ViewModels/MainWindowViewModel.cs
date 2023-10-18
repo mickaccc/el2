@@ -36,7 +36,6 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
         private readonly IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
-        public NotifyTaskCompletion<Page?> LieferTask { get; private set; }
         private NotifyTaskCompletion<int> _onlineTask;
         public NotifyTaskCompletion<int> OnlineTask
         {
@@ -70,15 +69,15 @@ namespace Lieferliste_WPF.ViewModels
         private double _progressValue;
         private bool _isLoading;
         
-        private ObservableCollection<Grid> _tabTitles;
-        private List<Grid> _windowTitles;
+        private ObservableCollection<IViewModel> _tabTitles;
+        private List<IViewModel> _windowTitles;
 
         public MainWindowViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
         {
             _dbContextFactory = contextFactory;
             
-            TabTitles = new ObservableCollection<Grid>();
-            WindowTitles = new List<Grid>();
+            TabTitles = new ObservableCollection<IViewModel>();
+            WindowTitles = new List<IViewModel>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
             OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
             OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
@@ -124,7 +123,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (obj is String o)
             {
-                var t = TabTitles.FirstOrDefault(x => x.Tag.ToString() == o);
+                var t = TabTitles.FirstOrDefault(x => x.Key == o);
                 if (t != null)
                 {
                     TabTitles.Remove(t);
@@ -136,55 +135,44 @@ namespace Lieferliste_WPF.ViewModels
         private void OnOpenMachineMgmtExecuted(object obj)
         {
 
-            var me = new MachineEdit()
-            {
-                Tag = ContentTitle.MachineEdit
-  
-            };
-            TabTitles.Add(me);
+            TabTitles.Add();
             SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenMachineMgmtCanExecute(object arg)
         {          
             return PermissionsProvider.GetInstance().GetUserPermission("MA00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit) &&
+                TabTitles.All(x => x != ContentTitle.MachineEdit) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.MachineEdit);
         }
 
         private void OnOpenRoleMgmtExecuted(object obj)
         {
 
-            var re = new RoleEdit()
-            {
-                Tag = ContentTitle.RoleEdit
-            };
-            TabTitles.Add(re);
+   
+            TabTitles.Add(ContentTitle.RoleEdit);
             SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit) &&
+                TabTitles.All(x => x != ContentTitle.RoleEdit) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
         }
 
         private void OnOpenUserMgmtExecuted(object obj)
         {
 
-            var ue = new UserEdit()
-            {
-                Tag = ContentTitle.UserEdit
-            };
-            TabTitles.Add(ue);
+  
+            TabTitles.Add(ContentTitle.UserEdit);
             SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenUserMgmtCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("UM00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.UserEdit) &&
+                TabTitles.All(x => x != ContentTitle.UserEdit) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.UserEdit);
         }
 
@@ -192,53 +180,43 @@ namespace Lieferliste_WPF.ViewModels
         private void OnOpenSettingsExecuted(object obj)
         {
 
-            var sett = new Settings()
-            {
-                Tag = ContentTitle.Settings
-            };
-            TabTitles.Add(sett);
+            TabTitles.Add(ContentTitle.Settings);
             SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenSettingsCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Settings) &&
+                TabTitles.All(x => x != ContentTitle.Settings) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Settings);
         }
 
         private void OnOpenMachinePlanExecuted(object obj)
         {
 
-            var mp = new MachinePlan
-            {
-                Tag = ContentTitle.Planning
-            };
-            TabTitles.Add(mp);
+
+            TabTitles.Add(ContentTitle.Planning);
             SelectedTab = TabTitles.Count;
         }
 
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Planning) &&
+                TabTitles.All(x => x != ContentTitle.Planning) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Planning);
         }
 
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("LIE00") &&
-                TabTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist) &&
+                TabTitles.All(x => x != ContentTitle.Deliverylist) &&
                 WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Deliverylist);
         }
         private void OnOpenLieferlisteExecuted(object obj)
         {
        
-            var ll = new Lieferliste()
-            {
-                Tag = ContentTitle.Deliverylist
-            };
-            TabTitles.Add(ll);
+ 
+            TabTitles.Add(ContentTitle.Deliverylist);
             SelectedTab = TabTitles.Count;
 
             //LieferTask = new NotifyTaskCompletion<Page?>(OnLoadAsync(ll));
@@ -294,7 +272,7 @@ namespace Lieferliste_WPF.ViewModels
                 OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
         }
 
-        public ObservableCollection<Grid> TabTitles
+        public ObservableCollection<IViewModel> TabTitles
         {
             get { return _tabTitles; }
             set
@@ -303,7 +281,7 @@ namespace Lieferliste_WPF.ViewModels
                 NotifyPropertyChanged(() => TabTitles);
             }
         }
-        public List<Grid> WindowTitles
+        public List<IViewModel> WindowTitles
         {
             get { return _windowTitles; }
             set
@@ -350,7 +328,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            if(dropInfo.Data is Grid pg)
+            if(dropInfo.Data is string pg)
             {
                 if(TabTitles.Contains(pg))
                 {
@@ -367,12 +345,12 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     TabTitles.Add(pg);
                     //WindowTitles.Remove(pg);
-                    if (pg.FindName("tabable") is Window wnd)
-                    {
-                        var o = wnd.Owner.OwnedWindows.SyncRoot;
+                    //if (pg.FindName("tabable") is Window wnd)
+                    //{
+                    //    var o = wnd.Owner.OwnedWindows.SyncRoot;
 
-                        wnd.Close();
-                    }
+                    //    wnd.Close();
+                    //}
                 }
             }
         }
@@ -381,9 +359,10 @@ namespace Lieferliste_WPF.ViewModels
         {
             using (var db = _dbContextFactory.CreateDbContext())
             {
-                var onl = db.Onlines;
-                onl.Add(new Online() { UserId = AppStatic.User.UserIdent, PcId = AppStatic.PC, Login = DateTime.Now });
-                db.SaveChanges();
+                db.Database.ExecuteSqlRaw("INSERT INTO Onlines VALUES({UserId},{PcId},{Login}",
+                    AppStatic.User.UserIdent,
+                    AppStatic.PC,
+                    DateTime.Now);
             }
         }
 

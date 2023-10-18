@@ -9,6 +9,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,11 +29,11 @@ namespace Lieferliste_WPF.View
     /// </summary>
     public partial class MachinePlan : Grid
     {
-        
+        [SupportedOSPlatform("windows7.0")]
         public MachinePlan()
         {
             InitializeComponent();
-
+            //DataContext = viewModel;
         }
 
         private void UnPlanedMouseDown(object sender, MouseButtonEventArgs e)

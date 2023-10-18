@@ -1,0 +1,65 @@
+﻿<Grid x:Class="Lieferliste_WPF.View.UserSettings"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Height="600" Width="1000" >
+ 
+    <Grid Background="{StaticResource Background1}">
+
+        <TabControl  HorizontalAlignment="Left"  Name="tabControl1" VerticalAlignment="Top">
+            <TabItem Header="Explorer" Name="tabItem1" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <StackPanel>
+                        <Label Content="Hauptpfad"/>
+                        <TextBox x:Name="ExpRoot" Text="{Binding Path=ExplorerRoot}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1">
+                        <Label Content="Muster für Ordnerpfad:"/>
+                        <TextBox x:Name="OrderPath" Text="{Binding Path=ExplorerPathPattern}"/>
+                    </StackPanel>
+  
+                </Grid>
+            </TabItem>
+            <TabItem Header="Zeiten">
+                <Grid>
+                    <ListView Name="pauseList">
+                        <Label Content="Pausen" Background="Cornsilk"/>
+                        <GridView>
+                            <GridViewColumn Header="Start"/>
+                            <GridViewColumn Header="End"/>
+                        </GridView>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Farben">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="In Date:"/>
+                        <TextBox  Text="{Binding Path=InOfDate}" Grid.Column="1"/>
+                        <Rectangle Width="20" Stroke="Black" Fill="{Binding Path=InOfDate}" Grid.Column="2"/>
+                    
+                    
+                        <Label Content="Out of Date:" Grid.Row="1"/>
+                        <TextBox Text="{Binding Path=OutOfDate}" Grid.Row="1" Grid.Column="1"/>
+                        <Rectangle Width="20" Stroke="Black" Fill="{Binding Path=OutOfDate}" Grid.Row="1" Grid.Column="2"/>
+                        
+                    
+                </Grid>
+                
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Grid>
