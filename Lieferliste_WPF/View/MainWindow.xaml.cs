@@ -69,32 +69,32 @@
                 }
             }
         }
-        private void TabControl_Leave(object sender, DragEventArgs e)
-        {
-            e.Effects = DragDropEffects.Move;
+        //private void TabControl_Leave(object sender, DragEventArgs e)
+        //{
+        //    e.Effects = DragDropEffects.Move;
 
-            var tabItemSource = (Grid)e.Data.GetData(typeof(Grid));
-            if (tabItemSource != null)
-            {
-                TabControl tabCrt = (TabControl)sender;
-                Window wnd = new Tabable
-                {
-                    Owner = this,
-                    Title = tabItemSource.Name,
-                    Content = tabItemSource,
-                    Tag = "MPL"
+        //    var tabItemSource = (Grid)e.Data.GetData(typeof(Grid));
+        //    if (tabItemSource != null)
+        //    {
+        //        TabControl tabCrt = (TabControl)sender;
+        //        Window wnd = new Tabable
+        //        {
+        //            Owner = this,
+        //            Title = tabItemSource.Name,
+        //            Content = tabItemSource,
+        //            Tag = "MPL"
 
-                };
+        //        };
                 
-                MainWindowViewModel mv = DataContext as MainWindowViewModel;
-                mv.WindowTitles.Add(tabItemSource);
-                //mv.TabTitles.Remove(tabItemSource);
+        //        MainWindowViewModel mv = DataContext as MainWindowViewModel;
+        //        mv.WindowTitles.Add(tabItemSource);
+        //        //mv.TabTitles.Remove(tabItemSource);
 
-                wnd.Show();
+        //        wnd.Show();
 
-                this.Background = Brushes.White;
-            }
-        }
+        //        this.Background = Brushes.White;
+        //    }
+        //}
         private void TabControl_Enter(object sender, DragEventArgs e)
         {
             this.Background = Brushes.Turquoise;
@@ -124,35 +124,35 @@
             return null;
         }
 
-        private void TbControl_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                if (e.MiddleButton == MouseButtonState.Pressed)
-                {
-                    TabControl tabCrt = (TabControl)sender;
-                    TabItem tabItemSource = (TabItem)tabCrt.SelectedItem;
-                    Window wnd = new Tabable
-                    {
-                        Owner = this,
-                        Title = (string)tabItemSource.Header
+        //private void TbControl_MouseDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (e.MiddleButton == MouseButtonState.Pressed)
+        //        {
+        //            TabControl tabCrt = (TabControl)sender;
+        //            TabItem tabItemSource = (TabItem)tabCrt.SelectedItem;
+        //            Window wnd = new Tabable
+        //            {
+        //                Owner = this,
+        //                Title = (string)tabItemSource.Header
 
-                    };
+        //            };
 
-                    (wnd as Tabable).Tabable_TabControl.Items.Add(tabItemSource);
-                    MainWindowViewModel mv = DataContext as MainWindowViewModel;
-                    //mv.TabTitles.Remove((Page)tabItemSource.Content);
-                    mv.WindowTitles.Add((Grid)tabItemSource.Content);
+        //            (wnd as Tabable).Tabable_TabControl.Items.Add(tabItemSource);
+        //            MainWindowViewModel mv = DataContext as MainWindowViewModel;
+        //            //mv.TabTitles.Remove((Page)tabItemSource.Content);
+        //            mv.WindowTitles.Add((Grid)tabItemSource.Content);
 
-                    wnd.Show();
-                }
-            }
+        //            wnd.Show();
+        //        }
+        //    }
             
-            catch (InvalidOperationException ex)
-            {
-                MessageBox.Show(ex.Message,"Fehlermeldung",MessageBoxButton.OK,MessageBoxImage.Error);
-            }
-        }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        MessageBox.Show(ex.Message,"Fehlermeldung",MessageBoxButton.OK,MessageBoxImage.Error);
+        //    }
+        //}
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {

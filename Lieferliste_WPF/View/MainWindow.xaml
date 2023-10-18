@@ -7,7 +7,7 @@
     xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
     xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
     xmlns:util="clr-namespace:El2Utilities.Utils;assembly=El2Utilities"
-    xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
+    xmlns:vmBase="clr-namespace:Lieferliste_WPF.ViewModels.Base"
     xmlns:local="clr-namespace:Lieferliste_WPF.View"
     xmlns:dd="urn:gong-wpf-dragdrop"
     mc:Ignorable="av"
@@ -323,7 +323,7 @@
 
         </DockPanel>
 
-        <local:CloseableTabControl ItemsSource="{Binding TabTitles}" Grid.Row="1" SelectedIndex="{Binding SelectedTab}">
+        <local:CloseableTabControl ItemsSource="{Binding TabTitles}" Grid.Row="1" SelectedItem="{Binding SelectedTab}">
             <local:CloseableTabControl.ItemContainerStyle>
                 <Style TargetType="local:CloseableTabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="CloseCommand" Value="{Binding DataContext.TabCloseCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
@@ -372,7 +372,7 @@
                     <Setter Property="Margin" Value="6,10,10,10" />
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
-                            <DataTemplate>
+                            <DataTemplate DataType="{x:Type vmBase:ViewModelBase}">
                                 <ContentPresenter Content="{TemplateBinding Content}"/>
                             </DataTemplate>
                         </Setter.Value>
