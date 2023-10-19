@@ -53,13 +53,13 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private ViewModelBase _selectedTab;
-        public ViewModelBase SelectedTab
+        private ViewPresenter _selectedTab;
+        public ViewPresenter SelectedTab
         {
             get { return _selectedTab; }
             set
             {
-                if (_selectedTab != value)
+                if (!_selectedTab.Equals(value))
                 {
                     _selectedTab = value;
                     NotifyPropertyChanged(() => SelectedTab);
@@ -73,14 +73,14 @@ namespace Lieferliste_WPF.ViewModels
         private double _progressValue;
         private bool _isLoading;
         
-        private ObservableCollection<ViewModelBase> _tabTitles;
+        private ObservableCollection<ViewPresenter> _tabTitles;
         private List<ViewModelBase> _windowTitles;
 
         public MainWindowViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
         {
             _dbContextFactory = contextFactory;
             
-            TabTitles = new ObservableCollection<ViewModelBase>();
+            TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
             //OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
@@ -129,46 +129,49 @@ namespace Lieferliste_WPF.ViewModels
             TabTitles.Remove(SelectedTab);
             SelectedTab = TabTitles.LastOrDefault();
         }
-        private void openTab(object selectedItem)
+        //private void openTab(object selectedItem)
+        //{
+        //    Type viewModelType;
+
+        //    switch (selectedItem)
+        //    {
+        //        case "1":
+        //            {
+        //                viewModelType = typeof(LieferViewModel);
+        //                break;
+        //            }
+        //        case "2":
+        //            {
+        //                viewModelType = typeof(MachineEditViewModel);
+        //                break;
+        //            }
+        //        default:
+        //            throw new Exception("Item " + selectedItem + " not set.");
+        //    }
+
+        //    DisplayVM(viewModelType);
+        //}
+
+        private void DisplayVM(ViewPresenter viewPresent)
         {
-            Type viewModelType;
-
-            switch (selectedItem)
+            if (TabTitles.All(vm => vm.ViewType != viewPresent.ViewType))
             {
-                case "1":
-                    {
-                        viewModelType = typeof(LieferViewModel);
-                        break;
-                    }
-                case "2":
-                    {
-                        viewModelType = typeof(MachineEditViewModel);
-                        break;
-                    }
-                default:
-                    throw new Exception("Item " + selectedItem + " not set.");
+                  
+                TabTitles.Add(viewPresent);
             }
-
-            DisplayVM(viewModelType);
-        }
-
-        private void DisplayVM(Type viewModelType)
-        {
-            if (TabTitles.All(vm => vm.GetType() != viewModelType))
-            {
-                   
-                TabTitles.Add((ViewModelBase)ActivatorUtilities.CreateInstance(ServiceProvider,viewModelType));
-            }
-            SelectedTab = TabTitles.Single(vm => vm.GetType() == viewModelType);
+            SelectedTab = TabTitles.Single(vm => vm.ViewType == viewPresent.ViewType);
         }
 
 
 
         private void OnOpenMachineMgmtExecuted(object selectedItem)
         {
-            Type viewModelType = typeof(MachineEditViewModel);
+            ViewPresenter present = new ViewPresenter();
+            present.ViewType = typeof(MachineEdit);
+            present.Key = "maed";
+            present.Title = "Maschinen Managment";
 
-            DisplayVM(viewModelType);
+            DisplayVM(present);
   
         }
 
@@ -243,10 +246,12 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenLieferlisteExecuted(object obj)
         {
-
-            Type viewModelType = typeof(LieferViewModel);
-
-            DisplayVM(viewModelType);
+            ViewPresenter present = new ViewPresenter();
+            present.ViewType = typeof(Lieferliste);
+            present.Key = "lief";
+            present.Title = "Lieferliste";
+            
+            DisplayVM(present);
    
 
             //LieferTask = new NotifyTaskCompletion<Page?>(OnLoadAsync(ll));
@@ -302,7 +307,7 @@ namespace Lieferliste_WPF.ViewModels
                 OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
         }
 
-        public ObservableCollection<ViewModelBase> TabTitles
+        public ObservableCollection<ViewPresenter> TabTitles
         {
             get { return _tabTitles; }
             set
@@ -405,6 +410,12 @@ namespace Lieferliste_WPF.ViewModels
             throw new NotImplementedException();
         }
 
+    }
+    public struct ViewPresenter
+    {
+        public string Title;
+        public string Key;
+        public Type ViewType;
     }
 
 }

@@ -11,13 +11,13 @@
                 <ResourceDictionary Source="/Styles/AnimColors.xaml"/>
                 <ResourceDictionary Source="/Styles/UIColors.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <DataTemplate x:Key="lieferliste">
-                <View:Lieferliste/>
+            <DataTemplate x:Key="mapl" >
+                <View:MachinePlan/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type ViewModel:MachineEditViewModel }">
+            <DataTemplate x:Key="maed">
                 <View:MachineEdit/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type ViewModel:LieferViewModel}">
+            <DataTemplate x:Key="lief">
                 <View:Lieferliste/>
             </DataTemplate>
 

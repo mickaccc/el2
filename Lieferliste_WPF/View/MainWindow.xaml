@@ -372,7 +372,7 @@
                     <Setter Property="Margin" Value="6,10,10,10" />
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
-                            <DataTemplate DataType="{x:Type vmBase:ViewModelBase}">
+                            <DataTemplate DataType="{Binding}">
                                 <ContentPresenter Content="{TemplateBinding Content}"/>
                             </DataTemplate>
                         </Setter.Value>

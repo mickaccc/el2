@@ -8,6 +8,7 @@ using Lieferliste_WPF.View;
 using Lieferliste_WPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Practices.Prism.Regions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,8 +32,7 @@ namespace Lieferliste_WPF.ViewModels
 {
     class LieferViewModel : ViewModelBase, IViewModel
     {
-
-
+        
         public ICollectionView OrdersView { get; private set; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
         public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
@@ -79,6 +79,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         public CmbFilter SelectedFilter
         {
+           
             get { return _cmbFilter; }
             set
             {
