@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Lieferliste_WPF.View
+namespace Lieferliste_WPF.Views
 {
     /// <summary>
     /// Interaction logic for MachineEdit.xaml

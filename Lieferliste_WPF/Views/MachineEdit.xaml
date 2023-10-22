@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     xmlns:lib="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
-    x:Class="Lieferliste_WPF.View.MachineEdit"
+    x:Class="Lieferliste_WPF.Views.MachineEdit"
         mc:Ignorable="d"
          MinHeight="350" MinWidth="800"   x:Name="MachineEditor">
     <Grid.Resources>

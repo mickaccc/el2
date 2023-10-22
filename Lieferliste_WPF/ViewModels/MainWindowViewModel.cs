@@ -4,7 +4,7 @@ using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Utilities;
-using Lieferliste_WPF.View;
+using Lieferliste_WPF.Views;
 using Lieferliste_WPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +20,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Microsoft.Practices.ServiceLocation;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -38,7 +39,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMachineMgmtCommand { get; private set; }
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
-        private readonly IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
+        private readonly DB_COS_LIEFERLISTE_SQLContext _dbContext;
 
         private NotifyTaskCompletion<int> _onlineTask;
         public NotifyTaskCompletion<int> OnlineTask
@@ -76,9 +77,9 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<ViewPresenter> _tabTitles;
         private List<ViewModelBase> _windowTitles;
 
-        public MainWindowViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
+        public MainWindowViewModel(DB_COS_LIEFERLISTE_SQLContext context)
         {
-            _dbContextFactory = contextFactory;
+            _dbContext = context;
             
             TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
@@ -99,7 +100,7 @@ namespace Lieferliste_WPF.ViewModels
         #region Commands
         private void OnCloseExecuted(object obj)
         {
-            using (var Dbctx = _dbContextFactory.CreateDbContext())
+            using (var Dbctx = _dbContext)
             {
                 Dbctx.ChangeTracker.DetectChanges();
                 if (Dbctx.ChangeTracker.HasChanges())
@@ -247,7 +248,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnOpenLieferlisteExecuted(object obj)
         {
             ViewPresenter present = new ViewPresenter();
-            present.ViewType = typeof(Lieferliste);
+            present.ViewType = typeof(Liefer);
             present.Key = "lief";
             present.Title = "Lieferliste";
             
@@ -303,7 +304,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            using (var Dbctx = _dbContextFactory.CreateDbContext())
+            using (var Dbctx = _dbContext)
                 OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
         }
 
@@ -392,13 +393,16 @@ namespace Lieferliste_WPF.ViewModels
 
         private  void RegisterMe()
         {
-            using (var db = _dbContextFactory.CreateDbContext())
+            //var ap = ServiceLocator.Current.GetInstance<AppStatic>();
+            
+            var pc = AppStatic.PC;
+            using (var db = _dbContext)
             {
                 db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Online(UserId,PcId,Login) VALUES({0},{1},{2})",
                     new[]
                     {
-                    AppStatic.User.UserIdent,
-                    AppStatic.PC,
+                    "mgsch",
+                    pc,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
             }
         }

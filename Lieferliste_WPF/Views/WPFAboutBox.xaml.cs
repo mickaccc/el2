@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Xml;
 
-namespace Lieferliste_WPF.View
+namespace Lieferliste_WPF.Views
 
 {
     /// <summary>

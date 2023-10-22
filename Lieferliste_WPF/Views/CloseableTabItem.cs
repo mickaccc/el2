@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Lieferliste_WPF.View
+namespace Lieferliste_WPF.Views
 {
     sealed class CloseableTabItem: TabItem
     {

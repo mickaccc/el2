@@ -8,10 +8,12 @@
     xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
     xmlns:util="clr-namespace:El2Utilities.Utils;assembly=El2Utilities"
     xmlns:vmBase="clr-namespace:Lieferliste_WPF.ViewModels.Base"
-    xmlns:local="clr-namespace:Lieferliste_WPF.View"
+    xmlns:local="clr-namespace:Lieferliste_WPF.Views"
+    xmlns:prism="http://prismlibrary.com/"
+    prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:dd="urn:gong-wpf-dragdrop"
     mc:Ignorable="av"
-    x:Class="Lieferliste_WPF.View.MainWindow"
+    x:Class="Lieferliste_WPF.Views.MainWindow"
  
         x:Name="mainWindow"
         Title="LieferListe El2" Height="900">

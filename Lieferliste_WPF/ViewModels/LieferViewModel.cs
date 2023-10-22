@@ -4,7 +4,7 @@ using El2Utilities.Utils;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Utilities;
-using Lieferliste_WPF.View;
+using Lieferliste_WPF.Views;
 using Lieferliste_WPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -247,7 +247,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (parameter is Vorgang vrg)
             {
-                OrderView ov = new(vrg.Aid);
+                Order ov = new(vrg.Aid);
                 Window wnd = new()
                 {
                     Owner = Application.Current.MainWindow,

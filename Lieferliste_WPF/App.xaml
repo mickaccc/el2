@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Lieferliste_WPF"
              xmlns:View="clr-namespace:Lieferliste_WPF.View"
+             xmlns:prism="http://prismlibrary.com/"
              xmlns:ViewModel="clr-namespace:Lieferliste_WPF.ViewModels">
     <Application.Resources>
         
@@ -11,15 +12,6 @@
                 <ResourceDictionary Source="/Styles/AnimColors.xaml"/>
                 <ResourceDictionary Source="/Styles/UIColors.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <DataTemplate x:Key="mapl" >
-                <View:MachinePlan/>
-            </DataTemplate>
-            <DataTemplate x:Key="maed">
-                <View:MachineEdit/>
-            </DataTemplate>
-            <DataTemplate x:Key="lief">
-                <View:Lieferliste/>
-            </DataTemplate>
 
         </ResourceDictionary>
  

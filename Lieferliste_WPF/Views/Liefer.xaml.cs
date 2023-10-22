@@ -1,14 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace Lieferliste_WPF.View
+namespace Lieferliste_WPF.Views
 {
     /// <summary>
     /// Interaktionslogik für Lieferliste.xaml
     /// </summary>
-    public partial class Lieferliste : Grid
+    public partial class Liefer : Grid
     {
 
-        public Lieferliste()
+        public Liefer()
         {         
             InitializeComponent();                    
         }

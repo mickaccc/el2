@@ -1,4 +1,4 @@
-﻿namespace Lieferliste_WPF.View
+﻿namespace Lieferliste_WPF.Views
 {
     using El2Utilities.Models;
     using Lieferliste_WPF;
@@ -20,10 +20,10 @@
     public partial class MainWindow : Window
     {
         [SupportedOSPlatform("windows7.0")]
-        public MainWindow(MainWindowViewModel viewmodel)
+        public MainWindow()
         {
             InitializeComponent();
-            DataContext = viewmodel;
+            
         }
 
         #region Events
@@ -154,10 +154,6 @@
         //    }
         //}
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            Window w = new Window1();
-            w.Show();
-        }
+  
     }
 }

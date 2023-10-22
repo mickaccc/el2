@@ -4,18 +4,20 @@ using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Linq;
 using System.Windows;
+using Prism.Modularity;
+using Prism.Ioc;
 
 namespace El2Utilities.Utils
 
 {
-    public class AppStatic : IGlobals
+    public class AppStatic : IModule, IGlobals
     {
         public static User User { get; private set; }
         public static String PC { get; private set; }
-        private static IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext>? _contextFactory;
-        public AppStatic(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> contextFactory)
+        private static DB_COS_LIEFERLISTE_SQLContext _context;
+        public AppStatic()
         {
-            _contextFactory = contextFactory;
+        
             PC = Environment.MachineName;
             LoadData();
             User ??= new();
@@ -23,14 +25,14 @@ namespace El2Utilities.Utils
         private static void LoadData()
         {
 
-            if (_contextFactory == null)
+            if (_context == null)
             {
                 MessageBox.Show("ERROR Connection not initialed!","ERRER",MessageBoxButton.OK);
                 return;
             }
                 //user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
                 string us = Environment.UserName;
-            using (var db = _contextFactory.CreateDbContext())
+            using (var db = _context)
             {
                 var u = db.Users
                     .Include(x => x.UserCosts)
@@ -45,6 +47,16 @@ namespace El2Utilities.Utils
 
                 User = (User)u;
             }
+        }
+
+        public void RegisterTypes(IContainerRegistry containerRegistry)
+        {
+            
+        }
+
+        public void OnInitialized(IContainerProvider containerProvider)
+        {
+            containerProvider.Resolve<AppStatic>();
         }
     }
 }

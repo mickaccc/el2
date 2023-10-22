@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Lieferliste_WPF.ViewModels;
 
-namespace Lieferliste_WPF.View
+namespace Lieferliste_WPF.Views
 {
     /// <summary>
     /// Interaction logic for OrderView.xaml
     /// </summary>
-    public partial class OrderView : Page
+    public partial class Order : Page
     {
-        public OrderView(string? arg)
+        public Order(string? arg)
         {
             InitializeComponent();
            

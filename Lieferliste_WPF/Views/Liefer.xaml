@@ -8,9 +8,8 @@
     xmlns:UserControls="clr-namespace:El2UserControls;assembly=El2UserControls"
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     xmlns:WpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
-    xmlns:matDesign="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
     x:Name="lieferListe"
-    x:Class="Lieferliste_WPF.View.Lieferliste"
+    x:Class="Lieferliste_WPF.Views.Liefer"
       mc:Ignorable="d" 
       d:DesignHeight="450" Width="1400"  >
     <Grid.Resources>
@@ -21,12 +20,9 @@
         <conv:KW_Converter x:Key="KW-Converter"/>
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <vm:LieferViewModel x:Key="lvm"/>
         
     </Grid.Resources>
-    <Grid.DataContext>
-        <vm:LieferViewModel/>
-    </Grid.DataContext>
+
     
         <Grid.RowDefinitions>
         <RowDefinition Height="30"/>

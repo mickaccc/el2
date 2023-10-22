@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Lieferliste_WPF.View
+namespace Lieferliste_WPF.Views
 {
     /// <summary>
     /// Interaction logic for UserEdit.xaml

@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class SettingsViewModel : Base.ViewModelBase
+    class UserSettingsViewModel : Base.ViewModelBase
     {
         string _ExplorerPathPattern;
         ObservableCollection<string> _ExplorerFilter = new();
@@ -14,7 +14,7 @@ namespace Lieferliste_WPF.ViewModels
         public Brush OutOfDate { get; set; }
         public Brush InOfDate { get; set; }
 
-        public SettingsViewModel()
+        public UserSettingsViewModel()
         {
             var br = new BrushConverter();
             ExplorerPathPattern = Properties.Settings.Default.ExplorerPath;

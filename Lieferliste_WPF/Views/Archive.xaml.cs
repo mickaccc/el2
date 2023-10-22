@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Lieferliste_WPF.View
+namespace Lieferliste_WPF.Views
 {
     /// <summary>
     /// Interaction logic for Archive.xaml
