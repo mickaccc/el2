@@ -1,4 +1,4 @@
-﻿using El2Utilities.Models;
+﻿using El2Core.Models;
 using Lieferliste_WPF.Properties;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;

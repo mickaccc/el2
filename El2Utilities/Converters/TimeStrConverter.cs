@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
     [ValueConversion(typeof(string), typeof(int))]
     public class TimeStrConverter : IValueConverter

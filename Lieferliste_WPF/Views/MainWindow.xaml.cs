@@ -1,6 +1,6 @@
 ﻿namespace Lieferliste_WPF.Views
 {
-    using El2Utilities.Models;
+    using El2Core.Models;
     using Lieferliste_WPF;
     using Lieferliste_WPF.ViewModels;
     using Microsoft.EntityFrameworkCore.Internal;
@@ -11,6 +11,8 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+    using Prism.Regions;
+    using ModuleRoleEdit.Views;
 
 
 
@@ -19,15 +21,17 @@
     /// </summary>
     public partial class MainWindow : Window
     {
+
         [SupportedOSPlatform("windows7.0")]
         public MainWindow()
         {
             InitializeComponent();
-            
         }
 
+
+
         #region Events
-           
+
         private void About_Click(object sender, RoutedEventArgs e)
         {
             WPFAboutBox about = new WPFAboutBox(this);

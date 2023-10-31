@@ -1,11 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using El2Core.ViewModelBase;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Media;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class UserSettingsViewModel : Base.ViewModelBase
+    class UserSettingsViewModel : ViewModelBase
     {
         string _ExplorerPathPattern;
         ObservableCollection<string> _ExplorerFilter = new();

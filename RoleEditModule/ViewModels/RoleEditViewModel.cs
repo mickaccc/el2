@@ -1,7 +1,7 @@
-﻿using El2Utilities.Models;
+﻿using El2Core.Models;
+using El2Core.ViewModelBase;
+using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Commands;
-using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -15,22 +15,23 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Prism.Regions;
 
-namespace Lieferliste_WPF.ViewModels
+namespace ModuleRoleEdit.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    public class RoleEditViewModel : Base.ViewModelBase, IDropTarget
+    public class RoleEditViewModel : ViewModelBase, IDropTarget
     {
          
         public ICommand SelectionChangedCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
 
-
+        private IRegionManager _regionManager;
         private static ICollectionView _roleCV;
         private static bool _hasChanges = false;
-        private IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
-        public static ObservableCollection<Role>? Roles { get; private set; }
+        private DB_COS_LIEFERLISTE_SQLContext _dbContext;
+        public static ObservableCollection<Role>? Roles { get; private set; } = new();
         
         public static ObservableCollection<Permission> PermissionsAvail { get; private set; } = new();
         public static ObservableCollection<PermissionRole> PermissionsInter { get; private set; } = new();
@@ -39,10 +40,10 @@ namespace Lieferliste_WPF.ViewModels
 
 
 
-        public RoleEditViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory)
+        public RoleEditViewModel(IRegionManager regionManager, DB_COS_LIEFERLISTE_SQLContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
-
+            _dbContext = dbContext;
+            _regionManager = regionManager;
             LoadData();
 
             _roleCV = CollectionViewSource.GetDefaultView(Roles);
@@ -79,7 +80,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                using (var Dbctx = _dbContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContext)
                 {
                     if (Dbctx.ChangeTracker.HasChanges())
                     {
@@ -103,7 +104,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (_roleCV.CurrentItem is Role role)
             {
-                using (var Dbctx = _dbContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContext)
                 {
                     var inserts = PermissionsInter.ExceptBy(role.PermissionRoles.Select(x => x.PermissionKey), y => y.PermissionKey);
                     var removes = role.PermissionRoles.ExceptBy(PermissionsInter.Select(x => x.PermissionKey), y => y.PermissionKey);
@@ -162,14 +163,17 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            using (var Dbctx = _dbContextFactory.CreateDbContext())
+            using (var Dbctx = _dbContext)
             {
-                Roles = Dbctx.Roles
+               var r = Dbctx.Roles
                 .Include(x => x.PermissionRoles)
                 .ThenInclude(x => x.PermissionKeyNavigation)
-                .ToObservableCollection();
+                .ToList();
 
-
+                foreach(var role  in r)
+                {
+                    Roles.Add(role);
+                }
                 var p = Dbctx.Permissions.ToList();
 
                 _permissionsAll.AddRange(p);

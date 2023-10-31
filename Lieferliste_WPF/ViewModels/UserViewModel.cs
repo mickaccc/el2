@@ -1,5 +1,5 @@
-﻿using El2Utilities.Models;
-using El2Utilities.Utils;
+﻿using El2Core.Utils;
+using El2Core.Models;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Utilities;
@@ -14,11 +14,12 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using WpfCustomControlLibrary;
+using El2Core.ViewModelBase;
 
 namespace Lieferliste_WPF.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    public class UserViewModel : Base.ViewModelBase, IDropTarget
+    public class UserViewModel : ViewModelBase, IDropTarget
     {
         
   

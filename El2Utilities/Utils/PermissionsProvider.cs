@@ -1,9 +1,9 @@
-﻿using El2Utilities.Models;
+﻿using El2Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace El2Utilities.Utils
+namespace El2Core.Utils
 {
 
     public sealed class PermissionsProvider
@@ -11,7 +11,7 @@ namespace El2Utilities.Utils
         private static PermissionsProvider? _instance;
 
         private HashSet<string> _permissions = new();
-        
+
 
         public static PermissionsProvider GetInstance()
         {
@@ -19,24 +19,24 @@ namespace El2Utilities.Utils
             {
 
                 _instance = new PermissionsProvider();
-                User u = AppStatic.User;
-               _instance.LoadPermissions(u);
+                User u = UserInfo.User;
+                _instance.LoadPermissions(u);
                 return _instance;
             }
             return _instance;
         }
 
-        private PermissionsProvider(){ }
+        private PermissionsProvider() { }
 
         private void LoadPermissions(User user)
         {
-                     
+
             foreach (var item in user.UserRoles)
             {
-                foreach(var permission in item.Role.PermissionRoles)
+                foreach (var permission in item.Role.PermissionRoles)
                 {
                     _permissions.Add(permission.PermissionKey.Trim());
-                }               
+                }
             }
         }
 

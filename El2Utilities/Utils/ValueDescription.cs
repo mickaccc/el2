@@ -1,4 +1,4 @@
-﻿namespace El2Utilities.Utils
+﻿namespace El2Core.Utils
 {
 
     public class ValueDescription

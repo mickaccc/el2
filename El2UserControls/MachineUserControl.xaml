@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:El2UserControls"
-             xmlns:conv="clr-namespace:El2Utilities.Converters;assembly=El2Utilities"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:dd="urn:gong-wpf-dragdrop" 
              x:Class="El2UserControls.MachineUserControl"
              mc:Ignorable="d" 

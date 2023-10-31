@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
-    [ValueConversion(typeof(DateTime), typeof(String))]
+    [ValueConversion(typeof(DateTime), typeof(string))]
     public class KW_Converter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace El2Utilities.Utils
+namespace El2Core.Utils
 {
     public static class EnumHelper
     {

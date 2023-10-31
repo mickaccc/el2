@@ -1,5 +1,5 @@
-﻿using El2Utilities.Models;
-using El2Utilities.Utils;
+﻿using El2Core.Models;
+using El2Core.Utils;
 using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Properties;
 using Lieferliste_WPF.Views;

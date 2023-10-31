@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Lieferliste_WPF.Commands
+namespace El2Core.Utils
 {
-    internal class ActionCommand : ICommand
+    public class ActionCommand : ICommand
     {
         private readonly Action<object> _executeHandler;
         private readonly Func<object, bool> _canExecuteHandler;

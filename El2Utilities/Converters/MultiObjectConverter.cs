@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
-    public class MultiObjectConverter :IMultiValueConverter
+    public class MultiObjectConverter : IMultiValueConverter
     {
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

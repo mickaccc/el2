@@ -1,6 +1,6 @@
 ﻿
-using El2Utilities.Converters;
-using El2Utilities.Models;
+using El2Core.Converters;
+using El2Core.Models;
 using Lieferliste_WPF.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -33,7 +33,6 @@ namespace Lieferliste_WPF.Views
         public MachinePlan()
         {
             InitializeComponent();
-            //DataContext = viewModel;
         }
 
         private void UnPlanedMouseDown(object sender, MouseButtonEventArgs e)

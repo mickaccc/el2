@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
     [ValueConversion(typeof(string), typeof(string))]
     public sealed partial class TTNR_Converter : IValueConverter
@@ -19,7 +19,7 @@ namespace El2Utilities.Converters
                 var match = regex.Match(strVal);
                 if (match.Success)
                 {
-                    
+
                     var retVal = match.Groups[1] + "." + match.Groups[2] + "." + match.Groups[3];
                     if (strVal.Length > 10)
                     {

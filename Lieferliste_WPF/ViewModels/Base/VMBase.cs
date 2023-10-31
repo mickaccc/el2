@@ -1,4 +1,6 @@
-﻿namespace Lieferliste_WPF.ViewModels.Base
+﻿using El2Core.ViewModelBase;
+
+namespace Lieferliste_WPF.ViewModels.Base
 {
     public class VMBase : ViewModelBase
     {

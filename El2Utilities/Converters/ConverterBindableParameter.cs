@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
     [ContentProperty(nameof(Binding))]
     public class ConverterBindableParameter : MarkupExtension

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
 
     public class NegatingConverter : IValueConverter

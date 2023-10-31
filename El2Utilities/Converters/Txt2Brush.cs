@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
     [ValueConversion(typeof(string), typeof(SolidColorBrush))]
     public sealed class Txt2Brush : IValueConverter

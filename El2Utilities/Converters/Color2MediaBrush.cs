@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
     [ValueConversion(typeof(System.Drawing.Color), typeof(Color))]
     class Color2MediaBrush : IValueConverter

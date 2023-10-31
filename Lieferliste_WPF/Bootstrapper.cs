@@ -1,12 +1,11 @@
-﻿using El2Utilities.Models;
-using El2Utilities.Utils;
+﻿using El2Core.Utils;
+using El2Core.Models;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Practices.Prism.UnityExtensions;
-using Microsoft.Practices.Unity;
 using Prism.Ioc;
 using Prism.Modularity;
+using Prism.Regions;
 using Prism.Unity;
 using System;
 using System.Collections.Generic;
@@ -17,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using ModuleRoleEdit.Views;
 
 namespace Lieferliste_WPF
 {
@@ -36,10 +36,24 @@ namespace Lieferliste_WPF
                 IConfiguration  Configuration = builder.Build();
             var defaultconnection = Configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection);
-            
+
+            containerRegistry.RegisterInstance(Configuration);
             containerRegistry.RegisterInstance(builderopt.Options);
-            containerRegistry.RegisterSingleton<IGlobals,AppStatic>();
+            containerRegistry.Register<DB_COS_LIEFERLISTE_SQLContext>();
+
+
+            var serv = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            Globals gl = new Globals(serv);
+            UserInfo u = new();
+            u.Initialize(gl.PC, gl.User);
+            containerRegistry.RegisterInstance(u);
             
+        }
+        protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
+        {
+            base.ConfigureModuleCatalog(moduleCatalog);
+
+            moduleCatalog.AddModule<ModuleRoleEdit.RoleEditModule>();
         }
 
     }  

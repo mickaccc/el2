@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\El2Utilities\El2Utilities.csproj" />
+    <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

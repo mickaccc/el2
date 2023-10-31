@@ -1,4 +1,5 @@
-﻿using El2Utilities.Models;
+﻿using El2Core.Models;
+using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.ViewModels;

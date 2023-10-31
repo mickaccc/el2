@@ -1,5 +1,6 @@
 ﻿
-using El2Utilities.Models;
+using El2Core.Models;
+using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,9 +13,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Lieferliste_WPF.ViewModels
+namespace Lieferliste_WPF.ViewModels 
 {
-    class OrderViewModel :Base.ViewModelBase
+    class OrderViewModel : ViewModelBase
     {
 
         private OrderRb? _order;

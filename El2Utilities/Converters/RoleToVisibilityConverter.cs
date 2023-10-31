@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
     public class RoleToVisibilityConverter : MarkupExtension, IValueConverter
     {
@@ -16,7 +16,7 @@ namespace El2Utilities.Converters
             bool IsValidUser = false;
             if (principal != null)
             {
-                foreach (String role in parameter.ToString().Split(';'))
+                foreach (string role in parameter.ToString().Split(';'))
                 {
                     if (principal.IsInRole(role))
                     {

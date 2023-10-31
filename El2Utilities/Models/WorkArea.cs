@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace El2Utilities.Models;
+namespace El2Core.Models;
 
 public partial class WorkArea
 {

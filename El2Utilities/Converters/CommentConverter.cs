@@ -1,24 +1,23 @@
-﻿
-using El2Utilities.Utils;
+﻿using El2Core.Utils;
 using System;
 using System.Globalization;
 using System.Windows.Data;
 
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
-    [ValueConversion(typeof(String), typeof(String))]
+    [ValueConversion(typeof(string), typeof(string))]
     public class CommentConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            
-            String p = (string)parameter;
-            String strVal = (String)value;
-            if (p != null && !String.IsNullOrEmpty(strVal))
+
+            string p = (string)parameter;
+            string strVal = (string)value;
+            if (p != null && !string.IsNullOrEmpty(strVal))
             {
-                
-                String[] val = strVal.Split(';');
+
+                string[] val = strVal.Split(';');
                 if (p.StartsWith("I"))
                 {
 
@@ -29,16 +28,16 @@ namespace El2Utilities.Converters
                     return val[1];
                 }
             }
-            return String.Empty;
+            return string.Empty;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value != null)
             {
-                String info = "[" + AppStatic.User.UserIdent + " - " + DateTime.Now.ToShortDateString() + "]";
+                string info = "[" + UserInfo.User.UserIdent + " - " + DateTime.Now.ToShortDateString() + "]";
                 return info + ";" + value;
             }
-            return String.Empty;
+            return string.Empty;
         }
     }
 }

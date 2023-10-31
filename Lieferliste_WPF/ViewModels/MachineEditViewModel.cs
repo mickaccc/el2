@@ -1,4 +1,5 @@
-﻿using El2Utilities.Models;
+﻿using El2Core.ViewModelBase;
+using El2Core.Models;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using El2Core.Utils;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    public class MachineEditViewModel : Base.ViewModelBase, IDataErrorInfo
+    public class MachineEditViewModel : ViewModelBase, IDataErrorInfo
     {
         
 
@@ -28,12 +30,12 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand textSearchCommand;
         private string _searchFilterText = String.Empty;
         private static bool _isLocked = false;
-        private readonly IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
+        private readonly DB_COS_LIEFERLISTE_SQLContext _dbContext;
         public static ObservableCollection<Ressource>? Ressources { get; private set; }
         public static ObservableCollection<WorkArea> WorkAreas { get; private set; } = new();
-        public MachineEditViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory)
+        public MachineEditViewModel(DB_COS_LIEFERLISTE_SQLContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
+            _dbContext = dbContext;
 
             LoadData();
 
@@ -102,7 +104,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                using (var Dbctx = _dbContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContext)
                 {
                     if (Dbctx.ChangeTracker.HasChanges())
                     {
@@ -124,20 +126,20 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            using var Dbctx = _dbContextFactory.CreateDbContext();
+            using var Dbctx = _dbContext;
             Dbctx.SaveChanges();
             
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-            using var Dbctx = _dbContextFactory.CreateDbContext();
+            using var Dbctx = _dbContext;
             return Dbctx.ChangeTracker.HasChanges();
         }
 
         private void LoadData()
         {
-            using (var Dbctx = _dbContextFactory.CreateDbContext())
+            using (var Dbctx = _dbContext)
             {
                 Ressources = Dbctx.Ressources
                     .Include(y => y.RessourceCostUnits)

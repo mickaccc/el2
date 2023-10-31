@@ -8,14 +8,14 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
-    [ValueConversion(typeof(Boolean), typeof(Visibility))]
+    [ValueConversion(typeof(bool), typeof(Visibility))]
     public class BooleanToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Boolean b)
+            if (value is bool b)
             {
                 if (b)
                 {
@@ -23,7 +23,7 @@ namespace El2Utilities.Converters
                 }
             }
             return Visibility.Collapsed;
-            
+
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

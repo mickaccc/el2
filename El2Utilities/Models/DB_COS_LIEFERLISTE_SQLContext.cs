@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace El2Utilities.Models;
+namespace El2Core.Models;
 
 public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 {

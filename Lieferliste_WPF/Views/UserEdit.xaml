@@ -10,10 +10,7 @@
     x:Class="Lieferliste_WPF.Views.UserEdit"
         mc:Ignorable="d"
         MinHeight="450" MinWidth="800" >
-    <Grid.Resources>
-        <vm:UserViewModel x:Key="usrVM"/>
-
-    </Grid.Resources>
+ 
 
     <Grid Margin="10,10,0,0" DataContext="{StaticResource usrVM}">
         <Grid.RowDefinitions>

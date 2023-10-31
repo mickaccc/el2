@@ -1,6 +1,5 @@
 ﻿using El2UserControls;
-using El2Utilities.Models;
-using El2Utilities.Utils;
+using El2Core.Models;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Utilities;
@@ -8,7 +7,7 @@ using Lieferliste_WPF.Views;
 using Lieferliste_WPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Practices.Prism.Regions;
+using Prism.Regions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,6 +26,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using El2Core.Utils;
+using El2Core.ViewModelBase;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -57,7 +58,7 @@ namespace Lieferliste_WPF.ViewModels
         private string _searchFilterText = string.Empty;
         private CmbFilter _cmbFilter;
         private static object _lock = new object();
-        private IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
+        private DB_COS_LIEFERLISTE_SQLContext _dbContext;
         public NotifyTaskCompletion<HashSet<Vorgang>>? OrderTask { get; private set; }
         
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
@@ -92,9 +93,9 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         
-        public LieferViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory)
+        public LieferViewModel(DB_COS_LIEFERLISTE_SQLContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
+            _dbContext = dbContext;
             
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
@@ -258,7 +259,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnSaveExecuted(object obj)
         {
-            using var Dbctx = _dbContextFactory.CreateDbContext();
+            using var Dbctx = _dbContext;
             Dbctx.SaveChangesAsync();
         }
         private bool OnSaveCanExecute(object arg)
@@ -266,7 +267,7 @@ namespace Lieferliste_WPF.ViewModels
 
             try
             {
-                using var Dbctx = _dbContextFactory.CreateDbContext();
+                using var Dbctx = _dbContext;
                 return Dbctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
@@ -362,7 +363,7 @@ namespace Lieferliste_WPF.ViewModels
             BindingOperations.EnableCollectionSynchronization(_orders, _lock);
             await Task.Factory.StartNew(() =>
             {
-                using (var Dbctx = _dbContextFactory.CreateDbContext())
+                using (var Dbctx = _dbContext)
                 {
                     var a = Dbctx.OrderRbs
                         .Include(v => v.Vorgangs)
@@ -381,7 +382,7 @@ namespace Lieferliste_WPF.ViewModels
                             if (x.ArbPlSap.Length >= 3)
                             {
                                 if (int.TryParse(x.ArbPlSap[..3], out int c))
-                                    if (AppStatic.User.UserCosts.Any(y => y.CostId == c))
+                                    if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
                                     {
                                         relev = true;
                                     }

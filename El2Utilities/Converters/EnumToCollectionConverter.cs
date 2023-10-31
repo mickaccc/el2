@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
-using El2Utilities.Utils;
+using El2Core.Utils;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
 
     [ValueConversion(typeof(Enum), typeof(IEnumerable<ValueDescription>))]

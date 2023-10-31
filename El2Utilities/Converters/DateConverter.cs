@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
-    [ValueConversion(typeof(DateTime), typeof(String))]
+    [ValueConversion(typeof(DateTime), typeof(string))]
     public class DateConverter : IValueConverter
     {
         public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -9,7 +9,7 @@
    "OutputContextPath": "",
    "OutputPath": "Models",
    "PreserveCasingWithRegex": true,
-   "ProjectRootNamespace": "El2Utilities",
+   "ProjectRootNamespace": "El2Core",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,

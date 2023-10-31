@@ -1,17 +1,16 @@
-﻿namespace Lieferliste_WPF.ViewModels.Base
+﻿namespace El2Core.ViewModelBase
 {
-    using El2Utilities.Models;
-    using Lieferliste_WPF.Interfaces;
-    using Lieferliste_WPF.Utilities;
+    using El2Core.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Internal;
+    using Prism.Mvvm;
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq.Expressions;
     using System.Windows.Controls;
 
-    public class ViewModelBase : INotifyPropertyChanged
+    public abstract class ViewModelBase : BindableBase, INotifyPropertyChanged
     {
 
         protected void OnChanged(string propertyName)

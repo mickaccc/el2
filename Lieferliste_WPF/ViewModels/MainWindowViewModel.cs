@@ -1,5 +1,4 @@
-﻿using El2Utilities.Models;
-using El2Utilities.Utils;
+﻿using El2Core.Models;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Interfaces;
@@ -20,7 +19,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Microsoft.Practices.ServiceLocation;
+using Prism.Regions;
+using El2Core.Utils;
+using El2Core.ViewModelBase;
+using ModuleRoleEdit.Views;
+using Prism.Ioc;
+using Unity.Injection;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -28,9 +32,9 @@ namespace Lieferliste_WPF.ViewModels
     /// Class for the main window's view-model.
     /// </summary>
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    public sealed class MainWindowViewModel : ViewModelBase, IDropTarget, IProgressbarInfo
+    public class MainWindowViewModel : ViewModelBase, IDropTarget, IProgressbarInfo
     {
-        private static IServiceProvider ServiceProvider; 
+
         public ICommand OpenMachinePlanCommand { get; private set; }
         public ICommand OpenLieferlisteCommand { get; private set; }
         public ICommand OpenSettingsCommand { get; private set; }
@@ -76,18 +80,24 @@ namespace Lieferliste_WPF.ViewModels
         
         private ObservableCollection<ViewPresenter> _tabTitles;
         private List<ViewModelBase> _windowTitles;
-
-        public MainWindowViewModel(DB_COS_LIEFERLISTE_SQLContext context)
+        private IRegionManager _regionmanager;
+        private IContainerExtension _container;
+        private IRegion _region;
+        private RoleEdit _RoleEditView;
+        private MachineEdit _MachineEditView;
+   
+        public MainWindowViewModel(IRegionManager regionManager, DB_COS_LIEFERLISTE_SQLContext context,IContainerExtension container)
         {
             _dbContext = context;
-            
+            _regionmanager = regionManager;
+            _container = container;
             TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
-            //OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
-            //OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
-            //OpenUserMgmtCommand = new ActionCommand(OnOpenUserMgmtExecuted, OnOpenUserMgmtCanExecute);
-            //OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
+            OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
+            OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
+            OpenUserMgmtCommand = new ActionCommand(OnOpenUserMgmtExecuted, OnOpenUserMgmtCanExecute);
+            OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
             OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
 
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
@@ -110,8 +120,8 @@ namespace Lieferliste_WPF.ViewModels
                     if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
                 }
 
-                var del = Dbctx.Onlines.Where(x => x.UserId.Equals(AppStatic.User.UserIdent)
-                 && x.PcId.Equals(AppStatic.PC)).ExecuteDelete();
+                var del = Dbctx.Onlines.Where(x => x.UserId.Equals(UserInfo.User.UserIdent)
+                 && x.PcId.Equals(UserInfo.PC)).ExecuteDelete();
             }
         }
 
@@ -167,12 +177,8 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenMachineMgmtExecuted(object selectedItem)
         {
-            ViewPresenter present = new ViewPresenter();
-            present.ViewType = typeof(MachineEdit);
-            present.Key = "maed";
-            present.Title = "Maschinen Managment";
-
-            DisplayVM(present);
+            _MachineEditView = _container.Resolve<MachineEdit>();
+            _regionmanager.AddToRegion("ContentRegion", _MachineEditView);
   
         }
 
@@ -181,65 +187,57 @@ namespace Lieferliste_WPF.ViewModels
             return PermissionsProvider.GetInstance().GetUserPermission("MA00");
         }
 
-        //private void OnOpenRoleMgmtExecuted(object obj)
-        //{
+        private void OnOpenRoleMgmtExecuted(object obj)
+        {
+            _regionmanager.AddToRegion("ContentRegion", typeof(RoleEdit));
+
+            _RoleEditView = _container.Resolve<RoleEdit>();
+            _regionmanager.AddToRegion("ContentRegion", _RoleEditView);
+            //TabTitles.Add(ContentTitle.RoleEdit);
+            //SelectedTab = TabTitles.Count;
+        }
+
+        private bool OnOpenRoleMgmtCanExecute(object arg)
+        {
+            return true;
+            //return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
+            //    TabTitles.All(x => x != ContentTitle.RoleEdit) &&
+            //    WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
+        }
+
+        private void OnOpenUserMgmtExecuted(object obj)
+        {
+            _regionmanager.AddToRegion("ContentRegion", typeof(UserEdit));
+        }
+
+        private bool OnOpenUserMgmtCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission("UM00");
+        }
 
 
-        //    TabTitles.Add(ContentTitle.RoleEdit);
-        //    SelectedTab = TabTitles.Count;
-        //}
+        private void OnOpenSettingsExecuted(object obj)
+        {
+            _regionmanager.AddToRegion("ContentRegion", typeof(UserSettings));
+ 
+        }
 
-        //private bool OnOpenRoleMgmtCanExecute(object arg)
-        //{
-        //    return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
-        //        TabTitles.All(x => x != ContentTitle.RoleEdit) &&
-        //        WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
-        //}
+        private bool OnOpenSettingsCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
+                !_regionmanager.MatchesObject(typeof(UserSettings));
+        }
 
-        //private void OnOpenUserMgmtExecuted(object obj)
-        //{
+        private void OnOpenMachinePlanExecuted(object obj)
+        {
+            _regionmanager.AddToRegion("ContentRegion", typeof (MachinePlan));
+        }
 
-
-        //    TabTitles.Add(ContentTitle.UserEdit);
-        //    SelectedTab = TabTitles.Count;
-        //}
-
-        //private bool OnOpenUserMgmtCanExecute(object arg)
-        //{
-        //    return PermissionsProvider.GetInstance().GetUserPermission("UM00") &&
-        //        TabTitles.All(x => x != ContentTitle.UserEdit) &&
-        //        WindowTitles.All(x => x.Tag.ToString() != ContentTitle.UserEdit);
-        //}
-
-
-        //private void OnOpenSettingsExecuted(object obj)
-        //{
-
-        //    TabTitles.Add(ContentTitle.Settings);
-        //    SelectedTab = TabTitles.Count;
-        //}
-
-        //private bool OnOpenSettingsCanExecute(object arg)
-        //{
-        //    return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
-        //        TabTitles.All(x => x != ContentTitle.Settings) &&
-        //        WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Settings);
-        //}
-
-        //private void OnOpenMachinePlanExecuted(object obj)
-        //{
-
-
-        //    TabTitles.Add(ContentTitle.Planning);
-        //    SelectedTab = TabTitles.Count;
-        //}
-
-        //private bool OnOpenMachinePlanCanExecute(object arg)
-        //{
-        //    return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
-        //        TabTitles.All(x => x != ContentTitle.Planning) &&
-        //        WindowTitles.All(x => x.Tag.ToString() != ContentTitle.Planning);
-        //}
+        private bool OnOpenMachinePlanCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
+                !_regionmanager.Matches(typeof(MachinePlan));
+        }
 
         private bool OnOpenLieferlisteCanExecute(object arg)
         {
@@ -247,12 +245,14 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenLieferlisteExecuted(object obj)
         {
-            ViewPresenter present = new ViewPresenter();
-            present.ViewType = typeof(Liefer);
-            present.Key = "lief";
-            present.Title = "Lieferliste";
+            var ll = _container.Resolve<Liefer>();
+            _regionmanager.AddToRegion("ContentRegion", ll);
+            //ViewPresenter present = new ViewPresenter();
+            //present.ViewType = typeof(Liefer);
+            //present.Key = "lief";
+            //present.Title = "Lieferliste";
             
-            DisplayVM(present);
+            //DisplayVM(present);
    
 
             //LieferTask = new NotifyTaskCompletion<Page?>(OnLoadAsync(ll));
@@ -394,16 +394,13 @@ namespace Lieferliste_WPF.ViewModels
         private  void RegisterMe()
         {
             //var ap = ServiceLocator.Current.GetInstance<AppStatic>();
-            
-            var pc = AppStatic.PC;
+
             using (var db = _dbContext)
             {
                 db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Online(UserId,PcId,Login) VALUES({0},{1},{2})",
-                    new[]
-                    {
-                    "mgsch",
-                    pc,
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
+                    UserInfo.User.UserIdent,
+                    UserInfo.PC,
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             }
         }
 

@@ -4,17 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     xmlns:lib="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    xmlns:prism="http://prismlibrary.com/"             
+    prism:ViewModelLocator.AutoWireViewModel="True"
     x:Class="Lieferliste_WPF.Views.MachineEdit"
         mc:Ignorable="d"
          MinHeight="350" MinWidth="800"   x:Name="MachineEditor">
-    <Grid.Resources>
-        <vm:MachineEditViewModel x:Key="machVM"/>
- 
-    </Grid.Resources>
 
-    <Grid Margin="10,10,0,0" DataContext="{StaticResource machVM}">
+
+    <Grid Margin="10,10,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>

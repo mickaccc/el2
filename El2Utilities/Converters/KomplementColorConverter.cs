@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace El2Utilities.Converters
+namespace El2Core.Converters
 {
     [ValueConversion(typeof(string), typeof(string))]
     public class KomplementColorConverter : IValueConverter

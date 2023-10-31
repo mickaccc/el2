@@ -5,11 +5,13 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lieferliste_WPF", "Lieferliste_WPF\Lieferliste_WPF.csproj", "{193B83C9-4EAF-4CF2-B535-CFB9D3A588F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "El2Utilities", "El2Utilities\El2Utilities.csproj", "{6D8D74A9-0E1A-4C29-9F31-0089EA385582}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "El2Core", "El2Utilities\El2Core.csproj", "{6D8D74A9-0E1A-4C29-9F31-0089EA385582}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "El2UserControls", "El2UserControls\El2UserControls.csproj", "{98F1D4DE-CE78-4B5E-8E09-EBA6E881296C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfCustomControlLibrary", "WpfCustomControlLibrary\WpfCustomControlLibrary.csproj", "{77CE415F-8705-4AA7-8316-C1C78486F236}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleRoleEdit", "RoleEditModule\ModuleRoleEdit.csproj", "{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{77CE415F-8705-4AA7-8316-C1C78486F236}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77CE415F-8705-4AA7-8316-C1C78486F236}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77CE415F-8705-4AA7-8316-C1C78486F236}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

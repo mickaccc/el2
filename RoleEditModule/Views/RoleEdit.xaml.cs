@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Lieferliste_WPF.Views
+namespace ModuleRoleEdit.Views
 {
     /// <summary>
     /// Interaction logic for RoleEdit.xaml
@@ -13,6 +13,7 @@ namespace Lieferliste_WPF.Views
         public string Ident { get; set; }
         public RoleEdit()
         {
+
             InitializeComponent();
 
         }
