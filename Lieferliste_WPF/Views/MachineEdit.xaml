@@ -30,7 +30,7 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding Source={StaticResource machVM}, Path=WorkAreas}" MinWidth="50"
+                            <ComboBox ItemsSource="{Binding Path=WorkAreas}" MinWidth="50"
                                       DisplayMemberPath="Bereich"                                   
                                       SelectedItem="WorkAreaId"
                                       SelectedValuePath="WorkAreaId"

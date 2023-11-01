@@ -14,7 +14,7 @@ namespace Lieferliste_WPF.ViewModels
         string _ExplorerRoot;
         public Brush OutOfDate { get; set; }
         public Brush InOfDate { get; set; }
-
+        public string Title { get; } = "Einstellungen";
         public UserSettingsViewModel()
         {
             var br = new BrushConverter();

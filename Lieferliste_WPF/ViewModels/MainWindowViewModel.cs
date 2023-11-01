@@ -25,6 +25,7 @@ using El2Core.ViewModelBase;
 using ModuleRoleEdit.Views;
 using Prism.Ioc;
 using Unity.Injection;
+using El2Core.Constants;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -32,7 +33,7 @@ namespace Lieferliste_WPF.ViewModels
     /// Class for the main window's view-model.
     /// </summary>
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    public class MainWindowViewModel : ViewModelBase, IDropTarget, IProgressbarInfo
+    public class MainWindowViewModel : ViewModelBase, IDropTarget
     {
 
         public ICommand OpenMachinePlanCommand { get; private set; }
@@ -43,7 +44,6 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMachineMgmtCommand { get; private set; }
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
-        private readonly DB_COS_LIEFERLISTE_SQLContext _dbContext;
 
         private NotifyTaskCompletion<int> _onlineTask;
         public NotifyTaskCompletion<int> OnlineTask
@@ -82,13 +82,11 @@ namespace Lieferliste_WPF.ViewModels
         private List<ViewModelBase> _windowTitles;
         private IRegionManager _regionmanager;
         private IContainerExtension _container;
-        private IRegion _region;
         private RoleEdit _RoleEditView;
         private MachineEdit _MachineEditView;
    
-        public MainWindowViewModel(IRegionManager regionManager, DB_COS_LIEFERLISTE_SQLContext context,IContainerExtension container)
+        public MainWindowViewModel(IRegionManager regionManager, IContainerExtension container)
         {
-            _dbContext = context;
             _regionmanager = regionManager;
             _container = container;
             TabTitles = new ObservableCollection<ViewPresenter>();
@@ -110,7 +108,7 @@ namespace Lieferliste_WPF.ViewModels
         #region Commands
         private void OnCloseExecuted(object obj)
         {
-            using (var Dbctx = _dbContext)
+            using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 Dbctx.ChangeTracker.DetectChanges();
                 if (Dbctx.ChangeTracker.HasChanges())
@@ -140,46 +138,12 @@ namespace Lieferliste_WPF.ViewModels
             TabTitles.Remove(SelectedTab);
             SelectedTab = TabTitles.LastOrDefault();
         }
-        //private void openTab(object selectedItem)
-        //{
-        //    Type viewModelType;
-
-        //    switch (selectedItem)
-        //    {
-        //        case "1":
-        //            {
-        //                viewModelType = typeof(LieferViewModel);
-        //                break;
-        //            }
-        //        case "2":
-        //            {
-        //                viewModelType = typeof(MachineEditViewModel);
-        //                break;
-        //            }
-        //        default:
-        //            throw new Exception("Item " + selectedItem + " not set.");
-        //    }
-
-        //    DisplayVM(viewModelType);
-        //}
-
-        private void DisplayVM(ViewPresenter viewPresent)
-        {
-            if (TabTitles.All(vm => vm.ViewType != viewPresent.ViewType))
-            {
-                  
-                TabTitles.Add(viewPresent);
-            }
-            SelectedTab = TabTitles.Single(vm => vm.ViewType == viewPresent.ViewType);
-        }
-
-
-
+ 
         private void OnOpenMachineMgmtExecuted(object selectedItem)
         {
-            _MachineEditView = _container.Resolve<MachineEdit>();
-            _regionmanager.AddToRegion("ContentRegion", _MachineEditView);
-  
+            var machedit = _container.Resolve<MachineEdit>();
+            _regionmanager.AddToRegion(RegionNames.MainContentRegion, machedit);
+            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(machedit);
         }
 
         private bool OnOpenMachineMgmtCanExecute(object arg)
@@ -189,25 +153,24 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenRoleMgmtExecuted(object obj)
         {
-            _regionmanager.AddToRegion("ContentRegion", typeof(RoleEdit));
 
             _RoleEditView = _container.Resolve<RoleEdit>();
-            _regionmanager.AddToRegion("ContentRegion", _RoleEditView);
-            //TabTitles.Add(ContentTitle.RoleEdit);
-            //SelectedTab = TabTitles.Count;
+            _regionmanager.AddToRegion(RegionNames.MainContentRegion, _RoleEditView);
+            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(_RoleEditView);
         }
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
-            return true;
-            //return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
-            //    TabTitles.All(x => x != ContentTitle.RoleEdit) &&
-            //    WindowTitles.All(x => x.Tag.ToString() != ContentTitle.RoleEdit);
+
+            return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
+                _regionmanager.Regions[RegionNames.MainContentRegion].Views.All(x => x.GetType() != typeof(RoleEdit));
         }
 
         private void OnOpenUserMgmtExecuted(object obj)
         {
-            _regionmanager.AddToRegion("ContentRegion", typeof(UserEdit));
+            var mgm = _container.Resolve(typeof(UserEdit));
+            _regionmanager.AddToRegion(RegionNames.MainContentRegion, mgm);
+            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(mgm);
         }
 
         private bool OnOpenUserMgmtCanExecute(object arg)
@@ -218,25 +181,28 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenSettingsExecuted(object obj)
         {
-            _regionmanager.AddToRegion("ContentRegion", typeof(UserSettings));
- 
+            var sett = _container.Resolve<UserSettings>();
+            _regionmanager.AddToRegion(RegionNames.MainContentRegion, sett);
+            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(sett);
         }
 
         private bool OnOpenSettingsCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
-                !_regionmanager.MatchesObject(typeof(UserSettings));
+                _regionmanager.Regions.All(x => !x.Views.Matches(typeof(UserSettings)));
         }
 
         private void OnOpenMachinePlanExecuted(object obj)
         {
-            _regionmanager.AddToRegion("ContentRegion", typeof (MachinePlan));
+            var machPlan = _container.Resolve<MachinePlan>();
+            _regionmanager.RegisterViewWithRegion(RegionNames.MainContentRegion,() => machPlan);
+            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(machPlan);
         }
 
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
-                !_regionmanager.Matches(typeof(MachinePlan));
+                !_regionmanager.Regions.All(x => !x.Views.Matches(typeof(MachinePlan)));
         }
 
         private bool OnOpenLieferlisteCanExecute(object arg)
@@ -246,7 +212,8 @@ namespace Lieferliste_WPF.ViewModels
         private void OnOpenLieferlisteExecuted(object obj)
         {
             var ll = _container.Resolve<Liefer>();
-            _regionmanager.AddToRegion("ContentRegion", ll);
+            _regionmanager.AddToRegion(RegionNames.MainContentRegion, ll);
+            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(ll);
             //ViewPresenter present = new ViewPresenter();
             //present.ViewType = typeof(Liefer);
             //present.Key = "lief";
@@ -304,7 +271,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            using (var Dbctx = _dbContext)
+            using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
         }
 
@@ -395,20 +362,13 @@ namespace Lieferliste_WPF.ViewModels
         {
             //var ap = ServiceLocator.Current.GetInstance<AppStatic>();
 
-            using (var db = _dbContext)
+            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Online(UserId,PcId,Login) VALUES({0},{1},{2})",
                     UserInfo.User.UserIdent,
-                    UserInfo.PC,
+                    UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             }
-        }
-
-
-
-        public void SetProgressIsBusy()
-        {
-            throw new NotImplementedException();
         }
 
     }

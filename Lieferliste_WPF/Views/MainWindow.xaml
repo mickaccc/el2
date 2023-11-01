@@ -7,6 +7,7 @@
     xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:util="clr-namespace:El2Core.Utils;assembly=El2Core"
+    xmlns:reg="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:vmBase="clr-namespace:Lieferliste_WPF.ViewModels.Base"
     xmlns:local="clr-namespace:Lieferliste_WPF.Views"
     xmlns:prism="http://prismlibrary.com/"
@@ -325,7 +326,7 @@
 
         </DockPanel>
 
-        <local:CloseableTabControl prism:RegionManager.RegionName="ContentRegion" Grid.Row="1">
+        <local:CloseableTabControl prism:RegionManager.RegionName="{x:Static reg:RegionNames.MainContentRegion}"  Grid.Row="1">
             <local:CloseableTabControl.ItemContainerStyle>
                 <Style TargetType="local:CloseableTabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="CloseCommand" Value="{Binding DataContext.TabCloseCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
@@ -379,7 +380,7 @@
                             </DataTemplate>
                         </Setter.Value>
                     </Setter>
-                    <Setter Property="Header" Value="{Binding Tag}"/>
+                    <Setter Property="Header" Value="{Binding DataContext.Title}"/>
                     <Setter Property="Background" Value="#FF6E6C67" />
                     <Setter Property="Height" Value="50" />
                     <Setter Property="Margin" Value="0" />

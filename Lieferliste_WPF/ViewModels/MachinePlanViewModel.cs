@@ -7,6 +7,7 @@ using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,7 +34,7 @@ namespace Lieferliste_WPF.ViewModels
         public List<PlanMachine> Machines { get; }
         private ObservableCollection<Vorgang>? Priv_processes { get; set; }
         private ObservableCollection<Vorgang>? Priv_parking { get; set; }
-        private DB_COS_LIEFERLISTE_SQLContext _dbContext;
+        private IContainerExtension _container;
         private readonly ICollectionView _ressCV;
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
@@ -45,9 +46,9 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
  
-        public MachinePlanViewModel(DB_COS_LIEFERLISTE_SQLContext dbContext) 
+        public MachinePlanViewModel(IContainerExtension container) 
         {
-            _dbContext = dbContext;
+            _container = container;
 
             Machines = new List<PlanMachine>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
@@ -68,20 +69,20 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
-            using var Dbctx = _dbContext;
+            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             return Dbctx.ChangeTracker.HasChanges();
 
         }
 
         private void OnSaveExecuted(object obj)
         {
-            using var Dbctx = _dbContext;
+            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 Dbctx.SaveChanges();
         }
 
         private void LoadData()
         {
-            using (var Dbctx = _dbContext)
+            using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 var qp = Dbctx.Vorgangs
                 .Include(x => x.AidNavigation)
@@ -200,7 +201,7 @@ namespace Lieferliste_WPF.ViewModels
 
         internal void Exit()
         {
-            using var Dbctx = _dbContext;
+            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             Dbctx.SaveChanges();
         }
 

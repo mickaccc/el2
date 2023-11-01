@@ -16,21 +16,21 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Prism.Regions;
+using Prism.Ioc;
 
 namespace ModuleRoleEdit.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     public class RoleEditViewModel : ViewModelBase, IDropTarget
     {
-         
+        public string Title { get; } = "Rollen Zuteilung"; 
         public ICommand SelectionChangedCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
 
-        private IRegionManager _regionManager;
         private static ICollectionView _roleCV;
         private static bool _hasChanges = false;
-        private DB_COS_LIEFERLISTE_SQLContext _dbContext;
+        private IContainerExtension _container;
         public static ObservableCollection<Role>? Roles { get; private set; } = new();
         
         public static ObservableCollection<Permission> PermissionsAvail { get; private set; } = new();
@@ -40,10 +40,9 @@ namespace ModuleRoleEdit.ViewModels
 
 
 
-        public RoleEditViewModel(IRegionManager regionManager, DB_COS_LIEFERLISTE_SQLContext dbContext)
+        public RoleEditViewModel(IContainerExtension container)
         {
-            _dbContext = dbContext;
-            _regionManager = regionManager;
+            _container = container;
             LoadData();
 
             _roleCV = CollectionViewSource.GetDefaultView(Roles);
@@ -80,7 +79,7 @@ namespace ModuleRoleEdit.ViewModels
         {
             if(obj is Window ob)
             {
-                using (var Dbctx = _dbContext)
+                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     if (Dbctx.ChangeTracker.HasChanges())
                     {
@@ -104,7 +103,7 @@ namespace ModuleRoleEdit.ViewModels
         {
             if (_roleCV.CurrentItem is Role role)
             {
-                using (var Dbctx = _dbContext)
+                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     var inserts = PermissionsInter.ExceptBy(role.PermissionRoles.Select(x => x.PermissionKey), y => y.PermissionKey);
                     var removes = role.PermissionRoles.ExceptBy(PermissionsInter.Select(x => x.PermissionKey), y => y.PermissionKey);
@@ -163,7 +162,7 @@ namespace ModuleRoleEdit.ViewModels
 
         private void LoadData()
         {
-            using (var Dbctx = _dbContext)
+            using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                var r = Dbctx.Roles
                 .Include(x => x.PermissionRoles)

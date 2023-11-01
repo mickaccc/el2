@@ -103,8 +103,8 @@
                             Invisible="{Binding Ausgebl, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}"
-                            ExplorerCommand="{Binding Path=OpenExplorerCommand,Source={StaticResource lvm}}"
-                            HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource, Source={StaticResource lvm}}">
+                            ExplorerCommand="{Binding DataContext.OpenExplorerCommand}"
+                            HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource}">
                                     <UserControls:LieferlisteControl.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}"

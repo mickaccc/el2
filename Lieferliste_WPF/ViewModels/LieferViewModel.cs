@@ -28,6 +28,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Prism.Ioc;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -58,7 +59,7 @@ namespace Lieferliste_WPF.ViewModels
         private string _searchFilterText = string.Empty;
         private CmbFilter _cmbFilter;
         private static object _lock = new object();
-        private DB_COS_LIEFERLISTE_SQLContext _dbContext;
+        private IContainerExtension _container;
         public NotifyTaskCompletion<HashSet<Vorgang>>? OrderTask { get; private set; }
         
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
@@ -93,9 +94,9 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         
-        public LieferViewModel(DB_COS_LIEFERLISTE_SQLContext dbContext)
+        public LieferViewModel(IContainerExtension container)
         {
-            _dbContext = dbContext;
+            _container = container;
             
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
@@ -259,7 +260,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnSaveExecuted(object obj)
         {
-            using var Dbctx = _dbContext;
+            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             Dbctx.SaveChangesAsync();
         }
         private bool OnSaveCanExecute(object arg)
@@ -267,7 +268,7 @@ namespace Lieferliste_WPF.ViewModels
 
             try
             {
-                using var Dbctx = _dbContext;
+                using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 return Dbctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
@@ -363,7 +364,7 @@ namespace Lieferliste_WPF.ViewModels
             BindingOperations.EnableCollectionSynchronization(_orders, _lock);
             await Task.Factory.StartNew(() =>
             {
-                using (var Dbctx = _dbContext)
+                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     var a = Dbctx.OrderRbs
                         .Include(v => v.Vorgangs)
