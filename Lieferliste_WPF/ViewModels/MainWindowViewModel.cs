@@ -22,7 +22,7 @@ using System.Windows.Threading;
 using Prism.Regions;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using ModuleRoleEdit.Views;
+using ModuleDeliverList.Views;
 using Prism.Ioc;
 using Unity.Injection;
 using El2Core.Constants;
@@ -45,8 +45,8 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
 
-        private NotifyTaskCompletion<int> _onlineTask;
-        public NotifyTaskCompletion<int> OnlineTask
+        private NotifyTaskCompletion<int>? _onlineTask;
+        public NotifyTaskCompletion<int>? OnlineTask
         {
             get { return _onlineTask; }
             set
@@ -72,9 +72,8 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private delegate void LieferTaskCompletedEventHandler();
-        private Dispatcher dispatcher = Application.Current.Dispatcher;
         private static int _onlines;
-        private static System.Timers.Timer _timer;
+        private static System.Timers.Timer? _timer;
         private double _progressValue;
         private bool _isLoading;
         
@@ -82,8 +81,6 @@ namespace Lieferliste_WPF.ViewModels
         private List<ViewModelBase> _windowTitles;
         private IRegionManager _regionmanager;
         private IContainerExtension _container;
-        private RoleEdit _RoleEditView;
-        private MachineEdit _MachineEditView;
    
         public MainWindowViewModel(IRegionManager regionManager, IContainerExtension container)
         {
@@ -135,8 +132,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnTabCloseExecuted(object obj)
         {
-            TabTitles.Remove(SelectedTab);
-            SelectedTab = TabTitles.LastOrDefault();
+            _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
         }
  
         private void OnOpenMachineMgmtExecuted(object selectedItem)
@@ -154,9 +150,9 @@ namespace Lieferliste_WPF.ViewModels
         private void OnOpenRoleMgmtExecuted(object obj)
         {
 
-            _RoleEditView = _container.Resolve<RoleEdit>();
-            _regionmanager.AddToRegion(RegionNames.MainContentRegion, _RoleEditView);
-            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(_RoleEditView);
+            var roleEdit = _container.Resolve<RoleEdit>();
+            _regionmanager.AddToRegion(RegionNames.MainContentRegion, roleEdit);
+            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(roleEdit);
         }
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
@@ -202,7 +198,7 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
-                !_regionmanager.Regions.All(x => !x.Views.Matches(typeof(MachinePlan)));
+                _regionmanager.Regions[RegionNames.MainContentRegion].Views.All(x => x.GetType() != typeof(MachinePlan));
         }
 
         private bool OnOpenLieferlisteCanExecute(object arg)

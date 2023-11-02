@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:lib="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     xmlns:prism="http://prismlibrary.com/"             
+    xmlns:local="clr-namespace:Lieferliste_WPF.Views"             
     prism:ViewModelLocator.AutoWireViewModel="True"
     x:Class="Lieferliste_WPF.Views.MachineEdit"
         mc:Ignorable="d"
@@ -30,11 +31,11 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding Path=WorkAreas}" MinWidth="50"
+                            <ComboBox ItemsSource="{Binding DataContext.WorkAreas, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid},AncestorLevel=2}}" MinWidth="50"
                                       DisplayMemberPath="Bereich"                                   
                                       SelectedItem="WorkAreaId"
                                       SelectedValuePath="WorkAreaId"
-                                      SelectedValue="{Binding WorkAreaId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, TargetNullValue=0}" />
+                                      SelectedValue="{Binding WorkAreaId, Mode=TwoWay, TargetNullValue=0, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

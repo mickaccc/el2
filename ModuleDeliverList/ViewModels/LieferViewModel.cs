@@ -1,23 +1,17 @@
-﻿using El2UserControls;
-using El2Core.Models;
-using Lieferliste_WPF.Commands;
-using Lieferliste_WPF.Interfaces;
-using Lieferliste_WPF.Utilities;
-using Lieferliste_WPF.Views;
-using Lieferliste_WPF.ViewModels.Base;
+﻿using El2Core.Models;
+using El2Core.Utils;
+using El2Core.ViewModelBase;
+using ModuleDeliverList.UserControls;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Prism.Regions;
+using Prism.Ioc;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.RightsManagement;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -26,18 +20,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using El2Core.Utils;
-using El2Core.ViewModelBase;
-using Prism.Ioc;
+using System.Configuration;
+using System.Reflection;
+using Prism.Modularity;
+using System.Collections.ObjectModel;
 
-namespace Lieferliste_WPF.ViewModels
+namespace ModuleDeliverList.ViewModels
 {
-    class LieferViewModel : ViewModelBase, IViewModel
+    class LieferViewModel : ViewModelBase
     {
         
         public ICollectionView OrdersView { get; private set; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
-        public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
+        //public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
         public ICommand FilterCommand => _filterCommand ??= new RelayCommand(OnFilter);
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
 
@@ -60,6 +55,8 @@ namespace Lieferliste_WPF.ViewModels
         private CmbFilter _cmbFilter;
         private static object _lock = new object();
         private IContainerExtension _container;
+        private string _setting;
+
         public NotifyTaskCompletion<HashSet<Vorgang>>? OrderTask { get; private set; }
         
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
@@ -97,7 +94,14 @@ namespace Lieferliste_WPF.ViewModels
         public LieferViewModel(IContainerExtension container)
         {
             _container = container;
-            
+            var p = _container.Resolve<SettingsContext>();
+            var filename = Assembly.GetEntryAssembly().Location;
+            var configuration = ConfigurationManager.OpenExeConfiguration(filename);
+            if (configuration != null)
+            {
+                var sect = configuration.GetSection("applicationSettings").ElementInformation.Properties;
+                var s = sect["ExplorerPath"];
+            }
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
@@ -166,8 +170,6 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
- 
-
         private void OnTextSearch(object commandParameter)
         {
             if (commandParameter is TextChangedEventArgs change)
@@ -184,58 +186,60 @@ namespace Lieferliste_WPF.ViewModels
 
 
         #region Commands
-        private void OnOpenExplorer(object obj)
-        {
-            if (obj is Dictionary<string, object> dic)
-            {
-                StringBuilder sb = new();
-                String exp = Properties.Settings.Default.ExplorerPath;
-                string[] pa = exp.Split(',');
+        //private void OnOpenExplorer(object obj)
+        //{
+        //    var c = _container.Resolve<Configuration>();
+            
+        //    if (obj is Dictionary<string, object> dic)
+        //    {
+        //        StringBuilder sb = new();
+        //        String exp = Properties.Settings.Default.ExplorerPath;
+        //        string[] pa = exp.Split(',');
 
-                Regex reg2 = new(@"(?<=\[)(.*?)(?=\])");
+        //        Regex reg2 = new(@"(?<=\[)(.*?)(?=\])");
 
 
-                for (int i = 0; i < pa.Length; i += 2)
-                {
-                    StringBuilder nsb = new StringBuilder();
-                    if (!pa[i].IsNullOrEmpty())
-                    {
-                        Regex reg3 = new(pa[i]);
-                        object? val;
+        //        for (int i = 0; i < pa.Length; i += 2)
+        //        {
+        //            StringBuilder nsb = new StringBuilder();
+        //            if (!pa[i].IsNullOrEmpty())
+        //            {
+        //                Regex reg3 = new(pa[i]);
+        //                object? val;
 
-                        if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
-                        {
-                            if (val is string s)
-                            {
-                                Match match2 = reg3.Match(s);
-                                foreach (Group ma in match2.Groups.Values)
-                                {
-                                    if (ma.Value != val.ToString())
-                                        nsb.Append(ma.Value.ToString()).Append(Path.DirectorySeparatorChar);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        object? val;
-                        if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
-                            nsb.Append(val.ToString()).Append(Path.DirectorySeparatorChar);
-                    }
-                    sb.Append(nsb.ToString());
-                }
+        //                if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
+        //                {
+        //                    if (val is string s)
+        //                    {
+        //                        Match match2 = reg3.Match(s);
+        //                        foreach (Group ma in match2.Groups.Values)
+        //                        {
+        //                            if (ma.Value != val.ToString())
+        //                                nsb.Append(ma.Value.ToString()).Append(Path.DirectorySeparatorChar);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                object? val;
+        //                if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
+        //                    nsb.Append(val.ToString()).Append(Path.DirectorySeparatorChar);
+        //            }
+        //            sb.Append(nsb.ToString());
+        //        }
 
-                var p = PathUtils.PathProvider(@Properties.Settings.Default.ExplorerRoot, sb.ToString());
+        //        var p = Path.Combine(@Properties.Settings.Default.ExplorerRoot, sb.ToString());
 
-                if (p.IsNullOrEmpty())
-                {
-                    MessageBox.Show(String.Format("Der Hauptpfad '{0}'\nwurde nicht gefunden!", Properties.Settings.Default.ExplorerRoot)
-                        , "Error", MessageBoxButton.OK);
-                    return;
-                }
-                Process.Start("explorer.exe", @p);
-            }
-        }
+        //        if (p.IsNullOrEmpty())
+        //        {
+        //            MessageBox.Show(String.Format("Der Hauptpfad '{0}'\nwurde nicht gefunden!", Properties.Settings.Default.ExplorerRoot)
+        //                , "Error", MessageBoxButton.OK);
+        //            return;
+        //        }
+        //        Process.Start("explorer.exe", @p);
+        //    }
+        //}
         private void OnFilter(object obj)
         {
             _cmbFilter = (CmbFilter) obj;
@@ -247,16 +251,16 @@ namespace Lieferliste_WPF.ViewModels
         }
         private static void OnOrderViewExecuted(object parameter)
         {
-            if (parameter is Vorgang vrg)
-            {
-                Order ov = new(vrg.Aid);
-                Window wnd = new()
-                {
-                    Owner = Application.Current.MainWindow,
-                    Content = ov
-                };
-                wnd.Show();
-            }
+            //if (parameter is Vorgang vrg)
+            //{
+            //    Order ov = new(vrg.Aid);
+            //    Window wnd = new()
+            //    {
+            //        Owner = Application.Current.MainWindow,
+            //        Content = ov
+            //    };
+            //    wnd.Show();
+            //}
         }
         private void OnSaveExecuted(object obj)
         {

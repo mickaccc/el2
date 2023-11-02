@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Lieferliste_WPF.Utilities
+namespace El2Core.Utils
 {
     public class ConcurrentObservableCollection<T> : ObservableCollection<T>
     {

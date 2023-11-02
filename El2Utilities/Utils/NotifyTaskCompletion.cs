@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace Lieferliste_WPF.Utilities
+namespace El2Core.Utils
 {
 
     public sealed class NotifyTaskCompletion<TResult> : INotifyPropertyChanged

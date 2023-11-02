@@ -1,6 +1,7 @@
 ﻿
 using El2Core.Models;
 using El2Core.ViewModelBase;
+using El2Core.Utils;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System;

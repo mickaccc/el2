@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "El2UserControls", "El2UserC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfCustomControlLibrary", "WpfCustomControlLibrary\WpfCustomControlLibrary.csproj", "{77CE415F-8705-4AA7-8316-C1C78486F236}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleRoleEdit", "RoleEditModule\ModuleRoleEdit.csproj", "{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleDeliverList", "ModuleDeliverList\ModuleDeliverList.csproj", "{B3A22B0C-AFFF-4069-9633-DBB5D8CCAE92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{77CE415F-8705-4AA7-8316-C1C78486F236}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77CE415F-8705-4AA7-8316-C1C78486F236}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77CE415F-8705-4AA7-8316-C1C78486F236}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6ECD67AB-FF7F-4CBE-BE82-24B084F0390F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3A22B0C-AFFF-4069-9633-DBB5D8CCAE92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A22B0C-AFFF-4069-9633-DBB5D8CCAE92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A22B0C-AFFF-4069-9633-DBB5D8CCAE92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A22B0C-AFFF-4069-9633-DBB5D8CCAE92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

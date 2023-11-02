@@ -347,7 +347,7 @@
                             VerticalAlignment="Center"
                             HorizontalAlignment="Center"
                             Command="{TemplateBinding CloseCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=local:CloseableTabItem},Path=Header}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=local:CloseableTabItem},Path=Content}"
                             BorderThickness="0">
                                             <Image Source="/Images/OrangeCross32.png" VerticalAlignment="Bottom" />
                                         </Button>

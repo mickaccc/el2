@@ -1,9 +1,9 @@
-﻿namespace Lieferliste_WPF.Commands
+﻿namespace El2Core.Utils
 {
     using System;
     using System.Windows.Input;
 
-    internal class RelayCommand : ICommand
+    public class RelayCommand : ICommand
     {
         #region Fields
 

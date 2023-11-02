@@ -23,6 +23,7 @@ namespace Lieferliste_WPF.ViewModels
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     class MachinePlanViewModel : ViewModelBase, IDropTarget
     {
+        public string Title { get; } = "Teamleiter Zuteileung";
         private RelayCommand? _selectionChangeCommand;
         private RelayCommand? _textSearchCommand;
         public ICommand SelectionChangeCommand => _selectionChangeCommand ??= new RelayCommand(SelectionChange);

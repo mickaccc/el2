@@ -16,7 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using ModuleRoleEdit.Views;
+using System.Runtime.CompilerServices;
 
 namespace Lieferliste_WPF
 {
@@ -34,10 +34,10 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
                 IConfiguration  Configuration = builder.Build();
-            var defaultconnection = Configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = Configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection);
 
-            containerRegistry.RegisterInstance(Configuration);
+            containerRegistry.RegisterInstance(Properties.Settings.Default);
             containerRegistry.RegisterInstance(builderopt.Options);
             containerRegistry.Register<DB_COS_LIEFERLISTE_SQLContext>();
 
@@ -53,7 +53,7 @@ namespace Lieferliste_WPF
         {
             base.ConfigureModuleCatalog(moduleCatalog);
 
-            moduleCatalog.AddModule<ModuleRoleEdit.RoleEditModule>();
+            moduleCatalog.AddModule<ModuleDeliverList.DeliverListModule>();
         }
 
     }  

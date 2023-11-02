@@ -14,7 +14,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace El2UserControls
+namespace ModuleDeliverList.UserControls
 {
     /// <summary>
     /// Interaction logic for LieferlisteView1.xaml

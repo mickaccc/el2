@@ -15,14 +15,15 @@ using System.Windows.Data;
 using System.Windows.Input;
 using WpfCustomControlLibrary;
 using El2Core.ViewModelBase;
+using Prism.Ioc;
 
 namespace Lieferliste_WPF.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    public class UserViewModel : ViewModelBase, IDropTarget
+    public class UserEditViewModel : ViewModelBase, IDropTarget
     {
-        
-  
+
+        public string Title { get; } = "User Zuteilung";
         public ICommand SelectionChangedCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
         public ICommand NewCommand { get; private set; }
@@ -42,7 +43,7 @@ namespace Lieferliste_WPF.ViewModels
         private static HashSet<Role> Roles { get; set; } = new();
         private static HashSet<WorkArea> WorkAreas { get; set; } = new();
         private static HashSet<Costunit> CostUnits { get; set; } = new();
-        private IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> _dbContextFactory;
+        private IContainerExtension _container;
         internal CollectionViewSource roleSource { get; private set; } = new();
         internal CollectionViewSource workSource { get; private set; } = new();
         internal CollectionViewSource costSource { get; private set; } = new();
@@ -67,9 +68,9 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public UserViewModel(IDbContextFactory<DB_COS_LIEFERLISTE_SQLContext> dbContextFactory)
+        public UserEditViewModel(IContainerExtension container)
         {
-            _dbContextFactory = dbContextFactory;
+            _container = container;
 
             LoadData();
             _usrCV = CollectionViewSource.GetDefaultView(Users);
@@ -81,8 +82,6 @@ namespace Lieferliste_WPF.ViewModels
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
 
- 
-
             roleSource.Source = Roles;
             workSource.Source = WorkAreas;
             costSource.Source = CostUnits;
@@ -92,8 +91,6 @@ namespace Lieferliste_WPF.ViewModels
             costSource.Filter += CostFilterPredicate;
           
         }
-
-
 
         private bool OnLostFocusCanExecute(object arg)
         {
@@ -169,7 +166,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                using (var Dbctx = _dbContextFactory.CreateDbContext())
+                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     if (Dbctx.ChangeTracker.HasChanges())
                     {
@@ -200,7 +197,7 @@ namespace Lieferliste_WPF.ViewModels
 
             if (u is User usr)
             {
-                using (var Dbctx = _dbContextFactory.CreateDbContext())
+                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     Users?.Remove(usr);
                     Dbctx.Users.Remove(usr);
@@ -230,7 +227,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (_isNew)
             {
-                using (var Dbctx = _dbContextFactory.CreateDbContext())
+                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     var user = Users.Except(Dbctx.Users).FirstOrDefault();
                     if (user != null)
@@ -246,7 +243,7 @@ namespace Lieferliste_WPF.ViewModels
                         Dbctx.Users.Add((User)user);
                     }
                 }
-                using (var Dbctx = _dbContextFactory.CreateDbContext())
+                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     Dbctx.SaveChangesAsync();
                     _isNew = false;
@@ -258,7 +255,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
-            using var Dbctx = _dbContextFactory.CreateDbContext();
+            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 return Dbctx.ChangeTracker.HasChanges() || _isNew;
         }
 
@@ -277,7 +274,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            using var Dbctx = _dbContextFactory.CreateDbContext();
+            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             Users = Dbctx.Users
                 .Include(x => x.UserWorkAreas)
                 .Include(y => y.UserRoles)

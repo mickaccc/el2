@@ -5,12 +5,12 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
-    xmlns:UserControls="clr-namespace:El2UserControls;assembly=El2UserControls"
+    xmlns:UserControls="clr-namespace:ModuleDeliverList.UserControls"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:WpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     x:Name="lieferListe"
-    x:Class="Lieferliste_WPF.Views.Liefer"
+    x:Class="ModuleDeliverList.Views.Liefer"
       mc:Ignorable="d" 
       d:DesignHeight="450" Width="1400"  >
     <Grid.Resources>
@@ -103,8 +103,7 @@
                             Invisible="{Binding Ausgebl, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}"
-                            ExplorerCommand="{Binding DataContext.OpenExplorerCommand}"
-                            HasMouseOver="{Binding Path=HasMouse, Mode=OneWayToSource}">
+                            HasMouseOver="{Binding DataContext.HasMouse, Mode=OneWayToSource}">
                                     <UserControls:LieferlisteControl.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}"

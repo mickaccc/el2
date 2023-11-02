@@ -12,9 +12,7 @@
     using System.Windows.Input;
     using System.Windows.Media;
     using Prism.Regions;
-    using ModuleRoleEdit.Views;
-
-
+    
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
