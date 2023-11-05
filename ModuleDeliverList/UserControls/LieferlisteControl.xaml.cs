@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
+using CompositeCommands.Core;
 
 namespace ModuleDeliverList.UserControls
 {
@@ -24,14 +25,13 @@ namespace ModuleDeliverList.UserControls
         public LieferlisteControl()
         {
             InitializeComponent();
+            
             //Dispatcher.ShutdownStarted += OnDispatcherShutDownStarted;
 
         }
-  
-
 
         #region Properties
-        
+
         public static readonly DependencyProperty AidProperty
             = DependencyProperty.Register("Aid"
                 , typeof(string)
@@ -315,20 +315,6 @@ namespace ModuleDeliverList.UserControls
                 typeof(LieferlisteControl), new PropertyMetadata(false));
 
 
-
-
-        public String HasMouseOver
-        {
-            get { return (String)GetValue(HasMouseOverProperty); }
-            set { SetValue(HasMouseOverProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for HasMouseOver.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty HasMouseOverProperty =
-            DependencyProperty.Register("HasMouseOver", typeof(String), typeof(LieferlisteControl), new PropertyMetadata(""));
-
-
-
         public bool Invisible
         {
             get { return (bool)GetValue(InvisibleProperty); }
@@ -374,26 +360,14 @@ namespace ModuleDeliverList.UserControls
             DependencyProperty.Register("SelectedValue", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
         public static readonly DependencyProperty ExplorerCommandProperty = DependencyProperty.Register("ExplorerCommand", typeof(ICommand), typeof(LieferlisteControl));
-        public ICommand ExplorerCommand
-        {
-            get { return (ICommand)GetValue(ExplorerCommandProperty); }
-            set { SetValue(ExplorerCommandProperty, value); }
-        }
-
-        public static readonly DependencyProperty ExplorerCommandParameterProperty = DependencyProperty.Register("ExplorerCommandParameter", typeof(object), typeof(LieferlisteControl));
-        public object ExplorerCommandParameter
-        {
-            get { return (object)GetValue(ExplorerCommandParameterProperty); }
-            set { SetValue(ExplorerCommandParameterProperty, value); }
-        }
-
-
-
+ 
         public Dictionary<string,object> AvailableItems
         {
             get { return (Dictionary<string,object>)GetValue(AvailableItemsProperty); }
             set { SetValue(AvailableItemsProperty, value); }
         }
+
+        public string HasMouseOver { get; internal set; }
 
         // Using a DependencyProperty as the backing store for AvailableItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AvailableItemsProperty =
@@ -455,19 +429,6 @@ namespace ModuleDeliverList.UserControls
                 if(send.IsMouseCaptured)
                     send.ReleaseMouseCapture();
             }
-        }
-        private void TextBlock_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if( sender is TextBlock send)
-            {
-                SetValue(HasMouseOverProperty, send.Name);
-                send.CaptureMouse();
-            }
-        }
-
-        private void NotTextBlock_MouseEnter(object sender, MouseEventArgs e)
-        {
-            SetValue(HasMouseOverProperty, String.Empty);
         }
 
         private void btnToArchiv_Click(object sender, RoutedEventArgs e)

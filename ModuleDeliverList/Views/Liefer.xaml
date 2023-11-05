@@ -102,8 +102,7 @@
                             Comment_Ma="{Binding BemMa, Mode=TwoWay}"
                             Invisible="{Binding Ausgebl, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
-                            Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}"
-                            HasMouseOver="{Binding DataContext.HasMouse, Mode=OneWayToSource}">
+                            Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}">
                                     <UserControls:LieferlisteControl.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}"

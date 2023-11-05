@@ -4,8 +4,11 @@ using System.Threading.Tasks;
 
 namespace El2Core.Utils
 {
+    public interface INotifyTaskCompletion
+    {
 
-    public sealed class NotifyTaskCompletion<TResult> : INotifyPropertyChanged
+    }
+    public sealed class NotifyTaskCompletion<TResult> : INotifyPropertyChanged, INotifyTaskCompletion
     {
         public NotifyTaskCompletion(Task<TResult> task)
         {

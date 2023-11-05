@@ -1,10 +1,13 @@
-﻿<UserControl x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:prism="http://prismlibrary.com/" xmlns:viewmodels="clr-namespace:ModuleDeliverList.ViewModels" xmlns:Views="clr-namespace:ModuleDeliverList.Views" x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
+             d:DataContext="{d:DesignInstance Type={x:Type viewmodels:LieferViewModel}}"
+             prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="1400" Height="100"  x:Name="luc" >
 
@@ -33,7 +36,7 @@
           Duration="0:0:1"
           Storyboard.TargetProperty="FontSize"  />
         </Storyboard>
-        <Style TargetType="TextBlock">
+        <Style TargetType="{x:Type TextBlock}">
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="FontFamily" Value="Calibri" />
             <Setter Property="FontSize" Value="12"/>
@@ -43,26 +46,19 @@
             <Setter Property="Margin" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <EventSetter Event="MouseEnter" Handler="TextBlock_MouseEnter"/>
-            <EventSetter Event="MouseLeave" Handler="TextBlock_MouseLeave"/>
-            <EventSetter Event="MouseLeftButtonUp" Handler="TextBlock_MouseLeftButtonUp"/>
-            <EventSetter Event="MouseRightButtonDown" Handler="TextBlock_MouseRightButtonDown"/>
+            <EventSetter Event="UIElement.MouseEnter" Handler="TextBlock_MouseEnter"/>
+            <EventSetter Event="UIElement.MouseLeave" Handler="TextBlock_MouseLeave"/>
+
         </Style>
-        <Style TargetType="TextBox">
+        <Style TargetType="{x:Type TextBox}">
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="MinWidth" Value="20"/>
-            <EventSetter Event="MouseEnter" Handler="NotTextBlock_MouseEnter"/>
         </Style>
-        <Style TargetType="Button">
-            <EventSetter Event="MouseEnter" Handler="NotTextBlock_MouseEnter"/>
-        </Style>
-        <Style TargetType="CheckBox">
-            <EventSetter Event="MouseEnter" Handler="NotTextBlock_MouseEnter"/>
-        </Style>
+ 
     </UserControl.Resources>
 
     <Border >
-        <StackPanel  Name="Liefer" Background="#FFBEC9CE" >
+        <StackPanel  x:Name="Liefer" Background="#FFBEC9CE" >
             <Grid >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="23"/>
@@ -85,105 +81,92 @@
                     <ColumnDefinition Width="100*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0"  Grid.Column="0" Name="txtPlanT" 
+                <TextBlock Grid.Row="0"  Grid.Column="0" x:Name="txtPlanT" 
                      ToolTip="Plantermin lt. SAP"
-                     Text="{Binding EckEnd ,ElementName=luc, Converter={StaticResource KwConv}}"  />
-                <TextBox Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1"/>
-                <TextBlock Grid.Column="1" Grid.Row="0" Name="txtProj" ToolTip="Projekt" />
-                <TextBlock Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Name="txtProjInfo" />
-                <TextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" Name="txtMatTTNR" >
+                     Text="{Binding EckEnd, Converter={StaticResource KwConv}, ElementName=luc}"  />
+                <TextBox x:Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" />
+                <TextBlock Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" />
+                <TextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="txtMatTTNR" >
                     <TextBlock.Text>
-                        <MultiBinding StringFormat="{} {0} {1}">
+                        <MultiBinding StringFormat=" {0} {1}">
                             <Binding Path="TTNR" ElementName="luc"/>
                             <Binding Path="MatText" ElementName="luc"/>
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
 
-                <TextBlock Grid.Column="13"  Height="23" Name="txtMatText" Width="120"  
+                <TextBlock Grid.Column="13"  Height="23" x:Name="txtMatText" Width="120"  
                      HorizontalAlignment="Left" VerticalAlignment="Center" 
                      Text="{Binding MatText, ElementName=luc}" />
-                <TextBlock  Name="txtWorkArea" 
+                <TextBlock  x:Name="txtWorkArea" 
                      Text="{Binding WorkArea, ElementName=luc}" Grid.Row="1" Grid.Column="2"  />
-                <TextBlock Grid.Column="5" Name="txtOrder"
+                <TextBlock Grid.Column="5" x:Name="txtOrder"
                            Text="{Binding Aid, ElementName=luc}" ToolTip="Auftragsnummer" Grid.ColumnSpan="2"  />
-                <TextBlock Grid.Column="3" Grid.Row="1" Name="txtVnr"  ToolTip="Vorgangsnummer" 
-                     Text="{Binding Vnr, StringFormat=\{0:D4\},  ElementName=luc}" />
-                <TextBlock Grid.Column="10" Name="txtQuant" ToolTip="Auftragsmenge" 
+                <TextBlock Grid.Column="3" Grid.Row="1" x:Name="txtVnr"  ToolTip="Vorgangsnummer" 
+                     Text="{Binding Vnr, ElementName=luc, StringFormat=\{0:D4\}}" />
+                <TextBlock Grid.Column="10" x:Name="txtQuant" ToolTip="Auftragsmenge" 
                      Text="{Binding Quantity, ElementName=luc}" Grid.ColumnSpan="2" Margin="158,344,134,-339" Grid.Row="2" />
-                <TextBlock Grid.Column="8" Name="txtQuantYield" ToolTip="zurückgemeldete Menge"
+                <TextBlock Grid.Column="8" x:Name="txtQuantYield" ToolTip="zurückgemeldete Menge"
                      Text="{Binding QuantityYield, ElementName=luc}" />
-                <TextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" Name="txtVrgText" ToolTip="Vorgang Kurztext"  
+                <TextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" x:Name="txtVrgText" ToolTip="Vorgang Kurztext"  
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />
-                <TextBlock Grid.Column="8" Grid.Row="2"  Name="txtVNR"  />
-                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  Name="txtRessTo" Background="Wheat">
-                    <TextBlock.Text>
-                        <conv:ConverterBindableParameter Binding="{Binding MachineText, ElementName=luc}"
-                                                          Converter="{StaticResource RtKw}"
-                                                          ConverterParameter="{Binding EndDate, ElementName=luc}"/>
-
-
-                    </TextBlock.Text>
-                </TextBlock>
-                <TextBlock Grid.Column="6" Grid.Row="2"  Name="txtScrap"  ToolTip="Ausschussmenge" 
+                <TextBlock Grid.Column="8" Grid.Row="2"  x:Name="txtVNR"  />
+                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  x:Name="txtRessTo" Background="Wheat" Text="{conv:ConverterBindableParameter Binding={Binding MachineText, ElementName=luc}, ConverterParameter={Binding EndDate, ElementName=luc}, Converter={StaticResource RtKw}}"/>
+                <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtScrap"  ToolTip="Ausschussmenge" 
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
-                <TextBlock Grid.Column="6" Grid.Row="2"  Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25" />
+                <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25" />
                 <StackPanel Grid.Column="9" Background="{StaticResource Background2}" Grid.RowSpan="3" Margin="5"  >
-                    <Label x:Name="label1" Height="25" Content="{Binding Comment_Me, ElementName=luc,
-                        Converter={StaticResource CommentConverter}, ConverterParameter=I}"
+                    <Label x:Name="label1" Height="25" Content="{Binding Comment_Me, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
                            Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
-                    <TextBox Height="60" Name="txtCommetM" Width="{Binding ActualWidth, ElementName=label1, Mode=OneWay}"
+                    <TextBox Height="60" x:Name="txtCommetM" Width="{Binding ActualWidth, ElementName=label1, Mode=OneWay}"
                              Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
                          HorizontalAlignment="Left" VerticalAlignment="Center"
-                             Text="{Binding Comment_Me, Converter={StaticResource CommentConverter},
-                                    ConverterParameter=S, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding Converter={StaticResource Permission},ConverterParameter=!COM-ME}" />
+                             Text="{Binding Comment_Me, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
+                    IsReadOnly="{Binding ConverterParameter=!COM-ME, Converter={StaticResource Permission}}" />
                 </StackPanel>
                 <StackPanel x:Name="stackPanel1" Grid.Column="10" Grid.RowSpan="3" Background="Aqua"  Margin="5">
-                    <Label x:Name="label" Height="25" Content="{Binding Comment_Te, Converter={StaticResource CommentConverter},
-                        ConverterParameter=I, ElementName=luc}"
+                    <Label x:Name="label" Height="25" Content="{Binding Comment_Te, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
                            Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque"/>
-                    <TextBox Height="60" Name="txtCommetT" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
+                    <TextBox Height="60" x:Name="txtCommetT" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
                          HorizontalAlignment="Left" VerticalAlignment="Center"
-                             Text="{Binding Comment_Te, Converter={StaticResource CommentConverter},
-                                    ConverterParameter=S, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding Converter={StaticResource Permission},ConverterParameter=!COM_TE}"
+                             Text="{Binding Comment_Te, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
+                    IsReadOnly="{Binding ConverterParameter=!COM_TE, Converter={StaticResource Permission}}"
                          Width="{Binding ActualWidth, ElementName=stackPanel1, Mode=OneWay}"/>
                 </StackPanel>
                 <StackPanel x:Name="stackPanel" Grid.Column="11" Grid.RowSpan="3" Margin="5" >
-                    <Label Height="25" Content="{Binding Comment_Ma,Converter={StaticResource CommentConverter},
-                        ConverterParameter=I, ElementName=luc}"
+                    <Label Height="25" Content="{Binding Comment_Ma, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
                            Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
-                    <TextBox Height="60" Name="txtCommetMa" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
+                    <TextBox Height="60" x:Name="txtCommetMa" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
                          HorizontalAlignment="Left" VerticalAlignment="Center"
-                             Text="{Binding Comment_Ma, Converter={StaticResource CommentConverter},
-                                ConverterParameter=S, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding Converter={StaticResource Permission},ConverterParameter=!COM_MA, ElementName=luc}"
+                             Text="{Binding Comment_Ma, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
+                    IsReadOnly="{Binding ConverterParameter=!COM_MA, Converter={StaticResource Permission}, ElementName=luc}"
                              Width="{Binding ActualWidth, ElementName=stackPanel, Mode=OneWay}"/>
                 </StackPanel>
-                <TextBlock Grid.Column="7" Name="txtEnd" 
+                <TextBlock Grid.Column="7" x:Name="txtEnd" 
                          ToolTip="Endtermin" Grid.Row="1" 
-                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\},ConverterCulture=de-AT}"
-                         Background="{Binding EndDate, ElementName=luc, Converter={StaticResource DateLost}}"/>
-                <DatePicker Grid.Column="8" Grid.Row="1" Name="txtTerm" Language="de-DE" 
+                         Text="{Binding EndDate, ConverterCulture=de-AT, ElementName=luc, StringFormat=\{0:d\}}"
+                         Background="{Binding EndDate, Converter={StaticResource DateLost}, ElementName=luc}"/>
+                <DatePicker Grid.Column="8" Grid.Row="1" x:Name="txtTerm" Language="de-DE" 
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Termin"
-                            SelectedDate="{Binding Termin, Mode=TwoWay, ElementName=luc}"
+                            SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"/>
-                <Button Grid.Row="2" Content="Explorer" Name="btnExpl" Command="{Binding ExplorerCommand,ElementName=luc}"
+                <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"/>
                 <StackPanel Grid.Row="2" Grid.Column="7" Orientation="Horizontal" >
-                    <CheckBox  Name="isHighPrio" Checked="Modified"/>
-                    <TextBox  Name="CommentHighPrio" Width="101" ToolTip="Priotext" TextChanged="CommentHighPrio_TextChanged" />
+                    <CheckBox  x:Name="isHighPrio" Checked="Modified"/>
+                    <TextBox  x:Name="CommentHighPrio" Width="101" ToolTip="Priotext" TextChanged="CommentHighPrio_TextChanged" />
                 </StackPanel>
 
-                <Button Grid.Column="13" Grid.Row="2" Content="ablegen" Name="btnToArchiv"
+                <Button Grid.Column="13" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
                         Click="btnToArchiv_Click" />
 
-                <Button Grid.Column="13" Grid.Row="1" Content="Messauftrag" Name="btnMessOrder" />
+                <Button Grid.Column="13" Grid.Row="1" Content="Messauftrag" x:Name="btnMessOrder" />
                 <DockPanel Grid.Column="8" Grid.Row="2" Background="YellowGreen" >
-                    <CheckBox  Height="16" Name="chkMap"  SnapsToDevicePixels="True" Click="Modified" 
+                    <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" Click="Modified" 
                       IsChecked="{Binding Doku, ElementName=luc}"/>
-                    <CheckBox  Height="16" Name="chkInvis" Click="Modified" 
+                    <CheckBox  Height="16" x:Name="chkInvis" Click="Modified" 
                       IsChecked="{Binding Invisible, ElementName=luc}" Checked="chkInvis_Checked" />
                 </DockPanel>
             </Grid>

@@ -24,6 +24,7 @@ using System.Configuration;
 using System.Reflection;
 using Prism.Modularity;
 using System.Collections.ObjectModel;
+using CompositeCommands.Core;
 
 namespace ModuleDeliverList.ViewModels
 {
@@ -44,7 +45,6 @@ namespace ModuleDeliverList.ViewModels
 
         public string Title { get; } = "Lieferliste";
 
-        public string HasMouse { get; set; } = string.Empty;
         private readonly Dictionary<string, string> _filterCriterias = new();
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
@@ -56,7 +56,12 @@ namespace ModuleDeliverList.ViewModels
         private static object _lock = new object();
         private IContainerExtension _container;
         private string _setting;
-
+        private IApplicationCommands _applicationCommands;
+        public IApplicationCommands ApplicationCommands
+        {
+            get { return _applicationCommands; }
+            set { SetProperty(ref _applicationCommands, value); }
+        }
         public NotifyTaskCompletion<HashSet<Vorgang>>? OrderTask { get; private set; }
         
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
@@ -91,19 +96,13 @@ namespace ModuleDeliverList.ViewModels
             }
         }
         
-        public LieferViewModel(IContainerExtension container)
+        public LieferViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
         {
             _container = container;
-            var p = _container.Resolve<SettingsContext>();
-            var filename = Assembly.GetEntryAssembly().Location;
-            var configuration = ConfigurationManager.OpenExeConfiguration(filename);
-            if (configuration != null)
-            {
-                var sect = configuration.GetSection("applicationSettings").ElementInformation.Properties;
-                var s = sect["ExplorerPath"];
-            }
+            _applicationCommands = applicationCommands;
+ 
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
-            SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanEcecute);
+            SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
@@ -111,7 +110,9 @@ namespace ModuleDeliverList.ViewModels
             
             LoadDataAsync();           
         }
-       
+
+
+
         private async void OnaddOrderAsync(object? sender, PropertyChangedEventArgs e)
         {
 
@@ -186,60 +187,7 @@ namespace ModuleDeliverList.ViewModels
 
 
         #region Commands
-        //private void OnOpenExplorer(object obj)
-        //{
-        //    var c = _container.Resolve<Configuration>();
-            
-        //    if (obj is Dictionary<string, object> dic)
-        //    {
-        //        StringBuilder sb = new();
-        //        String exp = Properties.Settings.Default.ExplorerPath;
-        //        string[] pa = exp.Split(',');
-
-        //        Regex reg2 = new(@"(?<=\[)(.*?)(?=\])");
-
-
-        //        for (int i = 0; i < pa.Length; i += 2)
-        //        {
-        //            StringBuilder nsb = new StringBuilder();
-        //            if (!pa[i].IsNullOrEmpty())
-        //            {
-        //                Regex reg3 = new(pa[i]);
-        //                object? val;
-
-        //                if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
-        //                {
-        //                    if (val is string s)
-        //                    {
-        //                        Match match2 = reg3.Match(s);
-        //                        foreach (Group ma in match2.Groups.Values)
-        //                        {
-        //                            if (ma.Value != val.ToString())
-        //                                nsb.Append(ma.Value.ToString()).Append(Path.DirectorySeparatorChar);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                object? val;
-        //                if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
-        //                    nsb.Append(val.ToString()).Append(Path.DirectorySeparatorChar);
-        //            }
-        //            sb.Append(nsb.ToString());
-        //        }
-
-        //        var p = Path.Combine(@Properties.Settings.Default.ExplorerRoot, sb.ToString());
-
-        //        if (p.IsNullOrEmpty())
-        //        {
-        //            MessageBox.Show(String.Format("Der Hauptpfad '{0}'\nwurde nicht gefunden!", Properties.Settings.Default.ExplorerRoot)
-        //                , "Error", MessageBoxButton.OK);
-        //            return;
-        //        }
-        //        Process.Start("explorer.exe", @p);
-        //    }
-        //}
+ 
         private void OnFilter(object obj)
         {
             _cmbFilter = (CmbFilter) obj;
@@ -251,16 +199,7 @@ namespace ModuleDeliverList.ViewModels
         }
         private static void OnOrderViewExecuted(object parameter)
         {
-            //if (parameter is Vorgang vrg)
-            //{
-            //    Order ov = new(vrg.Aid);
-            //    Window wnd = new()
-            //    {
-            //        Owner = Application.Current.MainWindow,
-            //        Content = ov
-            //    };
-            //    wnd.Show();
-            //}
+ 
         }
         private void OnSaveExecuted(object obj)
         {
@@ -281,10 +220,9 @@ namespace ModuleDeliverList.ViewModels
             }
             return false;
         }
-        private bool OnDescSortCanEcecute(object parameter)
+        private bool OnDescSortCanExecute(object arg)
         {
-            return !HasMouse.IsNullOrEmpty();
-
+            return true;
         }
         private void OnDescSortExecuted(object parameter)
         {
@@ -297,13 +235,8 @@ namespace ModuleDeliverList.ViewModels
             }
             
         }
-
-        private bool OnAscSortCanExecute(object parameter)
-        {
-
-            return !HasMouse.IsNullOrEmpty();
-
-        }
+        private bool OnAscSortCanExecute(Object arg)
+        { return true; }
 
         private void OnAscSortExecuted(object parameter)
         {
@@ -317,8 +250,9 @@ namespace ModuleDeliverList.ViewModels
                 var uiContext = SynchronizationContext.Current;
                 uiContext?.Send(x => OrdersView.Refresh(), null);
             }          
-        } 
+        }
         #endregion
+        public string HasMouse;
         private string Translate()
         {
             string v = HasMouse switch

@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Runtime.CompilerServices;
+using CompositeCommands.Core;
 
 namespace Lieferliste_WPF
 {
@@ -34,26 +35,25 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
                 IConfiguration  Configuration = builder.Build();
-            var defaultconnection = Configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = Configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection);
 
-            containerRegistry.RegisterInstance(Properties.Settings.Default);
             containerRegistry.RegisterInstance(builderopt.Options);
             containerRegistry.Register<DB_COS_LIEFERLISTE_SQLContext>();
+            containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
+            containerRegistry.RegisterForNavigation<LoadingView>();
 
-
-            var serv = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            Globals gl = new Globals(serv);
+            Globals gl = new Globals(Container);
             UserInfo u = new();
             u.Initialize(gl.PC, gl.User);
             containerRegistry.RegisterInstance(u);
-            
         }
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
             base.ConfigureModuleCatalog(moduleCatalog);
 
             moduleCatalog.AddModule<ModuleDeliverList.DeliverListModule>();
+            
         }
 
     }  

@@ -26,6 +26,14 @@ using ModuleDeliverList.Views;
 using Prism.Ioc;
 using Unity.Injection;
 using El2Core.Constants;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Diagnostics;
+using CompositeCommands.Core;
+using Prism.Commands;
+using System.Threading.Tasks;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -44,7 +52,14 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMachineMgmtCommand { get; private set; }
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
-
+        private IApplicationCommands _applicationCommands;
+        public IApplicationCommands ApplicationCommands
+        {
+            get { return _applicationCommands; }
+            set { SetProperty(ref _applicationCommands, value); }
+        }
+        public ICommand ExplorerCommand { get; private set; }
+ 
         private NotifyTaskCompletion<int>? _onlineTask;
         public NotifyTaskCompletion<int>? OnlineTask
         {
@@ -57,6 +72,12 @@ namespace Lieferliste_WPF.ViewModels
                     NotifyPropertyChanged(() => OnlineTask);
                 }
             }
+        }
+        private bool _canOpenExplorer = true;
+        public bool CanOpenExplorer
+        {
+            get { return _canOpenExplorer; }
+            set { SetProperty(ref _canOpenExplorer, value); }
         }
         private ViewPresenter _selectedTab;
         public ViewPresenter SelectedTab
@@ -82,10 +103,13 @@ namespace Lieferliste_WPF.ViewModels
         private IRegionManager _regionmanager;
         private IContainerExtension _container;
    
-        public MainWindowViewModel(IRegionManager regionManager, IContainerExtension container)
+        public MainWindowViewModel(IRegionManager regionManager,
+            IContainerExtension container,
+            IApplicationCommands applicationCommands)
         {
             _regionmanager = regionManager;
             _container = container;
+            _applicationCommands = applicationCommands;
             TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
@@ -97,7 +121,9 @@ namespace Lieferliste_WPF.ViewModels
 
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
+            ExplorerCommand = new ActionCommand(OnOpenExplorerExecuted, OnOpenExplorerCanExecute);
 
+            _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
             RegisterMe();
             SetTimer();
         }
@@ -205,11 +231,16 @@ namespace Lieferliste_WPF.ViewModels
         {
             return PermissionsProvider.GetInstance().GetUserPermission("LIE00");
         }
-        private void OnOpenLieferlisteExecuted(object obj)
+ 
+        private async void OnOpenLieferlisteExecuted(object obj)
         {
-            var ll = _container.Resolve<Liefer>();
-            _regionmanager.AddToRegion(RegionNames.MainContentRegion, ll);
-            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(ll);
+
+            var ldc = _container.Resolve<LoadingView>();
+            var navParam = new NavigationParameters();
+            navParam.Add("Title", "Lieferliste");
+            navParam.Add("View",typeof(Liefer));
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, "LoadingView", navParam);
+            
             //ViewPresenter present = new ViewPresenter();
             //present.ViewType = typeof(Liefer);
             //present.Key = "lief";
@@ -231,7 +262,62 @@ namespace Lieferliste_WPF.ViewModels
             //TaskComplete.PropertyChanged += TaskChanged;
 
         }
+        private bool OnOpenExplorerCanExecute(object arg)
+        {
+            return true;
+        }
+        private void OnOpenExplorerExecuted(object obj)
+        {
 
+            if (obj is Dictionary<string, object> dic)
+            {
+                StringBuilder sb = new();
+                String exp = Properties.Settings.Default.ExplorerPath;
+                string[] pa = exp.Split(',');
+
+                Regex reg2 = new(@"(?<=\[)(.*?)(?=\])");
+
+
+                for (int i = 0; i < pa.Length; i += 2)
+                {
+                    StringBuilder nsb = new StringBuilder();
+                    if (!pa[i].IsNullOrEmpty())
+                    {
+                        Regex reg3 = new(pa[i]);
+                        object? val;
+
+                        if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
+                        {
+                            if (val is string s)
+                            {
+                                Match match2 = reg3.Match(s);
+                                foreach (Group ma in match2.Groups.Values)
+                                {
+                                    if (ma.Value != val.ToString())
+                                        nsb.Append(ma.Value.ToString()).Append(Path.DirectorySeparatorChar);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out object? val))
+                            nsb.Append(val.ToString()).Append(Path.DirectorySeparatorChar);
+                    }
+                    sb.Append(nsb.ToString());
+                }
+
+                var p = Path.Combine(@Properties.Settings.Default.ExplorerRoot, sb.ToString());
+
+                if (p.IsNullOrEmpty())
+                {
+                    MessageBox.Show(String.Format("Der Hauptpfad '{0}'\nwurde nicht gefunden!", Properties.Settings.Default.ExplorerRoot)
+                        , "Error", MessageBoxButton.OK);
+                    return;
+                }
+                Process.Start("explorer.exe", @p);
+            }
+        }
         private void TaskChanged(object? sender, PropertyChangedEventArgs e)
         {
 
@@ -247,7 +333,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetTimer()
         {
             // Create a timer with a 1 minute interval.
-            _timer = new System.Timers.Timer(60000);
+            _timer = new System.Timers.Timer(15000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -267,8 +353,9 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
+            if (OnlineTask.IsCompleted) { Dbctx.Dispose(); }
         }
 
         public ObservableCollection<ViewPresenter> TabTitles
@@ -314,7 +401,6 @@ namespace Lieferliste_WPF.ViewModels
             public const string UserEdit = "User Managment";
 
         }
-
 
         public void DragOver(IDropInfo dropInfo)
         {

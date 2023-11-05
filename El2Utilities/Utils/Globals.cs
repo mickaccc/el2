@@ -14,11 +14,10 @@ namespace El2Core.Utils
     {
         public User User { get; private set; }
         public string PC { get; private set; }
-        private DB_COS_LIEFERLISTE_SQLContext _context;
-        public Globals(DB_COS_LIEFERLISTE_SQLContext context)
+        private IContainerProvider _container;
+        public Globals(IContainerProvider container)
         {
-
-            _context = context;
+            _container = container;
             PC = Environment.MachineName;
             LoadData();
             User ??= new();
@@ -26,15 +25,12 @@ namespace El2Core.Utils
         private void LoadData()
         {
 
-            if (_context == null)
-            {
-                MessageBox.Show("ERROR Connection not initialed!", "ERRER", MessageBoxButton.OK);
-                return;
-            }
             //user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             string us = Environment.UserName;
 
-            var u = _context.Users
+            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            {
+                var u = db.Users
                 .Include(x => x.UserCosts)
                 .ThenInclude(x => x.Cost)
                 .Include(x => x.UserWorkAreas)
@@ -45,7 +41,8 @@ namespace El2Core.Utils
                 .ThenInclude(x => x.PermissionKeyNavigation)
                 .Single(x => x.UserIdent == us);
 
-            User = u;
+                User = u;
+            }
 
         }
 
