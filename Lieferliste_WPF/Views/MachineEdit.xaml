@@ -23,24 +23,53 @@
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding Ressources}" AlternatingRowBackground="LightGray"
                   AutoGenerateColumns="False" >
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding RessName}"/>
-                <DataGridTextColumn Header="Inventarnummer" IsReadOnly="True" Binding="{Binding Inventarnummer}"/>
-                <DataGridTextColumn Header="Info" Binding="{Binding Info}" Width="4*"/>
-                <DataGridTextColumn Header="Abteilung" Binding="{Binding Abteilung}"/>
-                <DataGridTemplateColumn>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <ComboBox ItemsSource="{Binding DataContext.WorkAreas, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid},AncestorLevel=2}}" MinWidth="50"
+            <DataGrid.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Margin" Value="0,0,0,5"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <Expander IsExpanded="True" Background="#FF112255" BorderBrush="#FF002255" Foreground="#FFEEEEEE" BorderThickness="1,1,1,5">
+                                            <Expander.Header>
+                                                <DockPanel>
+                                                    <TextBox FontWeight="Bold" Text="{Binding Path=RessName}" Margin="5,0,0,0" Width="100"/>
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=Inventarnummer}"/>
+                                                    <TextBox Text="{Binding Path=Info}"/>
+                                                    <TextBlock Text="{Binding Path=CostId}"/>
+                                                    <TextBox Text="{Binding Path=Abteilung}"/>
+                                                    <ComboBox ItemsSource="{Binding DataContext.WorkAreas, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid},AncestorLevel=2}}" MinWidth="50"
                                       DisplayMemberPath="Bereich"                                   
                                       SelectedItem="WorkAreaId"
                                       SelectedValuePath="WorkAreaId"
                                       SelectedValue="{Binding WorkAreaId, Mode=TwoWay, TargetNullValue=0, UpdateSourceTrigger=PropertyChanged}" />
+                                                </DockPanel>
+                                            </Expander.Header>
+                                            <Expander.Content>
+                                                <ItemsPresenter />
+                                            </Expander.Content>
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <DockPanel Background="LightBlue">
+                                <TextBlock Text="Name" Foreground="Blue" Margin="30,0,0,0" Width="100"/>
+                                <TextBlock Text="Inventarnummer" Foreground="Blue"/>
+                                <TextBlock Text="Info"/>
+                                <TextBlock Text="Kostenstelle"/>
+                                <TextBlock Text="Abteilung"/>
+                            </DockPanel>
                         </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-            </DataGrid.Columns>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
         </DataGrid>
 
         <StackPanel  Orientation="Horizontal" HorizontalAlignment="Stretch" Height="35"  VerticalAlignment="Bottom" Background="BurlyWood" >

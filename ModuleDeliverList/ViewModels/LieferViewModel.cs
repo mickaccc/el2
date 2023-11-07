@@ -1,30 +1,22 @@
-﻿using El2Core.Models;
+﻿using CompositeCommands.Core;
+using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using ModuleDeliverList.UserControls;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using ModuleDeliverList.UserControls;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Configuration;
-using System.Reflection;
-using Prism.Modularity;
-using System.Collections.ObjectModel;
-using CompositeCommands.Core;
 
 namespace ModuleDeliverList.ViewModels
 {
@@ -60,9 +52,14 @@ namespace ModuleDeliverList.ViewModels
         public IApplicationCommands ApplicationCommands
         {
             get { return _applicationCommands; }
-            set { SetProperty(ref _applicationCommands, value); }
+            set 
+            {
+                if (_applicationCommands != value)
+                _applicationCommands = value;
+                NotifyPropertyChanged(() => ApplicationCommands);
+            }
         }
-        public NotifyTaskCompletion<HashSet<Vorgang>>? OrderTask { get; private set; }
+        public NotifyTaskCompletion<ICollectionView>? OrderTask { get; private set; }
         
         internal CollectionViewSource OrdersViewSource {get; private set;} = new();
 
@@ -105,27 +102,9 @@ namespace ModuleDeliverList.ViewModels
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            OrdersView = CollectionViewSource.GetDefaultView(_orders);
-            OrdersView.Filter += OrdersView_FilterPredicate;
-            
-            LoadDataAsync();           
+            OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());        
         }
 
-
-
-        private async void OnaddOrderAsync(object? sender, PropertyChangedEventArgs e)
-        {
-
-            await Task.Run(() =>
-            {
-                if (e.PropertyName == nameof(OrderTask.IsSuccessfullyCompleted))
-                {
-                    _orders.AddRange(OrderTask.Result);
-                    OrdersView = CollectionViewSource.GetDefaultView(_orders);
-                    OrdersView.Filter += OrdersView_FilterPredicate;
-                }
-            });
-        }
 
         private bool OrdersView_FilterPredicate(object value)
         {
@@ -278,25 +257,7 @@ namespace ModuleDeliverList.ViewModels
             
         }
 
-        public async Task LoadDataAsync2()
-        {
-
-            //var  o = await Dbctx.Vorgangs
-            //.Include(m => m.ArbPlSapNavigation)
-            //.Include(v => v.AidNavigation)
-            //.ThenInclude(x => x.MaterialNavigation)
-            //.Include(x => x.AidNavigation.DummyMatNavigation)
-            //.Include(x => x.RidNavigation)
-            //.Include(x => x.AidNavigation.Pro)
-            //.Where(x => !x.AidNavigation.Abgeschlossen && x.Aktuell)
-            //.OrderBy(x => x.SpaetEnd)
-            //.ToListAsync().ConfigureAwait(false);
-
-            //_orders.AddRange(o);           
-        }
-
-
-        public async void LoadDataAsync()
+        public async Task<ICollectionView> LoadDataAsync()
         {
             HashSet<Vorgang> result = new();
             BindingOperations.EnableCollectionSynchronization(_orders, _lock);
@@ -337,8 +298,11 @@ namespace ModuleDeliverList.ViewModels
                     }
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
                 }
+                OrdersView = CollectionViewSource.GetDefaultView(_orders);
+                OrdersView.Filter += OrdersView_FilterPredicate;
             });
-            
+
+            return OrdersView;
         }
  
     }

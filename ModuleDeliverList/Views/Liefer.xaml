@@ -12,7 +12,7 @@
     x:Name="lieferListe"
     x:Class="ModuleDeliverList.Views.Liefer"
       mc:Ignorable="d" 
-      d:DesignHeight="450" Width="1400"  >
+      d:DesignHeight="450" d:DesignWidth="1400"  >
     <Grid.Resources>
         <conv:CommentConverter x:Key="CommentConverter"/>
         <conv:DateConverter x:Key="DateConverter"/>
@@ -37,36 +37,40 @@
                 </LinearGradientBrush>
             </DockPanel.Background>
             <Button Content="Speichern" Command="{Binding SaveCommand}"/>
-            <WpfCustomControlLibrary:ClearableHintTextBox x:Name="searchBox" Width="1000"
+        <WpfCustomControlLibrary:ClearableHintTextBox x:Name="searchBox" Width="300"
                                                           ClHintText="suchen in Auftragsnr, TTNR, Materialtext"
                                                           Margin="10,0,0,0" >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="TextChanged">
-                        <i:InvokeCommandAction Command="{Binding TextSearchCommand}" PassEventArgsToCommand="True"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </WpfCustomControlLibrary:ClearableHintTextBox>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="TextChanged">
+                    <i:InvokeCommandAction Command="{Binding TextSearchCommand}" PassEventArgsToCommand="True"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </WpfCustomControlLibrary:ClearableHintTextBox>
+
+        <StackPanel Orientation="Horizontal"  DockPanel.Dock="Right" Background="DarkBlue" TextElement.Foreground="Beige"
+                        TextElement.FontSize="20">
             <ComboBox x:Name="cmb_filters" Width="100"
                       ItemsSource="{Binding Path=SelectedFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
                       SelectedValue="{Binding Path=SelectedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       DisplayMemberPath="Description"
                       SelectedValuePath="Value"/>
-
-
-            <StackPanel Orientation="Horizontal"  DockPanel.Dock="Right" Background="DarkBlue" TextElement.Foreground="Beige"
-                        TextElement.FontSize="20">
-                <TextBlock Text="Anzahl Vorgänge:" Margin="5,0,5,0"
+            <TextBlock Text="Anzahl Vorgänge:" Margin="5,0,5,0"
                    AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
                 <TextBlock x:Name="Count"  Width="auto"
                            Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
             </StackPanel>
         </DockPanel>
- 
-        <ScrollViewer Grid.Row="1" >
+    <StackPanel Grid.Row="1">
+        <TextBlock Text="Loading..." HorizontalAlignment="Center" FontSize="30"
+                   Visibility="{Binding OrderTask.IsNotCompleted, Converter={StaticResource BoolToVis}}"/>
+        <TextBlock Text="{Binding OrderTask.ErrorMessage}" HorizontalAlignment="Center"
+                   Visibility="{Binding OrderTask.Faulted, Converter={StaticResource BoolToVis}}"/>
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}" >
             
             <ItemsControl x:Name="Lieferlist" 
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrdersView}">
+                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrderTask.Result}">
                 
                 <!--<ItemsControl.ItemsSource>
                     <PriorityBinding>

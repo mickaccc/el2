@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModuleDeliverList", "Module
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompositeCommands.Core", "CompositeCommands.Core\CompositeCommands.Core.csproj", "{94485661-7B0E-4A66-A43E-93E2402AB533}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleLoadingView", "ModuleLoadingView\ModuleLoadingView.csproj", "{BD5497C4-1610-4FE2-809C-D5435C00302D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{94485661-7B0E-4A66-A43E-93E2402AB533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94485661-7B0E-4A66-A43E-93E2402AB533}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94485661-7B0E-4A66-A43E-93E2402AB533}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD5497C4-1610-4FE2-809C-D5435C00302D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD5497C4-1610-4FE2-809C-D5435C00302D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD5497C4-1610-4FE2-809C-D5435C00302D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD5497C4-1610-4FE2-809C-D5435C00302D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

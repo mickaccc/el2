@@ -114,7 +114,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="Views\LoadingView.xaml.cs">
+    <Compile Update="Views\Loading.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

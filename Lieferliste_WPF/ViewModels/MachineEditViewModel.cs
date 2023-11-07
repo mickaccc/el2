@@ -1,10 +1,12 @@
-﻿using El2Core.ViewModelBase;
-using El2Core.Models;
-using Lieferliste_WPF.Commands;
+﻿using El2Core.Models;
+using El2Core.Utils;
+using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Prism.Ioc;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -14,8 +16,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using El2Core.Utils;
-using Prism.Ioc;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -27,11 +27,11 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand CloseCommand { get; private set; }
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
-        private static ICollectionView _ressCV;
+        public ICollectionView Ressources;
         private RelayCommand textSearchCommand;
         private string _searchFilterText = String.Empty;
         private readonly IContainerExtension _container;
-        public static ObservableCollection<Ressource>? Ressources { get; private set; }
+        private static ObservableCollection<IGrouping<IEnumerable<int>, Ressource>>? _ressources { get; set; }
         public static ObservableCollection<WorkArea> WorkAreas { get; private set; } = new();
         public MachineEditViewModel(IContainerExtension container)
         {
@@ -39,30 +39,39 @@ namespace Lieferliste_WPF.ViewModels
 
             LoadData();
 
-            _ressCV = CollectionViewSource.GetDefaultView(Ressources);
+            Ressources = CollectionViewSource.GetDefaultView(_ressources);
 
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
             
-            _ressCV.MoveCurrentToFirst();
-            _ressCV.CurrentChanged += OnChanged;
-            _ressCV.Filter += RessView_FilterPredicate;
+            Ressources.GroupDescriptions.Clear();
+            Ressources.GroupDescriptions.Add(new PropertyGroupDescription("CostId"));
+            Ressources.MoveCurrentToFirst();
+            Ressources.CurrentChanged += OnChanged;
+            Ressources.Filter += RessView_FilterPredicate;
             
         }
 
 
         private bool RessView_FilterPredicate(object value)
         {
-            Ressource res = (Ressource)value;
+            IGrouping<IEnumerable<int>, Ressource> val = value as IGrouping<IEnumerable<int>, Ressource>;
+            Ressource res = (Ressource)val.First();
 
             bool accepted = true;
-
+            int v;
             if (!string.IsNullOrWhiteSpace(_searchFilterText))
             {
                 _searchFilterText = _searchFilterText.ToUpper();
-                if (!(accepted = res.Inventarnummer?.ToUpper().StartsWith(_searchFilterText) ?? false))
-                    accepted = res.RessourceCostUnits.Any(y => y.CostId.Equals(int.Parse(_searchFilterText)));
-
+                if (int.TryParse(_searchFilterText, out v))
+                {
+                    if (!(accepted = res.Inventarnummer?.ToUpper().StartsWith(_searchFilterText) ?? false))
+                        accepted = res.RessourceCostUnits.Any(y => y.CostId.Equals(v));
+                }
+                else
+                {
+                    accepted = (res.RessName != null) ? res.RessName.ToUpper().Contains(_searchFilterText) : false;
+                }
             }
             return accepted;
         }
@@ -76,7 +85,7 @@ namespace Lieferliste_WPF.ViewModels
                     _searchFilterText = tb.Text;
 
                     var uiContext = SynchronizationContext.Current;
-                    uiContext?.Send(x => _ressCV.Refresh(), null);
+                    uiContext?.Send(x => Ressources.Refresh(), null);
                 }
             }
         }
@@ -91,7 +100,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             get
             {
-                User us = (User)_ressCV.CurrentItem;
+                User us = (User)Ressources.CurrentItem;
                 string result = null;
                 if (columnName == nameof(User.UsrName))
                 {
@@ -141,11 +150,13 @@ namespace Lieferliste_WPF.ViewModels
         {
             using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                Ressources = Dbctx.Ressources
+                var response = Dbctx.Ressources
                     .Include(y => y.RessourceCostUnits)
                     .Include(x => x.WorkArea)
                     .Where(y => y.Inventarnummer != null)
-                    .ToObservableCollection();
+                    .ToList();
+
+                _ressources = response.GroupBy(x => x.RessourceCostUnits.Select(y => y.CostId)).ToObservableCollection();
 
                 WorkAreas = Dbctx.WorkAreas
                     .OrderBy(x => x.Bereich)
@@ -155,8 +166,6 @@ namespace Lieferliste_WPF.ViewModels
             }
             
         }
-
- 
     }
     public class MachineNameValidationRule:ValidationRule
     {

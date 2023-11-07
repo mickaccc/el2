@@ -56,7 +56,14 @@ namespace Lieferliste_WPF.ViewModels
         public IApplicationCommands ApplicationCommands
         {
             get { return _applicationCommands; }
-            set { SetProperty(ref _applicationCommands, value); }
+            set
+            {
+                if (_applicationCommands != value)
+                {
+                    _applicationCommands = value;
+                    NotifyPropertyChanged(() => ApplicationCommands);
+                }
+            }
         }
         public ICommand ExplorerCommand { get; private set; }
  
@@ -77,7 +84,14 @@ namespace Lieferliste_WPF.ViewModels
         public bool CanOpenExplorer
         {
             get { return _canOpenExplorer; }
-            set { SetProperty(ref _canOpenExplorer, value); }
+            set
+            {
+                if (_canOpenExplorer != value)
+                {
+                    _canOpenExplorer = value;
+                    NotifyPropertyChanged(() => CanOpenExplorer);
+                }
+            }
         }
         private ViewPresenter _selectedTab;
         public ViewPresenter SelectedTab
@@ -124,8 +138,10 @@ namespace Lieferliste_WPF.ViewModels
             ExplorerCommand = new ActionCommand(OnOpenExplorerExecuted, OnOpenExplorerCanExecute);
 
             _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
+  
             RegisterMe();
             SetTimer();
+            
         }
  
         #region Commands
@@ -232,36 +248,13 @@ namespace Lieferliste_WPF.ViewModels
             return PermissionsProvider.GetInstance().GetUserPermission("LIE00");
         }
  
-        private async void OnOpenLieferlisteExecuted(object obj)
+        private void OnOpenLieferlisteExecuted(object obj)
         {
 
-            var ldc = _container.Resolve<LoadingView>();
-            var navParam = new NavigationParameters();
-            navParam.Add("Title", "Lieferliste");
-            navParam.Add("View",typeof(Liefer));
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, "LoadingView", navParam);
-            
-            //ViewPresenter present = new ViewPresenter();
-            //present.ViewType = typeof(Liefer);
-            //present.Key = "lief";
-            //present.Title = "Lieferliste";
-            
-            //DisplayVM(present);
-   
-
-            //LieferTask = new NotifyTaskCompletion<Page?>(OnLoadAsync(ll));
-
-            //var ll = Dispatcher.BeginInvoke( DispatcherPriority.Normal, new LieferTaskCompletedEventHandler(OnComplete));
-            //if (ll.Result != null )
-            //Lieferliste ll = new Lieferliste()
-            //{
-            //    Title = ContentTitle.Deliverylist,
-            //    Tag = ContentTitle.Deliverylist
-            //};
-            //TaskComplete = ll.TaskCompletion;
-            //TaskComplete.PropertyChanged += TaskChanged;
-
-        }
+            var ll = _container.Resolve<Liefer>();
+            _regionmanager.AddToRegion(RegionNames.MainContentRegion, ll);
+            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(ll);
+         }
         private bool OnOpenExplorerCanExecute(object arg)
         {
             return true;
@@ -452,7 +445,50 @@ namespace Lieferliste_WPF.ViewModels
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             }
         }
-
+        private void DBOperation()
+        {
+            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            {
+                var vorg = db.WorkSaps.Where(x => x.WorkSapId != null).Select(x => x.WorkSapId).ToList();
+                var varb = vorg.Distinct();
+                foreach (var v in varb)
+                {
+                    if (v.Length > 3)
+                    {
+                        string cost = v[..3];
+                        string inv = v.Substring(3);
+                        int val;
+                        if (int.TryParse(cost, out val))
+                        {
+                            if (db.Costunits.All(x => x.CostunitId != val))
+                            {
+                                db.Database.ExecuteSqlRaw("INSERT INTO CostUnit(CostUnitId) VALUES({0})", val);
+                            }
+                            if (db.Ressources.All(x => x.Inventarnummer != inv))
+                            {
+                                db.Database.ExecuteSqlRaw("INSERT INTO Ressource(Inventarnummer) VALUES({0})", inv);
+                            }
+                            var id = db.Ressources.First(x => x.Inventarnummer == inv).RessourceId;
+                            if (db.WorkSaps.All(x => x.WorkSapId != v))
+                            {
+                                db.Database.ExecuteSqlRaw("INSERT INTO WorkSap(WorkSapId,RessourceId,created) VALUES({0}{1}{2})",
+                                    v, id, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                            }
+                            if (db.RessourceCostUnits.All(x => x.Rid != id && x.CostId != val))
+                            {
+                                var r = new RessourceCostUnit()
+                                {
+                                    Rid = id,
+                                    CostId = val
+                                };
+                                db.RessourceCostUnits.Add(r);
+                            }
+                        }
+                    }
+                }
+                db.SaveChanges();
+            }
+        }
     }
     public struct ViewPresenter
     {

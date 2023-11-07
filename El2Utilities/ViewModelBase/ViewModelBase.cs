@@ -10,7 +10,9 @@
     using System.Linq.Expressions;
     using System.Windows.Controls;
 
-    public abstract class ViewModelBase : BindableBase, INotifyPropertyChanged
+    public interface IView
+    { }
+    public abstract class ViewModelBase : INotifyPropertyChanged, IView
     {
 
         protected void OnChanged(string propertyName)

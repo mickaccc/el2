@@ -120,8 +120,6 @@ namespace Lieferliste_WPF.ViewModels
                         WorkArea = q.WorkArea,
                         CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
                         Description = q.Info ?? String.Empty,
-
-
                     };
 
                     List<Vorgang> VrgList = qp.FindAll(x => x.Rid == q.RessourceId);
@@ -135,9 +133,14 @@ namespace Lieferliste_WPF.ViewModels
                     Machines.Add(plm);
                 }
                 List<Vorgang> list = new();
+
                 foreach (var m in Machines)
                 {
-                    list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID));
+                    foreach (var c in UserInfo.User.UserCosts)
+                    {
+                        list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID &&
+                            x.ArbPlSap?[..3] == c.CostId.ToString()));
+                    }
                 }
                 Priv_processes = list.FindAll(x => x.Rid == null)
                     .ToObservableCollection();

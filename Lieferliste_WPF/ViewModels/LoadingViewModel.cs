@@ -8,19 +8,21 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace Lieferliste_WPF.ViewModels
 {
     
-    public class LoadingViewViewModel : ViewModelBase, INavigationAware
+    public class LoadingViewModel : ViewModelBase, INavigationAware
     {
         private IContainerExtension _container;
-        private NotifyTaskCompletion<UIElement>? _contentViewTask;
-        public NotifyTaskCompletion<UIElement>? ContentViewTask
+        private NotifyTaskCompletion<Grid>? _contentViewTask;
+        public NotifyTaskCompletion<Grid>? ContentViewTask
         {
             get { return _contentViewTask; }
             set
@@ -28,25 +30,31 @@ namespace Lieferliste_WPF.ViewModels
                 if (_contentViewTask != value)
                 {
                     _contentViewTask = value;
-                    //NotifyPropertyChanged(() => ContentViewTask);
+                    NotifyPropertyChanged(() => ContentViewTask);
                 }
             }
         }
-        public LoadingViewViewModel(IContainerExtension container)
+        public string Title { get; set; } = string.Empty;
+        public LoadingViewModel(IContainerExtension container)
         {
             _container = container;
         }
-        private async Task<UIElement> LoadingViewAsync()
+        private async Task<Grid> LoadingViewAsync(Grid view)
         {
-            var ret = 
-            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Loaded, () => { _container.Resolve<Liefer>(); });
+            var vi = view as Liefer;
+            Dispatcher dispatcher = App.Current.Dispatcher;
+            var ret = await Task.Run(() => _container.Resolve<Liefer>());
+               // dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => { _container.Resolve<Liefer>(); });
 
-            return (UIElement)ret.Result;
+            return (Grid)ret;
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
             var u = navigationContext.Uri;
+            Title = navigationContext.Parameters["Title"].ToString();
+            var objParam = navigationContext.Parameters["View"] as Grid;
+            ContentViewTask = new NotifyTaskCompletion<Grid>(LoadingViewAsync(objParam));
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

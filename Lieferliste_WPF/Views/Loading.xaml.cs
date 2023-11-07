@@ -17,22 +17,10 @@ namespace Lieferliste_WPF.Views
     /// <summary>
     /// Interaction logic for LoadingView.xaml
     /// </summary>
-    public partial class LoadingView : Grid
+    public partial class Loading : Grid
     {
 
-
-        public string Title
-        {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register("Title", typeof(string), typeof(LoadingView), new PropertyMetadata("Loading"));
-
-
-        public LoadingView()
+        public Loading()
         {
             InitializeComponent();           
         }
