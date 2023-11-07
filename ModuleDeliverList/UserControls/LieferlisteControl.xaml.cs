@@ -25,9 +25,6 @@ namespace ModuleDeliverList.UserControls
         public LieferlisteControl()
         {
             InitializeComponent();
-            
-            //Dispatcher.ShutdownStarted += OnDispatcherShutDownStarted;
-
         }
 
         #region Properties

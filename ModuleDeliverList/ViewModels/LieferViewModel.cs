@@ -261,47 +261,50 @@ namespace ModuleDeliverList.ViewModels
         {
             HashSet<Vorgang> result = new();
             BindingOperations.EnableCollectionSynchronization(_orders, _lock);
-            await Task.Factory.StartNew(() =>
-            {
-                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+ 
+                await Task.Factory.StartNew(() =>
                 {
-                    var a = Dbctx.OrderRbs
-                        .Include(v => v.Vorgangs)
-                        .Include(m => m.MaterialNavigation)
-                        .Include(d => d.DummyMatNavigation)
-                        .Where(x => x.Abgeschlossen == false)
-                        .ToList();
-                    HashSet<Vorgang> ol = new();
-                    foreach (var v in a)
+                    lock (_lock)
                     {
-                        ol.Clear();
-                        bool relev = false;
-                        foreach (var x in v.Vorgangs)
+                        using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                         {
-                            ol.Add(x);
-                            if (x.ArbPlSap.Length >= 3)
+                            var a = Dbctx.OrderRbs
+                                .Include(v => v.Vorgangs)
+                                .Include(m => m.MaterialNavigation)
+                                .Include(d => d.DummyMatNavigation)
+                                .Where(x => x.Abgeschlossen == false)
+                                .ToList();
+                            HashSet<Vorgang> ol = new();
+                            foreach (var v in a)
                             {
-                                if (int.TryParse(x.ArbPlSap[..3], out int c))
-                                    if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
+                                ol.Clear();
+                                bool relev = false;
+                                foreach (var x in v.Vorgangs)
+                                {
+                                    ol.Add(x);
+                                    if (x.ArbPlSap.Length >= 3)
                                     {
-                                        relev = true;
+                                        if (int.TryParse(x.ArbPlSap[..3], out int c))
+                                            if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
+                                            {
+                                                relev = true;
+                                            }
                                     }
+                                }
+                                if (relev)
+                                {
+                                    foreach (var r in ol.Where(x => x.Aktuell))
+                                    {
+                                        result.Add(r);
+                                    }
+                                }
                             }
-                        }
-                        if (relev)
-                        {
-                            foreach (var r in ol.Where(x => x.Aktuell))
-                            {
-                                result.Add(r);
-                            }
+                            _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
                         }
                     }
-                    _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
-                }
-                OrdersView = CollectionViewSource.GetDefaultView(_orders);
-                OrdersView.Filter += OrdersView_FilterPredicate;
-            });
-
+                    OrdersView = CollectionViewSource.GetDefaultView(_orders);
+                    OrdersView.Filter += OrdersView_FilterPredicate;
+                });
             return OrdersView;
         }
  

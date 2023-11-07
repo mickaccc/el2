@@ -58,7 +58,7 @@ namespace El2Core.Utils
             get
             {
                 return (Task.Status == TaskStatus.RanToCompletion) ?
-        Task.Result : default(TResult);
+                    Task.Result : default(TResult);
             }
         }
         public TaskStatus Status { get { return Task.Status; } }
@@ -69,7 +69,7 @@ namespace El2Core.Utils
             get
             {
                 return Task.Status ==
-        TaskStatus.RanToCompletion;
+                   TaskStatus.RanToCompletion;
             }
         }
         public bool IsCanceled { get { return Task.IsCanceled; } }
@@ -80,7 +80,7 @@ namespace El2Core.Utils
             get
             {
                 return (Exception == null) ?
-        null : Exception.InnerException;
+                   null : Exception.InnerException;
             }
         }
         public string ErrorMessage
@@ -88,7 +88,7 @@ namespace El2Core.Utils
             get
             {
                 return (InnerException == null) ?
-        null : InnerException.Message;
+                   null : InnerException.Message;
             }
         }
         public event PropertyChangedEventHandler PropertyChanged;

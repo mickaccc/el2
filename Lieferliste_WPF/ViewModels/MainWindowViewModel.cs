@@ -1,39 +1,29 @@
-﻿using El2Core.Models;
+﻿using CompositeCommands.Core;
+using El2Core.Constants;
+using El2Core.Models;
+using El2Core.Utils;
+using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Commands;
-using Lieferliste_WPF.Interfaces;
-using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.Views;
-using Lieferliste_WPF.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using ModuleDeliverList.Views;
+using Prism.Ioc;
+using Prism.Regions;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Threading;
-using Prism.Regions;
-using El2Core.Utils;
-using El2Core.ViewModelBase;
-using ModuleDeliverList.Views;
-using Prism.Ioc;
 using Unity.Injection;
-using El2Core.Constants;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Diagnostics;
-using CompositeCommands.Core;
-using Prism.Commands;
-using System.Threading.Tasks;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -138,7 +128,7 @@ namespace Lieferliste_WPF.ViewModels
             ExplorerCommand = new ActionCommand(OnOpenExplorerExecuted, OnOpenExplorerCanExecute);
 
             _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
-  
+            //DBOperation();
             RegisterMe();
             SetTimer();
             
@@ -457,36 +447,15 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         string cost = v[..3];
                         string inv = v.Substring(3);
-                        int val;
-                        if (int.TryParse(cost, out val))
+                        var id = db.Ressources.FirstOrDefault(x => x.Inventarnummer == inv)?.RessourceId;
+                        if (id != null)
                         {
-                            if (db.Costunits.All(x => x.CostunitId != val))
-                            {
-                                db.Database.ExecuteSqlRaw("INSERT INTO CostUnit(CostUnitId) VALUES({0})", val);
-                            }
-                            if (db.Ressources.All(x => x.Inventarnummer != inv))
-                            {
-                                db.Database.ExecuteSqlRaw("INSERT INTO Ressource(Inventarnummer) VALUES({0})", inv);
-                            }
-                            var id = db.Ressources.First(x => x.Inventarnummer == inv).RessourceId;
-                            if (db.WorkSaps.All(x => x.WorkSapId != v))
-                            {
-                                db.Database.ExecuteSqlRaw("INSERT INTO WorkSap(WorkSapId,RessourceId,created) VALUES({0}{1}{2})",
-                                    v, id, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                            }
-                            if (db.RessourceCostUnits.All(x => x.Rid != id && x.CostId != val))
-                            {
-                                var r = new RessourceCostUnit()
-                                {
-                                    Rid = id,
-                                    CostId = val
-                                };
-                                db.RessourceCostUnits.Add(r);
-                            }
+                            var work = db.WorkSaps.First(x => x.WorkSapId == v);
+                            work.RessourceId = id;
+                            db.SaveChanges();
                         }
                     }
                 }
-                db.SaveChanges();
             }
         }
     }
