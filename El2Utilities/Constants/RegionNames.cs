@@ -1,6 +1,6 @@
 ﻿namespace El2Core.Constants
 {
-    public static class RegionNames
+    public struct RegionNames
     {
         public const string MainContentRegion = "MainContentRegion";
     }

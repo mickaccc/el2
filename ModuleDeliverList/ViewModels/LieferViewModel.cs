@@ -253,14 +253,13 @@ namespace ModuleDeliverList.ViewModels
                 _ => string.Empty,
             };
             
-            return v;
-            
+            return v;           
         }
 
         public async Task<ICollectionView> LoadDataAsync()
         {
             HashSet<Vorgang> result = new();
-            BindingOperations.EnableCollectionSynchronization(_orders, _lock);
+            //BindingOperations.EnableCollectionSynchronization(_orders, _lock);
  
                 await Task.Factory.StartNew(() =>
                 {
@@ -274,6 +273,7 @@ namespace ModuleDeliverList.ViewModels
                                 .Include(d => d.DummyMatNavigation)
                                 .Where(x => x.Abgeschlossen == false)
                                 .ToList();
+                        
                             HashSet<Vorgang> ol = new();
                             foreach (var v in a)
                             {
@@ -282,7 +282,7 @@ namespace ModuleDeliverList.ViewModels
                                 foreach (var x in v.Vorgangs)
                                 {
                                     ol.Add(x);
-                                    if (x.ArbPlSap.Length >= 3)
+                                    if (x.ArbPlSap?.Length >= 3)
                                     {
                                         if (int.TryParse(x.ArbPlSap[..3], out int c))
                                             if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
@@ -306,7 +306,6 @@ namespace ModuleDeliverList.ViewModels
                     OrdersView.Filter += OrdersView_FilterPredicate;
                 });
             return OrdersView;
-        }
- 
+        } 
     }
 }

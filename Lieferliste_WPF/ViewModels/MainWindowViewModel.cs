@@ -111,34 +111,34 @@ namespace Lieferliste_WPF.ViewModels
             IContainerExtension container,
             IApplicationCommands applicationCommands)
         {
-            _regionmanager = regionManager;
+            _regionmanager = container.Resolve<IRegionManager>();
             _container = container;
             _applicationCommands = applicationCommands;
             TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
-            OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
-            OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
-            OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
-            OpenUserMgmtCommand = new ActionCommand(OnOpenUserMgmtExecuted, OnOpenUserMgmtCanExecute);
-            OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
-            OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
 
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
             ExplorerCommand = new ActionCommand(OnOpenExplorerExecuted, OnOpenExplorerCanExecute);
-
             _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
-            //DBOperation();
+
             RegisterMe();
             SetTimer();
-            
+            OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
+            OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
+ 
+            OpenUserMgmtCommand = new ActionCommand(OnOpenUserMgmtExecuted, OnOpenUserMgmtCanExecute);
+            OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
+            OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
+            OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
+
         }
  
         #region Commands
         private void OnCloseExecuted(object obj)
         {
             using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-            {
+            {              
                 Dbctx.ChangeTracker.DetectChanges();
                 if (Dbctx.ChangeTracker.HasChanges())
                 {
@@ -181,24 +181,18 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenRoleMgmtExecuted(object obj)
         {
-
-            var roleEdit = _container.Resolve<RoleEdit>();
-            _regionmanager.AddToRegion(RegionNames.MainContentRegion, roleEdit);
-            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(roleEdit);
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("RoleEdt", UriKind.Relative));
         }
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
 
-            return PermissionsProvider.GetInstance().GetUserPermission("RM00") &&
-                _regionmanager.Regions[RegionNames.MainContentRegion].Views.All(x => x.GetType() != typeof(RoleEdit));
+            return PermissionsProvider.GetInstance().GetUserPermission("RM00");
         }
 
         private void OnOpenUserMgmtExecuted(object obj)
         {
-            var mgm = _container.Resolve(typeof(UserEdit));
-            _regionmanager.AddToRegion(RegionNames.MainContentRegion, mgm);
-            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(mgm);
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("UserEdit", UriKind.Relative));
         }
 
         private bool OnOpenUserMgmtCanExecute(object arg)
@@ -209,28 +203,25 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenSettingsExecuted(object obj)
         {
-            var sett = _container.Resolve<UserSettings>();
-            _regionmanager.AddToRegion(RegionNames.MainContentRegion, sett);
-            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(sett);
+            
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("UserSettings", UriKind.Relative));
+            
         }
 
         private bool OnOpenSettingsCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("SET00") &&
-                _regionmanager.Regions.All(x => !x.Views.Matches(typeof(UserSettings)));
+            return PermissionsProvider.GetInstance().GetUserPermission("SET00");
         }
 
         private void OnOpenMachinePlanExecuted(object obj)
         {
-            var machPlan = _container.Resolve<MachinePlan>();
-            _regionmanager.RegisterViewWithRegion(RegionNames.MainContentRegion,() => machPlan);
-            _regionmanager.Regions[RegionNames.MainContentRegion].Activate(machPlan);
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion,new Uri("MachinePlan", UriKind.Relative));
+  
         }
 
         private bool OnOpenMachinePlanCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("MP00") &&
-                _regionmanager.Regions[RegionNames.MainContentRegion].Views.All(x => x.GetType() != typeof(MachinePlan));
+            return PermissionsProvider.GetInstance().GetUserPermission("MP00");
         }
 
         private bool OnOpenLieferlisteCanExecute(object arg)

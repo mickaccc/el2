@@ -1,5 +1,6 @@
-﻿using El2Core.Utils;
+﻿using CompositeCommands.Core;
 using El2Core.Models;
+using El2Core.Utils;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,17 +8,8 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
 using Prism.Unity;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Runtime.CompilerServices;
-using CompositeCommands.Core;
 
 namespace Lieferliste_WPF
 {
@@ -27,7 +19,10 @@ namespace Lieferliste_WPF
         {
             return Container.Resolve<MainWindow>();
         }
-
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+        }
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             var builder = new ConfigurationBuilder()
@@ -35,12 +30,16 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
                 IConfiguration  Configuration = builder.Build();
-            var defaultconnection = Configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = Configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection);
 
             containerRegistry.RegisterInstance(builderopt.Options);
             containerRegistry.Register<DB_COS_LIEFERLISTE_SQLContext>();
             containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
+            containerRegistry.RegisterScoped<IRegionManager, RegionManager>();
+            containerRegistry.RegisterForNavigation<UserSettings>();
+            containerRegistry.RegisterForNavigation<RoleEdit>();
+            containerRegistry.RegisterForNavigation<MachinePlan>();
 
             Globals gl = new Globals(Container);
             UserInfo u = new();

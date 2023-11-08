@@ -25,7 +25,7 @@
         <conv:PSP_Converter x:Key="psp-converter"/>
         <conv:TTNR_Converter x:Key="ttnr-converter"/>
         <cmd:ELCommands x:Key="elCmd"/>
-
+        <reg:RegionNames x:Key="regName"/>
 
         <!--<Style TargetType="{x:Type ContentControl}">
                     <Setter Property="ContentTemplate" Value="{StaticResource TabContentTemplate}" />
@@ -330,7 +330,7 @@
 
         </DockPanel>
 
-        <local:CloseableTabControl prism:RegionManager.RegionName="{x:Static reg:RegionNames.MainContentRegion}"  Grid.Row="1">
+        <local:CloseableTabControl prism:RegionManager.RegionName="MainContentRegion"  Grid.Row="1">
             <local:CloseableTabControl.ItemContainerStyle>
                 <Style TargetType="local:CloseableTabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="CloseCommand" Value="{Binding DataContext.TabCloseCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
