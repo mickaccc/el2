@@ -28,7 +28,7 @@ namespace ModuleDeliverList.ViewModels
         //public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
         public ICommand FilterCommand => _filterCommand ??= new RelayCommand(OnFilter);
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
-
+        private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand OrderViewCommand { get; private set; }
@@ -41,7 +41,6 @@ namespace ModuleDeliverList.ViewModels
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
         private RelayCommand? _textSearchCommand;
-        private RelayCommand? _openExplorerCommand;
         private RelayCommand? _filterCommand;
         private string _searchFilterText = string.Empty;
         private CmbFilter _cmbFilter;
@@ -97,7 +96,7 @@ namespace ModuleDeliverList.ViewModels
         {
             _container = container;
             _applicationCommands = applicationCommands;
- 
+            DBctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
@@ -182,16 +181,16 @@ namespace ModuleDeliverList.ViewModels
         }
         private void OnSaveExecuted(object obj)
         {
-            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            Dbctx.SaveChangesAsync();
+            
+            DBctx.SaveChangesAsync();
         }
         private bool OnSaveCanExecute(object arg)
         {
 
             try
             {
-                using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                return Dbctx.ChangeTracker.HasChanges();
+                
+                return DBctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
             {
@@ -258,53 +257,49 @@ namespace ModuleDeliverList.ViewModels
 
         public async Task<ICollectionView> LoadDataAsync()
         {
-            HashSet<Vorgang> result = new();
-            //BindingOperations.EnableCollectionSynchronization(_orders, _lock);
- 
-                await Task.Factory.StartNew(() =>
-                {
-                    lock (_lock)
-                    {
-                        using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-                        {
-                            var a = Dbctx.OrderRbs
-                                .Include(v => v.Vorgangs)
-                                .Include(m => m.MaterialNavigation)
-                                .Include(d => d.DummyMatNavigation)
-                                .Where(x => x.Abgeschlossen == false)
-                                .ToList();
+            await Task.Factory.StartNew(() =>
+            {
+                Task.Delay(10000);
+
+                    HashSet<Vorgang> result = new();
+                    var a = DBctx.OrderRbs
+                        .Include(v => v.Vorgangs)
+                        .ThenInclude(r => r.RidNavigation)
+                        .Include(m => m.MaterialNavigation)
+                        .Include(d => d.DummyMatNavigation)
+                        .Where(x => x.Abgeschlossen == false)
+                        .ToList();
                         
-                            HashSet<Vorgang> ol = new();
-                            foreach (var v in a)
+                    HashSet<Vorgang> ol = new();
+                    foreach (var v in a)
+                    {
+                        ol.Clear();
+                        bool relev = false;
+                        foreach (var x in v.Vorgangs)
+                        {
+                            ol.Add(x);
+                            if (x.ArbPlSap?.Length >= 3)
                             {
-                                ol.Clear();
-                                bool relev = false;
-                                foreach (var x in v.Vorgangs)
-                                {
-                                    ol.Add(x);
-                                    if (x.ArbPlSap?.Length >= 3)
+                                if (int.TryParse(x.ArbPlSap[..3], out int c))
+                                    if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
                                     {
-                                        if (int.TryParse(x.ArbPlSap[..3], out int c))
-                                            if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
-                                            {
-                                                relev = true;
-                                            }
+                                        relev = true;
                                     }
-                                }
-                                if (relev)
-                                {
-                                    foreach (var r in ol.Where(x => x.Aktuell))
-                                    {
-                                        result.Add(r);
-                                    }
-                                }
                             }
-                            _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
+                        }
+                        if (relev)
+                        {
+                            foreach (var r in ol.Where(x => x.Aktuell))
+                            {
+                                result.Add(r);
+                            }
                         }
                     }
-                    OrdersView = CollectionViewSource.GetDefaultView(_orders);
-                    OrdersView.Filter += OrdersView_FilterPredicate;
-                });
+                    _orders.AddRange(result.OrderBy(x => x.SpaetEnd));                      
+                    
+                OrdersView = CollectionViewSource.GetDefaultView(_orders);
+                OrdersView.Filter += OrdersView_FilterPredicate;
+            });
             return OrdersView;
         } 
     }

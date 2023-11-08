@@ -27,36 +27,35 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand CloseCommand { get; private set; }
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
-        public ICollectionView Ressources;
+        private ICollectionView _ressCV;
         private RelayCommand textSearchCommand;
         private string _searchFilterText = String.Empty;
         private readonly IContainerExtension _container;
-        private static ObservableCollection<IGrouping<IEnumerable<int>, Ressource>>? _ressources { get; set; }
+        private DB_COS_LIEFERLISTE_SQLContext _dbCtx;
+        public static ObservableCollection<Ressource>? Ressources { get; set; }
         public static ObservableCollection<WorkArea> WorkAreas { get; private set; } = new();
         public MachineEditViewModel(IContainerExtension container)
         {
             _container = container;
-
+            _dbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             LoadData();
 
-            Ressources = CollectionViewSource.GetDefaultView(_ressources);
+            _ressCV = CollectionViewSource.GetDefaultView(Ressources);
 
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
-            
-            Ressources.GroupDescriptions.Clear();
-            Ressources.GroupDescriptions.Add(new PropertyGroupDescription("CostId"));
-            Ressources.MoveCurrentToFirst();
-            Ressources.CurrentChanged += OnChanged;
-            Ressources.Filter += RessView_FilterPredicate;
+
+            _ressCV.MoveCurrentToFirst();
+            _ressCV.CurrentChanged += OnChanged;
+            _ressCV.Filter += RessView_FilterPredicate;
             
         }
 
 
         private bool RessView_FilterPredicate(object value)
         {
-            IGrouping<IEnumerable<int>, Ressource> val = value as IGrouping<IEnumerable<int>, Ressource>;
-            Ressource res = (Ressource)val.First();
+            var val = value as Ressource;
+            Ressource res = (Ressource)value;
 
             bool accepted = true;
             int v;
@@ -85,7 +84,7 @@ namespace Lieferliste_WPF.ViewModels
                     _searchFilterText = tb.Text;
 
                     var uiContext = SynchronizationContext.Current;
-                    uiContext?.Send(x => Ressources.Refresh(), null);
+                    uiContext?.Send(x => _ressCV.Refresh(), null);
                 }
             }
         }
@@ -100,7 +99,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             get
             {
-                User us = (User)Ressources.CurrentItem;
+                User us = (User)_ressCV.CurrentItem;
                 string result = null;
                 if (columnName == nameof(User.UsrName))
                 {
@@ -113,16 +112,14 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-                {
-                    if (Dbctx.ChangeTracker.HasChanges())
+                    if (_dbCtx.ChangeTracker.HasChanges())
                     {
                         MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
                             , MessageBoxButton.YesNo, MessageBoxImage.Question);
-                        if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
+                        if (result == MessageBoxResult.Yes) { _dbCtx.SaveChangesAsync(); }
 
                     }
-                }
+                
                 ob.Close();
                
             }
@@ -135,36 +132,32 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            Dbctx.SaveChanges();
+            _dbCtx.SaveChanges();
             
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            return Dbctx.ChangeTracker.HasChanges();
+            return _dbCtx.ChangeTracker.HasChanges();
         }
 
         private void LoadData()
         {
-            using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-            {
-                var response = Dbctx.Ressources
+
+                Ressources = _dbCtx.Ressources
                     .Include(y => y.RessourceCostUnits)
                     .Include(x => x.WorkArea)
                     .Where(y => y.Inventarnummer != null)
-                    .ToList();
+                    .ToObservableCollection();
 
-                _ressources = response.GroupBy(x => x.RessourceCostUnits.Select(y => y.CostId)).ToObservableCollection();
+                
 
-                WorkAreas = Dbctx.WorkAreas
+                WorkAreas = _dbCtx.WorkAreas
                     .OrderBy(x => x.Bereich)
                     .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
                     .ToObservableCollection();
                 WorkAreas.Insert(0, new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" });
-            }
-            
+                     
         }
     }
     public class MachineNameValidationRule:ValidationRule

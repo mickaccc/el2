@@ -7,7 +7,7 @@
     xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:util="clr-namespace:El2Core.Utils;assembly=El2Core"
-    xmlns:reg="clr-namespace:El2Core.Constants;assembly=El2Core"
+    xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:vmBase="clr-namespace:Lieferliste_WPF.ViewModels.Base"
     xmlns:local="clr-namespace:Lieferliste_WPF.Views"
     xmlns:prism="http://prismlibrary.com/"
@@ -25,7 +25,6 @@
         <conv:PSP_Converter x:Key="psp-converter"/>
         <conv:TTNR_Converter x:Key="ttnr-converter"/>
         <cmd:ELCommands x:Key="elCmd"/>
-        <reg:RegionNames x:Key="regName"/>
 
         <!--<Style TargetType="{x:Type ContentControl}">
                     <Setter Property="ContentTemplate" Value="{StaticResource TabContentTemplate}" />
@@ -330,7 +329,7 @@
 
         </DockPanel>
 
-        <local:CloseableTabControl prism:RegionManager.RegionName="MainContentRegion"  Grid.Row="1">
+        <local:CloseableTabControl prism:RegionManager.RegionName="{x:Static const:RegionNames.MainContentRegion}"  Grid.Row="1">
             <local:CloseableTabControl.ItemContainerStyle>
                 <Style TargetType="local:CloseableTabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="CloseCommand" Value="{Binding DataContext.TabCloseCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />

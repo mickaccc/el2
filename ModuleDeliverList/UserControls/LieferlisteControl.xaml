@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+    xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:Views="clr-namespace:ModuleDeliverList.Views"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
@@ -99,7 +100,7 @@
 
                 <TextBlock Grid.Column="13"  Height="23" x:Name="txtMatText" Width="120"  
                      HorizontalAlignment="Left" VerticalAlignment="Center" 
-                     Text="{Binding MatText, ElementName=luc}" />
+                     Text="{Binding MachineText, ElementName=luc}" />
                 <TextBlock  x:Name="txtWorkArea" 
                      Text="{Binding WorkArea, ElementName=luc}" Grid.Row="1" Grid.Column="2"  />
                 <TextBlock Grid.Column="5" x:Name="txtOrder"
@@ -112,37 +113,40 @@
                      Text="{Binding QuantityYield, ElementName=luc}" />
                 <TextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" x:Name="txtVrgText" ToolTip="Vorgang Kurztext"  
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />
-                <TextBlock Grid.Column="8" Grid.Row="2"  x:Name="txtVNR"  />
-                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  x:Name="txtRessTo" Background="Wheat" Text="{conv:ConverterBindableParameter Binding={Binding MachineText, ElementName=luc}, ConverterParameter={Binding EndDate, ElementName=luc}, Converter={StaticResource RtKw}}"/>
+                <TextBlock Grid.Column="8" Grid.Row="2"  x:Name="txtVNR"/>
+                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  x:Name="txtRessTo" Background="Wheat" FontSize="16"
+                           Text="{conv:ConverterBindableParameter Binding={Binding MachineText, ElementName=luc, Mode=OneTime},
+                    ConverterParameter={Binding EndDate, ElementName=luc}, Converter={StaticResource RtKw}}"/>
                 <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtScrap"  ToolTip="Ausschussmenge" 
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
                 <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25" />
                 <StackPanel Grid.Column="9" Background="{StaticResource Background2}" Grid.RowSpan="3" Margin="5"  >
                     <Label x:Name="label1" Height="25" Content="{Binding Comment_Me, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
                            Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
-                    <TextBox Height="60" x:Name="txtCommetM" Width="{Binding ActualWidth, ElementName=label1, Mode=OneWay}"
+                    <TextBox Height="60" x:Name="txtCommetM" 
                              Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Center"
                              Text="{Binding Comment_Me, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding ConverterParameter=!COM-ME, Converter={StaticResource Permission}}" />
+                    IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.CommentMeNeg},
+                        Converter={StaticResource Permission}}" />
                 </StackPanel>
                 <StackPanel x:Name="stackPanel1" Grid.Column="10" Grid.RowSpan="3" Background="Aqua"  Margin="5">
                     <Label x:Name="label" Height="25" Content="{Binding Comment_Te, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
                            Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque"/>
                     <TextBox Height="60" x:Name="txtCommetT" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Center"
                              Text="{Binding Comment_Te, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding ConverterParameter=!COM_TE, Converter={StaticResource Permission}}"
-                         Width="{Binding ActualWidth, ElementName=stackPanel1, Mode=OneWay}"/>
+                    IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.CommentTeNeg},
+                                Converter={StaticResource Permission}}"/>
                 </StackPanel>
                 <StackPanel x:Name="stackPanel" Grid.Column="11" Grid.RowSpan="3" Margin="5" >
                     <Label Height="25" Content="{Binding Comment_Ma, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
                            Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
                     <TextBox Height="60" x:Name="txtCommetMa" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
-                         HorizontalAlignment="Left" VerticalAlignment="Center"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Center"
                              Text="{Binding Comment_Ma, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding ConverterParameter=!COM_MA, Converter={StaticResource Permission}, ElementName=luc}"
-                             Width="{Binding ActualWidth, ElementName=stackPanel, Mode=OneWay}"/>
+                    IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.CommentMaNeg},
+                                Converter={StaticResource Permission}}"/>
                 </StackPanel>
                 <TextBlock Grid.Column="7" x:Name="txtEnd" 
                          ToolTip="Endtermin" Grid.Row="1" 
