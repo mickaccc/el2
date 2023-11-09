@@ -16,4 +16,6 @@ public partial class Costunit
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
     public virtual ICollection<UserCost> UserCosts { get; set; } = new List<UserCost>();
+
+    public virtual ICollection<WorkSap> WorkSaps { get; set; } = new List<WorkSap>();
 }

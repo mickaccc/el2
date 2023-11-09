@@ -21,6 +21,8 @@ public partial class Ressource
 
     public int? Type { get; set; }
 
+    public string? WorkSapId { get; set; }
+
     public int? WorkAreaId { get; set; }
 
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
@@ -28,4 +30,6 @@ public partial class Ressource
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 
     public virtual WorkArea? WorkArea { get; set; }
+
+    public virtual ICollection<WorkSap> WorkSaps { get; set; } = new List<WorkSap>();
 }

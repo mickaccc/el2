@@ -165,9 +165,14 @@
                 </StackPanel>
 
                 <Button Grid.Column="13" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
-                        Click="btnToArchiv_Click" />
+                        Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
+                        CommandParameter="{Binding Aid, ElementName=luc}"/>
 
-                <Button Grid.Column="13" Grid.Row="1" Content="Messauftrag" x:Name="btnMessOrder" />
+                <Button Grid.Column="13" Grid.Row="1" Content="Auftrag öffnen" 
+                        Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
+                        CommandParameter="{Binding Aid, ElementName=luc}"/>
                 <DockPanel Grid.Column="8" Grid.Row="2" Background="YellowGreen" >
                     <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" Click="Modified" 
                       IsChecked="{Binding Doku, ElementName=luc}"/>

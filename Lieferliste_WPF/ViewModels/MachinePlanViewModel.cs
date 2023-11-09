@@ -138,7 +138,7 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var c in UserInfo.User.UserCosts)
                 {
                     list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID &&
-                        x.ArbPlSap?[..3] == c.CostId.ToString()));
+                        x.ArbPlSapNavigation.CostId == c.CostId));
                 }
             }
             Priv_processes = list.FindAll(x => x.Rid == null)

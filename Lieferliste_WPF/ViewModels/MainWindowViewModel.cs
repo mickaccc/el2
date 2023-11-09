@@ -116,7 +116,7 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands = applicationCommands;
             TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
-
+            DBOperation();
             RegisterMe();
             SetTimer();
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
@@ -178,7 +178,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenRoleMgmtExecuted(object obj)
         {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("RoleEdt", UriKind.Relative));
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("RoleEdit", UriKind.Relative));
         }
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
@@ -299,8 +299,8 @@ namespace Lieferliste_WPF.ViewModels
         #endregion
         private void SetTimer()
         {
-            // Create a timer with a 1 minute interval.
-            _timer = new System.Timers.Timer(15000);
+            // Create a timer with a 30 seconds interval.
+            _timer = new System.Timers.Timer(30000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -409,8 +409,6 @@ namespace Lieferliste_WPF.ViewModels
 
         private  void RegisterMe()
         {
-            //var ap = ServiceLocator.Current.GetInstance<AppStatic>();
-
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Online(UserId,PcId,Login) VALUES({0},{1},{2})",
@@ -431,11 +429,10 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         string cost = v[..3];
                         string inv = v.Substring(3);
-                        var id = db.Ressources.FirstOrDefault(x => x.Inventarnummer == inv)?.RessourceId;
-                        if (id != null)
+                        int costid;
+                        if (int.TryParse(cost, out costid))
                         {
-                            var work = db.WorkSaps.First(x => x.WorkSapId == v);
-                            work.RessourceId = id;
+                           db.WorkSaps.First(x => x.WorkSapId == v).CostId = costid;
                             db.SaveChanges();
                         }
                     }

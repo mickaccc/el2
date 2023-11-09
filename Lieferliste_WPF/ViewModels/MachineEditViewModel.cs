@@ -143,7 +143,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-
+            
                 Ressources = _dbCtx.Ressources
                     .Include(y => y.RessourceCostUnits)
                     .Include(x => x.WorkArea)

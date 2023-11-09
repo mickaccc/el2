@@ -1,4 +1,5 @@
 ﻿using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -10,7 +11,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,6 +33,7 @@ namespace ModuleDeliverList.ViewModels
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand OrderViewCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
+        public ActionCommand ArchivateCommand { get; private set; }
         public string Key { get; } = "lie";
 
         public string Title { get; } = "Lieferliste";
@@ -46,7 +47,6 @@ namespace ModuleDeliverList.ViewModels
         private CmbFilter _cmbFilter;
         private static object _lock = new object();
         private IContainerExtension _container;
-        private string _setting;
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -101,8 +101,12 @@ namespace ModuleDeliverList.ViewModels
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
             OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());        
+            ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
+            OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
+            _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
+            _applicationCommands.OpenOrderCommand.RegisterCommand(OrderViewCommand);
         }
+
 
 
         private bool OrdersView_FilterPredicate(object value)
@@ -123,30 +127,8 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text.ToUpper().Contains("STARTEN");
             if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
             if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
+            if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
             return accepted;
-        }
-
-        public string ToolTip
-        {
-            get
-            {
-                var toolTip = new StringBuilder();
-                if (_filterCriterias.Count > 0)
-                {
-                    toolTip.Append("gefiltert:\n");
-                    foreach (KeyValuePair<String, String> c in _filterCriterias)
-                    {
-                        toolTip.Append(c.Key).Append(" = ").Append(c.Value).Append("\n");
-                    }
-                }
-                if (_sortField != string.Empty)
-                {
-                    toolTip.Append("sortiert nach:\n").Append(_sortField).Append(" / ").Append(_sortDirection);
-                }
-
-                return toolTip.ToString();
-                
-            }
         }
 
         private void OnTextSearch(object commandParameter)
@@ -162,18 +144,35 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
-
-
         #region Commands
- 
+
         private void OnFilter(object obj)
         {
             _cmbFilter = (CmbFilter) obj;
             OrdersView.Refresh();
         }
+        private void OnArchivateExecuted(object obj)
+        {
+            if (obj is string onr)
+            {
+                _orders.First(x => x.Aid == onr).AidNavigation.Abgeschlossen = true;
+                DBctx.SaveChangesAsync();
+                OrdersView.Refresh();
+            }
+        }
+
+        private bool OnArchivateCanExecute(object arg)
+        {
+            if (arg is string onr)
+            {
+                bool f = _orders.First(x => x.Aid == onr).AidNavigation.Fertig;
+                return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate) && f;
+            }
+            return false;
+        }
         private static bool OnOrderViewCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("OOPEN01");
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Order);
         }
         private static void OnOrderViewExecuted(object parameter)
         {
@@ -259,9 +258,11 @@ namespace ModuleDeliverList.ViewModels
         {
             await Task.Factory.StartNew(() =>
             {
-                Task.Delay(10000);
 
-                    HashSet<Vorgang> result = new();
+                HashSet<Vorgang> result = new();
+
+                lock (_lock)
+                {
                     var a = DBctx.OrderRbs
                         .Include(v => v.Vorgangs)
                         .ThenInclude(r => r.RidNavigation)
@@ -269,7 +270,7 @@ namespace ModuleDeliverList.ViewModels
                         .Include(d => d.DummyMatNavigation)
                         .Where(x => x.Abgeschlossen == false)
                         .ToList();
-                        
+
                     HashSet<Vorgang> ol = new();
                     foreach (var v in a)
                     {
@@ -295,6 +296,7 @@ namespace ModuleDeliverList.ViewModels
                             }
                         }
                     }
+                }
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));                      
                     
                 OrdersView = CollectionViewSource.GetDefaultView(_orders);

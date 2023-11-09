@@ -27,7 +27,7 @@
                 <DataGridTextColumn Header="Name" FontWeight="Bold" Binding="{Binding Path=RessName}"/>
                 <DataGridTextColumn Header="Inventarnummer" FontWeight="Bold" Binding="{Binding Path=Inventarnummer}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Info" Binding="{Binding Path=Info}"/>
-                <DataGridTextColumn Header="Kostenstelle" Binding="{Binding Path=RessourceCostUnits/CostId}"/>
+                <DataGridComboBoxColumn Header="Kostenstelle" ItemsSource="{Binding Path=RessourceCostUnits}" DisplayMemberPath="{Binding CostId}"/>
                 <DataGridTextColumn Header="Abteilung" Binding="{Binding Path=Abteilung}"/>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>

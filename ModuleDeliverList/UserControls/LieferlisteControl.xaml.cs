@@ -14,6 +14,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 using CompositeCommands.Core;
+using System.DirectoryServices;
 
 namespace ModuleDeliverList.UserControls
 {
@@ -372,6 +373,28 @@ namespace ModuleDeliverList.UserControls
 
         #endregion
 
+        //public string ToolTip
+        //{
+        //    get
+        //    {
+        //        var toolTip = new StringBuilder();
+        //        if (_filterCriterias.Count > 0)
+        //        {
+        //            toolTip.Append("gefiltert:\n");
+        //            foreach (KeyValuePair<String, String> c in _filterCriterias)
+        //            {
+        //                toolTip.Append(c.Key).Append(" = ").Append(c.Value).Append("\n");
+        //            }
+        //        }
+        //        if (_sortField != string.Empty)
+        //        {
+        //            toolTip.Append("sortiert nach:\n").Append(_sortField).Append(" / ").Append(_sortDirection);
+        //        }
+
+        //        return toolTip.ToString();
+
+        //    }
+        //}
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var newValue = e.NewValue;

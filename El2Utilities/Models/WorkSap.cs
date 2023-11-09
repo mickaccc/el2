@@ -11,7 +11,13 @@ public partial class WorkSap
 
     public int? RessourceId { get; set; }
 
-    public DateTime? Created { get; set; }
+    public DateTime Created { get; set; }
+
+    public int? CostId { get; set; }
+
+    public virtual Costunit? Cost { get; set; }
+
+    public virtual Ressource? Ressource { get; set; }
 
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 }

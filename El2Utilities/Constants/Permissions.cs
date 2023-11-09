@@ -17,5 +17,8 @@ namespace El2Core.Constants
         public const string CommentMeNeg = "!COM-ME";
         public const string CommentMaNeg = "!COM-MA";
         public const string CommentTeNeg = "!COM-TE";
+        public const string Archivate = "ARCHIVATE";
+        public const string Archiv = "ARCHIV";
+        public const string Order = "OO00";
     }
 }
