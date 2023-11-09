@@ -5,12 +5,12 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
-    xmlns:UserControls="clr-namespace:ModuleDeliverList.UserControls"
+    xmlns:UserControls="clr-namespace:El2UserControls;assembly=El2UserControls"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:WpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     x:Name="lieferListe"
-    x:Class="ModuleDeliverList.Views.Liefer"
+    x:Class="Lieferliste_WPF.Views.Liefer"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="1400"  >
     <Grid.Resources>

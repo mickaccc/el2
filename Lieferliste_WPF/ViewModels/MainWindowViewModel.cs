@@ -116,7 +116,7 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands = applicationCommands;
             TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
-            DBOperation();
+            //DBOperation();
             RegisterMe();
             SetTimer();
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
@@ -432,7 +432,18 @@ namespace Lieferliste_WPF.ViewModels
                         int costid;
                         if (int.TryParse(cost, out costid))
                         {
-                           db.WorkSaps.First(x => x.WorkSapId == v).CostId = costid;
+                            var ress = db.Ressources.Where(x => x.Inventarnummer == inv);
+                            var id = ress.FirstOrDefault().RessourceId;
+                            foreach (var r in ress.Skip(1))
+                            {
+                                db.Ressources.Remove(r);
+                            }
+                            if (id != null)
+                            {
+                                var res = db.RessourceCostUnits.FirstOrDefault(x => x.CostId == costid && x.Rid == id);
+                                if (res == null)
+                                db.RessourceCostUnits.Add(new RessourceCostUnit() { CostId = costid, Rid = id });
+                            }
                             db.SaveChanges();
                         }
                     }

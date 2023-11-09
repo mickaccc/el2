@@ -27,27 +27,30 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand CloseCommand { get; private set; }
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
-        private ICollectionView _ressCV;
+        public ICollectionView RessourcesCV { get; }
         private RelayCommand textSearchCommand;
         private string _searchFilterText = String.Empty;
         private readonly IContainerExtension _container;
-        private DB_COS_LIEFERLISTE_SQLContext _dbCtx;
-        public static ObservableCollection<Ressource>? Ressources { get; set; }
-        public static ObservableCollection<WorkArea> WorkAreas { get; private set; } = new();
+        private readonly DB_COS_LIEFERLISTE_SQLContext DBctx;
+        private ObservableCollection<Ressource>? _ressources { get; set; }
+        public static List<WorkArea> WorkAreas { get; private set; } = new();
         public MachineEditViewModel(IContainerExtension container)
         {
             _container = container;
-            _dbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            DBctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             LoadData();
 
-            _ressCV = CollectionViewSource.GetDefaultView(Ressources);
-
+            RessourcesCV = new ListCollectionView(_ressources);
+            if(RessourcesCV.CanGroup)
+            {
+                RessourcesCV.GroupDescriptions.Add(new PropertyGroupDescription("Inventarnummer"));
+            }
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
 
-            _ressCV.MoveCurrentToFirst();
-            _ressCV.CurrentChanged += OnChanged;
-            _ressCV.Filter += RessView_FilterPredicate;
+            RessourcesCV.MoveCurrentToFirst();
+            RessourcesCV.CurrentChanged += OnChanged;
+            RessourcesCV.Filter += RessView_FilterPredicate;
             
         }
 
@@ -84,7 +87,7 @@ namespace Lieferliste_WPF.ViewModels
                     _searchFilterText = tb.Text;
 
                     var uiContext = SynchronizationContext.Current;
-                    uiContext?.Send(x => _ressCV.Refresh(), null);
+                    uiContext?.Send(x => RessourcesCV.Refresh(), null);
                 }
             }
         }
@@ -99,7 +102,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             get
             {
-                User us = (User)_ressCV.CurrentItem;
+                User us = (User)RessourcesCV.CurrentItem;
                 string result = null;
                 if (columnName == nameof(User.UsrName))
                 {
@@ -112,13 +115,13 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                    if (_dbCtx.ChangeTracker.HasChanges())
-                    {
-                        MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
-                            , MessageBoxButton.YesNo, MessageBoxImage.Question);
-                        if (result == MessageBoxResult.Yes) { _dbCtx.SaveChangesAsync(); }
+                    //if (DBctx.ChangeTracker.HasChanges())
+                    //{
+                    //    MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
+                    //        , MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    //    if (result == MessageBoxResult.Yes) { DBctx.SaveChangesAsync(); }
 
-                    }
+                    //}
                 
                 ob.Close();
                
@@ -132,32 +135,30 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            _dbCtx.SaveChanges();
+            DBctx.SaveChanges();
             
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-            return _dbCtx.ChangeTracker.HasChanges();
+            return true;
         }
 
         private void LoadData()
         {
-            
-                Ressources = _dbCtx.Ressources
+
+                _ressources = DBctx.Ressources
                     .Include(y => y.RessourceCostUnits)
                     .Include(x => x.WorkArea)
                     .Where(y => y.Inventarnummer != null)
                     .ToObservableCollection();
 
-                
-
-                WorkAreas = _dbCtx.WorkAreas
+                WorkAreas = DBctx.WorkAreas
                     .OrderBy(x => x.Bereich)
                     .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
-                    .ToObservableCollection();
-                WorkAreas.Insert(0, new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" });
-                     
+                    .ToList();
+                WorkAreas.Prepend(new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" });
+                   
         }
     }
     public class MachineNameValidationRule:ValidationRule

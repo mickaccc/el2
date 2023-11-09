@@ -8,6 +8,7 @@ namespace CompositeCommands.Core
         CompositeCommand ExplorerCommand { get; }
         CompositeCommand ArchivateCommand { get; }
         CompositeCommand OpenOrderCommand { get; }
+        CompositeCommand OpenMachineCommand { get; }
     }
 
     public class ApplicationCommands : IApplicationCommands
@@ -27,5 +28,11 @@ namespace CompositeCommands.Core
         {
             get { return _openOrderCommand; }
         }
+        private CompositeCommand _openMachineCommand = new CompositeCommand();
+        public CompositeCommand OpenMachineCommand
+        {
+            get { return _openMachineCommand; }
+        }
+
     }
 }

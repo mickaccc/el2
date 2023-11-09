@@ -6,6 +6,7 @@ using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using ModuleDeliverList.UserControls;
 using Prism.Ioc;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace ModuleDeliverList.ViewModels
+namespace Lieferliste_WPF.ViewModels
 {
     class LieferViewModel : ViewModelBase
     {
@@ -48,6 +49,7 @@ namespace ModuleDeliverList.ViewModels
         private static object _lock = new object();
         private IContainerExtension _container;
         private IApplicationCommands _applicationCommands;
+        private IDialogService _dialogService;
         public IApplicationCommands ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -92,10 +94,13 @@ namespace ModuleDeliverList.ViewModels
             }
         }
         
-        public LieferViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
+        public LieferViewModel(IContainerExtension container,
+            IApplicationCommands applicationCommands,
+            IDialogService dialogService)
         {
             _container = container;
             _applicationCommands = applicationCommands;
+            _dialogService = dialogService;
             DBctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
@@ -174,9 +179,9 @@ namespace ModuleDeliverList.ViewModels
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Order);
         }
-        private static void OnOrderViewExecuted(object parameter)
+        private void OnOrderViewExecuted(object parameter)
         {
- 
+            _dialogService.Show("Order", new DialogParameters(parameter.ToString()),null);
         }
         private void OnSaveExecuted(object obj)
         {
@@ -256,21 +261,20 @@ namespace ModuleDeliverList.ViewModels
 
         public async Task<ICollectionView> LoadDataAsync()
         {
+             var a = DBctx.OrderRbs
+                .Include(v => v.Vorgangs)
+                .ThenInclude(r => r.RidNavigation)
+                .Include(m => m.MaterialNavigation)
+                .Include(d => d.DummyMatNavigation)
+                .Where(x => x.Abgeschlossen == false)
+                .ToList();
             await Task.Factory.StartNew(() =>
             {
-
+     
                 HashSet<Vorgang> result = new();
 
                 lock (_lock)
                 {
-                    var a = DBctx.OrderRbs
-                        .Include(v => v.Vorgangs)
-                        .ThenInclude(r => r.RidNavigation)
-                        .Include(m => m.MaterialNavigation)
-                        .Include(d => d.DummyMatNavigation)
-                        .Where(x => x.Abgeschlossen == false)
-                        .ToList();
-
                     HashSet<Vorgang> ol = new();
                     foreach (var v in a)
                     {

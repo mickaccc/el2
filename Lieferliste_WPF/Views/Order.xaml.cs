@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,19 +13,22 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Lieferliste_WPF.ViewModels;
+using Prism.Services.Dialogs;
 
 namespace Lieferliste_WPF.Views
 {
     /// <summary>
     /// Interaction logic for OrderView.xaml
     /// </summary>
-    public partial class Order : Page
+    public partial class Order : Window, IDialogWindow
     {
         public Order(string? arg)
         {
             InitializeComponent();
            
         }
+
+        public IDialogResult Result { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     }
 }

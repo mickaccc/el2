@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using CompositeCommands.Core;
 using System.DirectoryServices;
 
-namespace ModuleDeliverList.UserControls
+namespace El2UserControls
 {
     /// <summary>
     /// Interaction logic for LieferlisteView1.xaml
@@ -188,8 +188,6 @@ namespace ModuleDeliverList.UserControls
         // Using a DependencyProperty as the backing store for MachineText.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MachineTextProperty =
             DependencyProperty.Register("MachineText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
-
-
 
         public string Comment_MeI
         {

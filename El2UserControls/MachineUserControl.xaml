@@ -37,7 +37,9 @@
                     <Image Source="/Images/Collapse.png" Stretch="Fill"/>
                 </Button>
                 <Button Grid.Row="1" HorizontalAlignment="Left" Width="20" Background="White"
-                         ToolTip="Alternativ: Strg + LMB oder Strg + M">
+                         ToolTip="Alternativ: Strg + LMB oder Strg + M"
+                        Command="{Binding DataContext.OpenMachineCommand}"
+                        CommandParameter="{Binding InventNo}">
                     <Image Source="/Images/book.png" Stretch="Fill"/>
                 </Button>
                 <TextBlock Text="{Binding Name}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="Auto"/>

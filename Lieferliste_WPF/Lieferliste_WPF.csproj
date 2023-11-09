@@ -137,7 +137,6 @@
     <ProjectReference Include="..\CompositeCommands.Core\CompositeCommands.Core.csproj" />
     <ProjectReference Include="..\El2UserControls\El2UserControls.csproj" />
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
-    <ProjectReference Include="..\ModuleDeliverList\ModuleDeliverList.csproj" />
     <ProjectReference Include="..\WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
   </ItemGroup>
 

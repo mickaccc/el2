@@ -1,4 +1,5 @@
 ﻿using El2Core.Converters;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +19,14 @@ namespace Lieferliste_WPF.Views
     /// <summary>
     /// Interaction logic for MachineView.xaml
     /// </summary>
-    public partial class MachineView : Window
+    public partial class MachineView : Window, IDialogWindow
     {
         public MachineView()
         {
             InitializeComponent();
         }
 
+        public IDialogResult Result { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         private void Process_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {

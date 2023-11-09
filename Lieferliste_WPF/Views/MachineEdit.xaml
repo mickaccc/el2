@@ -21,14 +21,39 @@
 
         </Grid.RowDefinitions>
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Ressources}" AlternatingRowBackground="LightGray"
+        <DataGrid Grid.Row="2" ItemsSource="{Binding RessourcesCV}" AlternatingRowBackground="LightGray"
                   AutoGenerateColumns="False" >
+            <DataGrid.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Background="Black" Foreground="White">
+                                Inventarnummer: <Run Text="{Binding Path=Name, Mode=OneWay}"/>
+                                (Anzahl: <Run Text="{Binding Path=ItemCount, Mode=OneWay}"/>)
+                            </TextBlock>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" FontWeight="Bold" Binding="{Binding Path=RessName}"/>
                 <DataGridTextColumn Header="Inventarnummer" FontWeight="Bold" Binding="{Binding Path=Inventarnummer}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Info" Binding="{Binding Path=Info}"/>
-                <DataGridComboBoxColumn Header="Kostenstelle" ItemsSource="{Binding Path=RessourceCostUnits}" DisplayMemberPath="{Binding CostId}"/>
+            
                 <DataGridTextColumn Header="Abteilung" Binding="{Binding Path=Abteilung}"/>
+                <DataGridTemplateColumn Header="Kostenstellen">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ListBox ItemsSource="{Binding Path=RessourceCostUnits}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding CostId}"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

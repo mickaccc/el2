@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace ModuleDeliverList.Views
+namespace Lieferliste_WPF.Views
 {
     /// <summary>
     /// Interaktionslogik für Lieferliste.xaml

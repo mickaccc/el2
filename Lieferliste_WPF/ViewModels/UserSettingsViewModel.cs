@@ -1,4 +1,5 @@
 ﻿using El2Core.ViewModelBase;
+using Prism.Ioc;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
@@ -11,12 +12,14 @@ namespace Lieferliste_WPF.ViewModels
         string _ExplorerPathPattern;
         ObservableCollection<string> _ExplorerFilter = new();
         public ICollectionView ExplorerFilter { get; }
+        private IContainerExtension _container;
         string _ExplorerRoot;
         public Brush OutOfDate { get; set; }
         public Brush InOfDate { get; set; }
         public string Title { get; } = "Einstellungen";
-        public UserSettingsViewModel()
+        public UserSettingsViewModel(IContainerExtension container)
         {
+            _container = container;
             var br = new BrushConverter();
             ExplorerPathPattern = Properties.Settings.Default.ExplorerPath;
      

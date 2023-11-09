@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CompositeCommands.Core\CompositeCommands.Core.csproj" />
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
   </ItemGroup>
 
@@ -41,6 +42,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Home.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="LieferlisteControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="MachineUserControl.xaml">

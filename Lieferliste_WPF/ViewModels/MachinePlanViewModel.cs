@@ -1,4 +1,5 @@
 ﻿
+using CompositeCommands.Core;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -6,6 +7,7 @@ using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
+using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using System;
@@ -30,7 +32,18 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
 
         public ICommand SaveCommand { get; private set; }
-  
+        public ActionCommand OpenMachineCommand { get; private set; }
+        private IApplicationCommands _applicationCommands;
+        public IApplicationCommands ApplicationCommands
+        {
+            get { return _applicationCommands; }
+            set
+            {
+                if (_applicationCommands != value)
+                    _applicationCommands = value;
+                NotifyPropertyChanged(() => ApplicationCommands);
+            }
+        }
         public List<WorkArea>? WorkAreas { get; private set; }
         public List<PlanMachine> Machines { get; }
         private ObservableCollection<Vorgang>? Priv_processes { get; set; }
@@ -48,13 +61,15 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
  
-        public MachinePlanViewModel(IContainerExtension container) 
+        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands) 
         {
             _container = container;
+            _applicationCommands = applicationCommands;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             Machines = new List<PlanMachine>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-
+            OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
+            _applicationCommands.OpenMachineCommand.RegisterCommand(OpenMachineCommand);
             LoadData();
             _ressCV = CollectionViewSource.GetDefaultView(Machines);
             _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == WorkAreas?.First().WorkAreaId;
@@ -67,6 +82,16 @@ namespace Lieferliste_WPF.ViewModels
             _masterFilterText = WorkAreas?.First().WorkAreaId.ToString() ?? "";
             ProcessCV.Refresh();
         
+        }
+
+        private bool OnOpenMachineCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnOpenMachineExecuted(object obj)
+        {
+            _container.Resolve<MachineView>();
         }
 
         private bool OnSaveCanExecute(object arg)
