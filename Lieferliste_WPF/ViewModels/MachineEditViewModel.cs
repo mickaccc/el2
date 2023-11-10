@@ -146,14 +146,13 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-
                 _ressources = DBctx.Ressources
                     .Include(y => y.RessourceCostUnits)
                     .Include(x => x.WorkArea)
                     .Where(y => y.Inventarnummer != null)
                     .ToObservableCollection();
 
-                WorkAreas = DBctx.WorkAreas
+                WorkAreas = DBctx.WorkAreas.AsNoTracking()
                     .OrderBy(x => x.Bereich)
                     .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
                     .ToList();

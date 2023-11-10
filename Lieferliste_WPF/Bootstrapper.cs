@@ -32,7 +32,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
                 IConfiguration  Configuration = builder.Build();
-            var defaultconnection = Configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = Configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection);
 
             containerRegistry.RegisterInstance(builderopt.Options);
@@ -45,9 +45,8 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<UserEdit>();
 
             containerRegistry.RegisterForNavigation<Liefer>();
-
-            containerRegistry.RegisterDialogWindow<Order>();
-            containerRegistry.RegisterDialogWindow<MachineView>();
+            containerRegistry.RegisterDialog<Order>();
+            containerRegistry.RegisterDialog<MachineView>();
 
             Globals gl = new Globals(Container);
             UserInfo u = new();

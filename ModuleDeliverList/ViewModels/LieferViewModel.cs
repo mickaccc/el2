@@ -5,6 +5,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using ModuleDeliverList.UserControls;
+using ModuleDeliverList.Views;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
 using System;
@@ -19,7 +20,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace Lieferliste_WPF.ViewModels
+namespace ModuleDeliverList.ViewModels
 {
     class LieferViewModel : ViewModelBase
     {
@@ -104,12 +105,12 @@ namespace Lieferliste_WPF.ViewModels
             DBctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
-            OrderViewCommand = new ActionCommand(OnOrderViewExecuted, OnOrderViewCanExecute);
+            
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
             _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
-            _applicationCommands.OpenOrderCommand.RegisterCommand(OrderViewCommand);
+           
         }
 
 
@@ -175,17 +176,9 @@ namespace Lieferliste_WPF.ViewModels
             }
             return false;
         }
-        private static bool OnOrderViewCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Order);
-        }
-        private void OnOrderViewExecuted(object parameter)
-        {
-            _dialogService.Show("Order", new DialogParameters(parameter.ToString()),null);
-        }
+
         private void OnSaveExecuted(object obj)
-        {
-            
+        {           
             DBctx.SaveChangesAsync();
         }
         private bool OnSaveCanExecute(object arg)

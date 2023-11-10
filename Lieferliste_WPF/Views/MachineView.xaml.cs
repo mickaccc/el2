@@ -2,6 +2,7 @@
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,14 +20,33 @@ namespace Lieferliste_WPF.Views
     /// <summary>
     /// Interaction logic for MachineView.xaml
     /// </summary>
-    public partial class MachineView : Window, IDialogWindow
+    public partial class MachineView : UserControl, IDialogWindow
     {
         public MachineView()
         {
             InitializeComponent();
         }
 
-        public IDialogResult Result { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IDialogResult Result { get; set; }
+        public Window Owner { get; set; }
+
+        public event EventHandler Closed;
+        public event CancelEventHandler Closing;
+
+        public void Close()
+        {
+            
+        }
+
+        public void Show()
+        {
+            
+        }
+
+        public bool? ShowDialog()
+        {
+            return true;
+        }
 
         private void Process_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {

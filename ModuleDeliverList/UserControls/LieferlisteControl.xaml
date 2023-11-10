@@ -5,9 +5,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+    xmlns:Views="clr-namespace:ModuleDeliverList.Views"
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
-    x:Class="El2UserControls.LieferlisteControl"
+    x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="1400" Height="100"  x:Name="luc" >
@@ -106,19 +107,20 @@
                            Text="{Binding Aid, ElementName=luc}" ToolTip="Auftragsnummer" Grid.ColumnSpan="2"  />
                 <TextBlock Grid.Column="3" Grid.Row="1" x:Name="txtVnr"  ToolTip="Vorgangsnummer" 
                      Text="{Binding Vnr, ElementName=luc, StringFormat=\{0:D4\}}" />
-                <TextBlock Grid.Column="10" x:Name="txtQuant" ToolTip="Auftragsmenge" 
-                     Text="{Binding Quantity, ElementName=luc}" Grid.ColumnSpan="2" Margin="158,344,134,-339" Grid.Row="2" />
+                <TextBlock Grid.Column="7" x:Name="txtQuant" ToolTip="Auftragsmenge" 
+                     Text="{Binding Quantity, ElementName=luc}"/>
                 <TextBlock Grid.Column="8" x:Name="txtQuantYield" ToolTip="zurückgemeldete Menge"
                      Text="{Binding QuantityYield, ElementName=luc}" />
                 <TextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" x:Name="txtVrgText" ToolTip="Vorgang Kurztext"  
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />
                 <TextBlock Grid.Column="8" Grid.Row="2"  x:Name="txtVNR"/>
-                <!--<TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  x:Name="txtRessTo" Background="Wheat" FontSize="16"
+                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  x:Name="txtRessTo" Background="Wheat" FontSize="16"
                            Text="{conv:ConverterBindableParameter Binding={Binding MachineText, ElementName=luc, Mode=OneTime},
-                    ConverterParameter={Binding EndDate, ElementName=luc}, Converter={StaticResource RtKw}}"/>-->
+                    ConverterParameter={Binding EndDate, ElementName=luc}, Converter={StaticResource RtKw}}"/>
                 <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtScrap"  ToolTip="Ausschussmenge" 
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
-                <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25" />
+                <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25"
+                           Text="{Binding QuantityMiss, ElementName=luc}"/>
                 <StackPanel Grid.Column="9" Background="{StaticResource Background2}" Grid.RowSpan="3" Margin="5"  >
                     <Label x:Name="label1" Height="25" Content="{Binding Comment_Me, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
                            Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
@@ -155,21 +157,22 @@
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Termin"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"/>
-                <!--<Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
-                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"-->
-                        <!--CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"/>-->
+                <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
+                        CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"/>
                 <StackPanel Grid.Row="2" Grid.Column="7" Orientation="Horizontal" >
                     <CheckBox  x:Name="isHighPrio" Checked="Modified"/>
                     <TextBox  x:Name="CommentHighPrio" Width="101" ToolTip="Priotext" TextChanged="CommentHighPrio_TextChanged" />
                 </StackPanel>
 
-                <!--<Button Grid.Column="13" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
+                <Button Grid.Column="13" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
                         Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
-                        CommandParameter="{Binding Aid, ElementName=luc}"/>-->
+                        CommandParameter="{Binding Aid, ElementName=luc}"/>
 
                 <Button Grid.Column="13" Grid.Row="1" Content="Auftrag öffnen" 
-                        Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand}"
+                        Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding Aid, ElementName=luc}"/>
                 <DockPanel Grid.Column="8" Grid.Row="2" Background="YellowGreen" >
                     <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" Click="Modified" 

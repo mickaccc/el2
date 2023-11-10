@@ -5,12 +5,12 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
-    xmlns:UserControls="clr-namespace:El2UserControls;assembly=El2UserControls"
+    xmlns:UserControls="clr-namespace:ModuleDeliverList.UserControls"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:WpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     x:Name="lieferListe"
-    x:Class="Lieferliste_WPF.Views.Liefer"
+    x:Class="ModuleDeliverList.Views.Liefer"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="1400"  >
     <Grid.Resources>
@@ -64,15 +64,15 @@
         <TextBlock Text="Loading..." HorizontalAlignment="Center" FontSize="30"
                    Visibility="{Binding OrderTask.IsNotCompleted, Converter={StaticResource BoolToVis}}"/>
         <TextBlock Text="{Binding OrderTask.ErrorMessage}" HorizontalAlignment="Center"
-                   Visibility="{Binding OrderTask.Faulted, Converter={StaticResource BoolToVis}}"/>
+                   Visibility="{Binding OrderTask.IsFaulted, Converter={StaticResource BoolToVis}}"/>
     </StackPanel>
     <ScrollViewer Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}" >
-            
-            <ItemsControl x:Name="Lieferlist" 
+
+        <ItemsControl x:Name="Lieferlist" 
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                           ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrderTask.Result}">
-                
-                <!--<ItemsControl.ItemsSource>
+
+            <!--<ItemsControl.ItemsSource>
                     <PriorityBinding>
                         <Binding Source="{StaticResource lvm}" Path="OrdersView" IsAsync="True" UpdateSourceTrigger="Explicit"/>
                         <Binding Source="{StaticResource lvm}" Path="PrioOrdersView" IsAsync="True" UpdateSourceTrigger="Explicit"/>
@@ -80,13 +80,13 @@
 
                 </ItemsControl.ItemsSource>-->
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border x:Name="border" CornerRadius="5" BorderBrush="Black" Background="LightGreen" BorderThickness="1" Margin="2" >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border x:Name="border" CornerRadius="5" BorderBrush="Black" Background="LightGreen" BorderThickness="1" Margin="2" >
 
-                            <StackPanel Height="100">
+                        <StackPanel Height="100">
 
-                                <UserControls:LieferlisteControl x:Name="ucLiefer"  
+                            <UserControls:LieferlisteControl x:Name="ucLiefer"  
                             Aid="{Binding Aid}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
                             TTNR="{Binding AidNavigation.Material}"
@@ -97,6 +97,7 @@
                             Quantity="{Binding AidNavigation.Quantity}" 
                             QuantityYield="{Binding QuantityYield}" 
                             QuantityScrap="{Binding QuantityScrap}" 
+                            QuantityMiss="{Binding QuantityMiss}"
                             VgText="{Binding Text}"
                             WorkArea="{Binding ArbPlSap}"
                             WorkAreaText="{Binding ArbPlSap}"
@@ -107,24 +108,22 @@
                             Invisible="{Binding Ausgebl, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=TwoWay}">
-                                    <UserControls:LieferlisteControl.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}"
+                                <UserControls:LieferlisteControl.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}"
                                                       CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
-                                            <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand}"
+                                        <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand}"
                                                       CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
-                                            <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand}"
+                                        <MenuItem Header="Auftragsansicht" Command="{Binding OrderViewCommand}"
                                                   CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
-                                        </ContextMenu>
-                                    </UserControls:LieferlisteControl.ContextMenu>
-                                </UserControls:LieferlisteControl>
+                                    </ContextMenu>
+                                </UserControls:LieferlisteControl.ContextMenu>
+                            </UserControls:LieferlisteControl>
 
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-
-            </ItemsControl>
-        </ScrollViewer>
- 
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
 </Grid>

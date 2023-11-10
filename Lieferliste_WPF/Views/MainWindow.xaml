@@ -223,7 +223,6 @@
 
                     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
                     <conv:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
-                    <conv:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
                     <conv:PSP_Converter x:Key="PSP_Converter"/>
                     <Style x:Key="EntryFieldStyle" TargetType="{x:Type Grid}" >
                         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -293,7 +292,7 @@
                         <TextBlock Margin="2,2,40,2" Text="Projekte..." Grid.Column="0"
                                Foreground="{StaticResource brushWatermarkForeground}" 
                                IsHitTestVisible="False" 
-                               Visibility="{Binding SelectedItem, Converter={StaticResource NullVisibilityConverter}, ElementName=cmbProj}" Background="White" HorizontalAlignment="Stretch" TextAlignment="Center" />
+                                Background="White" HorizontalAlignment="Stretch" TextAlignment="Center" />
                         <Button Grid.Column="0" Height="23" HorizontalAlignment="Right" x:Name="btnClearProj" VerticalAlignment="Top" IsManipulationEnabled="False" Margin="0,3,0,0" >
                             <Image Source="/Images/eraser.png" Stretch="Uniform" ClipToBounds="True" />
                         </Button>
@@ -301,7 +300,7 @@
                         <TextBlock Margin="2,2,40,2" Text="Kostenstellen..." Grid.Column="1"
                                Foreground="{StaticResource brushWatermarkForeground}" 
                                IsHitTestVisible="False" 
-                               Visibility="{Binding SelectedItem, Converter={StaticResource NullVisibilityConverter}, ElementName=cmbKst}" Background="White" TextAlignment="Center" />
+                                Background="White" TextAlignment="Center" />
                         <Button Grid.Column="1" Height="23" HorizontalAlignment="Right" x:Name="btnClearKst" VerticalAlignment="Top" IsManipulationEnabled="False" BorderThickness="0" Margin="0,3,0,0" >
                             <Image Source="/Images/eraser.png" Stretch="Uniform" />
                         </Button>
@@ -316,7 +315,7 @@
                         <TextBlock Margin="2,2,0,2" Text="Spezial..." Grid.Column="2"
                                Foreground="{StaticResource brushWatermarkForeground}" 
                                IsHitTestVisible="False" 
-                               Visibility="{Binding SelectedItem, Converter={StaticResource NullVisibilityConverter}, ElementName=cmbSpezial}" Background="White" TextAlignment="Center" HorizontalAlignment="Left" Width="100" />
+                                Background="White" TextAlignment="Center" HorizontalAlignment="Left" Width="100" />
                         <Button Grid.Column="2" Height="23" HorizontalAlignment="Right" x:Name="btnClearSpezial" VerticalAlignment="Top" IsManipulationEnabled="False" BorderThickness="0" Margin="0,3,0,0" >
                             <Image Source="/Images/eraser.png" Stretch="Uniform" />
                         </Button>

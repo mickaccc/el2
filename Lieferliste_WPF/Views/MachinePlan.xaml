@@ -61,9 +61,9 @@
             <Button Content="Speichern" Command="{Binding SaveCommand}" Width="50" Grid.Column="2" FontWeight="Bold"/>
 
         </Grid>
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
             <ItemsControl x:Name="machines" ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                          ScrollViewer.VerticalScrollBarVisibility="Disabled" ItemsSource="{Binding Machines}" >
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding Machines}" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel x:Name="stackPanel" Orientation="Horizontal"/>

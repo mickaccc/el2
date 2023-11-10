@@ -10,7 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using ModuleDeliverList.Views;
 using Prism.Ioc;
 using Prism.Regions;
+using Prism.Services.Dialogs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -56,6 +58,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         public ICommand ExplorerCommand { get; private set; }
+        public ICommand OpenOrderCommand { get; private set; }
  
         private NotifyTaskCompletion<int>? _onlineTask;
         public NotifyTaskCompletion<int>? OnlineTask
@@ -106,14 +109,16 @@ namespace Lieferliste_WPF.ViewModels
         private List<ViewModelBase> _windowTitles;
         private IRegionManager _regionmanager;
         private IContainerExtension _container;
-   
+        private IDialogService _dialogService;
         public MainWindowViewModel(IRegionManager regionManager,
             IContainerExtension container,
-            IApplicationCommands applicationCommands)
+            IApplicationCommands applicationCommands,
+            IDialogService dialogService)
         {
             _regionmanager = regionManager;
             _container = container;
             _applicationCommands = applicationCommands;
+            _dialogService = dialogService;
             TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
             //DBOperation();
@@ -123,7 +128,8 @@ namespace Lieferliste_WPF.ViewModels
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
             ExplorerCommand = new ActionCommand(OnOpenExplorerExecuted, OnOpenExplorerCanExecute);
             _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
-
+            OpenOrderCommand = new ActionCommand(OnOpenOrderExecuted, OnOpenOrderCanExecute);
+            _applicationCommands.OpenOrderCommand.RegisterCommand(OpenOrderCommand);
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
             OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
             OpenUserMgmtCommand = new ActionCommand(OnOpenUserMgmtExecuted, OnOpenUserMgmtCanExecute);
@@ -165,7 +171,25 @@ namespace Lieferliste_WPF.ViewModels
         {
             _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
         }
- 
+        private static bool OnOpenOrderCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Order);
+        }
+        private void OnOpenOrderExecuted(object parameter)
+        {
+            OrderRb ord;
+            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            {
+                ord = db.OrderRbs
+                    .Include(x => x.MaterialNavigation)
+                    .Include(x => x.DummyMatNavigation)
+                    .Include(x => x.Vorgangs)
+                    .First(x => x.Aid == parameter.ToString());
+            }
+            var par = new DialogParameters();
+            par.Add("vrgList", ord);
+            _dialogService.Show("Order",par,null);
+        }
         private void OnOpenMachineMgmtExecuted(object selectedItem)
         {
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MachineEdit",UriKind.Relative));

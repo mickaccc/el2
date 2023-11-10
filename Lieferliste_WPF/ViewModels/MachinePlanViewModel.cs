@@ -10,6 +10,7 @@ using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,6 +51,7 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<Vorgang>? Priv_parking { get; set; }
         private DB_COS_LIEFERLISTE_SQLContext _DbCtx;
         private IContainerExtension _container;
+        private IDialogService _dialogService;
         private readonly ICollectionView _ressCV;
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
@@ -61,10 +63,11 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
  
-        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands) 
+        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands, IDialogService dialogService) 
         {
             _container = container;
             _applicationCommands = applicationCommands;
+            _dialogService = dialogService;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             Machines = new List<PlanMachine>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
@@ -91,12 +94,14 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenMachineExecuted(object obj)
         {
-            _container.Resolve<MachineView>();
+            var m = (PlanMachine)obj;           
+            var par = new DialogParameters();
+            par.Add("processList",m);
+            _dialogService.Show("MachineView");
         }
 
         private bool OnSaveCanExecute(object arg)
-        {
-           
+        {          
             return _DbCtx.ChangeTracker.HasChanges();
 
         }

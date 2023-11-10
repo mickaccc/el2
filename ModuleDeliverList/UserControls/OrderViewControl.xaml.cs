@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-namespace El2UserControls
+namespace ModuleDeliverList.UserControls
 {
     /// <summary>
     /// Interaction logic for OrderView.xaml

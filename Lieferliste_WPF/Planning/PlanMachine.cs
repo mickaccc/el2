@@ -18,7 +18,7 @@ using System.Windows.Shapes;
 
 namespace Lieferliste_WPF.Planning
 {
-    internal class PlanMachine : DependencyObject, IDropTarget, INotifyPropertyChanged
+    internal class PlanMachine : DependencyObject, IDropTarget
     {
 
         #region Constructors
@@ -68,20 +68,8 @@ namespace Lieferliste_WPF.Planning
         }
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? ChangeProcessesCommand { get; private set; }
-        private IApplicationCommands _applicationCommands;
-        public IApplicationCommands ApplicationCommands
-        {
-            get { return _applicationCommands; }
-            set
-            {
-                if (_applicationCommands != value)
-                    _applicationCommands = value;
-                //PropertyChanged   ApplicationCommands;
-            }
-        }
+ 
         private readonly int _rId;
-
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         public int RID { get { return _rId; } }
         public string? Name { get; set; }
@@ -98,18 +86,13 @@ namespace Lieferliste_WPF.Planning
 
         private void Initialize()
         {
-            PropertyChanged += OnChanged();
+
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
 
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
                       
-        }
-
-        private PropertyChangedEventHandler OnChanged()
-        {
-            throw new NotImplementedException();
         }
 
         private static bool OnSetMarkerCanExecute(object arg)

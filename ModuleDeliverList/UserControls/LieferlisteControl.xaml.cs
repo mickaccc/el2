@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using CompositeCommands.Core;
 using System.DirectoryServices;
 
-namespace El2UserControls
+namespace ModuleDeliverList.UserControls
 {
     /// <summary>
     /// Interaction logic for LieferlisteView1.xaml
@@ -129,6 +129,19 @@ namespace El2UserControls
             = DependencyProperty.Register("QuantityScrap"
                 , typeof(int)
                 , typeof(LieferlisteControl));
+
+
+        public int QuantityMiss
+        {
+            get { return (int)GetValue(QuantityMissProperty); }
+            set { SetValue(QuantityMissProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for QuantityMiss.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty QuantityMissProperty =
+            DependencyProperty.Register("QuantityMiss", typeof(int), typeof(LieferlisteControl), new PropertyMetadata(0));
+
+
         public int QuantityScrap
         {
             get { return (int)GetValue(QuantityScrapProperty); }
