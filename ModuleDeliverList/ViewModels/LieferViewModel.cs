@@ -33,7 +33,6 @@ namespace ModuleDeliverList.ViewModels
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
-        public ActionCommand OrderViewCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
         public ActionCommand ArchivateCommand { get; private set; }
         public string Key { get; } = "lie";

@@ -370,7 +370,7 @@ namespace Lieferliste_WPF.ViewModels
                     CostView.Refresh();
                 }
             }
-            
+            _usrCV.Refresh();
         }
 
     }

@@ -20,33 +20,13 @@ namespace Lieferliste_WPF.Views
     /// <summary>
     /// Interaction logic for MachineView.xaml
     /// </summary>
-    public partial class MachineView : UserControl, IDialogWindow
+    public partial class MachineView : Window
     {
         public MachineView()
         {
             InitializeComponent();
         }
 
-        public IDialogResult Result { get; set; }
-        public Window Owner { get; set; }
-
-        public event EventHandler Closed;
-        public event CancelEventHandler Closing;
-
-        public void Close()
-        {
-            
-        }
-
-        public void Show()
-        {
-            
-        }
-
-        public bool? ShowDialog()
-        {
-            return true;
-        }
 
         private void Process_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {

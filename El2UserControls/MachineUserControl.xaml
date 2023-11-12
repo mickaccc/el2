@@ -38,7 +38,7 @@
                 </Button>
                 <Button Grid.Row="1" HorizontalAlignment="Left" Width="20" Background="White"
                          ToolTip="Alternativ: Strg + LMB oder Strg + M"
-                        Command="{Binding DataContext.OpenMachineCommand}"
+                        Command="{Binding OpenMachineCommand, Mode=OneWay}"
                         CommandParameter="{Binding InventNo}">
                     <Image Source="/Images/book.png" Stretch="Fill"/>
                 </Button>
@@ -54,7 +54,11 @@
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}"
                   dd:DragDrop.DragHandler="{Binding}">
-
+            <DataGrid.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick"
+                              Command="{Binding ApplicationCommands.OpenOrderCommand}"
+                              CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"/>
+            </DataGrid.InputBindings>
             <DataGrid.ContextMenu>
                 <ContextMenu Width="Auto">
                     <MenuItem x:Name="DelBullet" Header="Markierung  löschen" Command="{Binding SetMarkerCommand}" >

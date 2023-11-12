@@ -5,6 +5,8 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.ViewModels;
+using Lieferliste_WPF.Views;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Immutable;
@@ -68,7 +70,8 @@ namespace Lieferliste_WPF.Planning
         }
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? ChangeProcessesCommand { get; private set; }
- 
+        public ICommand OpenMachineCommand { get; private set; }
+
         private readonly int _rId;
 
         public int RID { get { return _rId; } }
@@ -82,13 +85,27 @@ namespace Lieferliste_WPF.Planning
         public ObservableCollection<Vorgang>? Processes { get; set; }
         
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
+        private IApplicationCommands _applicationCommands;
+
+        public IApplicationCommands ApplicationCommands
+        {
+            get { return _applicationCommands; }
+            set
+            {
+                if (_applicationCommands != value)
+                {
+                    _applicationCommands = value;
+                }
+            }
+        }
+
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
         private void Initialize()
         {
 
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
-
+            OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
@@ -120,6 +137,17 @@ namespace Lieferliste_WPF.Planning
 
             ProcessesCV.Refresh();
   
+        }
+        private bool OnOpenMachineCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnOpenMachineExecuted(object obj)
+        {
+            var ma = new MachineView();
+            ma.DataContext = this;
+            ma.Show();
         }
         public void Exit()
         {

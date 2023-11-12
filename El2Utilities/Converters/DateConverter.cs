@@ -14,7 +14,7 @@ namespace El2Core.Converters
             try
             {
                 var v = value;
-                if (value == DBNull.Value) return null;
+                if (value == null) return null;
                 DateTime date = (DateTime)value;
                 return date.ToString("ddd, dd.MM.yyyy");
             }

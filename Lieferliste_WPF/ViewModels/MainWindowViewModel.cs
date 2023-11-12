@@ -177,18 +177,26 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenOrderExecuted(object parameter)
         {
-            OrderRb ord;
-            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            if (parameter != null)
             {
-                ord = db.OrderRbs
-                    .Include(x => x.MaterialNavigation)
-                    .Include(x => x.DummyMatNavigation)
-                    .Include(x => x.Vorgangs)
-                    .First(x => x.Aid == parameter.ToString());
+                string? para;
+                if (parameter is Vorgang y) para = y.Aid; else para = parameter.ToString();
+                OrderRb? ord;
+                using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+                {
+                    ord = db.OrderRbs
+                        .Include(x => x.MaterialNavigation)
+                        .Include(x => x.DummyMatNavigation)
+                        .Include(x => x.Vorgangs)
+                        .FirstOrDefault(x => x.Aid == para);
+                }
+                if (ord != null)
+                {
+                    var par = new DialogParameters();
+                    par.Add("vrgList", ord);
+                    _dialogService.Show("Order", par, null);
+                }
             }
-            var par = new DialogParameters();
-            par.Add("vrgList", ord);
-            _dialogService.Show("Order",par,null);
         }
         private void OnOpenMachineMgmtExecuted(object selectedItem)
         {
@@ -255,7 +263,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnOpenExplorerCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenExpl);
         }
         private void OnOpenExplorerExecuted(object obj)
         {

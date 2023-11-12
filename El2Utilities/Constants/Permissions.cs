@@ -20,5 +20,6 @@ namespace El2Core.Constants
         public const string Archivate = "ARCHIVATE";
         public const string Archiv = "ARCHIV";
         public const string Order = "OO00";
+        public const string OpenExpl = "EXPL00";
     }
 }

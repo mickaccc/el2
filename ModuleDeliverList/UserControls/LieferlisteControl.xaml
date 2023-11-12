@@ -15,10 +15,6 @@
 
 
     <UserControl.Resources>
-        <SolidColorBrush x:Key="CommentInfoBackground" Color="LightYellow"/>
-        <SolidColorBrush x:Key="CommentBackground" Color="Bisque"/>
-        <SolidColorBrush x:Key="Background1" Color="Aqua"/>
-        <SolidColorBrush x:Key="Background2" Color="Azure"/>
         <conv:DateLostToColorConverter x:Key="DateLost"/>
         <conv:CommentConverter x:Key="CommentConverter"/>
         <conv:RessourceToKwConverter x:Key="RtKw"/>

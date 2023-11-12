@@ -4,9 +4,13 @@
     <SolidColorBrush x:Key="Background1" Color="AliceBlue"/>
     <SolidColorBrush x:Key="Background2" Color="Beige"/>
 
-<!--#region LieferUserControl-->
+<!--LieferUserControl-->
     <SolidColorBrush x:Key="CommentInfoBackground" Color="LightYellow"/>
-    <SolidColorBrush x:Key="CommentBackground" Color="#FFE7BEF7"/>
+    <SolidColorBrush x:Key="CommentBackground" Color="LightSteelBlue"/>
     
-    <!--#endregion-->
+<!--OrderView-->
+    <SolidColorBrush x:Key="ActiveProcess" Color="DarkGreen"/>
+    <SolidColorBrush x:Key="ListBackgroud" Color="LightGray"/>
+    <SolidColorBrush x:Key="HeaderBackground" Color="LightGreen"/>
+    <SolidColorBrush x:Key="ValueBackground" Color="Beige"/>
 </ResourceDictionary>

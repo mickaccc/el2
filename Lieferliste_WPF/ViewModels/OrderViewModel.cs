@@ -16,18 +16,23 @@ using Prism.Ioc;
 using Prism.Services.Dialogs;
 using Prism.Mvvm;
 using Lieferliste_WPF.Planning;
+using System.Collections.ObjectModel;
+using Lieferliste_WPF.Utilities;
+using CompositeCommands.Core;
 
 namespace Lieferliste_WPF.ViewModels 
 {
     class OrderViewModel : ViewModelBase, IDialogAware
     {
-
-        private OrderRb _order;
-        public ConcurrentObservableCollection<Vorgang> Vorgangs { get; private set; }
+        public OrderViewModel(IApplicationCommands applicationCommands) 
+        {
+            _applicationCommands = applicationCommands;
+            VorgangCV = CollectionViewSource.GetDefaultView(Vorgangs);
+        }
+        private ObservableCollection<Vorgang> Vorgangs { get; set; } = new();
 
         public event Action<IDialogResult> RequestClose;
 
-        public OrderRb Order => _order;
         private string _aid;
         public string Aid
         { get { return _aid; }
@@ -105,8 +110,22 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private string? _sysStatus;
 
-        private ICollectionView _vorgangCV; 
+        public string? SysStatus
+        {
+            get { return _sysStatus; }
+            set
+            {
+                if (_sysStatus != value)
+                { 
+                    _sysStatus = value;
+                    NotifyPropertyChanged(() => SysStatus);
+                }
+            }
+        }
+
+        public ICollectionView VorgangCV { get; private set; } 
         private string _title = "Notification";
         public string Title
         {
@@ -120,15 +139,17 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-
-        #region Constructor
-        public OrderViewModel() 
+        private IApplicationCommands _applicationCommands;
+        public IApplicationCommands ApplicationCommands
         {
-            
-        } 
-        #endregion
- 
-
+            get { return _applicationCommands; }
+            set
+            {
+                if (_applicationCommands != value)
+                    _applicationCommands = value;
+                NotifyPropertyChanged(() => ApplicationCommands);
+            }
+        }
         public bool CanCloseDialog()
         {
             return true;
@@ -142,16 +163,20 @@ namespace Lieferliste_WPF.ViewModels
         public void OnDialogOpened(IDialogParameters parameters)
         {
             var p = parameters.GetValue<OrderRb>("vrgList");
-            _order = p;
-            Vorgangs = new ConcurrentObservableCollection<Vorgang>(_order.Vorgangs.ToList());
-            _vorgangCV = CollectionViewSource.GetDefaultView(Vorgangs);
-            Aid =_order.Aid;
-            Material = _order.Material;
-            Bezeichnung =_order.MaterialNavigation?.Bezeichng;
-            Quantity = _order.Quantity;
-            Pro = _order.ProId;
-            ProInfo = _order.ProId;
-            _vorgangCV.Refresh();
+
+            foreach (var item in p.Vorgangs)
+            {
+                Vorgangs.Add(item);
+            }
+
+            Aid =p.Aid;
+            Material = p.Material;
+            Bezeichnung =p.MaterialNavigation?.Bezeichng;
+            Quantity = p.Quantity;
+            Pro = p.ProId;
+            ProInfo = p.ProId;
+            SysStatus = p.SysStatus;
+            VorgangCV.Refresh();
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
                 IConfiguration  Configuration = builder.Build();
-            var defaultconnection = Configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = Configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection);
 
             containerRegistry.RegisterInstance(builderopt.Options);

@@ -152,11 +152,11 @@ namespace Lieferliste_WPF.ViewModels
                     .Where(y => y.Inventarnummer != null)
                     .ToObservableCollection();
 
-                WorkAreas = DBctx.WorkAreas.AsNoTracking()
+                var w = DBctx.WorkAreas.AsNoTracking()
                     .OrderBy(x => x.Bereich)
                     .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
                     .ToList();
-                WorkAreas.Prepend(new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" });
+                WorkAreas.AddRange(w.Prepend(new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" }));
                    
         }
     }

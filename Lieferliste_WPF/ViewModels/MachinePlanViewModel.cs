@@ -33,29 +33,32 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
 
         public ICommand SaveCommand { get; private set; }
-        public ActionCommand OpenMachineCommand { get; private set; }
-        private IApplicationCommands _applicationCommands;
-        public IApplicationCommands ApplicationCommands
-        {
-            get { return _applicationCommands; }
-            set
-            {
-                if (_applicationCommands != value)
-                    _applicationCommands = value;
-                NotifyPropertyChanged(() => ApplicationCommands);
-            }
-        }
+
         public List<WorkArea>? WorkAreas { get; private set; }
         public List<PlanMachine> Machines { get; }
         private ObservableCollection<Vorgang>? Priv_processes { get; set; }
         private ObservableCollection<Vorgang>? Priv_parking { get; set; }
         private DB_COS_LIEFERLISTE_SQLContext _DbCtx;
         private IContainerExtension _container;
-        private IDialogService _dialogService;
+
         private readonly ICollectionView _ressCV;
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
-        
+        private IApplicationCommands _applicationCommands;
+
+        public IApplicationCommands ApplicationCommands
+        {
+            get { return _applicationCommands; }
+            set
+            {
+                if (_applicationCommands != null)
+                {
+                    _applicationCommands = value;
+                    NotifyPropertyChanged(() => ApplicationCommands);
+                }
+            }
+        }
+
         private string _masterFilterText;
         private string? _searchFilterText;
         
@@ -63,16 +66,14 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
  
-        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands, IDialogService dialogService) 
+        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands) 
         {
             _container = container;
             _applicationCommands = applicationCommands;
-            _dialogService = dialogService;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             Machines = new List<PlanMachine>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
-            _applicationCommands.OpenMachineCommand.RegisterCommand(OpenMachineCommand);
+ 
             LoadData();
             _ressCV = CollectionViewSource.GetDefaultView(Machines);
             _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == WorkAreas?.First().WorkAreaId;
@@ -85,19 +86,6 @@ namespace Lieferliste_WPF.ViewModels
             _masterFilterText = WorkAreas?.First().WorkAreaId.ToString() ?? "";
             ProcessCV.Refresh();
         
-        }
-
-        private bool OnOpenMachineCanExecute(object arg)
-        {
-            return true;
-        }
-
-        private void OnOpenMachineExecuted(object obj)
-        {
-            var m = (PlanMachine)obj;           
-            var par = new DialogParameters();
-            par.Add("processList",m);
-            _dialogService.Show("MachineView");
         }
 
         private bool OnSaveCanExecute(object arg)
@@ -149,6 +137,7 @@ namespace Lieferliste_WPF.ViewModels
                     WorkArea = q.WorkArea,
                     CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
                     Description = q.Info ?? String.Empty,
+                    ApplicationCommands = _applicationCommands
                 };
 
                 List<Vorgang> VrgList = qp.FindAll(x => x.Rid == q.RessourceId);
