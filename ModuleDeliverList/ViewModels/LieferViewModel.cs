@@ -1,4 +1,5 @@
-﻿using CompositeCommands.Core;
+﻿using BionicCode.Utilities.Net.Standard.Extensions;
+using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
@@ -45,7 +46,21 @@ namespace ModuleDeliverList.ViewModels
         private RelayCommand? _textSearchCommand;
         private RelayCommand? _filterCommand;
         private string _searchFilterText = string.Empty;
+        private string _searchFilterProj = string.Empty;
         private CmbFilter _cmbFilter;
+        private HashSet<string> _projects = new();
+        public HashSet<string> Projects
+        {
+            get { return _projects; }
+            set
+            {
+                if (_projects != value)
+                {
+                    _projects = value;
+                    NotifyPropertyChanged(() => Projects);
+                }
+            }
+        }
         private static object _lock = new object();
         private IContainerExtension _container;
         private IApplicationCommands _applicationCommands;
@@ -93,6 +108,19 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
+        public string SearchFilterProj
+        {
+            get { return _searchFilterProj; }
+            set
+            {
+                if (value != _searchFilterProj)
+                {
+                    _searchFilterProj = value;
+                    NotifyPropertyChanged(() => SearchFilterProj);
+                    OrdersView?.Refresh();
+                }
+            }
+        }
         
         public LieferViewModel(IContainerExtension container,
             IApplicationCommands applicationCommands,
@@ -116,24 +144,28 @@ namespace ModuleDeliverList.ViewModels
 
         private bool OrdersView_FilterPredicate(object value)
         {
-            var ord = (Vorgang)value;
+ 
+                var ord = (Vorgang)value;
 
-            var accepted = true;
+                var accepted = true;
 
-            if (!string.IsNullOrWhiteSpace(_searchFilterText))
-            {
-                _searchFilterText = _searchFilterText.ToUpper();
-                if (!(accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
-                    if (!(accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
-                        accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
-            }
-            if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = ord.Ausgebl;
-            if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
-            if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text.ToUpper().Contains("STARTEN");
-            if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
-            if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
-            if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
-            return accepted;
+                if (!string.IsNullOrWhiteSpace(_searchFilterText))
+                {
+                    _searchFilterText = _searchFilterText.ToUpper();
+                    if (!(accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
+                        if (!(accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
+                            accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
+                }
+                if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = ord.Ausgebl;
+                if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
+                if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text.ToUpper().Contains("STARTEN");
+                if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
+                if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
+                if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
+
+                if (accepted && _searchFilterProj != string.Empty) accepted = ord.AidNavigation.ProId == _searchFilterProj;
+                return accepted;
+
         }
 
         private void OnTextSearch(object commandParameter)
@@ -253,6 +285,7 @@ namespace ModuleDeliverList.ViewModels
 
         public async Task<ICollectionView> LoadDataAsync()
         {
+            
              var a = DBctx.OrderRbs
                 .Include(v => v.Vorgangs)
                 .ThenInclude(r => r.RidNavigation)
@@ -286,9 +319,14 @@ namespace ModuleDeliverList.ViewModels
                         }
                         if (relev)
                         {
+                            foreach (var x in ol.Where(x => x.AidNavigation.ProId != null))
+                            {
+                                _projects.Add(x.AidNavigation.ProId ?? string.Empty);
+                            }
                             foreach (var r in ol.Where(x => x.Aktuell))
                             {
                                 result.Add(r);
+                                
                             }
                         }
                     }
@@ -296,7 +334,7 @@ namespace ModuleDeliverList.ViewModels
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));                      
                     
                 OrdersView = CollectionViewSource.GetDefaultView(_orders);
-                OrdersView.Filter += OrdersView_FilterPredicate;
+                //OrdersView.Filter += OrdersView_FilterPredicate;
             });
             return OrdersView;
         } 

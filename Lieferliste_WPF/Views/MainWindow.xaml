@@ -16,7 +16,7 @@
  
         x:Name="mainWindow"
         Title="LieferListe El2" Height="900">
- 
+
     <Window.Resources>
 
         <conv:PermissionConverter x:Key="permission"/>
@@ -174,14 +174,14 @@
                     <MenuItem Header="Print" Command="ApplicationCommands.Print"/>
                 </MenuItem>
 
-                <MenuItem Header="Teamleiterfunktionen">
-                    <MenuItem Header="Maschinenzuteilung"
+
+                <MenuItem Header="Teamleiter Zuteilung"
                               Command="{Binding OpenMachinePlanCommand}">
-                        <MenuItem.Icon>
-                            <Image  Source="/Images/machine-color.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
+                    <MenuItem.Icon>
+                        <Image  Source="/Images/machine-color.png" />
+                    </MenuItem.Icon>
                 </MenuItem>
+
                 <MenuItem Header="Lieferliste" Command="{Binding OpenLieferlisteCommand}">
                     <MenuItem.Icon>
                         <Image  Source="/Images/plan-edit.png" />

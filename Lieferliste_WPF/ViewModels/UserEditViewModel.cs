@@ -33,13 +33,14 @@ namespace Lieferliste_WPF.ViewModels
 
 
         private static ICollectionView _usrCV;
-
+ 
         public ICollectionView RoleView { get { return roleSource.View; } }
         public ICollectionView WorkView { get { return workSource.View; } }
         public ICollectionView CostView { get { return costSource.View; } }
 
         private static bool _isNew = false;
         public static ObservableCollection<User>? Users { get; private set; }
+
         private static HashSet<Role> Roles { get; set; } = new();
         private static HashSet<WorkArea> WorkAreas { get; set; } = new();
         private static HashSet<Costunit> CostUnits { get; set; } = new();
@@ -47,6 +48,8 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource roleSource { get; private set; } = new();
         internal CollectionViewSource workSource { get; private set; } = new();
         internal CollectionViewSource costSource { get; private set; } = new();
+ 
+        private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private int _validName = 0;
         private int _validIdent = 0;
         public int ValidName
@@ -71,10 +74,11 @@ namespace Lieferliste_WPF.ViewModels
         public UserEditViewModel(IContainerExtension container)
         {
             _container = container;
-
+            _dbctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             LoadData();
             _usrCV = CollectionViewSource.GetDefaultView(Users);
-
+            _usrCV.MoveCurrentToFirst();
+ 
             SelectionChangedCommand = new ActionCommand(OnSelectionChangeExecuted, OnSelectionChangeCanExecute);
             LostFocusCommand = new ActionCommand(OnLostFocusExecuted, OnLostFocusCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
@@ -85,7 +89,7 @@ namespace Lieferliste_WPF.ViewModels
             roleSource.Source = Roles;
             workSource.Source = WorkAreas;
             costSource.Source = CostUnits;
-
+ 
             roleSource.Filter += RoleFilterPredicate;
             workSource.Filter += WorkAreaFilterPredicate;
             costSource.Filter += CostFilterPredicate;
@@ -166,16 +170,15 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(obj is Window ob)
             {
-                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-                {
-                    if (Dbctx.ChangeTracker.HasChanges())
+
+                    if (_dbctx.ChangeTracker.HasChanges())
                     {
                         MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
                             , MessageBoxButton.YesNo, MessageBoxImage.Question);
-                        if (result == MessageBoxResult.Yes) { Dbctx.SaveChangesAsync(); }
+                        if (result == MessageBoxResult.Yes) { _dbctx.SaveChangesAsync(); }
 
                     }
-                }
+                
                 ob.Close();
                
             }
@@ -197,12 +200,11 @@ namespace Lieferliste_WPF.ViewModels
 
             if (u is User usr)
             {
-                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-                {
+  
                     Users?.Remove(usr);
-                    Dbctx.Users.Remove(usr);
+                    _dbctx.Users.Remove(usr);
                     OnSaveExecuted(usr);
-                }
+                
             }
         }
 
@@ -227,36 +229,33 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (_isNew)
             {
-                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-                {
-                    var user = Users.Except(Dbctx.Users).FirstOrDefault();
+
+                    var user = Users.Except(_dbctx.Users).FirstOrDefault();
                     if (user != null)
                     {
                         if (user.UsrName.IsNullOrEmpty()) ValidName = 1;
-                        if (user.UserIdent.IsNullOrEmpty() || Dbctx.Users.Any(x => x.UserIdent == user.UserIdent)) ValidIdent = 1;
+                        if (user.UserIdent.IsNullOrEmpty() || _dbctx.Users.Any(x => x.UserIdent == user.UserIdent)) ValidIdent = 1;
                         if (ValidName == 1 || ValidIdent == 1)
                         {
                             MessageBox.Show("Speichern wegen ungültigen Daten nicht möglich", "Speicherfehler",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                             return;
                         }
-                        Dbctx.Users.Add((User)user);
+                        _dbctx.Users.Add((User)user);
                     }
-                }
-                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-                {
-                    Dbctx.SaveChangesAsync();
+                
                     _isNew = false;
                     ValidIdent = 0;
                     ValidName = 0;
-                }
+                
             }
+            _dbctx.SaveChangesAsync();
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                return Dbctx.ChangeTracker.HasChanges() || _isNew;
+
+                return _dbctx.ChangeTracker.HasChanges() || _isNew;
         }
 
 
@@ -267,6 +266,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSelectionChangeExecuted(object obj)
         {
+           
             RoleView.Refresh();
             WorkView.Refresh();
             CostView.Refresh();   
@@ -274,8 +274,8 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            using var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            Users = Dbctx.Users
+            Users = new ObservableCollection<User>();
+            var u = _dbctx.Users
                 .Include(x => x.UserWorkAreas)
                 .Include(y => y.UserRoles)
                 .ThenInclude(c => c.Role)
@@ -284,11 +284,19 @@ namespace Lieferliste_WPF.ViewModels
                 .Where(x => x.Exited == false)
                 .OrderBy(o => o.UsrName)
                 .ToObservableCollection();
-
-
-            Roles = Dbctx.Roles.ToHashSet();
-            WorkAreas = Dbctx.WorkAreas.ToHashSet();
-            CostUnits = Dbctx.Costunits.ToHashSet();
+            foreach(var user in u)
+            {
+                User user1 = user;
+                user1.UserCosts = user.UserCosts.ToObservableCollection();
+                user1.UserRoles = user.UserRoles.ToObservableCollection();
+                user1.UserWorkAreas = user.UserWorkAreas.ToObservableCollection();
+                Users.Add(user1);
+            }
+            
+            var rl = UserInfo.User.UserRoles.Max(x => x.Role.Rolelevel);
+            Roles = _dbctx.Roles.Where(x => x.Rolelevel <= rl).ToHashSet();
+            WorkAreas = _dbctx.WorkAreas.ToHashSet();
+            CostUnits = _dbctx.Costunits.ToHashSet();
         }
 
         public void DragOver(IDropInfo dropInfo)
@@ -334,7 +342,6 @@ namespace Lieferliste_WPF.ViewModels
             {
                 data = new UserRole() { RoleId = r.Id, UserIdent = us.UserIdent, Role = r };
                 us.UserRoles.Add((UserRole)data);
-                RaisePropertyChanged(nameof(us.UserRoles));
                 RoleView.Refresh();
                 
             }
@@ -370,7 +377,7 @@ namespace Lieferliste_WPF.ViewModels
                     CostView.Refresh();
                 }
             }
-            _usrCV.Refresh();
+            _usrCV.Refresh(); 
         }
 
     }

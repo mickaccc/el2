@@ -121,7 +121,7 @@ namespace Lieferliste_WPF.ViewModels
             _dialogService = dialogService;
             TabTitles = new ObservableCollection<ViewPresenter>();
             WindowTitles = new List<ViewModelBase>();
-            //DBOperation();
+
             RegisterMe();
             SetTimer();
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
@@ -267,8 +267,22 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenExplorerExecuted(object obj)
         {
+            Dictionary<string, object>? dic;
+            if (obj is OrderViewModel o)
+            {
+                dic = new Dictionary<string, object>();
+                dic.Add("aid", o.Aid);
+                dic.Add("ttnr", o.Material ?? string.Empty);
+            }
+            else if (obj is Vorgang v)
+            {
+                dic = new Dictionary<string, object>();
+                dic.Add("aid", v.Aid);
+                dic.Add("ttnr", v.AidNavigation.Material ?? string.Empty);
+            }
+            else  dic = obj as Dictionary<string, object>;
+            if (dic != null)
 
-            if (obj is Dictionary<string, object> dic)
             {
                 StringBuilder sb = new();
                 String exp = Properties.Settings.Default.ExplorerPath;
@@ -289,10 +303,11 @@ namespace Lieferliste_WPF.ViewModels
                         {
                             if (val is string s)
                             {
+                                s = s.Trim();
                                 Match match2 = reg3.Match(s);
                                 foreach (Group ma in match2.Groups.Values)
                                 {
-                                    if (ma.Value != val.ToString())
+                                    if (ma.Value != s)
                                         nsb.Append(ma.Value.ToString()).Append(Path.DirectorySeparatorChar);
                                 }
                             }

@@ -1,4 +1,5 @@
-﻿using Lieferliste_WPF.Interfaces;
+﻿using GongSolutions.Wpf.DragDrop.Utilities;
+using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Lieferliste_WPF.Views
         public UserEdit()
         {
             InitializeComponent();
-
+            
         }
 
         //private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -43,9 +44,5 @@ namespace Lieferliste_WPF.Views
             e.CanExecute = true;
         }
 
-        private void U01_LostFocus(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

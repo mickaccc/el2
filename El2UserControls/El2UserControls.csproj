@@ -24,7 +24,9 @@
   <ItemGroup>
     <None Remove="Images\book.png" />
     <None Remove="Images\collapse.png" />
+    <None Remove="Images\files-and-folders.png" />
     <None Remove="Images\OrangeCross32.png" />
+    <None Remove="Images\planning.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,7 +54,9 @@
   <ItemGroup>
     <Resource Include="Images\book.png" />
     <Resource Include="Images\collapse.png" />
+    <Resource Include="Images\files-and-folders.png" />
     <Resource Include="Images\OrangeCross32.png" />
+    <Resource Include="Images\planning.png" />
   </ItemGroup>
 
 </Project>

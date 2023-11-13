@@ -49,6 +49,9 @@
 
         <StackPanel Orientation="Horizontal"  DockPanel.Dock="Right" Background="DarkBlue" TextElement.Foreground="Beige"
                         TextElement.FontSize="20">
+            <ComboBox x:Name="cmb_filtersProjects" Width="170" Margin="3,0,5,0"
+                      ItemsSource="{Binding Path=Projects}"
+                      SelectedValue="{Binding Path=SearchFilterProj, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <ComboBox x:Name="cmb_filters" Width="170"
                       ItemsSource="{Binding Path=SelectedFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
                       SelectedValue="{Binding Path=SelectedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

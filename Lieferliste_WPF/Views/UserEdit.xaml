@@ -119,7 +119,7 @@
 
         </ListBox>
         <ScrollViewer Grid.Row="3" Grid.Column="1">
-            <ListBox x:Name="ListWORKAREA" ItemsSource="{Binding WorkView}" 
+            <ListBox x:Name="ListWORKAREA" ItemsSource="{Binding WorkView}"  
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
                  dd:DragDrop.DragHandler="{Binding}"

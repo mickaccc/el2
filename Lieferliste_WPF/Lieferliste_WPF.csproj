@@ -50,6 +50,7 @@
     <None Remove="Images\drill.png" />
     <None Remove="Images\edit.png" />
     <None Remove="Images\eraser.png" />
+    <None Remove="Images\files-and-folders.png" />
     <None Remove="Images\format_text_bold.png" />
     <None Remove="Images\format_text_italic.png" />
     <None Remove="Images\format_text_underline.png" />
@@ -170,6 +171,7 @@
     <Resource Include="Images\drill.png" />
     <Resource Include="Images\edit.png" />
     <Resource Include="Images\eraser.png" />
+    <Resource Include="Images\files-and-folders.png" />
     <Resource Include="Images\format_text_bold.png" />
     <Resource Include="Images\format_text_italic.png" />
     <Resource Include="Images\format_text_underline.png" />

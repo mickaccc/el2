@@ -9,7 +9,7 @@
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     x:Class="Lieferliste_WPF.Views.Order"
         mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="1200" MinWidth="1000" >
+    d:DesignHeight="450" d:DesignWidth="1200" MinWidth="1000" MaxHeight="600" >
 
 
     <UserControl.Resources>
@@ -81,9 +81,12 @@
             <Label Grid.Column="4" Content="{Binding Items.Count, ConverterParameter=Vorgang;Vorgänge, Converter={StaticResource CountConverter1}, ElementName=listBox1, Mode=OneWay}"
                    HorizontalAlignment="Right" Margin="5" x:Name="Count" VerticalAlignment="Top"
                    Background="#FFEBEB73" Width="71" />
-            <Button Grid.Column="4" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchive"
+            <Button Grid.Column="4" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
                     VerticalAlignment="Top" Width="75" SnapsToDevicePixels="True"
                     Command="{Binding Path=ApplicationCommands.ArchivateCommand}" CommandParameter="{Binding Aid}"/>
+            <Button Grid.Column="4" Grid.Row="1" Content="Explorer" Height="23" HorizontalAlignment="left" Margin="5" x:Name="btnExplorer"
+                    VerticalAlignment="Top" Width="75" SnapsToDevicePixels="True"
+                    Command="{Binding Path=ApplicationCommands.ExplorerCommand}" CommandParameter="{Binding}"/>
         </Grid>
         <ScrollViewer Grid.Row="1" >
             <ItemsControl  x:Name="listBox1" ItemsSource="{Binding VorgangCV}" Background="{StaticResource ListBackgroud}"
