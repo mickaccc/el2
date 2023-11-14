@@ -48,7 +48,7 @@
         </WpfCustomControlLibrary:ClearableHintTextBox>
 
         <StackPanel Orientation="Horizontal"  DockPanel.Dock="Right" Background="DarkBlue" TextElement.Foreground="Beige"
-                        TextElement.FontSize="20">
+                        TextElement.FontSize="16">
             <ComboBox x:Name="cmb_filtersProjects" Width="170" Margin="3,0,5,0"
                       ItemsSource="{Binding Path=Projects}"
                       SelectedValue="{Binding Path=SearchFilterProj, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

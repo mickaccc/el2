@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Prism.Unity" Version="8.1.97" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CompositeCommands.Core\CompositeCommands.Core.csproj" />
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
     <ProjectReference Include="..\WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />

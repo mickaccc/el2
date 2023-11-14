@@ -1,11 +1,8 @@
 ﻿using El2Core.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+using Prism.Ioc;
 using System;
 using System.Linq;
-using System.Windows;
-using Prism.Modularity;
-using Prism.Ioc;
 
 namespace El2Core.Utils
 

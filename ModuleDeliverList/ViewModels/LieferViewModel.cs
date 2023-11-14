@@ -1,14 +1,11 @@
-﻿using BionicCode.Utilities.Net.Standard.Extensions;
-using CompositeCommands.Core;
+﻿using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using ModuleDeliverList.UserControls;
-using ModuleDeliverList.Views;
 using Prism.Ioc;
-using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +20,7 @@ using System.Windows.Input;
 
 namespace ModuleDeliverList.ViewModels
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     class LieferViewModel : ViewModelBase
     {
         
@@ -64,7 +62,7 @@ namespace ModuleDeliverList.ViewModels
         private static object _lock = new object();
         private IContainerExtension _container;
         private IApplicationCommands _applicationCommands;
-        private IDialogService _dialogService;
+
         public IApplicationCommands ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -123,12 +121,10 @@ namespace ModuleDeliverList.ViewModels
         }
         
         public LieferViewModel(IContainerExtension container,
-            IApplicationCommands applicationCommands,
-            IDialogService dialogService)
+            IApplicationCommands applicationCommands)
         {
             _container = container;
             _applicationCommands = applicationCommands;
-            _dialogService = dialogService;
             DBctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
@@ -285,7 +281,7 @@ namespace ModuleDeliverList.ViewModels
 
         public async Task<ICollectionView> LoadDataAsync()
         {
-            
+            _projects.Add(string.Empty);
              var a = DBctx.OrderRbs
                 .Include(v => v.Vorgangs)
                 .ThenInclude(r => r.RidNavigation)
@@ -319,6 +315,7 @@ namespace ModuleDeliverList.ViewModels
                         }
                         if (relev)
                         {
+                            
                             foreach (var x in ol.Where(x => x.AidNavigation.ProId != null))
                             {
                                 _projects.Add(x.AidNavigation.ProId ?? string.Empty);

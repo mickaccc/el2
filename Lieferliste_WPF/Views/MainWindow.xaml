@@ -8,7 +8,6 @@
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:util="clr-namespace:El2Core.Utils;assembly=El2Core"
-    xmlns:cmd="clr-namespace:Lieferliste_WPF.Commands"
     xmlns:local="clr-namespace:Lieferliste_WPF.Views"
     prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="av"
@@ -22,7 +21,7 @@
         <conv:PermissionConverter x:Key="permission"/>
         <conv:PSP_Converter x:Key="psp-converter"/>
         <conv:TTNR_Converter x:Key="ttnr-converter"/>
-        <cmd:ELCommands x:Key="elCmd"/>
+        
 
         <!--<Style TargetType="{x:Type ContentControl}">
                     <Setter Property="ContentTemplate" Value="{StaticResource TabContentTemplate}" />
@@ -209,7 +208,7 @@
 
                 <MenuItem Header="Hilfe" >
                     <MenuItem Header="About" Click="About_Click"/>
-                    <MenuItem Header="Archiv" Command="{Binding ShowArchive, Mode=OneWay, Source={StaticResource elCmd}}"/>
+                    <MenuItem Header="Archiv" />
                 </MenuItem>
             </Menu>
             <Grid>
