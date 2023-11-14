@@ -73,40 +73,9 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private bool _canOpenExplorer = true;
-        public bool CanOpenExplorer
-        {
-            get { return _canOpenExplorer; }
-            set
-            {
-                if (_canOpenExplorer != value)
-                {
-                    _canOpenExplorer = value;
-                    NotifyPropertyChanged(() => CanOpenExplorer);
-                }
-            }
-        }
-        private ViewPresenter _selectedTab;
-        public ViewPresenter SelectedTab
-        {
-            get { return _selectedTab; }
-            set
-            {
-                if (!_selectedTab.Equals(value))
-                {
-                    _selectedTab = value;
-                    NotifyPropertyChanged(() => SelectedTab);
-                }
-            }
-        }
-        private delegate void LieferTaskCompletedEventHandler();
+
         private static int _onlines;
         private static System.Timers.Timer? _timer;
-        private double _progressValue;
-        private bool _isLoading;
-        
-        private ObservableCollection<ViewPresenter> _tabTitles;
-        private List<ViewModelBase> _windowTitles;
         private IRegionManager _regionmanager;
         private readonly IContainerExtension _container;
         private readonly IDialogService _dialogService;
@@ -119,8 +88,6 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             _applicationCommands = applicationCommands;
             _dialogService = dialogService;
-            TabTitles = new ObservableCollection<ViewPresenter>();
-            WindowTitles = new List<ViewModelBase>();
 
             RegisterMe();
             SetTimer();
@@ -308,7 +275,7 @@ namespace Lieferliste_WPF.ViewModels
                                 foreach (Group ma in match2.Groups.Values)
                                 {
                                     if (ma.Value != s)
-                                        nsb.Append(ma.Value.ToString()).Append(Path.DirectorySeparatorChar);
+                                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
                                 }
                             }
                         }
@@ -316,33 +283,25 @@ namespace Lieferliste_WPF.ViewModels
                     else
                     {
                         if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out object? val))
-                            nsb.Append(val.ToString()).Append(Path.DirectorySeparatorChar);
+                            nsb.Append(val).Append(Path.DirectorySeparatorChar);
                     }
                     sb.Append(nsb.ToString());
                 }
 
-                var p = Path.Combine(@Properties.Settings.Default.ExplorerRoot, sb.ToString());
-
-                if (p.IsNullOrEmpty())
+                
+                if (!Directory.Exists(Properties.Settings.Default.ExplorerRoot))
                 {
-                    MessageBox.Show(String.Format("Der Hauptpfad '{0}'\nwurde nicht gefunden!", Properties.Settings.Default.ExplorerRoot)
+                    MessageBox.Show($"Der Hauptpfad '{Properties.Settings.Default.ExplorerRoot}'\nwurde nicht gefunden!"
                         , "Error", MessageBoxButton.OK);
-                    return;
                 }
-                Process.Start("explorer.exe", @p);
+                else
+                {
+                    var p = Path.Combine(@Properties.Settings.Default.ExplorerRoot, sb.ToString());
+                    Process.Start("explorer.exe", @p);
+                }
             }
         }
-        private void TaskChanged(object? sender, PropertyChangedEventArgs e)
-        {
-
-                //if (LieferTask.IsSuccessfullyCompleted)
-                //{
-                //    TabTitles.Add(LieferTask.Result);
-                //}
-            
-        }
-
-
+ 
         #endregion
         private void SetTimer()
         {
@@ -371,39 +330,6 @@ namespace Lieferliste_WPF.ViewModels
                 OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
             if (OnlineTask.IsCompleted) { Dbctx.Dispose(); }
         }
-
-        public ObservableCollection<ViewPresenter> TabTitles
-        {
-            get { return _tabTitles; }
-            set
-            {
-                _tabTitles = value;
-                NotifyPropertyChanged(() => TabTitles);
-            }
-        }
-        public List<ViewModelBase> WindowTitles
-        {
-            get { return _windowTitles; }
-            set
-            {
-                _windowTitles = value;
-                NotifyPropertyChanged(() => WindowTitles);
-            }
-        }
-
-        public double ProgressValue { get { return _progressValue; } set { _progressValue = value; } }
-        public bool IsLoading { get { return _isLoading; }
-            private set
-            {
-                if (_isLoading != value)
-                { 
-                    _isLoading = value;
-                    NotifyPropertyChanged(() => IsLoading);
-                }
-            }
-        }
-
-        public NotifyTaskCompletion<ObservableCollection<ViewModelBase>> TaskComplete { get; private set; }
 
         private struct ContentTitle
         {
@@ -498,13 +424,6 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
     }
-    public struct ViewPresenter
-    {
-        public string Title;
-        public string Key;
-        public Type ViewType;
-    }
-
-}
+ }
 
 
