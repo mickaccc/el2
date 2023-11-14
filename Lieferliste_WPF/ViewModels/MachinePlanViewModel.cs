@@ -108,9 +108,10 @@ namespace Lieferliste_WPF.ViewModels
             .Include(x => x.AidNavigation.DummyMatNavigation)
             .Include(x => x.ArbPlSapNavigation)
             .Include(x => x.RidNavigation)
-            .Where(x => !x.AidNavigation.Fertig &&
-            !x.SysStatus.Contains("RÜCK") &&
-            !x.Text.ToUpper().Contains("AUFTRAG STARTEN"))
+            .Where(x => x.SysStatus != null
+                        && !x.AidNavigation.Fertig
+                        && !x.SysStatus.Contains("RÜCK")
+                        && (x.Text != null) ? !x.Text.ToUpper().Contains("AUFTRAG STARTEN") : true)
             .ToList();
 
 

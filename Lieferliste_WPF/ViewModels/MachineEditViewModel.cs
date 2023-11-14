@@ -33,7 +33,7 @@ namespace Lieferliste_WPF.ViewModels
         private readonly IContainerExtension _container;
         private readonly DB_COS_LIEFERLISTE_SQLContext DBctx;
         private ObservableCollection<Ressource>? _ressources { get; set; }
-        public static List<WorkArea> WorkAreas { get; private set; } = new();
+        public static List<WorkArea> WorkAreas { get; } = new();
         public MachineEditViewModel(IContainerExtension container)
         {
             _container = container;
@@ -72,7 +72,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else
                 {
-                    accepted = (res.RessName != null) ? res.RessName.ToUpper().Contains(_searchFilterText) : false;
+                    accepted = (res.RessName != null) && res.RessName.ToUpper().Contains(_searchFilterText);
                 }
             }
             return accepted;
@@ -96,14 +96,14 @@ namespace Lieferliste_WPF.ViewModels
             
 
         }
-        public string Error { get { return null; } }
+        public string Error => null;
 
         public string this[string columnName]
         {
             get
             {
                 User us = (User)RessourcesCV.CurrentItem;
-                string result = null;
+                string result = string.Empty;
                 if (columnName == nameof(User.UsrName))
                 {
                     if (us.UsrName.IsNullOrEmpty()) return "Der Eintrag darf nicht leer sein";

@@ -13,7 +13,7 @@ namespace Lieferliste_WPF.Utilities
         private static Geometry descGeometry =
                 Geometry.Parse("M 0 0 L 3.5 4 L 7 0 Z");
 
-        public ListSortDirection Direction { get; private set; }
+        public ListSortDirection Direction { get; }
 
         public SortAdorner(UIElement element, ListSortDirection dir)
             : base(element)

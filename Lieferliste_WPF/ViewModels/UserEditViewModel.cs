@@ -45,9 +45,9 @@ namespace Lieferliste_WPF.ViewModels
         private static HashSet<WorkArea> WorkAreas { get; set; } = new();
         private static HashSet<Costunit> CostUnits { get; set; } = new();
         private IContainerExtension _container;
-        internal CollectionViewSource roleSource { get; private set; } = new();
-        internal CollectionViewSource workSource { get; private set; } = new();
-        internal CollectionViewSource costSource { get; private set; } = new();
+        internal CollectionViewSource roleSource { get; } = new();
+        internal CollectionViewSource workSource { get; } = new();
+        internal CollectionViewSource costSource { get; } = new();
  
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private int _validName = 0;
@@ -179,7 +179,7 @@ namespace Lieferliste_WPF.ViewModels
 
                     }
                 
-                ob.Close();
+                    ob.Close();
                
             }
         }

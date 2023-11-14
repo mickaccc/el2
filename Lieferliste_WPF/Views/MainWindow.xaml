@@ -18,7 +18,7 @@
 
     <Window.Resources>
 
-        <conv:PermissionConverter x:Key="permission"/>
+        <conv:PermissionConverter x:Key="Permission"/>
         <conv:PSP_Converter x:Key="psp-converter"/>
         <conv:TTNR_Converter x:Key="ttnr-converter"/>
         
@@ -278,9 +278,7 @@
                         </Setter.Value>
                     </Setter>
                     <Setter Property="Header" Value="{Binding DataContext.Title}"/>
-                    <Setter Property="Background" Value="#FF6E6C67" />
                     <Setter Property="Height" Value="50" />
-                    <Setter Property="Margin" Value="0" />
                     <Setter Property="Padding" Value="0" />
                     <Setter Property="FontFamily" Value="DokChampa" />
                     <Setter Property="FontSize" Value="16" />

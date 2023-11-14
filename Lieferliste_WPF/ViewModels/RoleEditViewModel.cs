@@ -30,12 +30,12 @@ namespace Lieferliste_WPF.ViewModels
 
         private static ICollectionView _roleCV;
         private static bool _hasChanges = false;
-        private IContainerExtension _container;
-        public static ObservableCollection<Role>? Roles { get; private set; } = new();
+        private readonly IContainerExtension _container;
+        public static ObservableCollection<Role>? Roles { get; } = new();
         
-        public static ObservableCollection<Permission> PermissionsAvail { get; private set; } = new();
-        public static ObservableCollection<PermissionRole> PermissionsInter { get; private set; } = new();
-        private static List<Permission> _permissionsAll = new();
+        public static ObservableCollection<Permission> PermissionsAvail { get; } = new();
+        public static ObservableCollection<PermissionRole> PermissionsInter { get; } = new();
+        private static readonly List<Permission> _permissionsAll = new();
         
 
 

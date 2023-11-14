@@ -41,7 +41,9 @@ namespace Lieferliste_WPF.Utilities
                 return Convert.ToString(Week) + "/" + Convert.ToString(Year);
             }
 
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
             public int CompareTo(object obj)
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
             {
                 if (obj == null) return 1;
                 CalendarWeek other = obj as CalendarWeek;
@@ -53,10 +55,11 @@ namespace Lieferliste_WPF.Utilities
 
                 return cal.CompareTo(other.Year * 100 + other.Week);
             }
+#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
             public override bool Equals(object obj)
+#pragma warning restore CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
             {
-                CalendarWeek objWeek = obj as CalendarWeek;
-                if (objWeek != null)
+                if (obj is CalendarWeek objWeek)
                 {
                     return (Year == objWeek.Year) && (Week == objWeek.Week);
                 }

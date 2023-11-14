@@ -21,7 +21,7 @@ using System.Windows.Input;
 namespace ModuleDeliverList.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    class LieferViewModel : ViewModelBase
+    internal class LieferViewModel : ViewModelBase
     {
         
         public ICollectionView OrdersView { get; private set; }
@@ -34,7 +34,6 @@ namespace ModuleDeliverList.ViewModels
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
         public ActionCommand ArchivateCommand { get; private set; }
-        public string Key { get; } = "lie";
 
         public string Title { get; } = "Lieferliste";
 
@@ -49,7 +48,7 @@ namespace ModuleDeliverList.ViewModels
         private HashSet<string> _projects = new();
         public HashSet<string> Projects
         {
-            get { return _projects; }
+            get => _projects;
             set
             {
                 if (_projects != value)
@@ -59,17 +58,16 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
-        private static object _lock = new object();
-        private IContainerExtension _container;
+        private static readonly object _lock = new();
         private IApplicationCommands _applicationCommands;
 
         public IApplicationCommands ApplicationCommands
         {
-            get { return _applicationCommands; }
+            get => _applicationCommands;
             set 
             {
                 if (_applicationCommands != value)
-                _applicationCommands = value;
+                    _applicationCommands = value;
                 NotifyPropertyChanged(() => ApplicationCommands);
             }
         }
@@ -80,6 +78,7 @@ namespace ModuleDeliverList.ViewModels
         public enum CmbFilter
         {
             [Description("")]
+            // ReSharper disable once InconsistentNaming
             NOT_SET = 0,
             [Description("ausgeblendet")]
             INVISIBLE,
@@ -95,7 +94,7 @@ namespace ModuleDeliverList.ViewModels
         public CmbFilter SelectedFilter
         {
            
-            get { return _cmbFilter; }
+            get => _cmbFilter;
             set
             {
                 if (_cmbFilter != value)
@@ -108,7 +107,7 @@ namespace ModuleDeliverList.ViewModels
         }
         public string SearchFilterProj
         {
-            get { return _searchFilterProj; }
+            get => _searchFilterProj;
             set
             {
                 if (value != _searchFilterProj)
@@ -120,12 +119,11 @@ namespace ModuleDeliverList.ViewModels
             }
         }
         
-        public LieferViewModel(IContainerExtension container,
+        public LieferViewModel(IContainerProvider container,
             IApplicationCommands applicationCommands)
         {
-            _container = container;
             _applicationCommands = applicationCommands;
-            DBctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            DBctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
             
@@ -135,8 +133,6 @@ namespace ModuleDeliverList.ViewModels
             _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
            
         }
-
-
 
         private bool OrdersView_FilterPredicate(object value)
         {
@@ -166,16 +162,12 @@ namespace ModuleDeliverList.ViewModels
 
         private void OnTextSearch(object commandParameter)
         {
-            if (commandParameter is TextChangedEventArgs change)
-            {
-                var tb = (TextBox)change.OriginalSource;
-                if (tb.Text.Length == 0 || tb.Text.Length >= 3)
-                {
-                    _searchFilterText = tb.Text;
-                    var uiContext = SynchronizationContext.Current;
-                    uiContext?.Send(x => OrdersView.Refresh(), null);
-                }
-            }
+            if (commandParameter is not TextChangedEventArgs change) return;
+            var tb = (TextBox)change.OriginalSource;
+            if (tb.Text.Length != 0 && tb.Text.Length < 3) return;
+            _searchFilterText = tb.Text;
+            var uiContext = SynchronizationContext.Current;
+            uiContext?.Send(x => OrdersView.Refresh(), null);
         }
         #region Commands
 
@@ -291,7 +283,6 @@ namespace ModuleDeliverList.ViewModels
                 .ToList();
             await Task.Factory.StartNew(() =>
             {
-     
                 HashSet<Vorgang> result = new();
 
                 lock (_lock)
@@ -327,11 +318,11 @@ namespace ModuleDeliverList.ViewModels
                             }
                         }
                     }
-                }
-                    _orders.AddRange(result.OrderBy(x => x.SpaetEnd));                      
+                } 
+                _orders.AddRange(result.OrderBy(x => x.SpaetEnd));                      
                     
                 OrdersView = CollectionViewSource.GetDefaultView(_orders);
-                //OrdersView.Filter += OrdersView_FilterPredicate;
+                OrdersView.Filter += OrdersView_FilterPredicate;
             });
             return OrdersView;
         } 

@@ -94,7 +94,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Border>
-        <DataGrid x:Name="UnPlaned" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
+        <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
                   CanUserAddRows="False" CanUserDeleteRows="False" HorizontalContentAlignment="Center" ColumnWidth="Auto"
                   IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" SelectionChanged="UnPlaned_SelectionChanged">

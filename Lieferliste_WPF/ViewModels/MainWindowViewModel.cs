@@ -57,8 +57,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        public ICommand ExplorerCommand { get; private set; }
-        public ICommand OpenOrderCommand { get; private set; }
+        public ICommand ExplorerCommand { get; }
+        public ICommand OpenOrderCommand { get; }
  
         private NotifyTaskCompletion<int>? _onlineTask;
         public NotifyTaskCompletion<int>? OnlineTask
@@ -108,8 +108,8 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<ViewPresenter> _tabTitles;
         private List<ViewModelBase> _windowTitles;
         private IRegionManager _regionmanager;
-        private IContainerExtension _container;
-        private IDialogService _dialogService;
+        private readonly IContainerExtension _container;
+        private readonly IDialogService _dialogService;
         public MainWindowViewModel(IRegionManager regionManager,
             IContainerExtension container,
             IApplicationCommands applicationCommands,
@@ -489,7 +489,7 @@ namespace Lieferliste_WPF.ViewModels
                             {
                                 var res = db.RessourceCostUnits.FirstOrDefault(x => x.CostId == costid && x.Rid == id);
                                 if (res == null)
-                                db.RessourceCostUnits.Add(new RessourceCostUnit() { CostId = costid, Rid = id });
+                                    db.RessourceCostUnits.Add(new RessourceCostUnit() { CostId = costid, Rid = id });
                             }
                             db.SaveChanges();
                         }

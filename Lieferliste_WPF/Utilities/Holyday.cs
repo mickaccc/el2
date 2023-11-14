@@ -14,7 +14,6 @@ namespace Lieferliste_WPF.Utilities
     {
         private bool isFix;
         private DateTime datum;
-        private string name = "";
         private string _locale = "";
 
         public Holyday(bool isFix, DateTime datum, string name, string locale)
@@ -29,11 +28,7 @@ namespace Lieferliste_WPF.Utilities
         /// <summary>
         /// Beschreibung: 
         /// </summary>
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        public string Name { get; set; } = "";
 
 
         /// <summary>
@@ -41,8 +36,8 @@ namespace Lieferliste_WPF.Utilities
         /// </summary>
         public DateTime Datum
         {
-            get { return datum; }
-            set { datum = value; }
+            get => datum;
+            set => datum = value;
         }
 
 
@@ -110,14 +105,14 @@ namespace Lieferliste_WPF.Utilities
         {
             get
             {
-                return holydays.FindAll(delegate (Holyday f) { return !f.IsFix; });
+                return holydays.FindAll(f => !f.IsFix);
             }
 
         }
 
         public bool isHolyday(DateTime value)
         {
-            return (holydays.Find(delegate (Holyday f) { return f.Datum.Date == value.Date; }) != null);
+            return (holydays.Find(f => f.Datum.Date == value.Date) != null);
         }
 
         public Holyday GetHolydayName(DateTime value)
@@ -131,7 +126,7 @@ namespace Lieferliste_WPF.Utilities
         {
             get
             {
-                return holydays.FindAll(delegate (Holyday f) { return f.IsFix; });
+                return holydays.FindAll(f => f.IsFix);
             }
         }
 
@@ -184,16 +179,13 @@ namespace Lieferliste_WPF.Utilities
 
         private DateTime GetEasterSunday()
         {
+            var g = year % 19;
+            var c = this.year / 100;
+            var h = ((c - (c / 4)) - (((8 * c) + 13) / 25) + (19 * g) + 15) % 30;
+            var i = h - (h / 28) * (1 - (29 / (h + 1)) * ((21 - g) / 11));
+            var j = (year + (year / 4) + i + 2 - c + (c / 4)) % 7;
 
-            int g, h, c, j, l, i;
-
-            g = year % 19;
-            c = this.year / 100;
-            h = ((c - (c / 4)) - (((8 * c) + 13) / 25) + (19 * g) + 15) % 30;
-            i = h - (h / 28) * (1 - (29 / (h + 1)) * ((21 - g) / 11));
-            j = (year + (year / 4) + i + 2 - c + (c / 4)) % 7;
-
-            l = i - j;
+            var l = i - j;
             var month = (int)(3 + ((l + 40) / 44));
             var day = (int)(l + 28 - 31 * (month / 4));
 

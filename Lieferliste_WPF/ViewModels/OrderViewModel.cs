@@ -29,7 +29,7 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands = applicationCommands;
             VorgangCV = CollectionViewSource.GetDefaultView(Vorgangs);
         }
-        private ObservableCollection<Vorgang> Vorgangs { get; set; } = new();
+        private ObservableCollection<Vorgang> Vorgangs { get; } = new();
 
         public event Action<IDialogResult> RequestClose;
 
@@ -125,7 +125,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public ICollectionView VorgangCV { get; private set; } 
+        public ICollectionView VorgangCV { get; } 
         private string _title = "Notification";
         public string Title
         {

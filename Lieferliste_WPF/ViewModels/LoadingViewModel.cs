@@ -20,7 +20,7 @@ namespace Lieferliste_WPF.ViewModels
     
     public class LoadingViewModel : ViewModelBase, INavigationAware
     {
-        private IContainerExtension _container;
+        private readonly IContainerExtension _container;
         private NotifyTaskCompletion<Grid>? _contentViewTask;
         public NotifyTaskCompletion<Grid>? ContentViewTask
         {
@@ -42,7 +42,6 @@ namespace Lieferliste_WPF.ViewModels
         private async Task<Grid> LoadingViewAsync(Grid view)
         {
             var vi = view as Liefer;
-            Dispatcher dispatcher = App.Current.Dispatcher;
             var ret = await Task.Run(() => _container.Resolve<Liefer>());
                // dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => { _container.Resolve<Liefer>(); });
 

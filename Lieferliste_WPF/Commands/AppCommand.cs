@@ -18,7 +18,7 @@
         /// </summary>
         static AppCommand()
         {
-            InputGestureCollection inputs = null;
+            InputGestureCollection inputs;
 
             // Initialize pin command (to set or unset a pin in MRU and re-sort list accordingly)
             inputs = new InputGestureCollection();

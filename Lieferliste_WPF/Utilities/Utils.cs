@@ -678,7 +678,7 @@ namespace Lieferliste_WPF.Utilities
 
     public class GroupFilter
     {
-        private List<Predicate<object>> _filters;
+        private readonly List<Predicate<object>> _filters;
 
         public Predicate<object> Filter { get; private set; }
 

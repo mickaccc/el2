@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -69,8 +70,7 @@ namespace Lieferliste_WPF.Planning
             set { SetValue(BulletsProperty, value); }
         }
         public ICommand? SetMarkerCommand { get; private set; }
-        public ICommand? ChangeProcessesCommand { get; private set; }
-        public ICommand OpenMachineCommand { get; private set; }
+        public ICommand? OpenMachineCommand { get; private set; }
 
         private readonly int _rId;
 
@@ -80,14 +80,14 @@ namespace Lieferliste_WPF.Planning
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public int[]? CostUnits { get; set; }
-        protected MachinePlanViewModel? Owner { get; private set; }
+        protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
         
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
-        private IApplicationCommands _applicationCommands;
+        private IApplicationCommands? _applicationCommands;
 
-        public IApplicationCommands ApplicationCommands
+        public IApplicationCommands? ApplicationCommands
         {
             get { return _applicationCommands; }
             set
@@ -151,8 +151,7 @@ namespace Lieferliste_WPF.Planning
         }
         public void Exit()
         {
-
-            Owner.Exit();
+            if (Owner != null) Owner.Exit();
         }
 
 
@@ -170,10 +169,11 @@ namespace Lieferliste_WPF.Planning
             }
             else
             {
+                Debug.Assert(t != null, nameof(t) + " != null");
                 ((IList)t.SourceCollection).Insert(v, vrg);
-                
             }
             var p = t.SourceCollection as Collection<Vorgang>;
+            Debug.Assert(p != null, nameof(p) + " != null");
             for(var i=0;i<p.Count;i++)
             {
                 p[i].Spos = i;
