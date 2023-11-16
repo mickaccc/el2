@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:userControls="clr-namespace:ModuleDeliverList.UserControls"
     xmlns:prism="http://prismlibrary.com/"
@@ -21,22 +22,23 @@
         <conv:KW_Converter x:Key="Kw-Converter"/>
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        
+
+
     </Grid.Resources>
 
-    
-        <Grid.RowDefinitions>
-        <RowDefinition Height="30"/>
+
+    <Grid.RowDefinitions>
+        <RowDefinition Height="50"/>
         <RowDefinition/>
-        </Grid.RowDefinitions>
-        <DockPanel LastChildFill="False">
-            <DockPanel.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FF383636"/>
-                    <GradientStop Color="#FFE60B0B" Offset="1"/>
-                </LinearGradientBrush>
-            </DockPanel.Background>
-            <Button Content="Speichern" Command="{Binding SaveCommand}"/>
+    </Grid.RowDefinitions>
+    <DockPanel LastChildFill="False">
+        <DockPanel.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FF383636"/>
+                <GradientStop Color="#FFE60B0B" Offset="1"/>
+            </LinearGradientBrush>
+        </DockPanel.Background>
+        <Button Content="Speichern" Command="{Binding SaveCommand}"/>
         <wpfCustomControlLibrary:ClearableHintTextBox x:Name="SearchBox" Width="300"
                                                           ClHintText="suchen in Auftragsnr, TTNR, Materialtext"
                                                           Margin="10,0,0,0" >
@@ -47,22 +49,51 @@
             </i:Interaction.Triggers>
         </wpfCustomControlLibrary:ClearableHintTextBox>
 
-        <StackPanel Orientation="Horizontal"  DockPanel.Dock="Right" Background="DarkBlue" TextElement.Foreground="Beige"
-                        TextElement.FontSize="16">
-            <ComboBox x:Name="CmbFiltersProjects" Width="170" Margin="3,0,5,0"
+        <!--<StackPanel>
+            <ComboBox x:Name="CmbFiltersProjects" DockPanel.Dock="Left" Width="170"  Style="{DynamicResource MaterialDesignComboBox}"
                       ItemsSource="{Binding Path=Projects}"
                       SelectedValue="{Binding Path=SearchFilterProj, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <ComboBox x:Name="CmbFilters" Width="170"
+            <ComboBox x:Name="CmbFilters" Width="170" Style="{DynamicResource MaterialDesignComboBox}"
                       ItemsSource="{Binding Path=SelectedFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
                       SelectedValue="{Binding Path=SelectedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       DisplayMemberPath="Description"
                       SelectedValuePath="Value"/>
-            <TextBlock Text="Anzahl Vorgänge:" Margin="5,0,5,0"
+            <TextBlock Text="Anzahl Vorgänge:" 
                    AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
                 <TextBlock x:Name="Count"  Width="auto"
                            Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
-            </StackPanel>
-        </DockPanel>
+            
+            </StackPanel>-->
+        <StackPanel DockPanel.Dock="Right">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <CheckBox
+      x:Name="OutlinedComboBoxEnabledCheckBox"
+      Margin="0,0,0,8"
+      Content="Enabled"
+      IsChecked="True" />
+                <Button
+      Grid.Column="1"
+      HorizontalAlignment="Right"
+      Click="ClearOutlinedComboBox_Click"
+      Content="Clear"
+      Style="{StaticResource MaterialDesignFlatButton}" />
+            </Grid>
+            <ComboBox
+    x:Name="OutlinedComboBox"
+    Width="256"
+    materialDesign:HintAssist.Hint="Some item"
+    IsEnabled="{Binding Path=IsChecked, ElementName=OutlinedComboBoxEnabledCheckBox}"
+    ItemsSource="{Binding Path=SelectedFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
+    Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                     SelectedValue="{Binding Path=SelectedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     DisplayMemberPath="Description"
+                     SelectedValuePath="Value"/>
+        </StackPanel>
+    </DockPanel>
     <StackPanel Grid.Row="1">
         <TextBlock Text="Loading..." HorizontalAlignment="Center" FontSize="30"
                    Visibility="{Binding OrderTask.IsNotCompleted, Converter={StaticResource BoolToVis}}"/>

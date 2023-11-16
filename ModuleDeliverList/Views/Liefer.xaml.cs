@@ -13,5 +13,9 @@ namespace ModuleDeliverList.Views
             InitializeComponent();                    
         }
 
+        private void ClearOutlinedComboBox_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
     }
 }
