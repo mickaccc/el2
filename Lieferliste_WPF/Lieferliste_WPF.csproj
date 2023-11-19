@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
+    <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <NeutralLanguage>de-AT</NeutralLanguage>
@@ -102,6 +103,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+    <PackageReference Include="ShowMeTheXAML" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -134,7 +136,6 @@
     <ProjectReference Include="..\El2UserControls\El2UserControls.csproj" />
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
     <ProjectReference Include="..\ModuleDeliverList\ModuleDeliverList.csproj" />
-    <ProjectReference Include="..\WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

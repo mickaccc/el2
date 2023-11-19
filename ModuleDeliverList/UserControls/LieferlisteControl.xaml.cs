@@ -202,17 +202,6 @@ namespace ModuleDeliverList.UserControls
         public static readonly DependencyProperty MachineTextProperty =
             DependencyProperty.Register("MachineText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
-        public string Comment_MeI
-        {
-            get { return (string)GetValue(Comment_MeIProperty); }
-            set { SetValue(Comment_MeIProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Comment_MeI.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Comment_MeIProperty =
-            DependencyProperty.Register("Comment_MeI", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
-
-
 
         public string Comment_Me
         {
@@ -227,33 +216,6 @@ namespace ModuleDeliverList.UserControls
                 new PropertyMetadata(""));
 
 
-
-        public bool Comment_MeAllow
-        {
-            get { return (bool)GetValue(Comment_MeAllowProperty); }
-            set { SetValue(Comment_MeAllowProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Comment_MeAllow.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Comment_MeAllowProperty =
-            DependencyProperty.Register("Comment_MeAllow", typeof(bool),
-                typeof(LieferlisteControl), new PropertyMetadata(false));
-
-
-
-
-        public string Comment_TeI
-        {
-            get { return (string)GetValue(Comment_TeIProperty); }
-            set { SetValue(Comment_TeIProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Comment_TeI.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Comment_TeIProperty =
-            DependencyProperty.Register("Comment_TeI", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
-
-
-
         public String Comment_Te
         {
             get { return (String)GetValue(Comment_TeProperty); }
@@ -263,38 +225,6 @@ namespace ModuleDeliverList.UserControls
         // Using a DependencyProperty as the backing store for Comment_Te.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty Comment_TeProperty =
             DependencyProperty.Register("Comment_Te", typeof(String),
-                typeof(LieferlisteControl), new PropertyMetadata("",
-                    new PropertyChangedCallback(OnComment_TeChangend)));
-
-
-
-        public bool Commént_TeAllow
-        {
-            get { return (bool)GetValue(Commént_TeAllowProperty); }
-            set { SetValue(Commént_TeAllowProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Commént_TeAllow.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Commént_TeAllowProperty =
-            DependencyProperty.Register("Commént_TeAllow", typeof(bool),
-                typeof(LieferlisteControl), new PropertyMetadata(false));
-
-
-        private static void OnComment_TeChangend(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            
-        }
-
-
-        public string Comment_MaI
-        {
-            get { return (string)GetValue(Comment_MaIProperty); }
-            set { SetValue(Comment_MaIProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Comment_MaI.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Comment_MaIProperty =
-            DependencyProperty.Register("Comment_MaI", typeof(string),
                 typeof(LieferlisteControl), new PropertyMetadata(""));
 
 
@@ -312,16 +242,27 @@ namespace ModuleDeliverList.UserControls
 
 
 
-        public bool Comment_MaAllow
+        public bool Prio
         {
-            get { return (bool)GetValue(Comment_MaAllowProperty); }
-            set { SetValue(Comment_MaAllowProperty, value); }
+            get { return (bool)GetValue(PrioProperty); }
+            set { SetValue(PrioProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Comment_MaAllow.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Comment_MaAllowProperty =
-            DependencyProperty.Register("Comment_MaAllow", typeof(bool),
-                typeof(LieferlisteControl), new PropertyMetadata(false));
+        // Using a DependencyProperty as the backing store for Prio.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PrioProperty =
+            DependencyProperty.Register("Prio", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
+
+
+
+        public string PrioText
+        {
+            get { return (string)GetValue(PrioTextProperty); }
+            set { SetValue(PrioTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PrioText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PrioTextProperty =
+            DependencyProperty.Register("PrioText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
 
         public bool Invisible

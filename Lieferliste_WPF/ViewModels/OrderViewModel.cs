@@ -32,7 +32,6 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<Vorgang> Vorgangs { get; } = new();
 
         public event Action<IDialogResult> RequestClose;
-
         private string _aid;
         public string Aid
         { get { return _aid; }
@@ -126,7 +125,7 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         public ICollectionView VorgangCV { get; } 
-        private string _title = "Notification";
+        private string _title = "Auftragsübersicht";
         public string Title
         {
             get { return _title; }

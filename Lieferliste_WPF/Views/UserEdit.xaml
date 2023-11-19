@@ -5,16 +5,16 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
-    xmlns:lib="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:dd="urn:gong-wpf-dragdrop"
     x:Class="Lieferliste_WPF.Views.UserEdit"
         mc:Ignorable="d"
-        MinHeight="450" MinWidth="800" >
+        MinHeight="450" MinWidth="800" Tag="{Binding Title}">
  
 
-    <Grid Margin="10,10,0,0" >
+    <Grid Margin="10,10,0,0" ShowGridLines="True" >
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
@@ -38,7 +38,7 @@
         </DockPanel>
         <Border Grid.Row="1" Grid.ColumnSpan="2" Background="Transparent" BorderThickness="2" BorderBrush="Black" >
 
-            <Grid Grid.ColumnSpan="2">
+            <Grid Grid.ColumnSpan="2" ShowGridLines="True">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -46,29 +46,29 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <lib:HintTextBox x:Name="U01"   TabIndex="0" HintText="Name der angezeigt werden soll"
-                                 Text="{Binding Users/UsrName, Mode=twoWay}" BorderBrush="Red" BorderThickness="{Binding ValidName}">
+                <TextBox x:Name="U01"   TabIndex="0" materialDesign:HintAssist.Hint="Name der angezeigt werden soll"
+                                 Text="{Binding Users/UsrName, Mode=twoWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="LostFocus">
                             <i:InvokeCommandAction Command="{Binding LostFocusCommand}"
                                                    CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource FindAncestor,
-                                AncestorType={x:Type lib:HintTextBox}}}" />
+                                AncestorType={x:Type TextBox}}}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
-                </lib:HintTextBox>
+                </TextBox>
 
-                <lib:HintTextBox x:Name="U02" Grid.Column="1" HintText="User Ident lt. Windows"
-                         Text="{Binding Users/UserIdent, Mode=TwoWay}" TabIndex="1" BorderBrush="Red" BorderThickness="{Binding ValidIdent}">
+                <TextBox x:Name="U02" Grid.Column="1" materialDesign:HintAssist.Hint="User Ident lt. Windows"
+                         Text="{Binding Users/UserIdent, Mode=TwoWay}" TabIndex="1" >
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="LostFocus">
                             <i:InvokeCommandAction Command="{Binding LostFocusCommand}"
-                                                   CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource AncestorType=lib:HintTextBox}}"/>
+                                                   CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource AncestorType=TextBox}}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
-                </lib:HintTextBox>
-                <lib:HintTextBox x:Name="U03" Grid.Column="2"  TabIndex="2" HintText="Personalnummer"
+                </TextBox>
+                <TextBox x:Name="U03" Grid.Column="2"  TabIndex="2" materialDesign:HintAssist.Hint="Personalnummer"
                          Text="{Binding Users/Personalnumber, Mode=TwoWay}"/>
-                <lib:HintTextBox x:Name="U04" Grid.Column="3"  HintText="E-Mail"
+                <TextBox x:Name="U04" Grid.Column="3"  materialDesign:HintAssist.Hint="E-Mail"
                          Text="{Binding Users/UsrEmail, Mode=TwoWay}" TabIndex="3" />
 
             </Grid>

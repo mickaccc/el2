@@ -9,7 +9,7 @@
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     x:Class="Lieferliste_WPF.Views.Order"
         mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="1200" MinWidth="1000" MaxHeight="600" >
+    d:DesignHeight="450" d:DesignWidth="1200" MinWidth="1000" MaxHeight="600" Tag="{Binding Title}" >
 
 
     <UserControl.Resources>

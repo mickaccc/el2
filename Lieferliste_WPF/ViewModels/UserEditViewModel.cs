@@ -13,7 +13,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using WpfCustomControlLibrary;
 using El2Core.ViewModelBase;
 using Prism.Ioc;
 
@@ -103,26 +102,26 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnLostFocusExecuted(object obj)
         {
-            if(obj is HintTextBox textBox)
-            {
+            //if(obj is TextBox textBox)
+            //{
 
-                if (textBox.Name == "U01")
-                {
-                    if (String.IsNullOrWhiteSpace(textBox.Text))
-                    {
-                        ValidName = 1;
-                    }
-                    else { ValidName = 0; }
-                }
-                if (textBox.Name == "U02")
-                {
-                    if(String.IsNullOrWhiteSpace(textBox.Text))
-                    {
-                        ValidIdent = 1;
-                    }
-                    else{ ValidIdent = 0;}
-                }   
-            }
+            //    if (textBox.Name == "U01")
+            //    {
+            //        if (String.IsNullOrWhiteSpace(textBox.Text))
+            //        {
+            //            ValidName = 1;
+            //        }
+            //        else { ValidName = 0; }
+            //    }
+            //    if (textBox.Name == "U02")
+            //    {
+            //        if(String.IsNullOrWhiteSpace(textBox.Text))
+            //        {
+            //            ValidIdent = 1;
+            //        }
+            //        else{ ValidIdent = 0;}
+            //    }   
+            //}
         }
 
         private void CostFilterPredicate(object sender, FilterEventArgs e)

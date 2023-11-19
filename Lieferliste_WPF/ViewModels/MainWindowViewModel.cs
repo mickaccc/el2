@@ -93,6 +93,7 @@ namespace Lieferliste_WPF.ViewModels
             SetTimer();
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
+            _applicationCommands.CloseCommand.RegisterCommand(CloseCommand);
             ExplorerCommand = new ActionCommand(OnOpenExplorerExecuted, OnOpenExplorerCanExecute);
             _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
             OpenOrderCommand = new ActionCommand(OnOpenOrderExecuted, OnOpenOrderCanExecute);
@@ -105,22 +106,29 @@ namespace Lieferliste_WPF.ViewModels
             OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
 
         }
- 
+
         #region Commands
         private void OnCloseExecuted(object obj)
         {
-            using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-            {              
-                Dbctx.ChangeTracker.DetectChanges();
-                if (Dbctx.ChangeTracker.HasChanges())
+            if (obj == null)
+            { 
+                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
-                    var r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
-                        "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                    if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
-                }
+                    Dbctx.ChangeTracker.DetectChanges();
+                    if (Dbctx.ChangeTracker.HasChanges())
+                    {
+                        var r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
+                            "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                        if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
+                    }
 
-                var del = Dbctx.Onlines.Where(x => x.UserId.Equals(UserInfo.User.UserIdent)
-                 && x.PcId.Equals(UserInfo.PC)).ExecuteDelete();
+                    var del = Dbctx.Onlines.Where(x => x.UserId.Equals(UserInfo.User.UserIdent)
+                     && x.PcId.Equals(UserInfo.PC)).ExecuteDelete();
+                }
+            }
+            else
+            {
+                _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
             }
         }
 

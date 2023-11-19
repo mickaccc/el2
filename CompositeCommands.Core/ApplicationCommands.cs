@@ -9,6 +9,7 @@ namespace CompositeCommands.Core
         CompositeCommand ArchivateCommand { get; }
         CompositeCommand OpenOrderCommand { get; }
         CompositeCommand OpenMachineCommand { get; }
+        CompositeCommand CloseCommand { get; }
     }
 
     public class ApplicationCommands : IApplicationCommands
@@ -33,6 +34,10 @@ namespace CompositeCommands.Core
         {
             get { return _openMachineCommand; }
         }
-
+        private CompositeCommand _closeCommand = new CompositeCommand();
+        public CompositeCommand CloseCommand
+        {
+            get { return _closeCommand; }
+        }
     }
 }

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:UserControls="clr-namespace:El2UserControls;assembly=El2UserControls"
         x:Class="Lieferliste_WPF.Views.Archive"
-        Title="Archive" Height="300" Width="300">
+        Title="Archive" Height="300" Width="300" Tag="{Binding Title}">
 
     <Window.Resources>
         <ContextMenu x:Key="context">

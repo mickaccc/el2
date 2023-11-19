@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="El2UserControls.CommentUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+             xmlns:local="clr-namespace:El2UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="85" d:DesignWidth="100" Name="cmt">
+    <UserControl.Resources>
+        <conv:NegateBoolConverter x:Key="neg"/>
+        <local:CommentConverter x:Key="CommentConv"/>
+        <sys:Boolean x:Key="TrueValue">True</sys:Boolean>
+        <sys:Boolean x:Key="FalseValue">False</sys:Boolean>
+    </UserControl.Resources>
+    <Canvas>
+        <Label Width="{Binding Path=ActualWidth, ElementName=cmt}" Height="25" Content="{Binding Comment, ElementName=cmt,
+            Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}"
+           Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
+        <TextBox Canvas.Top="25" Width="{Binding Path=ActualWidth, ElementName=cmt}" Height="60" x:Name="txtCommetMa" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
+             Text="{Binding Comment, ElementName=cmt, Mode=TwoWay,
+            Converter={StaticResource CommentConv},ConverterParameter={StaticResource FalseValue}}"
+                IsReadOnly="{Binding Permission, ElementName=cmt, Converter={StaticResource neg}}"/>
+    </Canvas>
+</UserControl>

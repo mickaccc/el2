@@ -4,14 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
-        xmlns:WpfCustom="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:local="clr-namespace:Lieferliste_WPF.Views"
         xmlns:UC="clr-namespace:El2UserControls;assembly=El2UserControls"
         x:Class="Lieferliste_WPF.Views.MachineView"
         
         mc:Ignorable="d"
-        Height="450" Width="800" >
+        Height="450" Width="800" Tag="{Binding Title}" >
 
     <Window.Resources>
         <conv:TTNR_Converter x:Key="ttnr"/>

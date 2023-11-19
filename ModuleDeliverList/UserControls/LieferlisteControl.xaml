@@ -1,6 +1,8 @@
 ﻿<UserControl
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xml:lang="de-AT"
     xmlns:prism="http://prismlibrary.com/"
+    xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,6 +10,8 @@
     xmlns:Views="clr-namespace:ModuleDeliverList.Views"
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:userControl="clr-namespace:El2UserControls;assembly=El2UserControls"
+    
     x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
@@ -16,7 +20,6 @@
 
     <UserControl.Resources>
         <conv:DateLostToColorConverter x:Key="DateLost"/>
-        <conv:CommentConverter x:Key="CommentConverter"/>
         <conv:RessourceToKwConverter x:Key="RtKw"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:PermissionConverter x:Key="Permission"/>
@@ -59,9 +62,9 @@
         <StackPanel  x:Name="Liefer" Background="#FFBEC9CE" >
             <Grid >
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="23"/>
-                    <RowDefinition Height="23"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="33"/>
+                    <RowDefinition Height="23*"/>
+                    <RowDefinition Height="33"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100*"/>
@@ -73,9 +76,9 @@
                     <ColumnDefinition Width="80*"/>
                     <ColumnDefinition Width="100*"/>
                     <ColumnDefinition Width="100*"/>
-                    <ColumnDefinition Width="200*"/>
-                    <ColumnDefinition Width="200*"/>
-                    <ColumnDefinition Width="200*"/>
+                    <ColumnDefinition Width="150*"/>
+                    <ColumnDefinition Width="150*"/>
+                    <ColumnDefinition Width="150*"/>
                     <ColumnDefinition Width="100*"/>
                 </Grid.ColumnDefinitions>
 
@@ -109,64 +112,56 @@
                      Text="{Binding QuantityYield, ElementName=luc}" />
                 <TextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" x:Name="txtVrgText" ToolTip="Vorgang Kurztext"  
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />
-                <TextBlock Grid.Column="8" Grid.Row="2"  x:Name="txtVNR"/>
-                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  x:Name="txtRessTo" Background="Wheat" FontSize="16"
-                           Text="{conv:ConverterBindableParameter Binding={Binding MachineText, ElementName=luc, Mode=OneTime},
-                    ConverterParameter={Binding EndDate, ElementName=luc}, Converter={StaticResource RtKw}}"/>
+                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  x:Name="txtRessTo" Background="Wheat" FontSize="16">
+                    <TextBlock.Text>
+                        <MultiBinding Converter="{StaticResource RtKw}">
+                            <Binding Path="MachineText" ElementName="luc"/>
+                            <Binding Path="EndDate" ElementName="luc"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
                 <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtScrap"  ToolTip="Ausschussmenge" 
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
                 <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25"
                            Text="{Binding QuantityMiss, ElementName=luc}"/>
-                <StackPanel Grid.Column="9" Background="{StaticResource Background2}" Grid.RowSpan="3" Margin="5"  >
-                    <Label x:Name="label1" Height="25" Content="{Binding Comment_Me, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
-                           Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
-                    <TextBox Height="60" x:Name="txtCommetM" 
-                             Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
-                         HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                             Text="{Binding Comment_Me, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.CommentMeNeg},
-                        Converter={StaticResource Permission}}" />
-                </StackPanel>
-                <StackPanel x:Name="stackPanel1" Grid.Column="10" Grid.RowSpan="3" Background="Aqua"  Margin="5">
-                    <Label x:Name="label" Height="25" Content="{Binding Comment_Te, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
-                           Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque"/>
-                    <TextBox Height="60" x:Name="txtCommetT" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
-                         HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                             Text="{Binding Comment_Te, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.CommentTeNeg},
-                                Converter={StaticResource Permission}}"/>
-                </StackPanel>
-                <StackPanel x:Name="stackPanel" Grid.Column="11" Grid.RowSpan="3" Margin="5" >
-                    <Label Height="25" Content="{Binding Comment_Ma, ConverterParameter=I, Converter={StaticResource CommentConverter}, ElementName=luc}"
-                           Background="{StaticResource CommentInfoBackground}" BorderBrush="Bisque" />
-                    <TextBox Height="60" x:Name="txtCommetMa" Background="{StaticResource CommentBackground}" TextWrapping="Wrap" 
-                         HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                             Text="{Binding Comment_Ma, ConverterParameter=S, Converter={StaticResource CommentConverter}, ElementName=luc, Mode=TwoWay}"
-                    IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.CommentMaNeg},
-                                Converter={StaticResource Permission}}"/>
-                </StackPanel>
+                <userControl:CommentUserControl Grid.Column="9" Grid.RowSpan="3" Margin="5" ToolTip="Kommentar Meister"
+                                                Comment="{Binding Comment_Me, ElementName=luc}"
+                                                Permission="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
+                                                    Converter={StaticResource Permission}}"/>
+                <userControl:CommentUserControl Grid.Column="10" Grid.RowSpan="3" Margin="5" ToolTip="Kommentar Teamleiter"
+                                                Comment="{Binding Comment_Te, ElementName=luc}"
+                                                Permission="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
+                                                    Converter={StaticResource Permission}}"/>
+                <userControl:CommentUserControl Grid.Column="11" Grid.RowSpan="3" Margin="5" ToolTip="Kommentar Mitarbeiter"
+                                                Comment="{Binding Comment_Ma, ElementName=luc}"
+                                                Permission="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
+                                                    Converter={StaticResource Permission}}"/>
                 <TextBlock Grid.Column="7" x:Name="txtEnd" 
                          ToolTip="Endtermin" Grid.Row="1" 
-                         Text="{Binding EndDate, ConverterCulture=de-AT, ElementName=luc, StringFormat=\{0:d\}}"
+                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
                          Background="{Binding EndDate, Converter={StaticResource DateLost}, ElementName=luc}"/>
-                <DatePicker Grid.Column="8" Grid.Row="1" x:Name="txtTerm" Language="de-DE" 
+                <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"  
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Termin"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"/>
+          
                 <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"/>
-                <StackPanel Grid.Row="2" Grid.Column="7" Orientation="Horizontal" >
-                    <CheckBox  x:Name="isHighPrio" Checked="Modified"/>
-                    <TextBox  x:Name="CommentHighPrio" Width="101" ToolTip="Priotext" TextChanged="CommentHighPrio_TextChanged" />
-                </StackPanel>
+                <Canvas x:Name="prio" Grid.Row="2" Grid.Column="7" >
+                    <CheckBox  x:Name="isHighPrio" IsChecked="{Binding Prio, ElementName=luc, Mode=TwoWay}"  />
+                    <TextBox  x:Name="CommentHighPrio" Canvas.Left="20"  ToolTip="Priotext" Width="80" 
+                               Height="{Binding Path=ActualHeight, ElementName=prio}"
+                              Text="{Binding PrioText, ElementName=luc, Mode=TwoWay}" TextWrapping="Wrap"/>
+                </Canvas>
 
                 <Button Grid.Column="13" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
                         Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding Aid, ElementName=luc}"/>
 
-                <Button Grid.Column="13" Grid.Row="1" Content="Auftrag öffnen" 
+                <Button Grid.Column="13" Grid.Row="1" Content="Auftrag" 
                         Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding Aid, ElementName=luc}"/>

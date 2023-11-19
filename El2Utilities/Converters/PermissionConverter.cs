@@ -11,17 +11,13 @@ namespace El2Core.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
 
-            string p = (string)parameter;
-            if (p.StartsWith("!"))
-            {
-                p = p[1..];
-
-                return !PermissionsProvider.GetInstance().GetUserPermission(p);
-            }
-            else
+            if (parameter is string p)
             {
                 return PermissionsProvider.GetInstance().GetUserPermission(p);
             }
+
+            return false;
+
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

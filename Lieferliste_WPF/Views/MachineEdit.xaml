@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:lib="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:prism="http://prismlibrary.com/" 
     prism:ViewModelLocator.AutoWireViewModel="True"
@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding RessourcesCV}" AlternatingRowBackground="LightGray"
-                  AutoGenerateColumns="False" >
+                  AutoGenerateColumns="False" GridLinesVisibility="Vertical">
             <DataGrid.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.HeaderTemplate>
@@ -43,7 +43,6 @@
                 <DataGridTextColumn Header="Name" FontWeight="Bold" Binding="{Binding Path=RessName, Mode=TwoWay}"/>
                 <DataGridTextColumn Header="Inventarnummer" FontWeight="Bold" Binding="{Binding Path=Inventarnummer}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Info" Binding="{Binding Path=Info, Mode=TwoWay}"/>
-            
                 <DataGridTextColumn Header="Abteilung" Binding="{Binding Path=Abteilung, Mode=TwoWay}"/>
                 <DataGridTemplateColumn Header="Kostenstellen">
                     <DataGridTemplateColumn.CellTemplate>
@@ -71,22 +70,24 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-
-        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Stretch" Height="35"  VerticalAlignment="Bottom" Background="BurlyWood" >
+        <materialDesign:ColorZone
+            Margin="5">
+        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Stretch" Height="35"  VerticalAlignment="Bottom" >
             <Button  Command="{Binding SaveCommand}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source= "/Images/DB_Y32.png" Margin="1"/>
                     <Label Content="Speichern"/>
                 </StackPanel>
             </Button>
-            <lib:ClearableHintTextBox x:Name="searchBox" MinWidth="500" Margin="2,0,2,0" HorizontalAlignment="Stretch"
-                                      ClHintText="suche nach Inventarnummer oder Kostenstelle">
+            <TextBox x:Name="searchBox" MinWidth="500" HorizontalAlignment="Stretch" Padding="10"
+                     materialDesign:HintAssist.Hint="suche nach Inventarnummer oder Kostenstelle">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="TextChanged">
                         <i:InvokeCommandAction Command="{Binding TextSearchCommand}" PassEventArgsToCommand="True"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-            </lib:ClearableHintTextBox>
+            </TextBox>
         </StackPanel>
+        </materialDesign:ColorZone>
     </Grid>
 </Grid>

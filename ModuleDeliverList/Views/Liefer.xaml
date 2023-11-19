@@ -9,13 +9,11 @@
     xmlns:userControls="clr-namespace:ModuleDeliverList.UserControls"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
-    xmlns:wpfCustomControlLibrary="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
-    x:Name="LieferListe"
+    x:Name="LieferListe" Tag="{Binding Title}"
     x:Class="ModuleDeliverList.Views.Liefer"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="1400"  >
     <Grid.Resources>
-        <conv:CommentConverter x:Key="CommentConverter"/>
         <conv:DateConverter x:Key="DateConverter"/>
         <conv:TTNR_Converter x:Key="Ttnr-Converter"/>
         <conv:PermissionConverter x:Key="Permission"/>
@@ -34,20 +32,19 @@
     <DockPanel LastChildFill="False">
         <DockPanel.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="#FF383636"/>
-                <GradientStop Color="#FFE60B0B" Offset="1"/>
+                <GradientStop Color="#FFB3ADAD"/>
+                <GradientStop Color="#FF0B91E6" Offset="1"/>
             </LinearGradientBrush>
         </DockPanel.Background>
         <Button Content="Speichern" Command="{Binding SaveCommand}"/>
-        <wpfCustomControlLibrary:ClearableHintTextBox x:Name="SearchBox" Width="300"
-                                                          ClHintText="suchen in Auftragsnr, TTNR, Materialtext"
-                                                          Margin="10,0,0,0" >
+        <TextBox x:Name="SearchBox" Width="300" Margin="10,0,0,10" Background="White" Padding="10"
+                 materialDesign:HintAssist.Hint="suchen in Auftragsnr, TTNR, Materialtext">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
                     <i:InvokeCommandAction Command="{Binding TextSearchCommand}" PassEventArgsToCommand="True"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-        </wpfCustomControlLibrary:ClearableHintTextBox>
+        </TextBox>
 
         <!--<StackPanel>
             <ComboBox x:Name="CmbFiltersProjects" DockPanel.Dock="Left" Width="170"  Style="{DynamicResource MaterialDesignComboBox}"
@@ -58,41 +55,38 @@
                       SelectedValue="{Binding Path=SelectedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       DisplayMemberPath="Description"
                       SelectedValuePath="Value"/>
-            <TextBlock Text="Anzahl Vorgänge:" 
-                   AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
-                <TextBlock x:Name="Count"  Width="auto"
-                           Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
+ 
             
             </StackPanel>-->
-        <StackPanel DockPanel.Dock="Right">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <CheckBox
-      x:Name="OutlinedComboBoxEnabledCheckBox"
-      Margin="0,0,0,8"
-      Content="Enabled"
-      IsChecked="True" />
-                <Button
-      Grid.Column="1"
-      HorizontalAlignment="Right"
-      Click="ClearOutlinedComboBox_Click"
-      Content="Clear"
-      Style="{StaticResource MaterialDesignFlatButton}" />
-            </Grid>
-            <ComboBox
-    x:Name="OutlinedComboBox"
-    Width="256"
-    materialDesign:HintAssist.Hint="Some item"
-    IsEnabled="{Binding Path=IsChecked, ElementName=OutlinedComboBoxEnabledCheckBox}"
+        <materialDesign:ColorZone DockPanel.Dock="Right"
+            FontSize="14"
+            FontWeight="Bold"
+            Margin="5,1,5,1"
+            Mode="Standard"
+            materialDesign:HintAssist.FloatingOffset="1,-10">
+        <StackPanel Orientation="Horizontal" >
+
+            <ComboBox x:Name="ProjComboBox" Width="200" 
+                     materialDesign:HintAssist.Hint="Projekte"
+                     Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
+            
+            <ComboBox 
+    x:Name="FilterComboBox"
+    Width="200"
+    materialDesign:HintAssist.Hint="Filters"
+                      
     ItemsSource="{Binding Path=SelectedFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                      SelectedValue="{Binding Path=SelectedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      DisplayMemberPath="Description"
                      SelectedValuePath="Value"/>
+            
+            <TextBlock Text="Anzahl Vorgänge:" 
+                  AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
+            <TextBlock x:Name="Count"  Width="auto"
+                          Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
         </StackPanel>
+        </materialDesign:ColorZone>
     </DockPanel>
     <StackPanel Grid.Row="1">
         <TextBlock Text="Loading..." HorizontalAlignment="Center" FontSize="30"
@@ -100,11 +94,13 @@
         <TextBlock Text="{Binding OrderTask.ErrorMessage}" HorizontalAlignment="Center"
                    Visibility="{Binding OrderTask.IsFaulted, Converter={StaticResource BoolToVis}}"/>
     </StackPanel>
+
     <ScrollViewer Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}" >
 
         <ItemsControl x:Name="Lieferlist" 
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrderTask.Result}">
+                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrderTask.Result}"
+                      VirtualizingStackPanel.VirtualizationMode="Recycling">
 
             <!--<ItemsControl.ItemsSource>
                     <PriorityBinding>
@@ -116,11 +112,10 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border x:Name="border" CornerRadius="5" BorderBrush="Black" Background="LightGreen" BorderThickness="1" Margin="2" >
+                    <Border x:Name="border" Height="100" CornerRadius="5" BorderBrush="Black" Background="LightGreen"
+                            BorderThickness="1" Margin="2" >
 
-                        <StackPanel Height="100">
-
-                            <userControls:LieferlisteControl x:Name="ucLiefer"  
+                        <userControls:LieferlisteControl x:Name="ucLiefer"  
                             Aid="{Binding Aid}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
                             TTNR="{Binding AidNavigation.Material}"
@@ -142,17 +137,15 @@
                             Invisible="{Binding Ausgebl, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}">
-                                <userControls:LieferlisteControl.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}"
+                            <userControls:LieferlisteControl.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Aufsteigend sortieren" Command="{Binding SortAscCommand}"
                                                       CommandParameter="{Binding Parent.DataContext, RelativeSource={RelativeSource Self}}"/>
-                                        <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand}"
+                                    <MenuItem Header="Absteigend sortieren" Command="{Binding SortDescCommand}"
                                                       CommandParameter="{Binding Parent.PlacementTarget, RelativeSource={RelativeSource Self}}"/>
-                                    </ContextMenu>
-                                </userControls:LieferlisteControl.ContextMenu>
-                            </userControls:LieferlisteControl>
-
-                        </StackPanel>
+                                </ContextMenu>
+                            </userControls:LieferlisteControl.ContextMenu>
+                        </userControls:LieferlisteControl>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

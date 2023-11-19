@@ -27,12 +27,13 @@ namespace Lieferliste_WPF.Views
     /// <summary>
     /// Interaction logic for MachinePlan.xaml
     /// </summary>
-    public partial class MachinePlan : Grid
+    public partial class MachinePlan : UserControl
     {
         [SupportedOSPlatform("windows7.0")]
         public MachinePlan()
         {
             InitializeComponent();
+            
         }
 
         private void UnPlanedMouseDown(object sender, MouseButtonEventArgs e)

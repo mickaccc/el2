@@ -14,9 +14,9 @@ namespace El2Core.Constants
         public const string UserEdit = "UM00";
         public const string UserSett = "SET00";
         public const string Liefer = "LIE00";
-        public const string CommentMeNeg = "!COM-ME";
-        public const string CommentMaNeg = "!COM-MA";
-        public const string CommentTeNeg = "!COM-TE";
+        public const string CommentMe = "COM-ME";
+        public const string CommentMa = "COM-MA";
+        public const string CommentTe = "COM-TE";
         public const string Archivate = "ARCHIVATE";
         public const string Archiv = "ARCHIV";
         public const string Order = "OO00";
