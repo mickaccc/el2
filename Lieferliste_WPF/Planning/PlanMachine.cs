@@ -153,28 +153,37 @@ namespace Lieferliste_WPF.Planning
 
         public void Drop(IDropInfo dropInfo)
         {
-            var vrg = (Vorgang)dropInfo.Data;
-            var s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
-            var t = dropInfo.TargetCollection as ListCollectionView;
-            if (s?.CanRemove ?? false) s.Remove(vrg);
-            var v = dropInfo.InsertIndex;
-            vrg.Rid = _rId;
-            if (v > t?.Count)
+
+            try
             {
-                ((IList)t.SourceCollection).Add(vrg);
+                var vrg = (Vorgang)dropInfo.Data;
+                var s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
+                var t = dropInfo.TargetCollection as ListCollectionView;
+                if (s.CanRemove) s.Remove(vrg);
+                var v = dropInfo.InsertIndex;
+                vrg.Rid = _rId;
+                if (v > t?.Count)
+                {
+                    ((IList)t.SourceCollection).Add(vrg);
+                }
+                else
+                {
+                    Debug.Assert(t != null, nameof(t) + " != null");
+                    ((IList)t.SourceCollection).Insert(v, vrg);
+                }
+                var p = t.SourceCollection as Collection<Vorgang>;
+                Debug.Assert(p != null, nameof(p) + " != null");
+                for (var i = 0; i < p.Count; i++)
+                {
+                    p[i].Spos = i;
+                }
+                t.Refresh();
             }
-            else
+            catch (System.Exception e)
             {
-                Debug.Assert(t != null, nameof(t) + " != null");
-                ((IList)t.SourceCollection).Insert(v, vrg);
+                string str = string.Format(e.Message + "\n" + e.InnerException);
+                MessageBox.Show(str, "ERROR", MessageBoxButton.OK);
             }
-            var p = t.SourceCollection as Collection<Vorgang>;
-            Debug.Assert(p != null, nameof(p) + " != null");
-            for (var i = 0; i < p.Count; i++)
-            {
-                p[i].Spos = i;
-            }
-            t.Refresh();
         }
 
         public void DragOver(IDropInfo dropInfo)

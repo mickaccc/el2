@@ -9,7 +9,7 @@
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     x:Class="Lieferliste_WPF.Views.Order"
         mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="1200" MinWidth="1000" MaxHeight="600" Tag="{Binding Title}" >
+    d:DesignHeight="450" d:DesignWidth="1000" MinWidth="1000" MaxHeight="600" Tag="{Binding Title}" >
 
 
     <UserControl.Resources>
@@ -53,7 +53,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock Height="23" Margin="5" x:Name="txtAuftr" VerticalAlignment="Top"
-                       Text="{Binding Aid, Converter={StaticResource TTNR_Converter1}, Mode=OneWay}"
+                       Text="{Binding Aid, Mode=OneWay}"
                        HorizontalAlignment="Right" MinWidth="120" ToolTip="Auftragsnummer"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblOrder, Mode=OneWay}" />
             <Label x:Name="lblOrder" Content="Auftrag" Height="23" HorizontalAlignment="Left" Margin="5"
@@ -82,10 +82,10 @@
                    HorizontalAlignment="Right" Margin="5" x:Name="Count" VerticalAlignment="Top"
                    Background="#FFEBEB73" Width="71" />
             <Button Grid.Column="4" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
-                    VerticalAlignment="Top" Width="75" SnapsToDevicePixels="True"
+                    VerticalAlignment="Top"  SnapsToDevicePixels="True"
                     Command="{Binding Path=ApplicationCommands.ArchivateCommand}" CommandParameter="{Binding Aid}"/>
             <Button Grid.Column="4" Grid.Row="1" Content="Explorer" Height="23" HorizontalAlignment="left" Margin="5" x:Name="btnExplorer"
-                    VerticalAlignment="Top" Width="75" SnapsToDevicePixels="True"
+                    VerticalAlignment="Top" SnapsToDevicePixels="True"
                     Command="{Binding Path=ApplicationCommands.ExplorerCommand}" CommandParameter="{Binding}"/>
         </Grid>
         <ScrollViewer Grid.Row="1" >
@@ -100,7 +100,7 @@
                                 <Setter Property="Margin" Value="5"/>
                             </Style>
                         </DataTemplate.Resources>
-                        <Border BorderThickness="2" CornerRadius="5" Name="ItemBorder" BorderBrush="{Binding Aktuell, 
+                        <Border BorderThickness="4" CornerRadius="10" Name="ItemBorder" BorderBrush="{Binding Aktuell, 
                             Converter={StaticResource active}}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
