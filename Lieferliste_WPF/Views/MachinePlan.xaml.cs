@@ -1,26 +1,11 @@
-﻿
-using El2Core.Converters;
-using El2Core.Models;
+﻿using El2Core.Models;
 using Lieferliste_WPF.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
 using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Lieferliste_WPF.Views
 {
@@ -33,7 +18,7 @@ namespace Lieferliste_WPF.Views
         public MachinePlan()
         {
             InitializeComponent();
-            
+
         }
 
         private void UnPlanedMouseDown(object sender, MouseButtonEventArgs e)
@@ -86,13 +71,13 @@ namespace Lieferliste_WPF.Views
             e.Handled = true;
         }
 
- 
+
 
         private void UnPlanedCVS_Filter(object sender, FilterEventArgs e)
         {
             if ((e.Item as Vorgang).Aid.Contains(searchTextBox.Text))
                 e.Accepted = true;
-            else e.Accepted = false;            
+            else e.Accepted = false;
         }
 
         private void UnPlaned_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace El2Core.Utils
 {
@@ -35,7 +31,7 @@ namespace El2Core.Utils
             _suppressNotification = false;
 
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-            
+
         }
         public void RemoveRange(IEnumerable<T> collection)
         {
@@ -48,7 +44,7 @@ namespace El2Core.Utils
             _suppressNotification = false;
 
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-            
+
         }
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)

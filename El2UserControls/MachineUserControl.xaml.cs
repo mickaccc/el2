@@ -1,7 +1,6 @@
 ﻿
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace El2UserControls
 {
@@ -10,9 +9,9 @@ namespace El2UserControls
     /// </summary>
     public partial class MachineUserControl : UserControl
     {
-        
+
         public MachineUserControl()
-        {           
+        {
             InitializeComponent();
             //Planed.SelectedIndex = -1;
         }
@@ -27,7 +26,7 @@ namespace El2UserControls
         private void HideDetails_Click(object sender, RoutedEventArgs e)
         {
             Planed.SelectedIndex = -1;
-            e.Handled= true;
+            e.Handled = true;
         }
 
     }

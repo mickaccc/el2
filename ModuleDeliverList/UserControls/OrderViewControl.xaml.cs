@@ -10,10 +10,10 @@ namespace ModuleDeliverList.UserControls
 
         public OrderViewControl()
         {
-            
+
             InitializeComponent();
             this.listBox1.Items.SortDescriptions.Add(
-                new System.ComponentModel.SortDescription("Vnr",System.ComponentModel.ListSortDirection.Ascending) );
+                new System.ComponentModel.SortDescription("Vnr", System.ComponentModel.ListSortDirection.Ascending));
             this.listBox1.Items.Refresh();
         }
 

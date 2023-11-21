@@ -1,20 +1,7 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfCustomControlLibrary
 {
@@ -54,14 +41,14 @@ namespace WpfCustomControlLibrary
         public static readonly DependencyProperty FontSizeProperty;
         public static readonly DependencyProperty TextProperty;
 
-        void OnTextChanged(object sender, TextChangedEventArgs e) { ChangeText();  }
+        private void OnTextChanged(object sender, TextChangedEventArgs e) { ChangeText(); }
         private TextBox _textBox;
         private TextBlock _placeHolder;
         private Button _button;
 
         static ClearableHintTextBox()
         {
-            
+
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ClearableHintTextBox), new FrameworkPropertyMetadata(typeof(ClearableHintTextBox)));
             ClHintTextProperty = DependencyProperty.Register(nameof(ClHintText),
                 typeof(string), typeof(ClearableHintTextBox),
@@ -77,7 +64,7 @@ namespace WpfCustomControlLibrary
                 new FrameworkPropertyMetadata(11.0,
                     FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-    }
+        }
 
 
         public new double FontSize
@@ -100,7 +87,7 @@ namespace WpfCustomControlLibrary
         protected override Size MeasureOverride(Size constraint)
         {
             FormattedText txt = GetFormattedText();
-            return new Size(txt.Width+5, txt.Height+5);
+            return new Size(txt.Width + 5, txt.Height + 5);
         }
 
 
@@ -132,16 +119,17 @@ namespace WpfCustomControlLibrary
             _placeHolder = Template.FindName("PART_PlaceHolder", this) as TextBlock;
             _button = Template.FindName("PART_Clear", this) as Button;
 
-            if(_button != null)
+            if (_button != null)
             {
                 _button.Click += OnClick;
             }
 
-            if (_textBox != null) {
+            if (_textBox != null)
+            {
                 ChangeText();
-                _textBox.TextChanged += OnTextChanged;               
+                _textBox.TextChanged += OnTextChanged;
             }
-            
+
         }
 
         private void OnClick(object sender, RoutedEventArgs e)
@@ -151,7 +139,7 @@ namespace WpfCustomControlLibrary
 
         private void ChangeText()
         {
-            if(string.IsNullOrEmpty(_textBox.Text))
+            if (string.IsNullOrEmpty(_textBox.Text))
             {
                 _placeHolder.Visibility = Visibility.Visible;
             }

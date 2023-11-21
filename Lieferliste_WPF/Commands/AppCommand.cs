@@ -7,9 +7,9 @@
         #region CommandFramework Fields
         private static RoutedUICommand loadFile;
 
-        private static RoutedUICommand pinUnpin;
-        private static RoutedUICommand addMruEntry;
-        private static RoutedUICommand removeMruEntry;
+        private static readonly RoutedUICommand pinUnpin;
+        private static readonly RoutedUICommand addMruEntry;
+        private static readonly RoutedUICommand removeMruEntry;
         #endregion CommandFramework Fields
 
         #region Static Constructor (Constructs static application commands)

@@ -6,7 +6,7 @@ using System.Windows.Media;
 namespace El2Core.Converters
 {
     [ValueConversion(typeof(System.Drawing.Color), typeof(Color))]
-    class Color2MediaBrush : IValueConverter
+    internal class Color2MediaBrush : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

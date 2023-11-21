@@ -1,13 +1,9 @@
 ﻿using CompositeCommands.Core;
 using El2Core.Models;
 using El2Core.Utils;
-using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
-using Prism.Services.Dialogs;
-using System;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
@@ -46,7 +42,7 @@ namespace Lieferliste_WPF.Planning
             CostUnits = costUnit;
         }
 
- 
+
         #endregion
 
 
@@ -83,7 +79,7 @@ namespace Lieferliste_WPF.Planning
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
-        
+
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         private IApplicationCommands? _applicationCommands;
 
@@ -109,7 +105,7 @@ namespace Lieferliste_WPF.Planning
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
-                      
+
         }
 
         private static bool OnSetMarkerCanExecute(object arg)
@@ -128,7 +124,7 @@ namespace Lieferliste_WPF.Planning
             var values = (object[])obj;
             var name = (string)values[0];
             var desc = (Vorgang)values[1];
-            
+
             if (name == "DelBullet") desc.Bullet = Brushes.White.ToString();
             if (name == "Bullet1") desc.Bullet = Brushes.Red.ToString();
             if (name == "Bullet2") desc.Bullet = Brushes.Green.ToString();
@@ -136,7 +132,7 @@ namespace Lieferliste_WPF.Planning
             if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
             ProcessesCV.Refresh();
-  
+
         }
         private bool OnOpenMachineCanExecute(object arg)
         {
@@ -151,7 +147,7 @@ namespace Lieferliste_WPF.Planning
         }
         public void Exit()
         {
-            if (Owner != null) Owner.Exit();
+            Owner?.Exit();
         }
 
 
@@ -174,7 +170,7 @@ namespace Lieferliste_WPF.Planning
             }
             var p = t.SourceCollection as Collection<Vorgang>;
             Debug.Assert(p != null, nameof(p) + " != null");
-            for(var i=0;i<p.Count;i++)
+            for (var i = 0; i < p.Count; i++)
             {
                 p[i].Spos = i;
             }

@@ -4,18 +4,13 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ModuleDeliverList.Views;
 using Prism.Ioc;
 using Prism.Regions;
 using Prism.Services.Dialogs;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -25,7 +20,6 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Unity.Injection;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -59,7 +53,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         public ICommand ExplorerCommand { get; }
         public ICommand OpenOrderCommand { get; }
- 
+
         private NotifyTaskCompletion<int>? _onlineTask;
         public NotifyTaskCompletion<int>? OnlineTask
         {
@@ -111,7 +105,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnCloseExecuted(object obj)
         {
             if (obj == null)
-            { 
+            {
                 using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     Dbctx.ChangeTracker.DetectChanges();
@@ -175,7 +169,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenMachineMgmtExecuted(object selectedItem)
         {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MachineEdit",UriKind.Relative));
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MachineEdit", UriKind.Relative));
         }
 
         private bool OnOpenMachineMgmtCanExecute(object arg)
@@ -207,9 +201,9 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenSettingsExecuted(object obj)
         {
-            
+
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("UserSettings", UriKind.Relative));
-            
+
         }
 
         private bool OnOpenSettingsCanExecute(object arg)
@@ -219,7 +213,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenMachinePlanExecuted(object obj)
         {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion,new Uri("MachinePlan", UriKind.Relative)); 
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MachinePlan", UriKind.Relative));
         }
 
         private bool OnOpenMachinePlanCanExecute(object arg)
@@ -231,7 +225,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Liefer);
         }
- 
+
         private void OnOpenLieferlisteExecuted(object obj)
         {
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Liefer", UriKind.RelativeOrAbsolute));
@@ -255,7 +249,7 @@ namespace Lieferliste_WPF.ViewModels
                 dic.Add("aid", v.Aid);
                 dic.Add("ttnr", v.AidNavigation.Material ?? string.Empty);
             }
-            else  dic = obj as Dictionary<string, object>;
+            else dic = obj as Dictionary<string, object>;
             if (dic != null)
 
             {
@@ -296,7 +290,7 @@ namespace Lieferliste_WPF.ViewModels
                     sb.Append(nsb.ToString());
                 }
 
-                
+
                 if (!Directory.Exists(Properties.Settings.Default.ExplorerRoot))
                 {
                     MessageBox.Show($"Der Hauptpfad '{Properties.Settings.Default.ExplorerRoot}'\nwurde nicht gefunden!"
@@ -309,7 +303,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
- 
+
         #endregion
         private void SetTimer()
         {
@@ -325,17 +319,17 @@ namespace Lieferliste_WPF.ViewModels
             get { return _onlines; }
             private set
             {
-                if(_onlines != value)
+                if (_onlines != value)
                 {
-                   _onlines = value;
-                   NotifyPropertyChanged(() => Onlines);
+                    _onlines = value;
+                    NotifyPropertyChanged(() => Onlines);
                 }
             }
         }
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
             var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
+            OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
             if (OnlineTask.IsCompleted) { Dbctx.Dispose(); }
         }
 
@@ -388,7 +382,7 @@ namespace Lieferliste_WPF.ViewModels
             //}
         }
 
-        private  void RegisterMe()
+        private void RegisterMe()
         {
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
@@ -409,7 +403,7 @@ namespace Lieferliste_WPF.ViewModels
                     if (v.Length > 3)
                     {
                         string cost = v[..3];
-                        string inv = v.Substring(3);
+                        string inv = v[3..];
                         int costid;
                         if (int.TryParse(cost, out costid))
                         {
@@ -432,6 +426,6 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
     }
- }
+}
 
 

@@ -1,20 +1,10 @@
 ﻿
 using System;
-using System.Data;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using System.CodeDom;
-using System.IO;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Data;
-using System.Text;
-using System.Diagnostics;
-using System.Collections.Generic;
-using CompositeCommands.Core;
-using System.DirectoryServices;
 
 namespace ModuleDeliverList.UserControls
 {
@@ -34,7 +24,7 @@ namespace ModuleDeliverList.UserControls
             = DependencyProperty.Register("Aid"
                 , typeof(string)
                 , typeof(LieferlisteControl),
-                new PropertyMetadata("",OnPropertyChanged));
+                new PropertyMetadata("", OnPropertyChanged));
         public String Aid
         {
             get { return (string)GetValue(AidProperty); }
@@ -44,7 +34,7 @@ namespace ModuleDeliverList.UserControls
             = DependencyProperty.Register("TTNR"
                 , typeof(string)
                 , typeof(LieferlisteControl),
-                new PropertyMetadata("",OnPropertyChanged));
+                new PropertyMetadata("", OnPropertyChanged));
         public string TTNR
         {
             get { return (string)GetValue(TtnrProperty); }
@@ -54,7 +44,7 @@ namespace ModuleDeliverList.UserControls
             = DependencyProperty.Register("MatText"
                 , typeof(string)
                 , typeof(LieferlisteControl),
-                new PropertyMetadata("",OnPropertyChanged));
+                new PropertyMetadata("", OnPropertyChanged));
         public string MatText
         {
             get { return (string)GetValue(MatTextProperty); }
@@ -100,7 +90,7 @@ namespace ModuleDeliverList.UserControls
             = DependencyProperty.Register("Vnr"
                 , typeof(int)
                 , typeof(LieferlisteControl),
-                new PropertyMetadata(0,OnPropertyChanged));
+                new PropertyMetadata(0, OnPropertyChanged));
         public int Vnr
         {
             get { return (int)GetValue(VnrProperty); }
@@ -110,7 +100,7 @@ namespace ModuleDeliverList.UserControls
             = DependencyProperty.Register("VgText"
                 , typeof(string)
                 , typeof(LieferlisteControl),
-                new PropertyMetadata("",OnPropertyChanged));
+                new PropertyMetadata("", OnPropertyChanged));
         public string VgText
         {
             get { return (string)GetValue(VgTextProperty); }
@@ -176,7 +166,7 @@ namespace ModuleDeliverList.UserControls
         // Using a DependencyProperty as the backing store for WorkArea.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty WorkAreaProperty =
             DependencyProperty.Register("WorkArea", typeof(string), typeof(LieferlisteControl),
-                new PropertyMetadata("",OnPropertyChanged));
+                new PropertyMetadata("", OnPropertyChanged));
 
 
 
@@ -298,7 +288,7 @@ namespace ModuleDeliverList.UserControls
         public static readonly DependencyProperty ArchivatedProperty =
             DependencyProperty.Register("Archivated", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
 
-            
+
         public string SelectedValue
         {
             get { return (string)GetValue(SelectedValueProperty); }
@@ -310,10 +300,10 @@ namespace ModuleDeliverList.UserControls
             DependencyProperty.Register("SelectedValue", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
         public static readonly DependencyProperty ExplorerCommandProperty = DependencyProperty.Register("ExplorerCommand", typeof(ICommand), typeof(LieferlisteControl));
- 
-        public Dictionary<string,object> AvailableItems
+
+        public Dictionary<string, object> AvailableItems
         {
-            get { return (Dictionary<string,object>)GetValue(AvailableItemsProperty); }
+            get { return (Dictionary<string, object>)GetValue(AvailableItemsProperty); }
             set { SetValue(AvailableItemsProperty, value); }
         }
 
@@ -321,7 +311,7 @@ namespace ModuleDeliverList.UserControls
 
         // Using a DependencyProperty as the backing store for AvailableItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AvailableItemsProperty =
-            DependencyProperty.Register("AvailableItems", typeof(Dictionary<string,object>), typeof(LieferlisteControl));
+            DependencyProperty.Register("AvailableItems", typeof(Dictionary<string, object>), typeof(LieferlisteControl));
 
         #endregion
 
@@ -353,8 +343,8 @@ namespace ModuleDeliverList.UserControls
             object? val;
             LieferlisteControl? lc = d as LieferlisteControl;
             if (lc != null)
-            { 
-                if(lc.AvailableItems == null) lc.AvailableItems = new Dictionary<string,object>();
+            {
+                if (lc.AvailableItems == null) lc.AvailableItems = new Dictionary<string, object>();
                 if (lc.AvailableItems.TryGetValue(e.Property.Name.ToLower(), out val))
                 {
                     lc.AvailableItems[e.Property.Name.ToLower()] = newValue;
@@ -364,7 +354,7 @@ namespace ModuleDeliverList.UserControls
                     lc.AvailableItems.Add(e.Property.Name.ToLower(), newValue);
                 }
             }
-            
+
         }
 
         private void Modified(object sender, RoutedEventArgs e)
@@ -396,9 +386,9 @@ namespace ModuleDeliverList.UserControls
         }
         private void TextBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if(sender is TextBlock send)
+            if (sender is TextBlock send)
             {
-                if(send.IsMouseCaptured)
+                if (send.IsMouseCaptured)
                     send.ReleaseMouseCapture();
             }
         }

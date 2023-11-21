@@ -4,14 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Markup;
-using System.Windows.Media;
 
 namespace Lieferliste_WPF.Utilities
 {
@@ -90,7 +83,7 @@ namespace Lieferliste_WPF.Utilities
         public int Count
         {
             get => _List.Count;
-            
+
         }
 
         public bool IsReadOnly

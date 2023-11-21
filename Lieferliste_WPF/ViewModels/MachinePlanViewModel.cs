@@ -4,13 +4,10 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Commands;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
-using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
-using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,7 +21,7 @@ using System.Windows.Input;
 namespace Lieferliste_WPF.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    class MachinePlanViewModel : ViewModelBase, IDropTarget
+    internal class MachinePlanViewModel : ViewModelBase, IDropTarget
     {
         public string Title { get; } = "Teamleiter Zuteilung";
         private RelayCommand? _selectionChangeCommand;
@@ -61,23 +58,23 @@ namespace Lieferliste_WPF.ViewModels
 
         private string _masterFilterText;
         private string? _searchFilterText;
-        
+
 
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
- 
-        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands) 
+
+        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
         {
             _container = container;
             _applicationCommands = applicationCommands;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             Machines = new List<PlanMachine>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
- 
+
             LoadData();
             _ressCV = CollectionViewSource.GetDefaultView(Machines);
             _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == WorkAreas?.First().WorkAreaId;
-            _ressCV.MoveCurrentToFirst();           
+            _ressCV.MoveCurrentToFirst();
             ProcessViewSource.Source = Priv_processes;
             ProcessViewSource.Filter += ProcessCV_Filter;
 
@@ -85,18 +82,18 @@ namespace Lieferliste_WPF.ViewModels
             ParkingCV.Filter = f => (f as Vorgang)?.RidNavigation?.WorkAreaId == WorkAreas?.First().WorkAreaId;
             _masterFilterText = WorkAreas?.First().WorkAreaId.ToString() ?? "";
             ProcessCV.Refresh();
-        
+
         }
 
         private bool OnSaveCanExecute(object arg)
-        {          
+        {
             return _DbCtx.ChangeTracker.HasChanges();
 
         }
 
         private void OnSaveExecuted(object obj)
-        {           
-           _DbCtx.SaveChanges();
+        {
+            _DbCtx.SaveChanges();
         }
 
         private void LoadData()
@@ -164,20 +161,20 @@ namespace Lieferliste_WPF.ViewModels
             Priv_processes = list.FindAll(x => x.Rid == null)
                 .ToObservableCollection();
             Priv_parking = list.FindAll(x => x.Rid == -1)
-                .ToObservableCollection();          
+                .ToObservableCollection();
         }
 
         private void SelectionChange(object commandParameter)
         {
             if (commandParameter is SelectionChangedEventArgs sel)
-            { 
+            {
                 if (sel.AddedItems[0] is WorkArea wa)
-                {                  
+                {
                     _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == wa.WorkAreaId;
-                    
+
                     _masterFilterText = wa.WorkAreaId.ToString();
                     ProcessCV.Refresh();
-                                                    
+
                 }
             }
         }
@@ -189,7 +186,7 @@ namespace Lieferliste_WPF.ViewModels
 
                 _searchFilterText = tb.Text;
                 ProcessCV.Refresh();
-                                 
+
             }
         }
         private void ProcessCV_Filter(object sender, FilterEventArgs e)
@@ -219,7 +216,7 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         internal void Exit()
-        {         
+        {
             _DbCtx.SaveChanges();
         }
 

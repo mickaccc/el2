@@ -1,4 +1,3 @@
-using System;
 using Prism.Commands;
 
 namespace CompositeCommands.Core
@@ -14,27 +13,27 @@ namespace CompositeCommands.Core
 
     public class ApplicationCommands : IApplicationCommands
     {
-        private CompositeCommand _explorerCommand = new CompositeCommand();
+        private readonly CompositeCommand _explorerCommand = new();
         public CompositeCommand ExplorerCommand
         {
             get { return _explorerCommand; }
         }
-        private CompositeCommand _archivateCommand = new CompositeCommand();
+        private CompositeCommand _archivateCommand = new();
         public CompositeCommand ArchivateCommand
         {
             get { return _archivateCommand; }
         }
-        private CompositeCommand _openOrderCommand = new CompositeCommand();
+        private CompositeCommand _openOrderCommand = new();
         public CompositeCommand OpenOrderCommand
         {
             get { return _openOrderCommand; }
         }
-        private CompositeCommand _openMachineCommand = new CompositeCommand();
+        private CompositeCommand _openMachineCommand = new();
         public CompositeCommand OpenMachineCommand
         {
             get { return _openMachineCommand; }
         }
-        private CompositeCommand _closeCommand = new CompositeCommand();
+        private CompositeCommand _closeCommand = new();
         public CompositeCommand CloseCommand
         {
             get { return _closeCommand; }

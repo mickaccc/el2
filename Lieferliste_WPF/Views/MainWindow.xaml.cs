@@ -1,18 +1,11 @@
 ﻿namespace Lieferliste_WPF.Views
 {
-    using El2Core.Models;
-    using Lieferliste_WPF;
-    using Lieferliste_WPF.ViewModels;
-    using Microsoft.EntityFrameworkCore.Internal;
-    using Microsoft.EntityFrameworkCore;
-    using System;
     using System.Runtime.Versioning;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
-    using Prism.Regions;
-    
+
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -87,7 +80,7 @@
         //            Tag = "MPL"
 
         //        };
-                
+
         //        MainWindowViewModel mv = DataContext as MainWindowViewModel;
         //        mv.WindowTitles.Add(tabItemSource);
         //        //mv.TabTitles.Remove(tabItemSource);
@@ -149,13 +142,13 @@
         //            wnd.Show();
         //        }
         //    }
-            
+
         //    catch (InvalidOperationException ex)
         //    {
         //        MessageBox.Show(ex.Message,"Fehlermeldung",MessageBoxButton.OK,MessageBoxImage.Error);
         //    }
         //}
 
-  
+
     }
 }

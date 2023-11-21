@@ -1,30 +1,18 @@
 ﻿
+using CompositeCommands.Core;
 using El2Core.Models;
 using El2Core.ViewModelBase;
-using El2Core.Utils;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using Prism.Ioc;
 using Prism.Services.Dialogs;
-using Prism.Mvvm;
-using Lieferliste_WPF.Planning;
+using System;
 using System.Collections.ObjectModel;
-using Lieferliste_WPF.Utilities;
-using CompositeCommands.Core;
+using System.ComponentModel;
+using System.Windows.Data;
 
-namespace Lieferliste_WPF.ViewModels 
+namespace Lieferliste_WPF.ViewModels
 {
-    class OrderViewModel : ViewModelBase, IDialogAware
+    internal class OrderViewModel : ViewModelBase, IDialogAware
     {
-        public OrderViewModel(IApplicationCommands applicationCommands) 
+        public OrderViewModel(IApplicationCommands applicationCommands)
         {
             _applicationCommands = applicationCommands;
             VorgangCV = CollectionViewSource.GetDefaultView(Vorgangs);
@@ -34,7 +22,8 @@ namespace Lieferliste_WPF.ViewModels
         public event Action<IDialogResult> RequestClose;
         private string _aid;
         public string Aid
-        { get { return _aid; }
+        {
+            get { return _aid; }
             set
             {
                 if (_aid != value)
@@ -46,7 +35,8 @@ namespace Lieferliste_WPF.ViewModels
         }
         private string? _material;
         public string? Material
-        { get { return _material; }
+        {
+            get { return _material; }
             set
             {
                 if (_material != value)
@@ -58,7 +48,8 @@ namespace Lieferliste_WPF.ViewModels
         }
         private string? _bezeichnung;
         public string? Bezeichnung
-        { get {  return _bezeichnung; }
+        {
+            get { return _bezeichnung; }
             set
             {
                 if (_bezeichnung != value)
@@ -98,7 +89,8 @@ namespace Lieferliste_WPF.ViewModels
         }
         private string? _proInfo;
 
-        public string? ProInfo        {
+        public string? ProInfo
+        {
             get { return _proInfo; }
             set
             {
@@ -117,14 +109,14 @@ namespace Lieferliste_WPF.ViewModels
             set
             {
                 if (_sysStatus != value)
-                { 
+                {
                     _sysStatus = value;
                     NotifyPropertyChanged(() => SysStatus);
                 }
             }
         }
 
-        public ICollectionView VorgangCV { get; } 
+        public ICollectionView VorgangCV { get; }
         private string _title = "Auftragsübersicht";
         public string Title
         {
@@ -156,7 +148,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void OnDialogClosed()
         {
-            
+
         }
 
         public void OnDialogOpened(IDialogParameters parameters)
@@ -168,9 +160,9 @@ namespace Lieferliste_WPF.ViewModels
                 Vorgangs.Add(item);
             }
 
-            Aid =p.Aid;
+            Aid = p.Aid;
             Material = p.Material;
-            Bezeichnung =p.MaterialNavigation?.Bezeichng;
+            Bezeichnung = p.MaterialNavigation?.Bezeichng;
             Quantity = p.Quantity;
             Pro = p.ProId;
             ProInfo = p.ProId;

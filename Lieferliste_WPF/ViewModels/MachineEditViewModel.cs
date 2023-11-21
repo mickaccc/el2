@@ -41,7 +41,7 @@ namespace Lieferliste_WPF.ViewModels
             LoadData();
 
             RessourcesCV = new ListCollectionView(_ressources);
-            if(RessourcesCV.CanGroup)
+            if (RessourcesCV.CanGroup)
             {
                 RessourcesCV.GroupDescriptions.Add(new PropertyGroupDescription("Inventarnummer"));
             }
@@ -51,7 +51,7 @@ namespace Lieferliste_WPF.ViewModels
             RessourcesCV.MoveCurrentToFirst();
             RessourcesCV.CurrentChanged += OnChanged;
             RessourcesCV.Filter += RessView_FilterPredicate;
-            
+
         }
 
 
@@ -93,7 +93,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnChanged(object? sender, EventArgs e)
         {
-            
+
 
         }
         public string Error => null;
@@ -113,18 +113,18 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnCloseExecuted(object obj)
         {
-            if(obj is Window ob)
+            if (obj is Window ob)
             {
-                    //if (DBctx.ChangeTracker.HasChanges())
-                    //{
-                    //    MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
-                    //        , MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    //    if (result == MessageBoxResult.Yes) { DBctx.SaveChangesAsync(); }
+                //if (DBctx.ChangeTracker.HasChanges())
+                //{
+                //    MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
+                //        , MessageBoxButton.YesNo, MessageBoxImage.Question);
+                //    if (result == MessageBoxResult.Yes) { DBctx.SaveChangesAsync(); }
 
-                    //}
-                
+                //}
+
                 ob.Close();
-               
+
             }
         }
 
@@ -136,7 +136,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnSaveExecuted(object obj)
         {
             DBctx.SaveChanges();
-            
+
         }
 
         private bool OnSaveCanExecute(object arg)
@@ -146,25 +146,25 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-                _ressources = DBctx.Ressources
-                    .Include(y => y.RessourceCostUnits)
-                    .Include(x => x.WorkArea)
-                    .Where(y => y.Inventarnummer != null)
-                    .ToObservableCollection();
+            _ressources = DBctx.Ressources
+                .Include(y => y.RessourceCostUnits)
+                .Include(x => x.WorkArea)
+                .Where(y => y.Inventarnummer != null)
+                .ToObservableCollection();
 
-                var w = DBctx.WorkAreas.AsNoTracking()
-                    .OrderBy(x => x.Bereich)
-                    .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
-                    .ToList();
-                WorkAreas.AddRange(w.Prepend(new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" }));
-                   
+            var w = DBctx.WorkAreas.AsNoTracking()
+                .OrderBy(x => x.Bereich)
+                .Select(y => new WorkArea() { WorkAreaId = y.WorkAreaId, Bereich = y.Bereich })
+                .ToList();
+            WorkAreas.AddRange(w.Prepend(new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" }));
+
         }
     }
-    public class MachineNameValidationRule:ValidationRule
+    public class MachineNameValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            
+
             if (value is string val)
             {
                 if (val.IsNullOrEmpty()) { return new ValidationResult(false, "Der Eintrag darf nicht leer sein"); }

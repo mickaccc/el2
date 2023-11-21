@@ -4,6 +4,7 @@ using System.Security.Principal;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
+using System.Linq;
 
 namespace El2Core.Converters
 {
@@ -12,18 +13,18 @@ namespace El2Core.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var principal = value as GenericPrincipal;
+            GenericPrincipal? principal = value as GenericPrincipal;
             bool IsValidUser = false;
             if (principal != null)
             {
-                foreach (string role in parameter.ToString().Split(';'))
+                foreach (var _ in from string role in parameter.ToString().Split(';')
+                                  where principal.IsInRole(role)
+                                  select new { })
                 {
-                    if (principal.IsInRole(role))
-                    {
-                        IsValidUser = true;
-                        break;
-                    }
+                    IsValidUser = true;
+                    break;
                 }
+
                 return IsValidUser ? Visibility.Visible : Visibility.Collapsed;
             }
 

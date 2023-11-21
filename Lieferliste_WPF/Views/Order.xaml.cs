@@ -14,7 +14,7 @@ namespace Lieferliste_WPF.Views
         public Order()
         {
             InitializeComponent();
-           
+
         }
 
         public Window Owner { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

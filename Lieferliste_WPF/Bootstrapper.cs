@@ -4,7 +4,6 @@ using El2Core.Utils;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using ModuleDeliverList;
 using ModuleDeliverList.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -15,7 +14,7 @@ using System.Windows;
 
 namespace Lieferliste_WPF
 {
-    class Bootstrapper : PrismBootstrapper
+    internal class Bootstrapper : PrismBootstrapper
     {
         protected override DependencyObject CreateShell()
         {
@@ -31,8 +30,8 @@ namespace Lieferliste_WPF
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-                IConfiguration  configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            IConfiguration configuration = builder.Build();
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection);
 
             containerRegistry.RegisterInstance(builderopt.Options);
@@ -48,7 +47,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterDialog<Order>();
             containerRegistry.RegisterDialog<MachineView>();
 
-            Globals gl = new Globals(Container);
+            Globals gl = new(Container);
             UserInfo u = new();
             u.Initialize(gl.PC, gl.User);
             containerRegistry.RegisterInstance(u);
@@ -58,8 +57,8 @@ namespace Lieferliste_WPF
             base.ConfigureModuleCatalog(moduleCatalog);
 
             moduleCatalog.AddModule<ModuleDeliverList.DeliverListModule>();
-            
+
         }
 
-    }  
+    }
 }

@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace El2Core.Converters
 {
-    [ValueConversion(typeof(Single),typeof(Single))]
+    [ValueConversion(typeof(Single), typeof(Single))]
     public class PlusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

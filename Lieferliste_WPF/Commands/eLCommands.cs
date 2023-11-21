@@ -8,7 +8,7 @@ namespace Lieferliste_WPF.Commands
         private static RoutedUICommand toArchive;
         private static RoutedUICommand showArchive;
         private static RoutedUICommand openExplorerCommand;
-  
+
         private static RoutedUICommand showUserMgmt;
         private static RoutedUICommand selectionChanged;
         private static RoutedUICommand rotateFriendImage180;
@@ -32,17 +32,17 @@ namespace Lieferliste_WPF.Commands
             //newFriend.InputGestures.Add(new MouseGesture(MouseAction.LeftDoubleClick, ModifierKeys.Alt | ModifierKeys.Control));
             showArchive = new RoutedUICommand("Archiv anzeigen", "NewImage", typeof(ELCommands));
             showArchive.InputGestures.Add(new KeyGesture(Key.I, ModifierKeys.Alt | ModifierKeys.Control));
-            openExplorerCommand = new RoutedUICommand("Explorer öffnen","Explorer",typeof(ELCommands));
+            openExplorerCommand = new RoutedUICommand("Explorer öffnen", "Explorer", typeof(ELCommands));
             openExplorerCommand.InputGestures.Add(new MouseGesture(MouseAction.LeftDoubleClick));
             presentText = new RoutedUICommand("Textbox vergrössern", "PresentText", typeof(ELCommands));
             presentText.InputGestures.Add(new MouseGesture(MouseAction.LeftClick));
 
             showUserMgmt = new RoutedUICommand("User editieren", "Usermgmt", typeof(ELCommands));
-            showMachinePlan = new RoutedUICommand("Maschinenzuteilung öffnen","MachinePlan",typeof (ELCommands));
-            openMachine = new RoutedUICommand("Maschine öffnen", "OpenMachine", typeof (ELCommands));
-            openMachine.InputGestures.Add(new KeyGesture (Key.M, ModifierKeys.Control));
+            showMachinePlan = new RoutedUICommand("Maschinenzuteilung öffnen", "MachinePlan", typeof(ELCommands));
+            openMachine = new RoutedUICommand("Maschine öffnen", "OpenMachine", typeof(ELCommands));
+            openMachine.InputGestures.Add(new KeyGesture(Key.M, ModifierKeys.Control));
             openMachine.InputGestures.Add(new MouseGesture(MouseAction.LeftClick, ModifierKeys.Control));
-            
+
             rotateFriendImage180 = new RoutedUICommand("Bild um 180 Grad drehen", "RotateImage180", typeof(ELCommands));
             rotateFriendImage270 = new RoutedUICommand("Bild um 270 Grad drehen", "RotateImage270", typeof(ELCommands));
             gotoNextFriend = new RoutedUICommand("Vorwärts", "GotoNextFriend", typeof(ELCommands));

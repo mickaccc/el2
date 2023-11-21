@@ -28,9 +28,8 @@ namespace El2Core.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string strValue = value as string;
-            DateTime resultDateTime;
-            if (DateTime.TryParse(strValue, out resultDateTime))
+            string? strValue = value as string;
+            if (DateTime.TryParse(strValue, out DateTime resultDateTime))
             {
                 return resultDateTime;
             }

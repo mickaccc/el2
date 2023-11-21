@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -115,8 +114,11 @@ namespace Lieferliste_WPF.Views
         /// </summary>
         public string Description
         {
-            get { return CalculatePropertyValue<AssemblyDescriptionAttribute>(propertyNameDescription, xPathDescription)
-                    ?? String.Empty; }
+            get
+            {
+                return CalculatePropertyValue<AssemblyDescriptionAttribute>(propertyNameDescription, xPathDescription)
+                    ?? String.Empty;
+            }
         }
 
         /// <summary>
@@ -124,8 +126,11 @@ namespace Lieferliste_WPF.Views
         /// </summary>
         public string Product
         {
-            get { return CalculatePropertyValue<AssemblyProductAttribute>(propertyNameProduct, xPathProduct) 
-                    ?? String.Empty; }
+            get
+            {
+                return CalculatePropertyValue<AssemblyProductAttribute>(propertyNameProduct, xPathProduct)
+                    ?? String.Empty;
+            }
         }
 
         /// <summary>
@@ -133,8 +138,11 @@ namespace Lieferliste_WPF.Views
         /// </summary>
         public string Copyright
         {
-            get { return CalculatePropertyValue<AssemblyCopyrightAttribute>(propertyNameCopyright, xPathCopyright) 
-                    ?? String.Empty; }
+            get
+            {
+                return CalculatePropertyValue<AssemblyCopyrightAttribute>(propertyNameCopyright, xPathCopyright)
+                    ?? String.Empty;
+            }
         }
 
         /// <summary>
@@ -142,8 +150,11 @@ namespace Lieferliste_WPF.Views
         /// </summary>
         public string Company
         {
-            get { return CalculatePropertyValue<AssemblyCompanyAttribute>(propertyNameCompany, xPathCompany)
-                    ?? String.Empty; }
+            get
+            {
+                return CalculatePropertyValue<AssemblyCompanyAttribute>(propertyNameCompany, xPathCompany)
+                    ?? String.Empty;
+            }
         }
 
         /// <summary>

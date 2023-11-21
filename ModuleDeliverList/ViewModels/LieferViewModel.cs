@@ -23,7 +23,7 @@ namespace ModuleDeliverList.ViewModels
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     internal class LieferViewModel : ViewModelBase
     {
-        
+
         public ICollectionView OrdersView { get; private set; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
         //public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
@@ -64,7 +64,7 @@ namespace ModuleDeliverList.ViewModels
         public IApplicationCommands ApplicationCommands
         {
             get => _applicationCommands;
-            set 
+            set
             {
                 if (_applicationCommands != value)
                     _applicationCommands = value;
@@ -72,8 +72,8 @@ namespace ModuleDeliverList.ViewModels
             }
         }
         public NotifyTaskCompletion<ICollectionView>? OrderTask { get; private set; }
-        
-        internal CollectionViewSource OrdersViewSource {get; private set;} = new();
+
+        internal CollectionViewSource OrdersViewSource { get; private set; } = new();
 
         public enum CmbFilter
         {
@@ -93,7 +93,7 @@ namespace ModuleDeliverList.ViewModels
         }
         public CmbFilter SelectedFilter
         {
-           
+
             get => _cmbFilter;
             set
             {
@@ -118,7 +118,7 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
-        
+
         public LieferViewModel(IContainerProvider container,
             IApplicationCommands applicationCommands)
         {
@@ -126,37 +126,37 @@ namespace ModuleDeliverList.ViewModels
             DBctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
-            
+
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
             _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
-           
+
         }
 
         private bool OrdersView_FilterPredicate(object value)
         {
- 
-                var ord = (Vorgang)value;
 
-                var accepted = true;
+            var ord = (Vorgang)value;
 
-                if (!string.IsNullOrWhiteSpace(_searchFilterText))
-                {
-                    _searchFilterText = _searchFilterText.ToUpper();
-                    if (!(accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
-                        if (!(accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
-                            accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
-                }
-                if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = ord.Ausgebl;
-                if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
-                if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text.ToUpper().Contains("STARTEN");
-                if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
-                if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
-                if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
+            var accepted = true;
 
-                if (accepted && _searchFilterProj != string.Empty) accepted = ord.AidNavigation.ProId == _searchFilterProj;
-                return accepted;
+            if (!string.IsNullOrWhiteSpace(_searchFilterText))
+            {
+                _searchFilterText = _searchFilterText.ToUpper();
+                if (!(accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
+                    if (!(accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
+                        accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
+            }
+            if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = ord.Ausgebl;
+            if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
+            if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text.ToUpper().Contains("STARTEN");
+            if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
+            if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
+            if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
+
+            if (accepted && _searchFilterProj != string.Empty) accepted = ord.AidNavigation.ProId == _searchFilterProj;
+            return accepted;
 
         }
 
@@ -173,7 +173,7 @@ namespace ModuleDeliverList.ViewModels
 
         private void OnFilter(object obj)
         {
-            _cmbFilter = (CmbFilter) obj;
+            _cmbFilter = (CmbFilter)obj;
             OrdersView.Refresh();
         }
         private void OnArchivateExecuted(object obj)
@@ -197,7 +197,7 @@ namespace ModuleDeliverList.ViewModels
         }
 
         private void OnSaveExecuted(object obj)
-        {           
+        {
             DBctx.SaveChangesAsync();
         }
         private bool OnSaveCanExecute(object arg)
@@ -205,7 +205,7 @@ namespace ModuleDeliverList.ViewModels
 
             try
             {
-                
+
                 return DBctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
@@ -220,14 +220,14 @@ namespace ModuleDeliverList.ViewModels
         }
         private void OnDescSortExecuted(object parameter)
         {
-            
+
             if (parameter is LieferlisteControl lvc)
             {
                 OrdersViewSource.SortDescriptions.Clear();
                 OrdersViewSource.SortDescriptions.Add(new SortDescription(lvc.HasMouseOver, ListSortDirection.Descending));
                 OrdersView.Refresh();
             }
-            
+
         }
         private bool OnAscSortCanExecute(Object arg)
         { return true; }
@@ -243,7 +243,7 @@ namespace ModuleDeliverList.ViewModels
                 OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
                 var uiContext = SynchronizationContext.Current;
                 uiContext?.Send(x => OrdersView.Refresh(), null);
-            }          
+            }
         }
         #endregion
         public string HasMouse;
@@ -267,20 +267,20 @@ namespace ModuleDeliverList.ViewModels
                 "txtRessTo" => "Vorgangs.RidNavigation.RessName",
                 _ => string.Empty,
             };
-            
-            return v;           
+
+            return v;
         }
 
         public async Task<ICollectionView> LoadDataAsync()
         {
             _projects.Add(string.Empty);
-             var a = DBctx.OrderRbs
-                .Include(v => v.Vorgangs)
-                .ThenInclude(r => r.RidNavigation)
-                .Include(m => m.MaterialNavigation)
-                .Include(d => d.DummyMatNavigation)
-                .Where(x => x.Abgeschlossen == false)
-                .ToList();
+            var a = DBctx.OrderRbs
+               .Include(v => v.Vorgangs)
+               .ThenInclude(r => r.RidNavigation)
+               .Include(m => m.MaterialNavigation)
+               .Include(d => d.DummyMatNavigation)
+               .Where(x => x.Abgeschlossen == false)
+               .ToList();
             await Task.Factory.StartNew(() =>
             {
                 HashSet<Vorgang> result = new();
@@ -306,7 +306,7 @@ namespace ModuleDeliverList.ViewModels
                         }
                         if (relev)
                         {
-                            
+
                             foreach (var x in ol.Where(x => x.AidNavigation.ProId != null))
                             {
                                 _projects.Add(x.AidNavigation.ProId ?? string.Empty);
@@ -314,17 +314,17 @@ namespace ModuleDeliverList.ViewModels
                             foreach (var r in ol.Where(x => x.Aktuell))
                             {
                                 result.Add(r);
-                                
+
                             }
                         }
                     }
-                } 
-                _orders.AddRange(result.OrderBy(x => x.SpaetEnd));                      
-                    
+                }
+                _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
+
                 OrdersView = CollectionViewSource.GetDefaultView(_orders);
                 OrdersView.Filter += OrdersView_FilterPredicate;
             });
             return OrdersView;
-        } 
+        }
     }
 }

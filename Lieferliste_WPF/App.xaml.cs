@@ -1,20 +1,4 @@
-﻿using El2Core.Models;
-using El2Core.Utils;
-using Lieferliste_WPF.Interfaces;
-using Lieferliste_WPF.Properties;
-using Lieferliste_WPF.Views;
-using Lieferliste_WPF.ViewModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.IO;
-using System.Windows;
-using Prism.Ioc;
-using Prism.Unity;
-using Prism.Modularity;
-using System.ComponentModel;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using System.Windows;
 
 namespace Lieferliste_WPF
 {

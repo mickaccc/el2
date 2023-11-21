@@ -4,7 +4,7 @@ using System.Windows.Controls;
 namespace Lieferliste_WPF.Views
 
 {
-    sealed class CloseableTabControl:TabControl
+    internal sealed class CloseableTabControl : TabControl
     {
         protected override DependencyObject GetContainerForItemOverride()
         {

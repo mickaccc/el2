@@ -7,13 +7,13 @@ using System.Windows.Media;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class UserSettingsViewModel : ViewModelBase
+    internal class UserSettingsViewModel : ViewModelBase
     {
-        string _ExplorerPathPattern;
-        ObservableCollection<string> _ExplorerFilter = new();
+        private string _ExplorerPathPattern;
+        private ObservableCollection<string> _ExplorerFilter = new();
         public ICollectionView ExplorerFilter { get; }
         private IContainerExtension _container;
-        string _ExplorerRoot;
+        private string _ExplorerRoot;
         public Brush OutOfDate { get; set; }
         public Brush InOfDate { get; set; }
         public string Title { get; } = "Einstellungen";
@@ -22,10 +22,10 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             var br = new BrushConverter();
             ExplorerPathPattern = Properties.Settings.Default.ExplorerPath;
-     
-            ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);          
+
+            ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
             ExplorerRoot = Properties.Settings.Default.ExplorerRoot;
-  
+
         }
         public string ExplorerPathPattern
         {
@@ -46,7 +46,8 @@ namespace Lieferliste_WPF.ViewModels
             set
             {
                 if (_ExplorerRoot != value)
-                { _ExplorerRoot = value;
+                {
+                    _ExplorerRoot = value;
                     NotifyPropertyChanged(() => ExplorerExt);
                 }
             }

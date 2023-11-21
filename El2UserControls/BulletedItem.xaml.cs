@@ -11,8 +11,8 @@ namespace El2UserControls
     {
 
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("BulletText", typeof(string), typeof(BulletedItem));
-        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("BulletColor", typeof (Color), typeof(BulletedItem),
-            new PropertyMetadata(Color.FromRgb(255,255,255)));
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("BulletColor", typeof(Color), typeof(BulletedItem),
+            new PropertyMetadata(Color.FromRgb(255, 255, 255)));
         public string BulletText
         {
             get { return (string)GetValue(TextProperty); }
@@ -27,7 +27,7 @@ namespace El2UserControls
         public BulletedItem()
         {
             InitializeComponent();
-            
+
         }
     }
 }

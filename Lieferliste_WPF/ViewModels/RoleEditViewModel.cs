@@ -1,9 +1,10 @@
 ﻿using El2Core.Models;
-using El2Core.ViewModelBase;
 using El2Core.Utils;
+using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,15 +16,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Prism.Regions;
-using Prism.Ioc;
 
 namespace Lieferliste_WPF.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
     public class RoleEditViewModel : ViewModelBase, IDropTarget
     {
-        public string Title { get; } = "Rollen Zuteilung"; 
+        public string Title { get; } = "Rollen Zuteilung";
         public ICommand SelectionChangedCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
@@ -32,11 +31,11 @@ namespace Lieferliste_WPF.ViewModels
         private static bool _hasChanges = false;
         private readonly IContainerExtension _container;
         public static ObservableCollection<Role>? Roles { get; } = new();
-        
+
         public static ObservableCollection<Permission> PermissionsAvail { get; } = new();
         public static ObservableCollection<PermissionRole> PermissionsInter { get; } = new();
         private static readonly List<Permission> _permissionsAll = new();
-        
+
 
 
 
@@ -49,7 +48,7 @@ namespace Lieferliste_WPF.ViewModels
             SelectionChangedCommand = new ActionCommand(OnSelectionChangeExecuted, OnSelectionChangeCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
-            
+
             _roleCV.MoveCurrentToFirst();
             PermissionsInter.CollectionChanged += OnCollectionChanged;
 
@@ -77,7 +76,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnCloseExecuted(object obj)
         {
-            if(obj is Window ob)
+            if (obj is Window ob)
             {
                 using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
@@ -90,7 +89,7 @@ namespace Lieferliste_WPF.ViewModels
                     }
                 }
                 ob.Close();
-               
+
             }
         }
 
@@ -129,7 +128,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private static void OnSelectionChangeExecuted(object obj)
         {
-            
+
             if (obj is Role us)
             {
                 PermissionsInter.Clear();
@@ -141,35 +140,35 @@ namespace Lieferliste_WPF.ViewModels
                         PermissionKey = p.PermissionKey,
                         RoleKey = p.RoleKey,
                     });
-   
+
                 }
                 PermissionsAvail.Clear();
-               
-                foreach(var p in _permissionsAll.ExceptBy(PermissionsInter.Select(o => o.PermissionKey), o => o.PKey))
+
+                foreach (var p in _permissionsAll.ExceptBy(PermissionsInter.Select(o => o.PermissionKey), o => o.PKey))
                 {
 
-                        PermissionsAvail.Add(new Permission()
-                        {
-                            PKey = p.PKey,
-                            Description = p.Description,
-                            Categorie = p.Categorie
-                        });
+                    PermissionsAvail.Add(new Permission()
+                    {
+                        PKey = p.PKey,
+                        Description = p.Description,
+                        Categorie = p.Categorie
+                    });
                 }
                 _hasChanges = false;
-                                         
-            }         
+
+            }
         }
 
         private void LoadData()
         {
             using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-               var r = Dbctx.Roles
-                .Include(x => x.PermissionRoles)
-                .ThenInclude(x => x.PermissionKeyNavigation)
-                .ToList();
+                var r = Dbctx.Roles
+                 .Include(x => x.PermissionRoles)
+                 .ThenInclude(x => x.PermissionKeyNavigation)
+                 .ToList();
 
-                foreach(var role  in r)
+                foreach (var role in r)
                 {
                     Roles.Add(role);
                 }
@@ -193,8 +192,8 @@ namespace Lieferliste_WPF.ViewModels
             Role? r = _roleCV.CurrentItem as Role;
             if (dropInfo.Data is Permission p)
             {
-                
-                if (r != null) 
+
+                if (r != null)
                 {
                     PermissionsInter.Add(new PermissionRole() { Created = DateTime.Now, PermissionKey = p.PKey, RoleKey = r.Id });
                     PermissionsAvail.Remove(p);
@@ -211,11 +210,11 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
     }
-    public class RoleNameValidationRule:ValidationRule
+    public class RoleNameValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            
+
             if (value is string val)
             {
                 if (val.IsNullOrEmpty()) { return new ValidationResult(false, "Der Eintrag darf nicht leer sein"); }

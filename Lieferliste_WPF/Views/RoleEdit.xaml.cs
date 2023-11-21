@@ -36,7 +36,7 @@ namespace Lieferliste_WPF.Views
 
         private void ListUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
+
         }
 
 
@@ -55,8 +55,8 @@ namespace Lieferliste_WPF.Views
             { e.Cancel = true; }
             if (e.PropertyName == "PermissionKeyNavigation")
             {
-                    var pr = e.PropertyType.GetField("Description");
-                    Debug.WriteLine(pr);
+                var pr = e.PropertyType.GetField("Description");
+                Debug.WriteLine(pr);
             }
         }
     }

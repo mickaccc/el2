@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
 namespace El2Core.Converters
 {
-    [ValueConversion (typeof(DBNull), typeof(int))]
+    [ValueConversion(typeof(DBNull), typeof(int))]
     public class NullConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

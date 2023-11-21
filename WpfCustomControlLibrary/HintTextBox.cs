@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -42,14 +41,14 @@ namespace WpfCustomControlLibrary
         public static new readonly DependencyProperty FontSizeProperty;
         public static new readonly DependencyProperty TextProperty;
 
-        void OnTextChanged(object sender, TextChangedEventArgs e) { ChangeText();  }
+        private void OnTextChanged(object sender, TextChangedEventArgs e) { ChangeText(); }
         private TextBox _textBox;
         private TextBlock _placeHolder;
-      
+
 
         static HintTextBox()
         {
-            
+
             DefaultStyleKeyProperty.OverrideMetadata(typeof(HintTextBox), new FrameworkPropertyMetadata(typeof(HintTextBox)));
             HintTextProperty = DependencyProperty.Register(nameof(HintText),
                 typeof(string), typeof(HintTextBox),
@@ -123,15 +122,16 @@ namespace WpfCustomControlLibrary
             _textBox = Template.FindName("PART_TextBox", this) as TextBox;
             _placeHolder = Template.FindName("PART_PlaceHolder", this) as TextBlock;
 
-            if (_textBox != null) {
+            if (_textBox != null)
+            {
                 ChangeText();
-                _textBox.TextChanged += OnTextChanged;               
+                _textBox.TextChanged += OnTextChanged;
             }
-            
+
         }
         private void ChangeText()
         {
-            if(string.IsNullOrEmpty(_textBox.Text))
+            if (string.IsNullOrEmpty(_textBox.Text))
             {
                 _placeHolder.Visibility = Visibility.Visible;
             }

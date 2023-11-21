@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:El2UserControls"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
-    xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:dd="urn:gong-wpf-dragdrop" 
              x:Class="El2UserControls.MachineUserControl"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="150" Unloaded="UserControl_Unloaded" >
+             d:DesignHeight="450" d:DesignWidth="250" Unloaded="UserControl_Unloaded" >
 
     <UserControl.Resources>
         <conv:ToIntConverter x:Key="ToIntConverter"/>
@@ -17,38 +17,43 @@
         <conv:TTNR_Converter x:Key="TTNR"/>
 
     </UserControl.Resources>
-
+    <Border BorderBrush="Black" BorderThickness="1">
     <Grid x:Name="grid" DataContext="{Binding}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Border BorderBrush="Black" BorderThickness="2">
-            <Grid Background="RosyBrown">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border CornerRadius="5" ClipToBounds="True" Background="RosyBrown"> 
+            <Grid >
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="30"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Button x:Name="HideDetails" Click="HideDetails_Click"  HorizontalAlignment="Left"  Margin="2"
-                    Content="{materialdesign:PackIcon Kind=Hide}"  VerticalAlignment="Center"/>
+                    <Button x:Name="HideDetails" Click="HideDetails_Click"  HorizontalAlignment="Left" Padding="2"
+                        Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialdesign:PackIcon Kind="Hide" Width="16" Height="16" />
+                    </Button>
 
-
-                <Button Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2"
+                    <Button Grid.Row="1" HorizontalAlignment="Left" Padding="2"
                          ToolTip="Alternativ: Strg + LMB oder Strg + M"
                         Command="{Binding OpenMachineCommand, Mode=OneWay}"
-                        CommandParameter="{Binding InventNo}" Content="{materialdesign:PackIcon Kind=Details}"/>
+                        CommandParameter="{Binding InventNo}"
+                        Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialdesign:PackIcon Kind="Details" Width="16" Height="16"/>
+                    </Button>
 
                 <TextBlock Text="{Binding Name}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding InventNo}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Height="Auto"/>
-                         
+                
             </Grid>
-        </Border>
-        <DataGrid x:Name="Planed" ItemsSource="{Binding ProcessesCV}"  AutoGenerateColumns="False" Grid.Row="1" CanUserSortColumns="False"
+            </Border>
+            <DataGrid x:Name="Planed" Grid.Row="1" ItemsSource="{Binding ProcessesCV}"  AutoGenerateColumns="False"  CanUserSortColumns="False"
                   RowDetailsVisibilityMode="VisibleWhenSelected" CanUserAddRows="False" CanUserDeleteRows="False"
                   IsSynchronizedWithCurrentItem="True"
                   dd:DragDrop.IsDragSource="True"
@@ -171,4 +176,5 @@
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
+    </Border>
 </UserControl>

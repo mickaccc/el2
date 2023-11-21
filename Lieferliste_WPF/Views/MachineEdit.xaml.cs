@@ -33,12 +33,12 @@ namespace Lieferliste_WPF.Views
 
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if(e.PropertyName == "RessourceId"
+            if (e.PropertyName == "RessourceId"
                 || e.PropertyName == "Sort")
             {
                 e.Cancel = true;
             }
-            else if(e.PropertyName == "RessName")
+            else if (e.PropertyName == "RessName")
             {
                 e.Column.Header = "Name";
             }

@@ -9,8 +9,8 @@ namespace ModuleDeliverList.Views
     {
 
         public Liefer()
-        {         
-            InitializeComponent();                    
+        {
+            InitializeComponent();
         }
 
         private void ClearOutlinedComboBox_Click(object sender, System.Windows.RoutedEventArgs e)

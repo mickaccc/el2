@@ -1,6 +1,4 @@
-﻿using Lieferliste_WPF.ViewModels;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace Lieferliste_WPF.Views
 {
@@ -12,7 +10,7 @@ namespace Lieferliste_WPF.Views
         public UserSettings()
         {
             InitializeComponent();
-            
+
         }
 
 

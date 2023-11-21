@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 
 namespace Lieferliste_WPF.Utilities
@@ -80,12 +75,12 @@ namespace Lieferliste_WPF.Utilities
         public int CurrentYear
         {
             get { return year; }
-            set { year = value;}
+            set { year = value; }
         }
         public String Locale
         {
             get { return locale; }
-            set {  locale = value; }
+            set { locale = value; }
         }
         public static HolydayLogic GetInstance(int year, String locale = "")
         {

@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace Lieferliste_WPF.Utilities
 {
-    class SortAdorner : Adorner
+    internal class SortAdorner : Adorner
     {
         private static Geometry ascGeometry =
                 Geometry.Parse("M 0 4 L 3.5 0 L 7 4 Z");

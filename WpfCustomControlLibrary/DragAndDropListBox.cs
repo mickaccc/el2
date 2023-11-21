@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows;
 
 namespace WpfCustomControlLibrary
 {
-    public class DragAndDropListBox<T> :ListBox
+    public class DragAndDropListBox<T> : ListBox
         where T : class
     {
-        
+
         private Point _dragStartPoint;
 
         private P FindVisualParent<P>(DependencyObject child)
@@ -23,8 +20,7 @@ namespace WpfCustomControlLibrary
             if (parentObject == null)
                 return null;
 
-            P parent = parentObject as P;
-            if (parent != null)
+            if (parentObject is P parent)
                 return parent;
 
             return FindVisualParent<P>(parentObject);
@@ -59,7 +55,6 @@ namespace WpfCustomControlLibrary
                 (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
                     Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
             {
-                var lb = sender as ListBox;
                 var lbi = FindVisualParent<ListBoxItem>(((DependencyObject)e.OriginalSource));
                 if (lbi != null)
                 {
@@ -75,10 +70,10 @@ namespace WpfCustomControlLibrary
 
         private void ListBoxItem_Drop(object sender, DragEventArgs e)
         {
-            if (sender is ListBoxItem)
+            if (sender is ListBoxItem item)
             {
                 var source = e.Data.GetData(typeof(T)) as T;
-                var target = ((ListBoxItem)(sender)).DataContext as T;
+                var target = item.DataContext as T;
 
                 int sourceIndex = this.Items.IndexOf(source);
                 int targetIndex = this.Items.IndexOf(target);
@@ -91,7 +86,7 @@ namespace WpfCustomControlLibrary
         {
             if (sourceIndex < targetIndex)
             {
-                var items = this.DataContext as IList<T>;
+                IList<T>? items = this.DataContext as IList<T>;
                 if (items != null)
                 {
                     items.Insert(targetIndex + 1, source);
@@ -100,8 +95,7 @@ namespace WpfCustomControlLibrary
             }
             else
             {
-                var items = this.DataContext as IList<T>;
-                if (items != null)
+                if (this.DataContext is IList<T> items)
                 {
                     int removeIndex = sourceIndex + 1;
                     if (items.Count + 1 > removeIndex)

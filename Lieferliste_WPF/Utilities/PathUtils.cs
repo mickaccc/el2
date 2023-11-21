@@ -1,12 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Lieferliste_WPF.Utilities
 {
@@ -26,15 +20,15 @@ namespace Lieferliste_WPF.Utilities
             }
             return sb.ToString();
         }
-        public static string PathProvider(string root,string path)
+        public static string PathProvider(string root, string path)
         {
             string resPath = Path.Combine(root);
 
-            if(!Directory.Exists(resPath)) { return String.Empty; }
+            if (!Directory.Exists(resPath)) { return String.Empty; }
 
             string[] subdir = path.Split('\\');
-            
-            foreach(var subdir2 in subdir)
+
+            foreach (var subdir2 in subdir)
             {
                 if (Directory.Exists(Path.Combine(resPath, subdir2)) && subdir2 != String.Empty)
                 {
