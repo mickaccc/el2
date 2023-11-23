@@ -10,7 +10,7 @@
              d:DesignHeight="85" d:DesignWidth="100" Name="cmt">
     <UserControl.Resources>
         <conv:NegateBoolConverter x:Key="neg"/>
-        <local:CommentConverter x:Key="CommentConv"/>
+        <local:CommentConvert x:Key="CommentConv"/>
         <sys:Boolean x:Key="TrueValue">True</sys:Boolean>
         <sys:Boolean x:Key="FalseValue">False</sys:Boolean>
     </UserControl.Resources>

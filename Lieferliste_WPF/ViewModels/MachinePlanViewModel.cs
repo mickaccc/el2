@@ -180,11 +180,9 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnTextSearch(object commandParameter)
         {
-            if (commandParameter is TextChangedEventArgs change)
+            if (commandParameter is string change)
             {
-                TextBox tb = (TextBox)change.OriginalSource;
-
-                _searchFilterText = tb.Text;
+                _searchFilterText = change;
                 ProcessCV.Refresh();
 
             }

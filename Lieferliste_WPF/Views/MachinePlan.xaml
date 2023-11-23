@@ -57,7 +57,7 @@
                      Style="{StaticResource MaterialDesignFloatingHintTextBox}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="TextChanged">
-                        <i:InvokeCommandAction Command="{Binding TextSearchCommand}" PassEventArgsToCommand="True"/>
+                        <i:InvokeCommandAction Command="{Binding TextSearchCommand}" CommandParameter="{Binding Path=Text, ElementName=searchTextBox}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </TextBox>
