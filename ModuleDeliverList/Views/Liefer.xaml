@@ -95,12 +95,11 @@
                    Visibility="{Binding OrderTask.IsFaulted, Converter={StaticResource BoolToVis}}"/>
     </StackPanel>
 
-    <ScrollViewer Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}" >
 
-        <ItemsControl x:Name="Lieferlist" 
+        <ListBox x:Name="Lieferlist" Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}"
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                           ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrderTask.Result}"
-                      VirtualizingStackPanel.VirtualizationMode="Recycling">
+                          HorizontalContentAlignment="Stretch" >
 
             <!--<ItemsControl.ItemsSource>
                     <PriorityBinding>
@@ -110,10 +109,10 @@
 
                 </ItemsControl.ItemsSource>-->
 
-            <ItemsControl.ItemTemplate>
+            <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border x:Name="border" Height="100" CornerRadius="5" BorderBrush="Black" Background="LightGreen"
-                            BorderThickness="1" Margin="2" >
+                            BorderThickness="1" Margin="-5">
 
                         <userControls:LieferlisteControl x:Name="ucLiefer"  
                             Aid="{Binding Aid}"
@@ -148,7 +147,7 @@
                         </userControls:LieferlisteControl>
                     </Border>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </ScrollViewer>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
 </Grid>
