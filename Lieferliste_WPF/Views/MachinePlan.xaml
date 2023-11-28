@@ -63,24 +63,23 @@
             </TextBox>
             
         </DockPanel>
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="machines" ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                          ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding Machines}" >
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel x:Name="stackPanel" Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <control:MachineUserControl Height="{Binding ActualHeight, ElementName=stackPanel, Mode=OneWay}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
 
-            </ItemsControl>
-        </ScrollViewer>
+        <ListBox x:Name="machines" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.Row="1"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding Machines}" >
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel x:Name="stackPanel" IsItemsHost="True" Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <control:MachineUserControl Height="{Binding ActualHeight, ElementName=stackPanel, Mode=OneWay}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
         <Border Grid.Column="1" Grid.Row="0" BorderBrush="IndianRed" BorderThickness="2" Grid.RowSpan="2">
             <ListBox ItemsSource="{Binding ParkingCV}" x:Name="parking"
                      dd:DragDrop.IsDragSource="True"
