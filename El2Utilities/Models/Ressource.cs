@@ -25,6 +25,8 @@ public partial class Ressource
 
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
+    public virtual ICollection<RessourceUser> RessourceUsers { get; set; } = new List<RessourceUser>();
+
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 
     public virtual WorkArea? WorkArea { get; set; }

@@ -66,7 +66,7 @@
                               CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"/>
             </DataGrid.InputBindings>
             <DataGrid.ContextMenu>
-                <ContextMenu Width="Auto">
+                <ContextMenu Width="Auto" >
                     <MenuItem Header="Auftrag öffnen" Command="{Binding ApplicationCommands.OpenOrderCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
                         <MenuItem.Icon>
@@ -127,27 +127,24 @@
                             <local:BulletedItem BulletColor="Yellow"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="blauer Punkt" Command="{Binding SetMarkerCommand}"
+                        <MenuItem Header="blauer Punkt" Command="{Binding SetMarkerCommand}"
                               x:Name="Bullet4" >
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <local:BulletedItem BulletColor="Blue"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-
-
-                </ContextMenu>
+                            <MenuItem.CommandParameter>
+                                <MultiBinding Converter="{StaticResource MultiObject}">
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
+                                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedItem"/>
+                                </MultiBinding>
+                            </MenuItem.CommandParameter>
+                            <MenuItem.Icon>
+                                <local:BulletedItem BulletColor="Blue"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
             </DataGrid.ContextMenu>
 
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
-                    <Grid Background="LightBlue">
-
+                        <Grid Background="LightBlue">
                         <StackPanel >
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>

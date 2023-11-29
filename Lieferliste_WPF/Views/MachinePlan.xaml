@@ -19,13 +19,11 @@
         <conv:TTNR_Converter x:Key="ttnr"/>
         <conv:MultiObjectConverter x:Key="multi"/>
         <conv:PlusConverter x:Key="plus"/>
-        <CollectionViewSource x:Key="UnPlanedCVS" Filter="UnPlanedCVS_Filter"/>
+
     </UserControl.Resources>
  
     <Grid x:Name="Main" >
-        <Grid.Resources>
-            <CollectionViewSource x:Key="UnPlanedCVS" Source="{Binding ProcessCV}" Filter="UnPlanedCVS_Filter"/>
-        </Grid.Resources>
+ 
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -85,6 +83,9 @@
                      dd:DragDrop.IsDragSource="True"
                      dd:DragDrop.IsDropTarget="True"
                      dd:DragDrop.DropHandler="{Binding}">
+                <ListBox.Background>
+                    <ImageBrush ImageSource="/Images/parking.png" />
+                </ListBox.Background>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" >

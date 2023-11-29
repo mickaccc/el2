@@ -56,7 +56,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private string _masterFilterText;
+        private int _currentWorkArea;
         private string? _searchFilterText;
 
 
@@ -79,8 +79,8 @@ namespace Lieferliste_WPF.ViewModels
             ProcessViewSource.Filter += ProcessCV_Filter;
 
             ParkingViewSource.Source = Priv_parking;
-            ParkingCV.Filter = f => (f as Vorgang)?.RidNavigation?.WorkAreaId == WorkAreas?.First().WorkAreaId;
-            _masterFilterText = WorkAreas?.First().WorkAreaId.ToString() ?? "";
+            ParkingCV.Filter = f => (f as Vorgang)?.Rid == WorkAreas?.First().WorkAreaId * -1;
+            _currentWorkArea = WorkAreas?.First().WorkAreaId ?? 0;
             ProcessCV.Refresh();
 
         }
@@ -88,7 +88,6 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnSaveCanExecute(object arg)
         {
             return _DbCtx.ChangeTracker.HasChanges();
-
         }
 
         private void OnSaveExecuted(object obj)
@@ -171,10 +170,11 @@ namespace Lieferliste_WPF.ViewModels
                 if (sel.AddedItems[0] is WorkArea wa)
                 {
                     _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == wa.WorkAreaId;
+                    ParkingCV.Filter = f => (f as Vorgang)?.Rid == wa.WorkAreaId * -1;
 
-                    _masterFilterText = wa.WorkAreaId.ToString();
+                    _currentWorkArea = wa.WorkAreaId;
                     ProcessCV.Refresh();
-
+                    ParkingCV.Refresh();
                 }
             }
         }
@@ -184,14 +184,13 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _searchFilterText = change;
                 ProcessCV.Refresh();
-
             }
         }
         private void ProcessCV_Filter(object sender, FilterEventArgs e)
         {
             Vorgang v = (Vorgang)e.Item;
             e.Accepted = false;
-            var l = Machines.FindAll(x => x.WorkArea.WorkAreaId.ToString() == _masterFilterText);
+            var l = Machines.FindAll(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
             if (l.Any(x => x.RID == v.ArbPlSapNavigation?.RessourceId))
             {
                 e.Accepted = true;
@@ -222,19 +221,27 @@ namespace Lieferliste_WPF.ViewModels
 
         {
             string? name = dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) as string;
-            if (dropInfo.Data is Vorgang vrg)
+            try
             {
-                if (name == "parking")
+                if (dropInfo.Data is Vorgang vrg)
                 {
-                    vrg.Rid = -1;
+                    if (name == "parking")
+                    {
+                        vrg.Rid = _currentWorkArea * -1;
+                    }
+                    else
+                    {
+                        vrg.Rid = null;
+                    }
+                    ((ListCollectionView)dropInfo.DragInfo.SourceCollection).Remove(vrg);
+                    ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
+                    ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
                 }
-                else
-                {
-                    vrg.Rid = null;
-                }
-                ((ListCollectionView)dropInfo.DragInfo.SourceCollection).Remove(vrg);
-                ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
-                ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.Message,"Method Drop",MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

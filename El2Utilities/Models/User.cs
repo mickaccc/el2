@@ -23,6 +23,8 @@ public partial class User
 
     public bool? Exited { get; set; }
 
+    public virtual ICollection<RessourceUser> RessourceUsers { get; set; } = new List<RessourceUser>();
+
     public virtual ICollection<UserCost> UserCosts { get; set; } = new List<UserCost>();
 
     public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();

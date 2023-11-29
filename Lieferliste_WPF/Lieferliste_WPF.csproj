@@ -75,6 +75,7 @@
     <None Remove="Images\minus32.png" />
     <None Remove="Images\multiply-1.png" />
     <None Remove="Images\OrangeCross32.png" />
+    <None Remove="Images\parking.png" />
     <None Remove="Images\paste-from-clipboard.png" />
     <None Remove="Images\paste.png" />
     <None Remove="Images\paste16.png" />
@@ -192,6 +193,7 @@
     <Resource Include="Images\minus32.png" />
     <Resource Include="Images\multiply-1.png" />
     <Resource Include="Images\OrangeCross32.png" />
+    <Resource Include="Images\parking.png" />
     <Resource Include="Images\paste-from-clipboard.png" />
     <Resource Include="Images\paste.png" />
     <Resource Include="Images\paste16.png" />

@@ -15,5 +15,6 @@
         public const string Archiv = "ARCHIV";
         public const string Order = "OO00";
         public const string OpenExpl = "EXPL00";
+        public const string DeArchivate = "ARCHIVATE0";
     }
 }

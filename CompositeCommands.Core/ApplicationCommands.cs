@@ -23,6 +23,11 @@ namespace CompositeCommands.Core
         {
             get { return _archivateCommand; }
         }
+        private CompositeCommand _deArchivateCommand = new();
+        public CompositeCommand DeArchivateCommand
+        {
+            get { return _deArchivateCommand; }
+        }
         private CompositeCommand _openOrderCommand = new();
         public CompositeCommand OpenOrderCommand
         {

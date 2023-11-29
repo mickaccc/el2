@@ -211,7 +211,7 @@
 
                     <MenuItem Header="Hilfe" >
                         <MenuItem Header="About" Click="About_Click"/>
-                        <MenuItem Header="Archiv" />
+                        <MenuItem Header="Archiv" Command="{Binding OpenArchiveCommand}" />
                     </MenuItem>
                 </Menu>
             </StackPanel>

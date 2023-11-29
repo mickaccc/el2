@@ -31,6 +31,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<RessourceCostUnit> RessourceCostUnits { get; set; }
 
+    public virtual DbSet<RessourceUser> RessourceUsers { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<TblDummy> TblDummies { get; set; }
@@ -51,7 +53,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<WorkSap> WorkSaps { get; set; }
 
-     protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Costunit>(entity =>
         {
@@ -213,6 +216,25 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasConstraintName("FK_RessourceCostUnit_Ressource");
         });
 
+        modelBuilder.Entity<RessourceUser>(entity =>
+        {
+            entity.HasKey(e => new { e.UsId, e.Rid });
+
+            entity.ToTable("RessourceUser");
+
+            entity.Property(e => e.UsId)
+                .HasMaxLength(255)
+                .HasColumnName("UsID");
+
+            entity.HasOne(d => d.RidNavigation).WithMany(p => p.RessourceUsers)
+                .HasForeignKey(d => d.Rid)
+                .HasConstraintName("FK_RessourceUser_Ressource");
+
+            entity.HasOne(d => d.Us).WithMany(p => p.RessourceUsers)
+                .HasForeignKey(d => d.UsId)
+                .HasConstraintName("FK_RessourceUser_User");
+        });
+
         modelBuilder.Entity<Role>(entity =>
         {
             entity.Property(e => e.Id).HasColumnName("id");
@@ -259,7 +281,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.ToTable("User");
 
             entity.Property(e => e.UserIdent).HasMaxLength(255);
-            entity.Property(e => e.Exited).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Exited).HasDefaultValue(false);
             entity.Property(e => e.UsrEmail).HasMaxLength(50);
             entity.Property(e => e.UsrGroup).HasMaxLength(50);
             entity.Property(e => e.UsrInfo).HasMaxLength(50);

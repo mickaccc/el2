@@ -31,7 +31,7 @@ namespace El2Core.Converters
         }
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            return (value as string).Replace(".", "");
         }
     }
 }
