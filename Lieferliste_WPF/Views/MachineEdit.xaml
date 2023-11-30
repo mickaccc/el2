@@ -12,7 +12,7 @@
     
     x:Class="Lieferliste_WPF.Views.MachineEdit"
         mc:Ignorable="d"
-         MinHeight="350" MinWidth="800"   x:Name="MachineEditor">
+         MinHeight="350" MinWidth="800"   x:Name="MachineEditor" Tag="{Binding Title}">
     <Grid.Resources>
         <conv:NullConverter x:Key="NullConv"/>
     </Grid.Resources>
@@ -27,18 +27,6 @@
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding RessourcesCV}" AlternatingRowBackground="LightGray"
                   AutoGenerateColumns="False" GridLinesVisibility="Vertical">
-            <DataGrid.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Background="Black" Foreground="White">
-                                Inventarnummer: <Run Text="{Binding Path=Name, Mode=OneWay}"/>
-                                (Anzahl: <Run Text="{Binding Path=ItemCount, Mode=OneWay}"/>)
-                            </TextBlock>
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </DataGrid.GroupStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" FontWeight="Bold" Binding="{Binding Path=RessName, Mode=TwoWay}"/>
                 <DataGridTextColumn Header="Inventarnummer" FontWeight="Bold" Binding="{Binding Path=Inventarnummer}" IsReadOnly="True"/>
@@ -60,7 +48,7 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding DataContext.WorkAreas, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid},AncestorLevel=2}}" MinWidth="50"
+                            <ComboBox ItemsSource="{Binding DataContext.WorkAreas, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid},AncestorLevel=3}}" MinWidth="50"
                                      DisplayMemberPath="Bereich"                                   
                                      SelectedItem="WorkAreaId"
                                      SelectedValuePath="WorkAreaId"
@@ -68,6 +56,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridCheckBoxColumn Header="Sichtbar" Binding="{Binding Path=Visability, Mode=TwoWay}" />
             </DataGrid.Columns>
         </DataGrid>
         <materialDesign:ColorZone

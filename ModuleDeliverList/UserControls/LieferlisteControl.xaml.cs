@@ -410,6 +410,19 @@ namespace ModuleDeliverList.UserControls
         {
 
         }
+
+
+        private void CopyCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            TextBlock tx = (TextBlock)sender;
+            Clipboard.SetText(tx.Text);
+        }
+
+        private void CopyCommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            TextBlock textBlock = (TextBlock)sender;
+            e.CanExecute = !string.IsNullOrEmpty(textBlock.Text);
+        }
     }
 
 

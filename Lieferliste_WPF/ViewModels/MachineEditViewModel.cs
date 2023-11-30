@@ -41,10 +41,7 @@ namespace Lieferliste_WPF.ViewModels
             LoadData();
 
             RessourcesCV = new ListCollectionView(_ressources);
-            if (RessourcesCV.CanGroup)
-            {
-                RessourcesCV.GroupDescriptions.Add(new PropertyGroupDescription("Inventarnummer"));
-            }
+ 
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
 
@@ -164,7 +161,6 @@ namespace Lieferliste_WPF.ViewModels
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-
             if (value is string val)
             {
                 if (val.IsNullOrEmpty()) { return new ValidationResult(false, "Der Eintrag darf nicht leer sein"); }

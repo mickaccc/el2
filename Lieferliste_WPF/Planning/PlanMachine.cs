@@ -55,6 +55,18 @@ namespace Lieferliste_WPF.Planning
                 , typeof(ImmutableArray<Shape>)
                 , typeof(PlanMachine));
 
+
+        public bool Vis
+        {
+            get { return (bool)GetValue(VisProperty); }
+            set { SetValue(VisProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Vis.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty VisProperty =
+            DependencyProperty.Register("Vis", typeof(bool), typeof(PlanMachine), new PropertyMetadata(true));
+
+
         public bool Planable
         {
             get { return (bool)GetValue(PlanableProperty); }

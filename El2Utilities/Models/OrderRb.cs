@@ -53,9 +53,9 @@ public partial class OrderRb
 
     public string? OrderType { get; set; }
 
-    public string? OrderCategory { get; set; }
-
     public string? ProductionSupervisor { get; set; }
+
+    public string? OrderCategory { get; set; }
 
     public string? Wbselement { get; set; }
 

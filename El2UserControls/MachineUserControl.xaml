@@ -9,13 +9,12 @@
              xmlns:dd="urn:gong-wpf-dragdrop" 
              x:Class="El2UserControls.MachineUserControl"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="250" Unloaded="UserControl_Unloaded" >
+             d:DesignHeight="450" d:DesignWidth="250" Unloaded="UserControl_Unloaded" Visibility="{Binding Path=Vis,Converter={StaticResource BooleanToVisibilityConverter}}" >
 
     <UserControl.Resources>
         <conv:ToIntConverter x:Key="ToIntConverter"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:TTNR_Converter x:Key="TTNR"/>
-
     </UserControl.Resources>
     <Border BorderBrush="Black" BorderThickness="1">
     <Grid x:Name="grid" DataContext="{Binding}">

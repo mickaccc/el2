@@ -43,6 +43,33 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         private IApplicationCommands _applicationCommands;
 
+        private NotifyTaskCompletion<PlanMachine> _machineTask;
+
+        public NotifyTaskCompletion<PlanMachine> MachineTask
+        {
+            get { return _machineTask; }
+            set {
+                if (_machineTask != value)
+                {
+                    _machineTask = value;
+                    NotifyPropertyChanged(() =>  MachineTask);
+                }
+            }
+        }
+        private NotifyTaskCompletion<PlanMachine> _processTask;
+
+        public NotifyTaskCompletion<PlanMachine> ProcessTask
+        {
+            get { return _processTask; }
+            set
+            {
+                if (_processTask != value)
+                {
+                    _processTask = value;
+                    NotifyPropertyChanged(() => ProcessTask);
+                }
+            }
+        }
         public IApplicationCommands ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -134,7 +161,8 @@ namespace Lieferliste_WPF.ViewModels
                     WorkArea = q.WorkArea,
                     CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
                     Description = q.Info ?? String.Empty,
-                    ApplicationCommands = _applicationCommands
+                    ApplicationCommands = _applicationCommands,
+                    Vis = q.Visability
                 };
 
                 List<Vorgang> VrgList = qp.FindAll(x => x.Rid == q.RessourceId);
@@ -162,7 +190,10 @@ namespace Lieferliste_WPF.ViewModels
             Priv_parking = list.FindAll(x => x.Rid == -1)
                 .ToObservableCollection();
         }
+        private async NotifyTaskCompletion<PlanMachine> LoadMachinesAsync()
+        {
 
+        }
         private void SelectionChange(object commandParameter)
         {
             if (commandParameter is SelectionChangedEventArgs sel)
@@ -227,13 +258,21 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     if (name == "parking")
                     {
-                        vrg.Rid = _currentWorkArea * -1;
+                        int parkRid = _currentWorkArea * -1;
+                        using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                        if (db.Ressources.All(x => x.RessourceId != parkRid))
+                        {
+                            db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Resource(RessourceId) VALUES({0})", parkRid);
+                        }
+                        vrg.Rid = parkRid;
                     }
                     else
                     {
                         vrg.Rid = null;
                     }
-                    ((ListCollectionView)dropInfo.DragInfo.SourceCollection).Remove(vrg);
+                    var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
+                    if (source.IsAddingNew) { source.CommitNew(); }
+                    source.Remove(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
                 }

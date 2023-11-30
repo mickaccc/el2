@@ -9,7 +9,7 @@
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     x:Class="Lieferliste_WPF.Views.Order"
         mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="1000" MinWidth="1000" MaxHeight="600" Tag="{Binding Title}" >
+    d:DesignHeight="450" d:DesignWidth="1000" MaxHeight="600" Tag="{Binding Title}" >
 
 
     <UserControl.Resources>
@@ -42,7 +42,8 @@
                 </Style>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.8*"/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -52,39 +53,39 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Height="23" Margin="5" x:Name="txtAuftr" VerticalAlignment="Top"
+            <TextBlock Grid.Column="1" Height="23" Margin="5" x:Name="txtAuftr" VerticalAlignment="Top"
                        Text="{Binding Aid, Mode=OneWay}"
                        HorizontalAlignment="Right" MinWidth="120" ToolTip="Auftragsnummer"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblOrder, Mode=OneWay}" />
             <Label x:Name="lblOrder" Content="Auftrag" Height="23" HorizontalAlignment="Left" Margin="5"
                    VerticalAlignment="Top" Width="55" Padding="3" />
             <Label Grid.Row="1" x:Name="lblMat" Content="Material" Height="28" HorizontalAlignment="Left"  VerticalAlignment="Top" />
-            <TextBlock Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="5"  x:Name="txtTTNR" VerticalAlignment="Top"
+            <TextBlock Grid.Column="1" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="5"  x:Name="txtTTNR" VerticalAlignment="Top"
                        Text="{Binding Material, Converter={StaticResource TTNR_Converter1}, Mode=OneWay}"
                        MinWidth="120" ToolTip="Typ Teile Nummer"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblMat, Mode=OneWay}" />
-            <TextBlock Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtMatBez" VerticalAlignment="Top"
+            <TextBlock Grid.Column="2" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtMatBez" VerticalAlignment="Top"
                        Text="{Binding Bezeichnung, Mode=OneWay}" MinWidth="179" ToolTip="Material Kurztext" />
-            <TextBlock Grid.Column="2" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtQuant" VerticalAlignment="Top"
+            <TextBlock Grid.Column="3" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtQuant" VerticalAlignment="Top"
                        Text="{Binding Quantity, Mode=OneWay}" MinWidth="120" ToolTip="bestellet Menge"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblQuant, Mode=OneWay}"/>
-            <Label Grid.Column="2" x:Name="lblQuant" Content="Menge" Height="28" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" />
-            <Label Grid.Column="3" Content="Projekt" Height="28" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" />
-            <TextBlock Grid.Column="3" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtProj"
+            <Label Grid.Column="3" x:Name="lblQuant" Content="Menge" Height="28" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" />
+            <Label Grid.Column="4" Content="Projekt" Height="28" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" />
+            <TextBlock Grid.Column="4" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtProj"
                        VerticalAlignment="Top" Width="120" Text="{Binding Pro, Mode=OneWay}" ToolTip="Projekt" />
-            <TextBlock Grid.Row="1" Grid.Column="3" Height="31" HorizontalAlignment="Left" Margin="5" x:Name="txtProjInfo"
+            <TextBlock Grid.Row="1" Grid.Column="4" Height="31" HorizontalAlignment="Left" Margin="5" x:Name="txtProjInfo"
                        Text="{Binding ProInfo}" VerticalAlignment="Top" Width="200" ToolTip="Projekt Info" />
-            <TextBlock Grid.Column="2" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="5" x:Name="txtSysStat"
+            <TextBlock Grid.Column="3" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="5" x:Name="txtSysStat"
                      VerticalAlignment="Top" Text="{Binding SysStatus, Mode=OneWay}" 
                      TextWrapping="WrapWithOverflow" FontSize="9" FontFamily="Modern No. 20" FontStretch="Condensed"
                        MinWidth="180" ToolTip="SAP Systemstatus" />
-            <Label Grid.Column="4" Content="{Binding Items.Count, ConverterParameter=Vorgang;Vorgänge, Converter={StaticResource CountConverter1}, ElementName=listBox1, Mode=OneWay}"
+            <Label Grid.Column="5" Content="{Binding Items.Count, ConverterParameter=Vorgang;Vorgänge, Converter={StaticResource CountConverter1}, ElementName=listBox1, Mode=OneWay}"
                    HorizontalAlignment="Right" Margin="5" x:Name="Count" VerticalAlignment="Top"
                    Background="#FFEBEB73" Width="71" />
-            <Button Grid.Column="4" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
+            <Button Grid.Column="5" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
                     VerticalAlignment="Top"  SnapsToDevicePixels="True"
                     Command="{Binding Path=ApplicationCommands.ArchivateCommand}" CommandParameter="{Binding Aid}"/>
-            <Button Grid.Column="4" Grid.Row="1" Content="Explorer" Height="23" HorizontalAlignment="left" Margin="5" x:Name="btnExplorer"
+            <Button Grid.Column="5" Grid.Row="1" Content="Explorer" Height="23" HorizontalAlignment="left" Margin="5" x:Name="btnExplorer"
                     VerticalAlignment="Top" SnapsToDevicePixels="True"
                     Command="{Binding Path=ApplicationCommands.ExplorerCommand}" CommandParameter="{Binding}"/>
         </Grid>

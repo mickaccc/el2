@@ -148,7 +148,7 @@ namespace ModuleDeliverList.ViewModels
                     if (!(accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
                         accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
             }
-            if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = ord.Ausgebl;
+            if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability;
             if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
             if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text.ToUpper().Contains("STARTEN");
             if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");

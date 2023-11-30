@@ -13,6 +13,8 @@ public partial class Vorgang
 
     public short Vnr { get; set; }
 
+    public int? Bid { get; set; }
+
     public string? ArbPlSap { get; set; }
 
     public string? Text { get; set; }
@@ -63,7 +65,7 @@ public partial class Vorgang
 
     public int? QuantityRework { get; set; }
 
-    public bool Ausgebl { get; set; }
+    public bool Visability { get; set; }
 
     public DateTime? ActualStartDate { get; set; }
 
@@ -79,9 +81,9 @@ public partial class Vorgang
 
     public int? Spos { get; set; }
 
-    public string? CommentMach { get; set; }
-
     public int? Rid { get; set; }
+
+    public byte[]? CommentMach { get; set; }
 
     public virtual OrderRb AidNavigation { get; set; } = null!;
 

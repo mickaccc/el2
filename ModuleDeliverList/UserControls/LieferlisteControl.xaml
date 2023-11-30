@@ -10,6 +10,7 @@
     xmlns:Views="clr-namespace:ModuleDeliverList.Views"
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:Controls="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     xmlns:userControl="clr-namespace:El2UserControls;assembly=El2UserControls"
     
     x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
@@ -29,6 +30,10 @@
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <System:DateTime x:Key="datetime"/>
 
+        <ContextMenu x:Key="DefaultContextMenu">
+            <MenuItem Header="Text kopieren" Command="ApplicationCommands.Copy"/>
+        </ContextMenu>
+        
         <Storyboard x:Key="EnterStoryBoard">
             <DoubleAnimation
           Duration="0:0:0.2"
@@ -40,7 +45,7 @@
           Duration="0:0:1"
           Storyboard.TargetProperty="FontSize"  />
         </Storyboard>
-        <Style TargetType="{x:Type TextBlock}">
+        <Style TargetType="{x:Type Controls:SelectableTextBlock}">
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="FontFamily" Value="Calibri" />
             <Setter Property="FontSize" Value="12"/>
@@ -50,9 +55,10 @@
             <Setter Property="Margin" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="ContextMenu" Value="{StaticResource DefaultContextMenu}"/>
             <EventSetter Event="UIElement.MouseEnter" Handler="TextBlock_MouseEnter"/>
             <EventSetter Event="UIElement.MouseLeave" Handler="TextBlock_MouseLeave"/>
-
+ 
         </Style>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="MinHeight" Value="20"/>
@@ -63,11 +69,12 @@
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Padding" Value="1"/>
         </Style>
- 
+
     </UserControl.Resources>
 
     <Border >
         <StackPanel  x:Name="Liefer" Background="#FFBEC9CE" >
+            
             <Grid >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="33"/>
@@ -90,50 +97,52 @@
                     <ColumnDefinition Width="100*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0"  Grid.Column="0" x:Name="txtPlanT" 
+                <Controls:SelectableTextBlock Grid.Row="0"  Grid.Column="0" x:Name="txtPlanT" 
                      ToolTip="Plantermin lt. SAP"
                      Text="{Binding EckEnd, Converter={StaticResource KwConv}, ElementName=luc}"  />
                 <TextBox x:Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1"/>
-                <TextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" />
-                <TextBlock Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" />
-                <TextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="txtMatTTNR" >
-                    <TextBlock.Text>
+                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" />
+                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" />
+                <Controls:SelectableTextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="txtMatTTNR" >
+                    <Controls:SelectableTextBlock.Text>
                         <MultiBinding StringFormat=" {0} {1}">
                             <Binding Path="TTNR" ElementName="luc"/>
                             <Binding Path="MatText" ElementName="luc"/>
                         </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                    </Controls:SelectableTextBlock.Text>
+                </Controls:SelectableTextBlock>
 
-                <TextBlock Grid.Column="13"  Height="23" x:Name="txtMatText" Width="120"  
-                     HorizontalAlignment="Left" VerticalAlignment="Center" 
-                     Text="{Binding MachineText, ElementName=luc}" />
-                <TextBlock  x:Name="txtWorkArea" 
+                <Controls:SelectableTextBlock  x:Name="txtWorkArea" 
                      Text="{Binding WorkArea, ElementName=luc}" Grid.Row="1" Grid.Column="2"  />
-                <TextBlock Grid.Column="5" x:Name="txtOrder"
-                           Text="{Binding Aid, ElementName=luc}" ToolTip="Auftragsnummer" Grid.ColumnSpan="2"  />
-                <TextBlock Grid.Column="3" Grid.Row="1" x:Name="txtVnr"  ToolTip="Vorgangsnummer" 
+                <Controls:SelectableTextBlock Grid.Column="5" x:Name="txtOrder"
+                           Text="{Binding Aid, ElementName=luc}" ToolTip="Auftragsnummer" Grid.ColumnSpan="2" />
+                <Controls:SelectableTextBlock Grid.Column="3" Grid.Row="1" x:Name="txtVnr"  ToolTip="Vorgangsnummer" 
                      Text="{Binding Vnr, ElementName=luc, StringFormat=\{0:D4\}}" />
-                <TextBlock Grid.Column="7" x:Name="txtQuant" ToolTip="Auftragsmenge" 
+                <Canvas Grid.Column="7">
+                <Controls:SelectableTextBlock x:Name="txtQuant" ToolTip="Auftragsmenge" 
                      Text="{Binding Quantity, ElementName=luc}"/>
-                <TextBlock Grid.Column="8" x:Name="txtQuantYield" ToolTip="zurückgemeldete Menge"
+                <Controls:SelectableTextBlock Canvas.Left="30" x:Name="txtQuantYield" ToolTip="zurückgemeldete Menge"
                      Text="{Binding QuantityYield, ElementName=luc}" />
-                <TextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" x:Name="txtVrgText" ToolTip="Vorgang Kurztext"  
+                <Controls:SelectableTextBlock Canvas.Right="5"  x:Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25"
+                     Text="{Binding QuantityMiss, ElementName=luc}"/>
+                </Canvas>
+                <Controls:SelectableTextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" x:Name="txtVrgText" ToolTip="Vorgang Kurztext"  
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />
-                <TextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3"  x:Name="txtRessTo" Background="Wheat" FontSize="16">
-                    <TextBlock.Text>
+                <Controls:SelectableTextBlock Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="4"  x:Name="txtRessTo" Background="Wheat" FontSize="16">
+                    <Controls:SelectableTextBlock.Text>
                         <MultiBinding Converter="{StaticResource RtKw}">
                             <Binding Path="MachineText" ElementName="luc"/>
                             <Binding Path="EndDate" ElementName="luc"/>
                         </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                    </Controls:SelectableTextBlock.Text>
+                </Controls:SelectableTextBlock>
+                <Canvas Grid.Column="8">
 
-                <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtScrap"  ToolTip="Ausschussmenge" 
+                    <Controls:SelectableTextBlock  x:Name="txtScrap"  ToolTip="Ausschussmenge" 
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
-                <TextBlock Grid.Column="6" Grid.Row="2"  x:Name="txtOpen"  ToolTip="offene Menge"  HorizontalAlignment="Left" Width="25"
-                           Text="{Binding QuantityMiss, ElementName=luc}"/>
-
+                    <Controls:SelectableTextBlock Canvas.Left="30"  x:Name="txtRework"  ToolTip="Nacharbeitsmenge" 
+                     Text="{Binding QuantityRework, ElementName=luc}" HorizontalAlignment="Right"  />
+                </Canvas>
                 <GroupBox Grid.Column="9"  ToolTip="Kommentar Meister" 
                           Header="{Binding Comment_Me, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
@@ -162,7 +171,7 @@
                                                Converter={StaticResource Permission}}"
                                    TextWrapping="Wrap"/>
                 </GroupBox>
-                <TextBlock Grid.Column="7" x:Name="txtEnd" 
+                <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" 
                          ToolTip="Endtermin" Grid.Row="1" 
                          Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
                          Background="{Binding EndDate, Converter={StaticResource DateLost}, ElementName=luc}"/>
