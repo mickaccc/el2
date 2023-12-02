@@ -22,13 +22,12 @@ namespace Lieferliste_WPF.Planning
 
         #region Constructors
         public PlanMachine() { Initialize(); }
-        public PlanMachine(int RID, string name, string inventarNo, MachinePlanViewModel owner)
+        public PlanMachine(int RID, string name, string inventarNo)
         {
             Initialize();
             _rId = RID;
             Name = name;
             InventNo = inventarNo;
-            Owner = owner;
         }
 
 

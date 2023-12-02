@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -32,44 +34,32 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand SaveCommand { get; private set; }
 
         public List<WorkArea>? WorkAreas { get; private set; }
-        public List<PlanMachine> Machines { get; }
+        private ConcurrentObservableCollection<PlanMachine> _machines { get; } = new();
         private ObservableCollection<Vorgang>? Priv_processes { get; set; }
         private ObservableCollection<Vorgang>? Priv_parking { get; set; }
         private DB_COS_LIEFERLISTE_SQLContext _DbCtx;
         private IContainerExtension _container;
 
-        private readonly ICollectionView _ressCV;
+        public ICollectionView RessCV { get; private set; }
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         private IApplicationCommands _applicationCommands;
 
-        private NotifyTaskCompletion<PlanMachine> _machineTask;
+        private NotifyTaskCompletion<ICollectionView> _machineTask;
 
-        public NotifyTaskCompletion<PlanMachine> MachineTask
+        public NotifyTaskCompletion<ICollectionView> MachineTask
         {
             get { return _machineTask; }
-            set {
+            set
+            {
                 if (_machineTask != value)
                 {
                     _machineTask = value;
-                    NotifyPropertyChanged(() =>  MachineTask);
+                    NotifyPropertyChanged(() => MachineTask);
                 }
             }
         }
-        private NotifyTaskCompletion<PlanMachine> _processTask;
 
-        public NotifyTaskCompletion<PlanMachine> ProcessTask
-        {
-            get { return _processTask; }
-            set
-            {
-                if (_processTask != value)
-                {
-                    _processTask = value;
-                    NotifyPropertyChanged(() => ProcessTask);
-                }
-            }
-        }
         public IApplicationCommands ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -85,8 +75,8 @@ namespace Lieferliste_WPF.ViewModels
 
         private int _currentWorkArea;
         private string? _searchFilterText;
-
-
+        private readonly object _lock = new();
+        private List<Vorgang> _processesAll;
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
 
@@ -95,21 +85,11 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             _applicationCommands = applicationCommands;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            Machines = new List<PlanMachine>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
-            LoadData();
-            _ressCV = CollectionViewSource.GetDefaultView(Machines);
-            _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == WorkAreas?.First().WorkAreaId;
-            _ressCV.MoveCurrentToFirst();
-            ProcessViewSource.Source = Priv_processes;
-            ProcessViewSource.Filter += ProcessCV_Filter;
-
-            ParkingViewSource.Source = Priv_parking;
-            ParkingCV.Filter = f => (f as Vorgang)?.Rid == WorkAreas?.First().WorkAreaId * -1;
-            _currentWorkArea = WorkAreas?.First().WorkAreaId ?? 0;
-            ProcessCV.Refresh();
-
+            LoadWorkAreas();
+            MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
+      
         }
 
         private bool OnSaveCanExecute(object arg)
@@ -122,21 +102,8 @@ namespace Lieferliste_WPF.ViewModels
             _DbCtx.SaveChanges();
         }
 
-        private void LoadData()
+        private void LoadWorkAreas()
         {
-
-            var qp = _DbCtx.Vorgangs
-            .Include(x => x.AidNavigation)
-            .ThenInclude(x => x.MaterialNavigation)
-            .Include(x => x.AidNavigation.DummyMatNavigation)
-            .Include(x => x.ArbPlSapNavigation)
-            .Include(x => x.RidNavigation)
-            .Where(x => x.SysStatus != null
-                        && !x.AidNavigation.Fertig
-                        && !x.SysStatus.Contains("RÜCK")
-                        && (x.Text != null) ? !x.Text.ToUpper().Contains("AUFTRAG STARTEN") : true)
-            .ToList();
-
 
             var work = _DbCtx.WorkAreas
                 .Include(x => x.UserWorkAreas)
@@ -144,55 +111,98 @@ namespace Lieferliste_WPF.ViewModels
 
             WorkAreas = new List<WorkArea>(work);
 
+        }
+        private async Task<List<Vorgang>> GetVorgangsAsync()
+        {
+            if (_processesAll == null)
+            {
+                var query = await _DbCtx.Vorgangs
+                  .Include(x => x.AidNavigation)
+                  .ThenInclude(x => x.MaterialNavigation)
+                  .Include(x => x.AidNavigation.DummyMatNavigation)
+                  .Include(x => x.ArbPlSapNavigation)
+                  .Include(x => x.RidNavigation)
+                  .Where(x => x.SysStatus == null
+                              || x.AidNavigation.Fertig
+                              || x.SysStatus.Contains("RÜCK")
+                              || x.Text == null || !x.Text.ToUpper().Contains("AUFTRAG STARTEN"))
+                  .ToListAsync();
+                _processesAll = query;
+            }
+            return _processesAll;
+        }
 
-            var re = _DbCtx.Ressources
-                .Include(x => x.RessourceCostUnits)
-                .Include(x => x.WorkArea)
-                .Where(x => x.WorkArea != null).ToList();
+        private async Task<ICollectionView> LoadMachinesAsync()
+        {
+            var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
+            var re = await _DbCtx.Ressources
+            .Include(x => x.RessourceCostUnits)
+            .Include(x => x.WorkArea)
+            .Where(x => x.WorkArea != null).ToListAsync();
+
+            var proc = await GetVorgangsAsync();
 
             var ress = re.Where(y => y.RessourceCostUnits.IntersectBy(UserInfo.User.UserCosts.Select(e => e.CostId), a => a.CostId).Any());
-
-
-            foreach (var q in ress)
+            await Task.Factory.StartNew(() =>
             {
-
-                PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty, this)
+                HashSet<PlanMachine> result = [];
+                lock (_lock)
                 {
-                    WorkArea = q.WorkArea,
-                    CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
-                    Description = q.Info ?? String.Empty,
-                    ApplicationCommands = _applicationCommands,
-                    Vis = q.Visability
-                };
 
-                List<Vorgang> VrgList = qp.FindAll(x => x.Rid == q.RessourceId);
+                    foreach (var q in ress)
+                    {
 
-                foreach (var vrg in VrgList)
-                {
-                    if (vrg.VorgangId.Length > 0)
-                        plm.Processes?.Add(vrg);
+                        PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty)
+                        {
+                            WorkArea = q.WorkArea,
+                            CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
+                            Description = q.Info ?? String.Empty,
+                            ApplicationCommands = _applicationCommands,
+                            Vis = q.Visability
+                        };
+
+                        List<Vorgang> VrgList = proc.FindAll(x => x.Rid == q.RessourceId);
+
+                        foreach (var vrg in VrgList)
+                        {
+                            if (vrg.VorgangId.Length > 0)
+                                plm.Processes?.Add(vrg);
+                        }
+
+                        result.Add(plm);
+                    }
                 }
+                _machines.AddRange(result);
 
-                Machines.Add(plm);
-            }
-            List<Vorgang> list = new();
-
-            foreach (var m in Machines)
-            {
-                foreach (var c in UserInfo.User.UserCosts)
+                List<Vorgang> list = new();
+                foreach (PlanMachine m in _machines)
                 {
-                    list.AddRange(qp.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID &&
-                        x.ArbPlSapNavigation.CostId == c.CostId));
+                    foreach (var c in UserInfo.User.UserCosts)
+                    {
+                        list.AddRange(proc.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID &&
+                            x.ArbPlSapNavigation.CostId == c.CostId));
+                    }
                 }
-            }
+            
             Priv_processes = list.FindAll(x => x.Rid == null)
                 .ToObservableCollection();
-            Priv_parking = list.FindAll(x => x.Rid == -1)
+            Priv_parking = list.FindAll(x => x.Rid < 0)
                 .ToObservableCollection();
-        }
-        private async NotifyTaskCompletion<PlanMachine> LoadMachinesAsync()
-        {
+            ProcessViewSource.Source = Priv_processes;
+            ParkingViewSource.Source = Priv_parking;
+            
+            RessCV = CollectionViewSource.GetDefaultView(_machines);
+                _currentWorkArea = ((PlanMachine)RessCV.CurrentItem).WorkArea.WorkAreaId;
+  
+            }, CancellationToken.None, TaskCreationOptions.None, uiContext);
 
+            NotifyPropertyChanged(() => ProcessCV);
+            NotifyPropertyChanged(() => ParkingCV);
+            RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == _currentWorkArea;
+            ParkingCV.Filter = f => (f as Vorgang)?.Rid == _currentWorkArea * -1;
+            ProcessViewSource.Filter += ProcessCV_Filter;
+
+            return RessCV;
         }
         private void SelectionChange(object commandParameter)
         {
@@ -200,7 +210,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if (sel.AddedItems[0] is WorkArea wa)
                 {
-                    _ressCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == wa.WorkAreaId;
+                    RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == wa.WorkAreaId;
                     ParkingCV.Filter = f => (f as Vorgang)?.Rid == wa.WorkAreaId * -1;
 
                     _currentWorkArea = wa.WorkAreaId;
@@ -221,16 +231,16 @@ namespace Lieferliste_WPF.ViewModels
         {
             Vorgang v = (Vorgang)e.Item;
             e.Accepted = false;
-            var l = Machines.FindAll(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
+            var l = _machines.Where(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
             if (l.Any(x => x.RID == v.ArbPlSapNavigation?.RessourceId))
             {
                 e.Accepted = true;
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))
                 {
-                    _searchFilterText = _searchFilterText.ToUpper();
-                    if (!(e.Accepted = v.Aid.ToUpper().Contains(_searchFilterText)))
-                        if (!(e.Accepted = v.AidNavigation?.Material?.ToUpper().Contains(_searchFilterText) ?? false))
-                            e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
+                    
+                    if (!(e.Accepted = v.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
+                        if (!(e.Accepted = v.AidNavigation?.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
+                            e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
                 }
             }
         }
@@ -280,7 +290,7 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
 
-                MessageBox.Show(e.Message,"Method Drop",MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "Method Drop", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

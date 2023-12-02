@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -27,9 +28,9 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand NewCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
-        public ICommand LostFocusCommand { get; private set; }
+        public ICommand LostFocusCommand => _LostFocusCommand ??= new RelayCommand(OnLostFocus);
 
-
+        private RelayCommand _LostFocusCommand;
         private static ICollectionView _usrCV;
 
         public ICollectionView RoleView { get { return roleSource.View; } }
@@ -37,7 +38,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView CostView { get { return costSource.View; } }
 
         private static bool _isNew = false;
-        public static ObservableCollection<User>? Users { get; private set; }
+        public static BindingList<User>? Users { get; private set; }
 
         private static HashSet<Role> Roles { get; set; } = new();
         private static HashSet<WorkArea> WorkAreas { get; set; } = new();
@@ -48,8 +49,10 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource costSource { get; } = new();
 
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
-        private int _validName = 0;
-        private int _validIdent = 0;
+        private int _validName = 1;
+        private int _validIdent = 1;
+
+
         public int ValidName
         {
             get { return _validName; }
@@ -78,7 +81,6 @@ namespace Lieferliste_WPF.ViewModels
             _usrCV.MoveCurrentToFirst();
 
             SelectionChangedCommand = new ActionCommand(OnSelectionChangeExecuted, OnSelectionChangeCanExecute);
-            LostFocusCommand = new ActionCommand(OnLostFocusExecuted, OnLostFocusCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             NewCommand = new ActionCommand(OnNewExecuted, OnNewCanExecute);
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
@@ -94,33 +96,30 @@ namespace Lieferliste_WPF.ViewModels
 
         }
 
-        private bool OnLostFocusCanExecute(object arg)
-        {
-            return true;
-        }
 
-        private void OnLostFocusExecuted(object obj)
-        {
-            //if(obj is TextBox textBox)
-            //{
 
-            //    if (textBox.Name == "U01")
-            //    {
-            //        if (String.IsNullOrWhiteSpace(textBox.Text))
-            //        {
-            //            ValidName = 1;
-            //        }
-            //        else { ValidName = 0; }
-            //    }
-            //    if (textBox.Name == "U02")
-            //    {
-            //        if(String.IsNullOrWhiteSpace(textBox.Text))
-            //        {
-            //            ValidIdent = 1;
-            //        }
-            //        else{ ValidIdent = 0;}
-            //    }   
-            //}
+        private void OnLostFocus(object obj)
+        {
+            if (obj is TextBox textBox)
+            {
+
+                if (textBox.Name == "U01")
+                {
+                    if (String.IsNullOrWhiteSpace(textBox.Text))
+                    {
+                        ValidName = 1;
+                    }
+                    else { ValidName = 0; }
+                }
+                if (textBox.Name == "U02")
+                {
+                    if (String.IsNullOrWhiteSpace(textBox.Text))
+                    {
+                        ValidIdent = 1;
+                    }
+                    else { ValidIdent = 0; }
+                }
+            }
         }
 
         private void CostFilterPredicate(object sender, FilterEventArgs e)
@@ -151,24 +150,11 @@ namespace Lieferliste_WPF.ViewModels
         }
 
 
-        public string this[string columnName]
-        {
-            get
-            {
-                User us = (User)_usrCV.CurrentItem;
-                string result = null;
-                if (columnName == nameof(User.UsrName))
-                {
-                    if (us.UsrName.IsNullOrEmpty()) return "Der Eintrag darf nicht leer sein";
-                }
-                return result;
-            }
-        }
         private void OnCloseExecuted(object obj)
         {
             if (obj is Window ob)
             {
-
+                _dbctx.ChangeTracker.DetectChanges();
                 if (_dbctx.ChangeTracker.HasChanges())
                 {
                     MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
@@ -212,9 +198,8 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         private void OnNewExecuted(object obj)
-        {
-            User u = new();
-            Users?.Add(u);
+        {           
+            var u = Users?.AddNew();
 
             _usrCV.MoveCurrentTo(u);
             RoleView.Refresh();
@@ -252,8 +237,8 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
-
-            return _dbctx.ChangeTracker.HasChanges() || _isNew;
+            _dbctx.ChangeTracker.DetectChanges();
+            return _dbctx.ChangeTracker.HasChanges() || ((ValidName == 0 && ValidIdent == 0) && _isNew);
         }
 
 
@@ -272,7 +257,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            Users = new ObservableCollection<User>();
+            Users = new ();
             var u = _dbctx.Users
                 .Include(x => x.UserWorkAreas)
                 .Include(y => y.UserRoles)
@@ -281,7 +266,7 @@ namespace Lieferliste_WPF.ViewModels
                 .ThenInclude(x => x.Cost)
                 .Where(x => x.Exited == false)
                 .OrderBy(o => o.UsrName)
-                .ToObservableCollection();
+                .ToList();
             foreach (var user in u)
             {
                 User user1 = user;

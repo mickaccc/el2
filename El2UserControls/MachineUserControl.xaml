@@ -15,6 +15,7 @@
         <conv:ToIntConverter x:Key="ToIntConverter"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:TTNR_Converter x:Key="TTNR"/>
+        <conv:TextCompareToColorConverter x:Key="txtColor"/>
     </UserControl.Resources>
     <Border BorderBrush="Black" BorderThickness="1">
     <Grid x:Name="grid" DataContext="{Binding}">
@@ -161,15 +162,30 @@
                         <DataTemplate >
 
                             <local:BulletedItem HorizontalAlignment="Left" VerticalAlignment="Top"
-                                                BulletColor="{Binding Bullet, TargetNullValue='White'}" />
+                                            BulletColor="{Binding Bullet, TargetNullValue='White'}" />
 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid, Mode=OneTime}" Width="Auto" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid, Mode=OneTime}" Width="Auto" IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource txtColor}">
+                                            <Binding Path="Aid"/>
+                                            <Binding Path="Text" ElementName="searchTextBox"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                                    
                 <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}" Width="Auto" IsReadOnly="True"/>
-            </DataGrid.Columns>
+                    
+                </DataGrid.Columns>
         </DataGrid>
     </Grid>
     </Border>

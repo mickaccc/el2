@@ -51,7 +51,7 @@
             
             <TextBox x:Name="searchTextBox" VerticalContentAlignment="Center" DockPanel.Dock="Right" Margin="10,0,10,0"
                      materialdesign:HintAssist.Hint="suchen in Auftragsnummer, TTNR und Materialbezeichnung"
-                     materialdesign:TextFieldAssist.HasClearButton="True"
+                     materialdesign:TextFieldAssist.HasClearButton="false" 
                      Style="{StaticResource MaterialDesignFloatingHintTextBox}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="TextChanged">
@@ -61,9 +61,12 @@
             </TextBox>
             
         </DockPanel>
-
+        <ProgressBar Grid.Row="1" IsIndeterminate="True" Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                     Visibility="{Binding MachineTask.IsNotCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <TextBlock Grid.Row="1" Text="{Binding MachineTask.ErrorMessage}"
+                   Visibility="{Binding MachineTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ListBox x:Name="machines" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.Row="1"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding Machines}" >
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding MachineTask.Result}" >
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel x:Name="stackPanel" IsItemsHost="True" Orientation="Horizontal"/>
@@ -71,9 +74,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel>
-                        <control:MachineUserControl Height="{Binding ActualHeight, ElementName=stackPanel, Mode=OneWay}"/>
-                    </StackPanel>
+                    <control:MachineUserControl Height="{Binding ActualHeight, ElementName=stackPanel, Mode=OneWay}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
 
@@ -96,6 +97,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Border>
+
         <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
                   CanUserAddRows="False" CanUserDeleteRows="False" HorizontalContentAlignment="Center" ColumnWidth="Auto"

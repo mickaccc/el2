@@ -28,7 +28,7 @@ namespace ModuleDeliverList.ViewModels
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
         //public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
         public ICommand FilterCommand => _filterCommand ??= new RelayCommand(OnFilter);
-        private ConcurrentObservableCollection<Vorgang> _orders { get; } = new();
+        private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
@@ -133,7 +133,6 @@ namespace ModuleDeliverList.ViewModels
             _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
 
         }
-
         private bool OrdersView_FilterPredicate(object value)
         {
 
@@ -143,14 +142,13 @@ namespace ModuleDeliverList.ViewModels
 
             if (!string.IsNullOrWhiteSpace(_searchFilterText))
             {
-                _searchFilterText = _searchFilterText.ToUpper();
-                if (!(accepted = ord.Aid.ToUpper().Contains(_searchFilterText)))
-                    if (!(accepted = ord.AidNavigation.Material?.ToUpper().Contains(_searchFilterText) ?? false))
-                        accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.ToUpper().Contains(_searchFilterText) ?? false;
+                if (!(accepted = ord.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
+                    if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
+                        accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
             }
             if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability;
             if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
-            if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text.ToUpper().Contains("STARTEN");
+            if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false;
             if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
             if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
             if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
@@ -274,13 +272,13 @@ namespace ModuleDeliverList.ViewModels
         public async Task<ICollectionView> LoadDataAsync()
         {
             _projects.Add(string.Empty);
-            var a = DBctx.OrderRbs
+            var a = await DBctx.OrderRbs
                .Include(v => v.Vorgangs)
                .ThenInclude(r => r.RidNavigation)
                .Include(m => m.MaterialNavigation)
                .Include(d => d.DummyMatNavigation)
                .Where(x => x.Abgeschlossen == false)
-               .ToList();
+               .ToListAsync();
             await Task.Factory.StartNew(() =>
             {
                 HashSet<Vorgang> result = new();
