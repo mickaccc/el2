@@ -13,7 +13,14 @@ namespace El2Core.Converters
 
             if (parameter is string p)
             {
-                return PermissionsProvider.GetInstance().GetUserPermission(p);
+                if (p.StartsWith('!'))
+                {
+                    return !PermissionsProvider.GetInstance().GetUserPermission(p[1..]);
+                }
+                else
+                {
+                    return PermissionsProvider.GetInstance().GetUserPermission(p);
+                }
             }
 
             return false;

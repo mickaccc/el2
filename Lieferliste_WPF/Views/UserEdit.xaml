@@ -6,6 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     xmlns:util="clr-namespace:Lieferliste_WPF.Utilities"
+    xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
+    xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
@@ -14,6 +16,9 @@
         mc:Ignorable="d"
         MinHeight="450" MinWidth="800" Tag="{Binding Title}">
 
+    <UserControl.Resources>
+        <conv:PermissionConverter x:Key="Permission"/>
+    </UserControl.Resources>
 
     <Grid Margin="10,10,0,0" >
         <Grid.RowDefinitions>
@@ -55,7 +60,9 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <TextBox x:Name="U01"   TabIndex="0" materialDesign:HintAssist.Hint="Name der angezeigt werden soll">
+                <TextBox x:Name="U01"   TabIndex="0" materialDesign:HintAssist.Hint="Name der angezeigt werden soll"
+                         IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.UserEditInvers},
+                                                Converter={StaticResource Permission}}">
                     <Binding Path="Users/UsrName" Mode="TwoWay">
                     <Binding.ValidationRules>
                             <util:UserValidationRule/>
@@ -72,7 +79,8 @@
                 </TextBox>
 
                 <TextBox x:Name="U02" Grid.Column="1" materialDesign:HintAssist.Hint="User Ident lt. Windows"
-                          TabIndex="1" >
+                          TabIndex="1" IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.UserEditInvers},
+                                                Converter={StaticResource Permission}}">
                     <Binding Path="Users/UserIdent" Mode="TwoWay">
                         <Binding.ValidationRules>
                             <util:UserValidationRule/>

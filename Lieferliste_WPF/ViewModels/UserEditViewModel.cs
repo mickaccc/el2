@@ -1,4 +1,5 @@
-﻿using El2Core.Models;
+﻿using El2Core.Constants;
+using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
@@ -152,8 +153,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnCloseExecuted(object obj)
         {
-            if (obj is Window ob)
-            {
+ 
                 _dbctx.ChangeTracker.DetectChanges();
                 if (_dbctx.ChangeTracker.HasChanges())
                 {
@@ -163,9 +163,6 @@ namespace Lieferliste_WPF.ViewModels
 
                 }
 
-                ob.Close();
-
-            }
         }
 
         private bool OnCloseCanExecute(object arg)
@@ -175,7 +172,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnDeleteCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("UM03");
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.UserDelete);
         }
 
         private void OnDeleteExecuted(object obj)
@@ -194,7 +191,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private static bool OnNewCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission("UM01") && !_isNew;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.UserNew) && !_isNew;
         }
 
         private void OnNewExecuted(object obj)
@@ -210,29 +207,36 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            if (_isNew)
+            try
             {
-
-                var user = Users.Except(_dbctx.Users).FirstOrDefault();
-                if (user != null)
+                if (_isNew)
                 {
-                    if (user.UsrName.IsNullOrEmpty()) ValidName = 1;
-                    if (user.UserIdent.IsNullOrEmpty() || _dbctx.Users.Any(x => x.UserIdent == user.UserIdent)) ValidIdent = 1;
-                    if (ValidName == 1 || ValidIdent == 1)
+
+                    var user = Users.Except(_dbctx.Users).FirstOrDefault();
+                    if (user != null)
                     {
-                        MessageBox.Show("Speichern wegen ungültigen Daten nicht möglich", "Speicherfehler",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
+                        if (user.UsrName.IsNullOrEmpty()) ValidName = 1;
+                        if (user.UserIdent.IsNullOrEmpty() || _dbctx.Users.Any(x => x.UserIdent == user.UserIdent)) ValidIdent = 1;
+                        if (ValidName == 1 || ValidIdent == 1)
+                        {
+                            MessageBox.Show("Speichern wegen ungültigen Daten nicht möglich", "Speicherfehler",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        _dbctx.Users.Add((User)user);
                     }
-                    _dbctx.Users.Add((User)user);
+
+                    _isNew = false;
+                    ValidIdent = 0;
+                    ValidName = 0;
+
                 }
-
-                _isNew = false;
-                ValidIdent = 0;
-                ValidName = 0;
-
+                _dbctx.SaveChangesAsync();
             }
-            _dbctx.SaveChangesAsync();
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "!ERROR!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private bool OnSaveCanExecute(object arg)

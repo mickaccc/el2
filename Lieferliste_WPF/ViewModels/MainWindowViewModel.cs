@@ -208,7 +208,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenUserMgmtCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.UserEdit);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenUserEdit);
         }
 
 
