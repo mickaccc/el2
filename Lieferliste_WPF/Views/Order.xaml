@@ -4,9 +4,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
     prism:ViewModelLocator.AutoWireViewModel="True"
-    xmlns:vm="clr-namespace:Lieferliste_WPF.ViewModels"
     x:Class="Lieferliste_WPF.Views.Order"
         mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="1000" MaxHeight="600" Tag="{Binding Title}" >
@@ -17,9 +18,11 @@
         <conv:TTNR_Converter x:Key="TTNR_Converter1" />
         <conv:CountConverter x:Key="CountConverter1" />
         <conv:PermissionConverter x:Key="Permission" />
+        <conv:CommentConverter x:Key="CommentConv"/>
         <conv:PermissionVisibilityConverter x:Key="PermissionVisibilityConverter1" />
         <conv:ActivateColorConverter x:Key="active" ActiveColor="{StaticResource ActiveProcess}"/>
-
+        <System:Boolean x:Key="TrueValue">True</System:Boolean>
+        <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
 
@@ -145,9 +148,37 @@
                                 <TextBlock Grid.Column="4" Height="23" x:Name="txtAuss" Width="58"
                                     Text="{Binding QuantityScrap, Mode=OneWay}" ToolTip="Ausschußteile zurückgemeldet"/>
                                 <TextBlock Grid.Column="5" Height="23" x:Name="txtOff" Width="58"
-                                    Text="{Binding QuantityMiss, Mode=OneWay}" ToolTip="offene Menge"/>
-                                <TextBlock Grid.Column="6" Height="23" x:Name="txtKst" Width="70"
-                                    Text="{Binding ArbPlSapNavigation/CostId, Mode=OneWay}" ToolTip="Kostenstelle" />
+                                           Text="{Binding QuantityMiss, Mode=OneWay}" ToolTip="offene Menge"/>
+								<TextBlock Grid.Column="6" Height="23" x:Name="txtKst" Width="70"
+									Text="{Binding ArbPlSapNavigation/CostId, Mode=OneWay}" ToolTip="Kostenstelle" />
+
+								<GroupBox Grid.Column="7"  ToolTip="Kommentar Meister" 
+			                                      Header="{Binding BemM,
+                                    Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
+                                                                    <TextBox Text="{Binding BemM,
+                                    Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
+	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
+									                                     Converter={StaticResource Permission}}"
+				                                     TextWrapping="Wrap" /> 
+                                </GroupBox>
+                                <GroupBox Grid.Column="8"  ToolTip="Kommentar Teamleiter" 
+			                                      Header="{Binding BemT,
+                                    Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
+                                    <TextBox Text="{Binding BemT,
+                                    Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
+	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
+									                                     Converter={StaticResource Permission}}"
+				                                     TextWrapping="Wrap" />
+                                </GroupBox>
+                                <GroupBox Grid.Column="9"  ToolTip="Kommentar Mitarbeiter" 
+                                                  Header="{Binding BemMa,
+                                    Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
+                                                                        <TextBox Text="{Binding BemMa,
+                                    Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
+                                         IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
+                                                                         Converter={StaticResource Permission}}"
+                                                     TextWrapping="Wrap" />
+                                </GroupBox>
                             </Grid>
                         </Border>
                         <DataTemplate.Triggers>

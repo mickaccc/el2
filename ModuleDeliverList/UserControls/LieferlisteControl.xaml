@@ -150,7 +150,7 @@
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
                                                  Converter={StaticResource Permission}}"
-                             TextWrapping="Wrap"/>
+                             TextWrapping="Wrap" />
                 </GroupBox>
 
                 <GroupBox Grid.Column="10"  ToolTip="Kommentar Teamleiter"

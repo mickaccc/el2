@@ -423,6 +423,11 @@ namespace ModuleDeliverList.UserControls
             TextBlock textBlock = (TextBlock)sender;
             e.CanExecute = !string.IsNullOrEmpty(textBlock.Text);
         }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 
 
