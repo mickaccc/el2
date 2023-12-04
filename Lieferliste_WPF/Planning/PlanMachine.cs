@@ -1,9 +1,11 @@
 ﻿using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
+using System;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
@@ -78,6 +80,7 @@ namespace Lieferliste_WPF.Planning
         }
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? OpenMachineCommand { get; private set; }
+        public ICommand? MachinePrint {  get; private set; }
 
         private readonly int _rId;
 
@@ -113,10 +116,21 @@ namespace Lieferliste_WPF.Planning
 
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
+            MachinePrint = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExete);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
 
+        }
+
+        private bool OnMachinePrintCanExete(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
+        }
+
+        private void OnMachinePrintExecuted(object obj)
+        {
+            
         }
 
         private static bool OnSetMarkerCanExecute(object arg)
@@ -147,7 +161,7 @@ namespace Lieferliste_WPF.Planning
         }
         private bool OnOpenMachineCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenMach);
         }
 
         private void OnOpenMachineExecuted(object obj)

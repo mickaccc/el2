@@ -122,10 +122,11 @@ namespace Lieferliste_WPF.ViewModels
                   .Include(x => x.AidNavigation.DummyMatNavigation)
                   .Include(x => x.ArbPlSapNavigation)
                   .Include(x => x.RidNavigation)
-                  .Where(x => x.SysStatus == null
-                              || x.AidNavigation.Fertig
-                              || x.SysStatus.Contains("RÜCK")
-                              || x.Text == null || !x.Text.ToUpper().Contains("AUFTRAG STARTEN"))
+                  .Where(y => y.AidNavigation.Abgeschlossen == false
+                    && y.SysStatus != null
+                    && y.SysStatus.Contains("RÜCK") == false
+                    && y.Text != null
+                    && y.Text.ToLower().Contains("starten") == false)
                   .ToListAsync();
                 _processesAll = query;
             }
@@ -192,6 +193,7 @@ namespace Lieferliste_WPF.ViewModels
             ParkingViewSource.Source = Priv_parking;
             
             RessCV = CollectionViewSource.GetDefaultView(_machines);
+            RessCV.MoveCurrentToFirst();
                 _currentWorkArea = ((PlanMachine)RessCV.CurrentItem).WorkArea.WorkAreaId;
   
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
@@ -272,7 +274,9 @@ namespace Lieferliste_WPF.ViewModels
                         using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                         if (db.Ressources.All(x => x.RessourceId != parkRid))
                         {
-                            db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Resource(RessourceId) VALUES({0})", parkRid);
+                            
+                            db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
+                            
                         }
                         vrg.Rid = parkRid;
                     }

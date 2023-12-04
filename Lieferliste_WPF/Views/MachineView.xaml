@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:local="clr-namespace:Lieferliste_WPF.Views"
         xmlns:UC="clr-namespace:El2UserControls;assembly=El2UserControls"
@@ -76,6 +77,10 @@
                         <MenuItem.Icon>
                             <Image Source="/Images/files-and-folders.png" />
                         </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Drucken" Command="{Binding MachinePrint}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
+                        <materialDesign:PackIcon Kind="PrinterPrimary"/>
                     </MenuItem>
                     <Separator />
                     <MenuItem x:Name="DelBullet" Header="Markierung  löschen" Command="{Binding SetMarkerCommand}" >
@@ -159,8 +164,10 @@
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Bemerkung" Binding="{Binding CommentT, ValidatesOnExceptions=True}"
                                     EditingElementStyle="{StaticResource CellEditStyle}"/>
-                
- 
+                <DataGridTextColumn Header="Gemeldet" Binding="{Binding QuantityYield}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="offen" Binding="{Binding QuantityMiss}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Ausschuss" Binding="{Binding QuantityScrap}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="NA" Binding="{Binding QuantityRework}" IsReadOnly="True"/>
 
             </DataGrid.Columns>
         </DataGrid>

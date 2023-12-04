@@ -20,5 +20,7 @@
         public const string Order = "OO00";
         public const string OpenExpl = "EXPL00";
         public const string DeArchivate = "ARCHIVATE0";
+        public const string MachPrint = "MACHPR";
+        public const string OpenMach = "MACH00";
     }
 }
