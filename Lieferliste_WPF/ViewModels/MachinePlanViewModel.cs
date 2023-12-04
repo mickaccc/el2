@@ -94,7 +94,18 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
-            return _DbCtx.ChangeTracker.HasChanges();
+            try
+            {
+                return _DbCtx.ChangeTracker.HasChanges();
+            }
+            catch (InvalidOperationException e)
+            {
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message,"SaveCanExecute",MessageBoxButton.OK,MessageBoxImage.Error);
+            }
+            return false;
         }
 
         private void OnSaveExecuted(object obj)
