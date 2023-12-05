@@ -24,7 +24,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="130"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
 
         </Grid.RowDefinitions>
@@ -34,7 +35,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="1.5*"/>
         </Grid.ColumnDefinitions>
-
+        <GridSplitter ResizeDirection="Rows" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="3" VerticalAlignment="Stretch" Height="4" HorizontalAlignment="Stretch"/>
         <DockPanel >
 
             <Button Command="{Binding NewCommand}" materialDesign:ButtonAssist.CornerRadius="10" >
@@ -59,7 +60,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-
+                
                 <TextBox x:Name="U01"   TabIndex="0" materialDesign:HintAssist.Hint="Name der angezeigt werden soll"
                          IsReadOnly="{Binding ConverterParameter={x:Static const:Permissions.UserEditInvers},
                                                 Converter={StaticResource Permission}}">
@@ -101,7 +102,7 @@
 
             </Grid>
         </Border>
-        <ScrollViewer Grid.Row="2" Grid.RowSpan="2">
+        <ScrollViewer Grid.Row="2" Grid.RowSpan="3">
             <ListBox x:Name="ListUsers" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Users}"
                   SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <ListBox.ItemTemplate>
@@ -146,7 +147,7 @@
             </ListBox.ItemTemplate>
 
         </ListBox>
-        <ScrollViewer Grid.Row="3" Grid.Column="1">
+        <ScrollViewer Grid.Row="4" Grid.Column="1">
             <ListBox x:Name="ListWORKAREA" ItemsSource="{Binding WorkView}"  
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
@@ -183,7 +184,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <ScrollViewer Grid.Row="3" Grid.Column="2">
+        <ScrollViewer Grid.Row="4" Grid.Column="2">
             <ListBox x:Name="ListROLE" ItemsSource="{Binding RoleView}" 
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
@@ -223,7 +224,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <ScrollViewer  Grid.Row="3" Grid.Column="3">
+        <ScrollViewer  Grid.Row="4" Grid.Column="3">
             <ListBox x:Name="ListCOSTUNIT" ItemsSource="{Binding CostView}" 
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"

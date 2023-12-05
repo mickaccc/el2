@@ -22,5 +22,6 @@
         public const string DeArchivate = "ARCHIVATE0";
         public const string MachPrint = "MACHPR";
         public const string OpenMach = "MACH00";
+        public const string SETMARK = "SETMARK";
     }
 }

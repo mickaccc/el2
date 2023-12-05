@@ -30,7 +30,7 @@
         </DockPanel>
 
         <ListBox x:Name="ListRoles" Grid.Row="1" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Roles}"
-                  SelectedIndex="0" SelectionChanged="ListUsers_SelectionChanged">
+                  SelectedIndex="0" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Description}"/>
@@ -44,17 +44,17 @@
             </i:Interaction.Triggers>
 
         </ListBox>
-        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding PermissionsInter}"
+        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding PermissionsInter}" 
                   AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
-                  dd:DragDrop.DropHandler="{Binding}"/>
+                  dd:DragDrop.DropHandler="{Binding}" ScrollViewer.CanContentScroll="True"/>
 
         <DataGrid x:Name="ListPermission" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding PermissionsAvail}"
                   AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
-                  dd:DragDrop.DropHandler="{Binding}" />
+                  dd:DragDrop.DropHandler="{Binding}" ScrollViewer.CanContentScroll="True" />
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
 

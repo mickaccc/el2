@@ -9,13 +9,16 @@ namespace El2Core.Converters
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-            string source = (string)value[0];
-            if (!string.IsNullOrEmpty(source))
+
+            if (value[0] is string source)
             {
-                if (value[1] is DateTime date)
+                if (!string.IsNullOrEmpty(source))
                 {
-                    int weekNum = culture.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    return string.Format("{0} bis KW{1}' {2}", source, weekNum, date.Year);
+                    if (value[1] is DateTime date)
+                    {
+                        int weekNum = culture.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                        return string.Format("{0} bis KW{1}' {2}", source, weekNum, date.Year);
+                    }
                 }
             }
             return string.Empty;

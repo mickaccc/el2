@@ -112,11 +112,14 @@
                 <DataGridTextColumn Header="Spätend" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}"/>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Path=Text}"/>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}"/>
-                <DataGridTextColumn Header="Dauer" Binding="{Binding Beaze, Converter={StaticResource plus}}"/>
-
-
-
-
+                <DataGridTextColumn Header="Dauer">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding Converter="{StaticResource plus}">
+                            <Binding Path="Beaze"/>
+                            <Binding Path="Rstze"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
 

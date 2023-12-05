@@ -393,23 +393,11 @@ namespace ModuleDeliverList.UserControls
             }
         }
 
-        private void btnToArchiv_Click(object sender, RoutedEventArgs e)
-        {
-            SetValue(ArchivatedProperty, true);
-        }
-
-
-
-
         private void chkInvis_Checked(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void CommentHighPrio_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
 
 
         private void CopyCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)

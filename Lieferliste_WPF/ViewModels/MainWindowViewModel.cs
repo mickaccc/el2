@@ -170,6 +170,7 @@ namespace Lieferliste_WPF.ViewModels
                         .Include(x => x.MaterialNavigation)
                         .Include(x => x.DummyMatNavigation)
                         .Include(x => x.Vorgangs)
+                        .ThenInclude(x => x.RidNavigation)
                         .FirstOrDefault(x => x.Aid == para);
                 }
                 if (ord != null)

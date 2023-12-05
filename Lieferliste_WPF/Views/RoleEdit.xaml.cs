@@ -33,13 +33,6 @@ namespace Lieferliste_WPF.Views
         }
 
 
-
-        private void ListUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             if (e.PropertyName == "PKey" ||
@@ -56,7 +49,7 @@ namespace Lieferliste_WPF.Views
             if (e.PropertyName == "PermissionKeyNavigation")
             {
                 var pr = e.PropertyType.GetField("Description");
-                Debug.WriteLine(pr);
+                
             }
         }
     }

@@ -50,20 +50,28 @@ namespace Lieferliste_WPF.Utilities
                 //copy.PageWidth = 528; // allow the page to be the natural with of the output device
 
                 // Send content to the printer.
-                docWriter.Write(paginator);
+                PrintDialog dialog = new PrintDialog();
+                dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
+                docWriter.Write(paginator, dialog.PrintTicket);
             }
 
         }
         public static FlowDocument CreateFlowDocument(object parameter)
         {
             PlanMachine plm = (PlanMachine)parameter;
-
-            FlowDocument fd = new FlowDocument();
-
             StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append(DateTime.Now.ToLongDateString()).Append(" --- ").Append(DateTime.Now.ToLongTimeString());
+            FlowDocument fd = new FlowDocument();
+            Paragraph p1 = new Paragraph(new Run(stringBuilder.ToString()));
+            p1.FontStyle = FontStyles.Normal;
+            p1.FontFamily = new FontFamily("Microsoft Sans Serif");
+            p1.FontSize = 12;
+            fd.Blocks.Add(p1);
+            stringBuilder.Clear();
             stringBuilder.Append(plm.Name).Append(' ').Append(plm.InventNo);
             Paragraph p = new Paragraph(new Run(stringBuilder.ToString()));
             p.FontStyle = FontStyles.Normal;
+            p.FontWeight = FontWeights.Bold;
             p.FontFamily = new FontFamily("Segoe UI");
             p.FontSize = 18;
             fd.Blocks.Add(p);

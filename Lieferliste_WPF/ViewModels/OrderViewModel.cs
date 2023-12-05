@@ -73,6 +73,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+ 
         private string? _pro;
 
         public string? Pro
@@ -167,6 +168,7 @@ namespace Lieferliste_WPF.ViewModels
             Pro = p.ProId;
             ProInfo = p.ProId;
             SysStatus = p.SysStatus;
+
             VorgangCV.Refresh();
         }
     }
