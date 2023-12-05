@@ -39,16 +39,23 @@
                         Style="{StaticResource MaterialDesignFlatButton}">
                         <materialdesign:PackIcon Kind="Hide" Width="16" Height="16" />
                     </Button>
-
-                    <Button Grid.Row="1" HorizontalAlignment="Left" Padding="2"
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <Button HorizontalAlignment="Left" Padding="2"
                          ToolTip="Alternativ: Strg + LMB oder Strg + M"
                         Command="{Binding OpenMachineCommand, Mode=OneWay}"
                         CommandParameter="{Binding InventNo}"
                         Style="{StaticResource MaterialDesignFlatButton}">
                         <materialdesign:PackIcon Kind="Details" Width="16" Height="16"/>
                     </Button>
-
-                <TextBlock Text="{Binding Name}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"/>
+                    <Button Padding="2"
+                            ToolTip="Drucken"
+                            Command="{Binding MachinePrintCommand}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialdesign:PackIcon Kind="PrinterFavorite" Width="16" Height="16"/>
+                    </Button>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Name}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding InventNo}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Height="Auto"/>
                 
             </Grid>
