@@ -35,6 +35,16 @@
             <RowDefinition Height=" 80"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Drucken" Command="{Binding MachinePrintCommand}"
+                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="PrinterPrimary"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <DockPanel Background="RosyBrown">
 
             <ListBox x:Name="cost" DockPanel.Dock="Right" VerticalAlignment="Top" ItemsSource="{Binding CostUnits}"
