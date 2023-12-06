@@ -1,10 +1,16 @@
 ﻿namespace Lieferliste_WPF.Views
 {
+    using El2Core.Converters;
+    using SharpCompress.Common;
+    using System;
+    using System.Globalization;
     using System.Runtime.Versioning;
+    using System.Text.RegularExpressions;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+    using System.Windows.Threading;
 
 
     /// <summary>
@@ -64,41 +70,12 @@
                 }
             }
         }
-        //private void TabControl_Leave(object sender, DragEventArgs e)
-        //{
-        //    e.Effects = DragDropEffects.Move;
 
-        //    var tabItemSource = (Grid)e.Data.GetData(typeof(Grid));
-        //    if (tabItemSource != null)
-        //    {
-        //        TabControl tabCrt = (TabControl)sender;
-        //        Window wnd = new Tabable
-        //        {
-        //            Owner = this,
-        //            Title = tabItemSource.Name,
-        //            Content = tabItemSource,
-        //            Tag = "MPL"
-
-        //        };
-
-        //        MainWindowViewModel mv = DataContext as MainWindowViewModel;
-        //        mv.WindowTitles.Add(tabItemSource);
-        //        //mv.TabTitles.Remove(tabItemSource);
-
-        //        wnd.Show();
-
-        //        this.Background = Brushes.White;
-        //    }
-        //}
         private void TabControl_Enter(object sender, DragEventArgs e)
         {
             this.Background = Brushes.Turquoise;
         }
         #endregion
-
-        #region ToArchiveCommand
-        #endregion ToArchiveCommand
-
 
 
         private static TabItem GetTargetTabItem(object originalSource)
@@ -119,36 +96,17 @@
             return null;
         }
 
-        //private void TbControl_MouseDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    try
-        //    {
-        //        if (e.MiddleButton == MouseButtonState.Pressed)
-        //        {
-        //            TabControl tabCrt = (TabControl)sender;
-        //            TabItem tabItemSource = (TabItem)tabCrt.SelectedItem;
-        //            Window wnd = new Tabable
-        //            {
-        //                Owner = this,
-        //                Title = (string)tabItemSource.Header
 
-        //            };
-
-        //            (wnd as Tabable).Tabable_TabControl.Items.Add(tabItemSource);
-        //            MainWindowViewModel mv = DataContext as MainWindowViewModel;
-        //            //mv.TabTitles.Remove((Page)tabItemSource.Content);
-        //            mv.WindowTitles.Add((Grid)tabItemSource.Content);
-
-        //            wnd.Show();
-        //        }
-        //    }
-
-        //    catch (InvalidOperationException ex)
-        //    {
-        //        MessageBox.Show(ex.Message,"Fehlermeldung",MessageBoxButton.OK,MessageBoxImage.Error);
-        //    }
-        //}
-
-
+        private void mainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            DispatcherTimer timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (object s, EventArgs ev) =>
+            {
+                this.myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
+            }, this.Dispatcher);
+            timer.Start();
+            this.aktKW.Text = string.Format("  KW {0}  ", CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now,
+                CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday));
+    
+        }
     }
 }

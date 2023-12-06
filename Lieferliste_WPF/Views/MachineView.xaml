@@ -7,7 +7,8 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:local="clr-namespace:Lieferliste_WPF.Views"
-        xmlns:UC="clr-namespace:El2UserControls;assembly=El2UserControls"
+    xmlns:wpfControl="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+        xmlns:UC="clr-namespace:Lieferliste_WPF.UserControls"
         x:Class="Lieferliste_WPF.Views.MachineView"
         
         mc:Ignorable="d"
@@ -16,6 +17,7 @@
     <Window.Resources>
         <conv:TTNR_Converter x:Key="ttnr"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
+        <conv:BullettShapeConverter x:Key="BulletShape"/>
 
         <Style x:Key="CellEditStyle" TargetType="{x:Type TextBox}">
             <Setter Property="BorderThickness" Value="1"/>
@@ -64,7 +66,7 @@
                 Command="{Binding MachinePrintCommand}"
                 CommandParameter="{Binding}"
                 Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="PrinterFavorite"/>
+                    <materialDesign:PackIcon Kind="PrinterFavorite" Width="30" Height="30"/>
             </Button>
             <TextBox Text="{Binding Name}" DockPanel.Dock="Top" FontSize="30" FontWeight="Bold" Background="Transparent"/>
             <TextBox Text="{Binding Description}" DockPanel.Dock="Bottom" FontSize="20" Background="Transparent"/>
@@ -105,7 +107,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <UC:BulletedItem BulletColor="White"/>
+                            <wpfControl:BullettControl BullettColor="White"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem x:Name="Bullet1" Header="roter Punkt"  Command="{Binding SetMarkerCommand}">
@@ -116,7 +118,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <UC:BulletedItem BulletColor="Red"/>
+                            <wpfControl:BullettControl BullettColor="Red" BullettShape="0"/>
                         </MenuItem.Icon>
                     </MenuItem>
 
@@ -129,7 +131,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <UC:BulletedItem BulletColor="Green"/>
+                            <wpfControl:BullettControl BullettColor="Green" BullettShape="0"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="gelber Punkt" Command="{Binding SetMarkerCommand}"
@@ -141,7 +143,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <UC:BulletedItem BulletColor="Yellow"/>
+                            <wpfControl:BullettControl BullettColor="Yellow" BullettShape="0"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="blauer Punkt" Command="{Binding SetMarkerCommand}"
@@ -153,7 +155,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <UC:BulletedItem BulletColor="Blue"/>
+                            <wpfControl:BullettControl BullettColor="Blue"/>
                         </MenuItem.Icon>
                     </MenuItem>
 
@@ -164,7 +166,8 @@
                 <DataGridTemplateColumn >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate >
-                            <UC:BulletedItem BulletColor="{Binding Bullet, TargetNullValue='White'}"/>
+                            <wpfControl:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
+                                                       BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"/>
 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

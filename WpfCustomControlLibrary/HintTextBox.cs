@@ -63,7 +63,6 @@ namespace WpfCustomControlLibrary
                new FrameworkPropertyMetadata(11.0,
                    FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-
         }
 
 

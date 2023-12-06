@@ -4,6 +4,7 @@
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/HintTextBox.xaml"/>
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/ClearableHintTextBox.xaml"/>
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/LoadingSpinner.xaml"/>
+        <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/BullettControl.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

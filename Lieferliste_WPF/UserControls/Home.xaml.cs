@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace El2UserControls
+namespace Lieferliste_WPF.UserControls
 {
     /// <summary>
     /// Interaction logic for Home.xaml

@@ -11,7 +11,6 @@
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     xmlns:Controls="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
-    xmlns:userControl="clr-namespace:El2UserControls;assembly=El2UserControls"
     
     x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
              prism:ViewModelLocator.AutoWireViewModel="True"

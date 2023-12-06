@@ -6,9 +6,7 @@ using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
-using System;
 using System.Collections;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -16,7 +14,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace Lieferliste_WPF.Planning
 {
@@ -47,17 +44,6 @@ namespace Lieferliste_WPF.Planning
 
         #endregion
 
-
-        public static readonly DependencyProperty PlanableProperty =
-            DependencyProperty.Register("Planable"
-                , typeof(bool)
-                , typeof(PlanMachine));
-        public static readonly DependencyProperty BulletsProperty =
-            DependencyProperty.Register("Bullets"
-                , typeof(ImmutableArray<Shape>)
-                , typeof(PlanMachine));
-
-
         public bool Vis
         {
             get { return (bool)GetValue(VisProperty); }
@@ -69,16 +55,6 @@ namespace Lieferliste_WPF.Planning
             DependencyProperty.Register("Vis", typeof(bool), typeof(PlanMachine), new PropertyMetadata(true));
 
 
-        public bool Planable
-        {
-            get { return (bool)GetValue(PlanableProperty); }
-            set { SetValue(PlanableProperty, value); }
-        }
-        public ImmutableArray<Shape> Bullets
-        {
-            get { return (ImmutableArray<Shape>)GetValue(BulletsProperty); }
-            set { SetValue(BulletsProperty, value); }
-        }
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? OpenMachineCommand { get; private set; }
         public ICommand? MachinePrintCommand {  get; private set; }
@@ -131,33 +107,42 @@ namespace Lieferliste_WPF.Planning
 
         private void OnMachinePrintExecuted(object obj)
         {
-            Printing.DoThePrint(Printing.CreateFlowDocument(obj));
+            try
+            {
+                Printing.DoThePrint(Printing.CreateFlowDocument(obj));
+            }
+            catch (System.Exception e)
+            {
+                MessageBox.Show(e.Message, "MachinePrint", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private static bool OnSetMarkerCanExecute(object arg)
         {
-            if (arg != null)
-            {
-                var values = (object[])arg;
-                return (values[1] is Vorgang);
-            }
-            return false;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);
         }
 
         private void OnSetMarkerExecuted(object obj)
         {
-            if (obj == null) return;
-            var values = (object[])obj;
-            var name = (string)values[0];
-            var desc = (Vorgang)values[1];
+            try
+            {
+                if (obj == null) return;
+                var values = (object[])obj;
+                var name = (string)values[0];
+                var desc = (Vorgang)values[1];
 
-            if (name == "DelBullet") desc.Bullet = Brushes.White.ToString();
-            if (name == "Bullet1") desc.Bullet = Brushes.Red.ToString();
-            if (name == "Bullet2") desc.Bullet = Brushes.Green.ToString();
-            if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
-            if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
+                if (name == "DelBullet") desc.Bullet = Brushes.White.ToString();
+                if (name == "Bullet1") desc.Bullet = Brushes.Red.ToString();
+                if (name == "Bullet2") desc.Bullet = Brushes.Green.ToString();
+                if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
+                if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
-            ProcessesCV.Refresh();
+                ProcessesCV.Refresh();
+            }
+            catch (System.Exception e)
+            {
+                MessageBox.Show(e.Message, "SetMarker", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
         }
         private bool OnOpenMachineCanExecute(object arg)

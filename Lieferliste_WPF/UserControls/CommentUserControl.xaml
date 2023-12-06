@@ -1,16 +1,15 @@
-﻿<UserControl x:Class="El2UserControls.CommentUserControl"
+﻿<UserControl x:Class="Lieferliste_WPF.UserControls.CommentUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
-             xmlns:local="clr-namespace:El2UserControls"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="85" d:DesignWidth="100" Name="cmt">
     <UserControl.Resources>
         <conv:NegateBoolConverter x:Key="neg"/>
-        <local:CommentConvert x:Key="CommentConv"/>
+        <conv:CommentConverter x:Key="CommentConv"/>
         <sys:Boolean x:Key="TrueValue">True</sys:Boolean>
         <sys:Boolean x:Key="FalseValue">False</sys:Boolean>
     </UserControl.Resources>

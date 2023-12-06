@@ -92,8 +92,9 @@ namespace Lieferliste_WPF.Utilities
                 x.Aid,
                 x.AidNavigation.Material,
                 x.AidNavigation.MaterialNavigation?.Bezeichng,
+                x.AidNavigation.Quantity,
                 x.Text,
-                x.CommentT
+                x.BemT
             }).ToArray();
 
             int i = 0;
@@ -106,8 +107,9 @@ namespace Lieferliste_WPF.Utilities
                     case "Aid": head = "Auftragsnummer"; break;
                     case "Material": head = "Material"; break;
                     case "Bezeichng": head = "Bezeichnung"; break;
+                    case "Quantity": head = "Menge"; break;
                     case "Text": head = "Kurztext"; break;
-                    case "CommentT": head = "Kommentar"; break;
+                    case "BemT": head = "Kommentar"; break;
                     default: head = "not Valid"; break;
                 }
                 r.Cells.Add(new TableCell(new Paragraph(new Run(head))));
@@ -140,7 +142,6 @@ namespace Lieferliste_WPF.Utilities
                     r.Cells.Add(new TableCell(new Paragraph(new Run((string)property.GetValue(row)))));
                     r.Cells[i].ColumnSpan = 1;
                     r.Cells[i].Padding = new Thickness(1);
-
                     r.Cells[i].BorderBrush = Brushes.DarkGray;
                     r.Cells[i].BorderThickness = new Thickness(0, 0, 1, 1);
                     ++i;

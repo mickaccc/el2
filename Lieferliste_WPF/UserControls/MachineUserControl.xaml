@@ -1,13 +1,13 @@
-﻿<UserControl 
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:El2UserControls"
-             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
-             xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:dd="urn:gong-wpf-dragdrop" 
-             x:Class="El2UserControls.MachineUserControl"
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+    xmlns:wpfcontrol="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    x:Class="Lieferliste_WPF.UserControls.MachineUserControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="250" Unloaded="UserControl_Unloaded" Visibility="{Binding Path=Vis,Converter={StaticResource BooleanToVisibilityConverter}}" >
 
@@ -16,6 +16,7 @@
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:TTNR_Converter x:Key="TTNR"/>
         <conv:TextCompareToColorConverter x:Key="txtColor"/>
+        <conv:BullettShapeConverter x:Key="BulletShape"/>
     </UserControl.Resources>
     <Border BorderBrush="Black" BorderThickness="1">
     <Grid x:Name="grid" DataContext="{Binding}">
@@ -37,24 +38,23 @@
 
                     <Button x:Name="HideDetails" Click="HideDetails_Click"  HorizontalAlignment="Left" Padding="2"
                         Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialdesign:PackIcon Kind="Hide" Width="16" Height="16" />
+                        <materialdesign:PackIcon Kind="Hide" Width="25" Height="25" />
                     </Button>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal">
-                    <Button HorizontalAlignment="Left" Padding="2"
+                    <Canvas Grid.Row="1" >
+                    <Button HorizontalAlignment="Left" Padding="2" 
                          ToolTip="Alternativ: Strg + LMB oder Strg + M"
                         Command="{Binding OpenMachineCommand, Mode=OneWay}"
                         CommandParameter="{Binding InventNo}"
                         Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialdesign:PackIcon Kind="Details" Width="16" Height="16"/>
+                        <materialdesign:PackIcon Kind="Details" Width="25" Height="25"/>
                     </Button>
-                    <Button Padding="2"
-                            ToolTip="Drucken"
+                    <Button Canvas.Left="35" Padding="2" ToolTip="Drucken" 
                             Command="{Binding MachinePrintCommand}"
                             CommandParameter="{Binding}"
                             Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialdesign:PackIcon Kind="PrinterFavorite" Width="16" Height="16"/>
+                        <materialdesign:PackIcon Kind="PrinterEye"  Width="25" Height="25"/>
                     </Button>
-                    </StackPanel>
+                    </Canvas>
                     <TextBlock Text="{Binding Name}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding InventNo}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Height="Auto"/>
                 
@@ -77,13 +77,13 @@
                     <MenuItem Header="Auftrag öffnen" Command="{Binding ApplicationCommands.OpenOrderCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
                         <MenuItem.Icon>
-                            <Image Source="/El2UserControls;component/Images/planning.png"/>
+                            <Image Source="/Images/planning.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Explorer öffnen" Command="{Binding ApplicationCommands.ExplorerCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
                         <MenuItem.Icon>
-                            <Image Source="/El2UserControls;component/Images/files-and-folders.png"/>
+                            <Image Source="/Images/files-and-folders.png"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <Separator/>
@@ -95,7 +95,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <local:BulletedItem BulletColor="White"/>
+                            <wpfcontrol:BullettControl BullettColor="White"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem x:Name="Bullet1" Header="roter Punkt"  Command="{Binding SetMarkerCommand}">
@@ -106,7 +106,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <local:BulletedItem BulletColor="Red"/>
+                            <wpfcontrol:BullettControl BullettColor="Red"/>
                         </MenuItem.Icon>
                     </MenuItem>
 
@@ -119,7 +119,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <local:BulletedItem BulletColor="Green"/>
+                            <wpfcontrol:BullettControl BullettColor="Green"/>
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="gelber Punkt" Command="{Binding SetMarkerCommand}"
@@ -131,7 +131,7 @@
                             </MultiBinding>
                         </MenuItem.CommandParameter>
                         <MenuItem.Icon>
-                            <local:BulletedItem BulletColor="Yellow"/>
+                            <wpfcontrol:BullettControl BullettColor="Yellow"/>
                         </MenuItem.Icon>
                     </MenuItem>
                         <MenuItem Header="blauer Punkt" Command="{Binding SetMarkerCommand}"
@@ -143,7 +143,7 @@
                                 </MultiBinding>
                             </MenuItem.CommandParameter>
                             <MenuItem.Icon>
-                                <local:BulletedItem BulletColor="Blue"/>
+                                <wpfcontrol:BullettControl BullettColor="Blue"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>
@@ -168,8 +168,9 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate >
 
-                            <local:BulletedItem HorizontalAlignment="Left" VerticalAlignment="Top"
-                                            BulletColor="{Binding Bullet, TargetNullValue='White'}" />
+                            <wpfcontrol:BullettControl HorizontalAlignment="Left" VerticalAlignment="Top"
+                                            BullettColor="{Binding Bullet, TargetNullValue='White'}"
+                                            BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"/>
 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

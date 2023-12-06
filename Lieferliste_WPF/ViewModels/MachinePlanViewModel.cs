@@ -33,7 +33,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public ICommand SaveCommand { get; private set; }
 
-        public List<WorkArea>? WorkAreas { get; private set; }
+        public List<WorkArea> WorkAreas { get; } = [];
         private ConcurrentObservableCollection<PlanMachine> _machines { get; } = new();
         private ObservableCollection<Vorgang>? Priv_processes { get; set; }
         private ObservableCollection<Vorgang>? Priv_parking { get; set; }
@@ -89,7 +89,7 @@ namespace Lieferliste_WPF.ViewModels
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
-      
+
         }
 
         private bool OnSaveCanExecute(object arg)
@@ -120,7 +120,7 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.UserWorkAreas)
                 .Where(x => x.UserWorkAreas.Any(x => x.UserId.Equals(UserInfo.User.UserIdent)));
 
-            WorkAreas = new List<WorkArea>(work);
+            WorkAreas.AddRange(work);
 
         }
         private async Task<List<Vorgang>> GetVorgangsAsync()
@@ -150,18 +150,17 @@ namespace Lieferliste_WPF.ViewModels
             var re = await _DbCtx.Ressources
             .Include(x => x.RessourceCostUnits)
             .Include(x => x.WorkArea)
-            .Where(x => x.WorkArea != null).ToListAsync();
+            .Where(x => (x.WorkArea != null) && WorkAreas.Contains(x.WorkArea)).ToListAsync();
 
             var proc = await GetVorgangsAsync();
 
-            var ress = re.Where(y => y.RessourceCostUnits.IntersectBy(UserInfo.User.UserCosts.Select(e => e.CostId), a => a.CostId).Any());
             await Task.Factory.StartNew(() =>
             {
                 HashSet<PlanMachine> result = [];
                 lock (_lock)
                 {
 
-                    foreach (var q in ress)
+                    foreach (var q in re)
                     {
 
                         PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty)
@@ -219,17 +218,25 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void SelectionChange(object commandParameter)
         {
-            if (commandParameter is SelectionChangedEventArgs sel)
+            try
             {
-                if (sel.AddedItems[0] is WorkArea wa)
+                if (commandParameter is SelectionChangedEventArgs sel)
                 {
-                    RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == wa.WorkAreaId;
-                    ParkingCV.Filter = f => (f as Vorgang)?.Rid == wa.WorkAreaId * -1;
+                    if (sel.AddedItems[0] is WorkArea wa)
+                    {
+                        RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == wa.WorkAreaId;
+                        ParkingCV.Filter = f => (f as Vorgang)?.Rid == wa.WorkAreaId * -1;
 
-                    _currentWorkArea = wa.WorkAreaId;
-                    ProcessCV.Refresh();
-                    ParkingCV.Refresh();
+                        _currentWorkArea = wa.WorkAreaId;
+                        ProcessCV.Refresh();
+                        ParkingCV.Refresh();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.Message, "SelectionChange", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void OnTextSearch(object commandParameter)

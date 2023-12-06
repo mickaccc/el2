@@ -13,16 +13,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CompositeCommands.Core\CompositeCommands.Core.csproj" />
-    <ProjectReference Include="..\El2UserControls\El2UserControls.csproj" />
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
     <ProjectReference Include="..\WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Update="UserControls\LieferlisteControl.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="UserControls\OrderViewControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
