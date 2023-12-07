@@ -26,8 +26,6 @@ namespace ModuleDeliverList.ViewModels
 
         public ICollectionView OrdersView { get; private set; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
-        //public ICommand OpenExplorerCommand => _openExplorerCommand ??= new RelayCommand(OnOpenExplorer);
-        public ICommand FilterCommand => _filterCommand ??= new RelayCommand(OnFilter);
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SortAscCommand { get; private set; }
@@ -41,10 +39,26 @@ namespace ModuleDeliverList.ViewModels
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
         private RelayCommand? _textSearchCommand;
-        private RelayCommand? _filterCommand;
         private string _searchFilterText = string.Empty;
-        private string _searchFilterProj = string.Empty;
-        private CmbFilter _cmbFilter;
+        private string _selectedProjectFilter = string.Empty;
+        private string _selectedSectionFilter = string.Empty;
+        private CmbFilter _selectedDefaultFilter;
+        private List<Ressource> _ressources = [];
+        private HashSet<string> _sections =[];
+
+        public HashSet<string> Sections
+        {
+            get { return _sections; }
+            set
+            {
+                if (value != _sections)
+                {
+                    _sections = value;
+                    NotifyPropertyChanged(() => Sections);
+                }
+            }
+        }
+
         private HashSet<string> _projects = new();
         public HashSet<string> Projects
         {
@@ -91,34 +105,48 @@ namespace ModuleDeliverList.ViewModels
             [Description("Verkaufsmuster")]
             SALES
         }
-        public CmbFilter SelectedFilter
+        public CmbFilter SelectedDefaultFilter
         {
 
-            get => _cmbFilter;
+            get => _selectedDefaultFilter;
             set
             {
-                if (_cmbFilter != value)
+                if (_selectedDefaultFilter != value)
                 {
-                    _cmbFilter = value;
-                    NotifyPropertyChanged(() => SelectedFilter);
+                    _selectedDefaultFilter = value;
+                    NotifyPropertyChanged(() => SelectedDefaultFilter);
                     OrdersView.Refresh();
                 }
             }
         }
-        public string SearchFilterProj
+        public string SelectedProjectFilter
         {
-            get => _searchFilterProj;
+            get => _selectedProjectFilter;
             set
             {
-                if (value != _searchFilterProj)
+                if (value != _selectedProjectFilter)
                 {
-                    _searchFilterProj = value;
-                    NotifyPropertyChanged(() => SearchFilterProj);
+                    _selectedProjectFilter = value;
+                    NotifyPropertyChanged(() => SelectedProjectFilter);
                     OrdersView?.Refresh();
                 }
             }
         }
 
+        public string SelectedSectionFilter
+        {
+            get { return _selectedSectionFilter; }
+            set
+            {
+                if (_selectedSectionFilter != value)
+                {
+                    _selectedSectionFilter = value;
+                    NotifyPropertyChanged(() => SelectedSectionFilter);
+                    OrdersView?.Refresh();
+                }
+            }
+        }
+        
         public LieferViewModel(IContainerProvider container,
             IApplicationCommands applicationCommands)
         {
@@ -146,14 +174,17 @@ namespace ModuleDeliverList.ViewModels
                     if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
                         accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
             }
-            if (accepted && _cmbFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability;
-            if (accepted && _cmbFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
-            if (accepted && _cmbFilter == CmbFilter.START) accepted = ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false;
-            if (accepted && _cmbFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
-            if (accepted && _cmbFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
+            if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability;
+            if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
+            if (accepted && _selectedDefaultFilter == CmbFilter.START) accepted = ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false;
+            if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
+            if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
             if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
 
-            if (accepted && _searchFilterProj != string.Empty) accepted = ord.AidNavigation.ProId == _searchFilterProj;
+            if (accepted && _selectedProjectFilter != string.Empty) accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
+            if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
+                    .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
+                    .WorkArea?.Bereich == _selectedSectionFilter;
             return accepted;
 
         }
@@ -168,12 +199,7 @@ namespace ModuleDeliverList.ViewModels
             uiContext?.Send(x => OrdersView.Refresh(), null);
         }
         #region Commands
-
-        private void OnFilter(object obj)
-        {
-            _cmbFilter = (CmbFilter)obj;
-            OrdersView.Refresh();
-        }
+ 
         private void OnArchivateExecuted(object obj)
         {
             if (obj is string onr)
@@ -203,12 +229,11 @@ namespace ModuleDeliverList.ViewModels
 
             try
             {
-
                 return DBctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
             {
-                MessageBox.Show(e.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "CanSave", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;
         }
@@ -271,7 +296,8 @@ namespace ModuleDeliverList.ViewModels
 
         public async Task<ICollectionView> LoadDataAsync()
         {
-            _projects.Add(string.Empty);
+            _projects.Add(String.Empty);
+            _sections.Add(String.Empty);
             var a = await DBctx.OrderRbs
                .Include(v => v.Vorgangs)
                .ThenInclude(r => r.RidNavigation)
@@ -279,6 +305,10 @@ namespace ModuleDeliverList.ViewModels
                .Include(d => d.DummyMatNavigation)
                .Where(x => x.Abgeschlossen == false)
                .ToListAsync();
+            var ress = await DBctx.Ressources.AsNoTracking()
+                .Include(x => x.WorkArea)
+                .ToArrayAsync();
+            _ressources.AddRange(ress);
             await Task.Factory.StartNew(() =>
             {
                 HashSet<Vorgang> result = new();
@@ -306,14 +336,23 @@ namespace ModuleDeliverList.ViewModels
                         {
 
                             foreach (var x in ol.Where(x => x.AidNavigation.ProId != null))
-                            {
-                                _projects.Add(x.AidNavigation.ProId ?? string.Empty);
+                            { 
+                                var p = x.AidNavigation.ProId;
+                                if (p != null)
+                                    _projects.Add(p);
                             }
+
                             foreach (var r in ol.Where(x => x.Aktuell))
                             {
                                 result.Add(r);
-
+                                var inv = (r.ArbPlSap != null) ? r.ArbPlSap[3..] : string.Empty;
+                                var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea?.Bereich;
+                                if (z != null)
+                                { 
+                                  _sections.Add(z);
+                                }
                             }
+
                         }
                     }
                 }

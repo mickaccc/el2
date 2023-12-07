@@ -80,9 +80,5 @@ namespace Lieferliste_WPF.Views
             else e.Accepted = false;
         }
 
-        private void UnPlaned_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }

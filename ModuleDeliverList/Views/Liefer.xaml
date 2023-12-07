@@ -37,7 +37,7 @@
             </LinearGradientBrush>
         </DockPanel.Background>
         <Button Content="Speichern" Command="{Binding SaveCommand}"/>
-        <TextBox x:Name="SearchBox" Width="300" Margin="10,0,0,10" Background="White" Padding="10"
+        <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Background="White" Padding="10"
                  materialDesign:HintAssist.Hint="suchen in Auftragsnr, TTNR, Materialtext">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
@@ -52,28 +52,34 @@
             Margin="5,1,5,1"
             Mode="Standard"
             materialDesign:HintAssist.FloatingOffset="1,-10">
-        <StackPanel Orientation="Horizontal" >
+            <StackPanel Orientation="Horizontal" >
 
-            <ComboBox x:Name="ProjComboBox" Width="200" 
+                <ComboBox x:Name="ProjComboBox" Width="200"  
                      materialDesign:HintAssist.Hint="Projekte"
-                     Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
-            
-            <ComboBox 
-    x:Name="FilterComboBox"
-    Width="200"
-    materialDesign:HintAssist.Hint="Filters"
-                      
-    ItemsSource="{Binding Path=SelectedFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
-    Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                     SelectedValue="{Binding Path=SelectedFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     DisplayMemberPath="Description"
-                     SelectedValuePath="Value"/>
-            
-            <TextBlock Text="Anzahl Vorgänge:" 
+                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          ItemsSource="{Binding Projects}"
+                          SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="{Binding SelectedProjectFilter}"/>
+
+                <ComboBox x:Name="SectionComboBox" Width="200" Padding="8"
+                      materialDesign:HintAssist.Hint="Bereiche"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          ItemsSource="{Binding Sections}"
+                          SelectedValue="{Binding SelectedSectionFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="{Binding SelectedSectionFilter}" />
+                <ComboBox x:Name="FilterComboBox" Width="200" Padding="10"
+                    materialDesign:HintAssist.Hint="Filters"                    
+                    ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
+                    Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                         SelectedValue="{Binding Path=SelectedDefaultFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         DisplayMemberPath="Description"
+                         SelectedValuePath="Value"/>
+
+                <TextBlock Text="Anzahl Vorgänge:" 
                   AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
-            <TextBlock x:Name="Count"  Width="auto"
+                <TextBlock x:Name="Count"  Width="auto"
                           Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
-        </StackPanel>
+            </StackPanel>
         </materialDesign:ColorZone>
     </DockPanel>
     <StackPanel Grid.Row="1">
@@ -86,17 +92,17 @@
     </StackPanel>
 
 
-        <ListBox x:Name="Lieferlist" Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}"
+    <ListBox x:Name="Lieferlist" Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}"
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                           ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrderTask.Result}"
                           HorizontalContentAlignment="Stretch" >
 
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border x:Name="border" Height="100" CornerRadius="5" BorderBrush="Black" Background="LightGreen"
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <Border x:Name="border" Height="100" CornerRadius="5" BorderBrush="Black" Background="LightGreen"
                             BorderThickness="1" Margin="-5">
 
-                        <userControls:LieferlisteControl x:Name="ucLiefer"  
+                    <userControls:LieferlisteControl x:Name="ucLiefer"  
                             Aid="{Binding Aid}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
                             TTNR="{Binding AidNavigation.Material}"
@@ -118,11 +124,11 @@
 
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}">
-  
-                        </userControls:LieferlisteControl>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+
+                    </userControls:LieferlisteControl>
+                </Border>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
 
 </Grid>

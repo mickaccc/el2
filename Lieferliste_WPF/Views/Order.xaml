@@ -68,7 +68,7 @@
                        Text="{Binding Material, Converter={StaticResource TTNR_Converter1}, Mode=OneWay}"
                        MinWidth="120" ToolTip="Typ Teile Nummer"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblMat, Mode=OneWay}" />
-            <TextBlock Grid.Column="2" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtMatBez" VerticalAlignment="Top"
+            <TextBlock Grid.Column="2" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtMatBez" VerticalAlignment="Top"
                        Text="{Binding Bezeichnung, Mode=OneWay}" MinWidth="179" ToolTip="Material Kurztext" />
             <TextBlock Grid.Column="3" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtQuant" VerticalAlignment="Top"
                        Text="{Binding Quantity, Mode=OneWay}" MinWidth="120" ToolTip="bestellet Menge"
@@ -86,6 +86,8 @@
             <Label Grid.Column="5" Content="{Binding Items.Count, ConverterParameter=Vorgang;Vorgänge, Converter={StaticResource CountConverter1}, ElementName=listBox1, Mode=OneWay}"
                    HorizontalAlignment="Right" Margin="5" x:Name="Count" VerticalAlignment="Top"
                    Background="#FFEBEB73" Width="71" />
+            <Button Grid.Column="5" Content="Speichern" Height="23" HorizontalAlignment="Left" Margin="5"
+                    Command="{Binding SaveCommand}"/>
             <Button Grid.Column="5" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
                     VerticalAlignment="Top"  SnapsToDevicePixels="True"
                     Command="{Binding Path=ApplicationCommands.ArchivateCommand}" CommandParameter="{Binding Aid}"/>
