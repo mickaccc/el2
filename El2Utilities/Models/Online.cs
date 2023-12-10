@@ -14,4 +14,6 @@ public partial class Online
     public string PcId { get; set; } = null!;
 
     public DateTime Login { get; set; }
+
+    public virtual ICollection<Msg> Msgs { get; set; } = new List<Msg>();
 }

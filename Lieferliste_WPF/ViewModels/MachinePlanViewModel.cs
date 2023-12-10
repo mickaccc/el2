@@ -15,6 +15,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -44,7 +45,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         private IApplicationCommands _applicationCommands;
-
+        private static System.Timers.Timer? _timer;
         private NotifyTaskCompletion<ICollectionView> _machineTask;
 
         public NotifyTaskCompletion<ICollectionView> MachineTask
@@ -89,7 +90,7 @@ namespace Lieferliste_WPF.ViewModels
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
-
+            SetTimer();
         }
 
         private bool OnSaveCanExecute(object arg)
@@ -135,7 +136,6 @@ namespace Lieferliste_WPF.ViewModels
                   .Include(x => x.RidNavigation)
                   .Where(y => y.AidNavigation.Abgeschlossen == false
                     && y.SysStatus != null
-                    && y.SysStatus.Contains("RÜCK") == false
                     && y.Text != null
                     && y.Text.ToLower().Contains("starten") == false)
                   .ToListAsync();
@@ -143,7 +143,57 @@ namespace Lieferliste_WPF.ViewModels
             }
             return _processesAll;
         }
+        private void SetTimer()
+        {
+            // Create a timer with a 30 seconds interval.
+            _timer = new System.Timers.Timer(10000);
+            // Hook up the Elapsed event for the timer. 
+            _timer.Elapsed += OnTimedEvent;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+        }
 
+        private void OnTimedEvent(object? sender, ElapsedEventArgs e)
+        {
+            Task.Factory.StartNew(() =>
+            {
+
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                {
+                    var m = db.Msgs
+                        .Include(x => x.Onl)
+                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
+                        .ToList();
+                    foreach (var mess in m)
+                    {
+                        db.Database.ExecuteSqlRaw(@"DELETE FROM msg WHERE id={0}", mess.Id);
+                        var o = _processesAll.FirstOrDefault(x => x.VorgangId == mess.PrimaryKey);
+                        if (o != null)
+                        {
+                            Vorgang vrg = db.Vorgangs.First(x => x.VorgangId.Trim().Equals(mess.PrimaryKey, StringComparison.Ordinal));
+
+                            o.SysStatus = vrg.SysStatus;
+                            o.Spos = vrg.Spos;
+                            o.Text = vrg.Text;
+                            o.ActualEndDate = vrg.ActualEndDate;
+                            o.ActualStartDate = vrg.ActualStartDate;
+                            o.Aktuell = vrg.Aktuell;
+                            o.Bullet = vrg.Bullet;
+                            o.BemM = vrg.BemM;
+                            o.BemMa = vrg.BemMa;
+                            o.BemT = vrg.BemT;
+                            o.CommentT = vrg.CommentT;
+                            o.QuantityMiss = vrg.QuantityMiss;
+                            o.QuantityRework = vrg.QuantityRework;
+                            o.QuantityScrap = vrg.QuantityScrap;
+                            o.QuantityYield = vrg.QuantityYield;
+
+                        }
+                    }
+                }
+                ProcessCV.Refresh();
+            });
+        }
         private async Task<ICollectionView> LoadMachinesAsync()
         {
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
@@ -254,7 +304,7 @@ namespace Lieferliste_WPF.ViewModels
             var l = _machines.Where(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
             if (l.Any(x => x.RID == v.ArbPlSapNavigation?.RessourceId))
             {
-                e.Accepted = true;
+                e.Accepted = (!v.SysStatus?.Contains("RÜCK"))??false;
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))
                 {
                     
