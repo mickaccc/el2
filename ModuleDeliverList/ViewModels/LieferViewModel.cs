@@ -10,13 +10,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace ModuleDeliverList.ViewModels
 {
@@ -42,6 +45,8 @@ namespace ModuleDeliverList.ViewModels
         private string _searchFilterText = string.Empty;
         private string _selectedProjectFilter = string.Empty;
         private string _selectedSectionFilter = string.Empty;
+        private static System.Timers.Timer? _timer;
+        private IContainerProvider _container;
         private CmbFilter _selectedDefaultFilter;
         private List<Ressource> _ressources = [];
         private HashSet<string> _sections =[];
@@ -152,6 +157,7 @@ namespace ModuleDeliverList.ViewModels
         {
             _applicationCommands = applicationCommands;
             DBctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            _container = container;
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
 
@@ -159,6 +165,7 @@ namespace ModuleDeliverList.ViewModels
             ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
             _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
+            SetTimer();
 
         }
         private bool OrdersView_FilterPredicate(object value)
@@ -188,7 +195,71 @@ namespace ModuleDeliverList.ViewModels
             return accepted;
 
         }
+        private void SetTimer()
+        {
+            // Create a timer with a 30 seconds interval.
+            _timer = new System.Timers.Timer(2000);
+            // Hook up the Elapsed event for the timer. 
+            _timer.Elapsed += OnTimedEvent;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+        }
 
+        private void OnTimedEvent(object? sender, ElapsedEventArgs e)
+        {
+            if (OrdersView != null)
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    lock (_lock)
+                    {
+                        using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                        {
+                            var m = db.Msgs
+                                .Include(x => x.Onl)
+                                .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
+                                .ToList();
+                            foreach (var mess in m)
+                            {
+                                db.Database.ExecuteSqlRaw(@"DELETE FROM msg WHERE id={0}", mess.Id);
+                                var o = _orders.FirstOrDefault(x => x.VorgangId == mess.PrimaryKey);
+                                if (o != null)
+                                {
+
+                                    Vorgang vrg = db.Vorgangs.First(x => x.VorgangId == mess.PrimaryKey);
+                                    if (mess.TableName == "Vorgang")
+                                    {
+                                        o.SysStatus = vrg.SysStatus;
+                                        o.Spos = vrg.Spos;
+                                        o.Text = vrg.Text;
+                                        o.ActualEndDate = vrg.ActualEndDate;
+                                        o.ActualStartDate = vrg.ActualStartDate;
+                                        o.Aktuell = vrg.Aktuell;
+                                        o.Bullet = vrg.Bullet;
+                                        o.BemM = vrg.BemM;
+                                        o.BemMa = vrg.BemMa;
+                                        o.BemT = vrg.BemT;
+                                        o.CommentMach = vrg.CommentMach;
+                                        o.QuantityMiss = vrg.QuantityMiss;
+                                        o.QuantityRework = vrg.QuantityRework;
+                                        o.QuantityScrap = vrg.QuantityScrap;
+                                        o.QuantityYield = vrg.QuantityYield;
+
+                                    }
+                                    else if (mess.TableName == "OrderRB")
+                                    {
+                                        o.AidNavigation.Abgeschlossen = vrg.AidNavigation.Abgeschlossen;
+                                        o.AidNavigation.Dringend = vrg.AidNavigation.Dringend;
+                                        o.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
+                                        o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
         private void OnTextSearch(object commandParameter)
         {
             if (commandParameter is not TextChangedEventArgs change) return;
@@ -336,7 +407,7 @@ namespace ModuleDeliverList.ViewModels
                         {
 
                             foreach (var x in ol.Where(x => x.AidNavigation.ProId != null))
-                            { 
+                            {
                                 var p = x.AidNavigation.ProId;
                                 if (p != null)
                                     _projects.Add(p);
@@ -348,19 +419,20 @@ namespace ModuleDeliverList.ViewModels
                                 var inv = (r.ArbPlSap != null) ? r.ArbPlSap[3..] : string.Empty;
                                 var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea?.Bereich;
                                 if (z != null)
-                                { 
-                                  _sections.Add(z);
+                                {
+                                    _sections.Add(z);
                                 }
                             }
 
                         }
                     }
-                }
-                _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
 
-                OrdersView = CollectionViewSource.GetDefaultView(_orders);
-                OrdersView.Filter += OrdersView_FilterPredicate;
+                    _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
+
+                }
             });
+            OrdersView = CollectionViewSource.GetDefaultView(_orders);
+            OrdersView.Filter += OrdersView_FilterPredicate;
             return OrdersView;
         }
     }

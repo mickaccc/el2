@@ -9,7 +9,7 @@ public partial class Msg
 {
     public int Id { get; set; }
 
-    public int OnlId { get; set; }
+    public int? OnlId { get; set; }
 
     public string? TableName { get; set; }
 
@@ -21,5 +21,5 @@ public partial class Msg
 
     public string? NewValue { get; set; }
 
-    public virtual Online Onl { get; set; } = null!;
+    public virtual Online? Onl { get; set; }
 }

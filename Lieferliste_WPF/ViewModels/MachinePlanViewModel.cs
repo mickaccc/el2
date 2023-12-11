@@ -139,6 +139,7 @@ namespace Lieferliste_WPF.ViewModels
                     && y.Text != null
                     && y.Text.ToLower().Contains("starten") == false)
                   .ToListAsync();
+                  
                 _processesAll = query;
             }
             return _processesAll;
@@ -146,7 +147,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetTimer()
         {
             // Create a timer with a 30 seconds interval.
-            _timer = new System.Timers.Timer(10000);
+            _timer = new System.Timers.Timer(2000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -155,44 +156,55 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            Task.Factory.StartNew(() =>
+            if (_processesAll != null)
             {
-
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                Task.Factory.StartNew(() =>
                 {
-                    var m = db.Msgs
-                        .Include(x => x.Onl)
-                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
-                        .ToList();
-                    foreach (var mess in m)
+
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     {
-                        db.Database.ExecuteSqlRaw(@"DELETE FROM msg WHERE id={0}", mess.Id);
-                        var o = _processesAll.FirstOrDefault(x => x.VorgangId == mess.PrimaryKey);
-                        if (o != null)
+                        var m = db.Msgs
+                            .Include(x => x.Onl)
+                            .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
+                            .ToList();
+                        foreach (var mess in m)
                         {
-                            Vorgang vrg = db.Vorgangs.First(x => x.VorgangId.Trim().Equals(mess.PrimaryKey, StringComparison.Ordinal));
-
-                            o.SysStatus = vrg.SysStatus;
-                            o.Spos = vrg.Spos;
-                            o.Text = vrg.Text;
-                            o.ActualEndDate = vrg.ActualEndDate;
-                            o.ActualStartDate = vrg.ActualStartDate;
-                            o.Aktuell = vrg.Aktuell;
-                            o.Bullet = vrg.Bullet;
-                            o.BemM = vrg.BemM;
-                            o.BemMa = vrg.BemMa;
-                            o.BemT = vrg.BemT;
-                            o.CommentT = vrg.CommentT;
-                            o.QuantityMiss = vrg.QuantityMiss;
-                            o.QuantityRework = vrg.QuantityRework;
-                            o.QuantityScrap = vrg.QuantityScrap;
-                            o.QuantityYield = vrg.QuantityYield;
-
+                            db.Database.ExecuteSqlRaw(@"DELETE FROM msg WHERE id={0}", mess.Id);
+                            var o = _processesAll.FirstOrDefault(x => x.VorgangId == mess.PrimaryKey);
+                            if (o != null)
+                            {
+                                Vorgang vrg = db.Vorgangs.First(x => x.VorgangId == mess.PrimaryKey);
+                                if (mess.TableName == "Vorgang")
+                                {
+                                    o.SysStatus = vrg.SysStatus;
+                                    o.Spos = vrg.Spos;
+                                    o.Text = vrg.Text;
+                                    o.ActualEndDate = vrg.ActualEndDate;
+                                    o.ActualStartDate = vrg.ActualStartDate;
+                                    o.Aktuell = vrg.Aktuell;
+                                    o.Bullet = vrg.Bullet;
+                                    o.BemM = vrg.BemM;
+                                    o.BemMa = vrg.BemMa;
+                                    o.BemT = vrg.BemT;
+                                    o.CommentMach = vrg.CommentMach;
+                                    o.QuantityMiss = vrg.QuantityMiss;
+                                    o.QuantityRework = vrg.QuantityRework;
+                                    o.QuantityScrap = vrg.QuantityScrap;
+                                    o.QuantityYield = vrg.QuantityYield;
+                                }
+                                else if (mess.TableName == "OrderRB")
+                                {
+                                    o.AidNavigation.Abgeschlossen = vrg.AidNavigation.Abgeschlossen;
+                                    o.AidNavigation.Dringend = vrg.AidNavigation.Dringend;
+                                    o.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
+                                    o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
+                                }
+                            }
                         }
                     }
-                }
-                ProcessCV.Refresh();
-            });
+                    //ProcessCV.Refresh();
+                });
+            }
         }
         private async Task<ICollectionView> LoadMachinesAsync()
         {

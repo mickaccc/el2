@@ -21,6 +21,8 @@ public partial class Ressource
 
     public int? Type { get; set; }
 
+    public string? WorkSapId { get; set; }
+
     public int? WorkAreaId { get; set; }
 
     public bool Visability { get; set; }
