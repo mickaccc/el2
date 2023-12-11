@@ -9,8 +9,9 @@
     xmlns:dd="urn:gong-wpf-dragdrop"
     x:Class="Lieferliste_WPF.UserControls.MachineUserControl"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="250" Unloaded="UserControl_Unloaded" Visibility="{Binding Path=Vis,Converter={StaticResource BooleanToVisibilityConverter}}" >
-
+             d:DesignHeight="450" d:DesignWidth="250" Unloaded="UserControl_Unloaded" Visibility="{Binding Path=Vis,Converter={StaticResource BooleanToVisibilityConverter}}"
+    DataContextChanged="UserControl_DataContextChanged">
+            
     <UserControl.Resources>
         <conv:ToIntConverter x:Key="ToIntConverter"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>

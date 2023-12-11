@@ -1,4 +1,7 @@
 ﻿
+using Lieferliste_WPF.Planning;
+using System.ComponentModel;
+using System.DirectoryServices;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -29,5 +32,14 @@ namespace Lieferliste_WPF.UserControls
             e.Handled = true;
         }
 
+        private void UserControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var dtx = this.DataContext as PlanMachine;
+            if (dtx != null)
+            {
+                dtx.ProcessesCV.SortDescriptions.Clear();
+                dtx.ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+            }
+        }
     }
 }
