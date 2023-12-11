@@ -1,12 +1,14 @@
 ﻿
 using CompositeCommands.Core;
 using El2Core.Models;
+using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -16,7 +18,19 @@ namespace Lieferliste_WPF.ViewModels
         {
             _applicationCommands = applicationCommands;
             VorgangCV = CollectionViewSource.GetDefaultView(Vorgangs);
+            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
         }
+
+        private bool OnSaveCanExecute(object arg)
+        {
+            return false;
+        }
+
+        private void OnSaveExecuted(object obj)
+        {
+            
+        }
+
         private ObservableCollection<Vorgang> Vorgangs { get; } = new();
 
         public event Action<IDialogResult> RequestClose;
@@ -142,6 +156,7 @@ namespace Lieferliste_WPF.ViewModels
                 NotifyPropertyChanged(() => ApplicationCommands);
             }
         }
+        public ICommand SaveCommand;
         public bool CanCloseDialog()
         {
             return true;

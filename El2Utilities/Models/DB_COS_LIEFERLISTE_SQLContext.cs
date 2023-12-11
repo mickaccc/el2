@@ -19,6 +19,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<Costunit> Costunits { get; set; }
 
+    public virtual DbSet<Msg> Msgs { get; set; }
+
     public virtual DbSet<Online> Onlines { get; set; }
 
     public virtual DbSet<OrderRb> OrderRbs { get; set; }
@@ -67,6 +69,18 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.PlanRelevance).HasColumnName("plan_relevance");
         });
 
+        modelBuilder.Entity<Msg>(entity =>
+        {
+            entity.ToTable("msg");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.OnlId).HasColumnName("onlId");
+
+            entity.HasOne(d => d.Onl).WithMany(p => p.Msgs)
+                .HasForeignKey(d => d.OnlId)
+                .HasConstraintName("FK_msg_Online");
+        });
+
         modelBuilder.Entity<Online>(entity =>
         {
             entity.HasKey(e => e.Oid);
@@ -89,7 +103,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity.HasKey(e => e.Aid);
 
-            entity.ToTable("OrderRB");
+            entity.ToTable("OrderRB", tb =>
+                {
+                    tb.HasTrigger("AuditChangesOrderRB");
+                    tb.HasTrigger("AuditInsertOrderRB");
+                });
 
             entity.Property(e => e.Aid)
                 .HasMaxLength(50)
@@ -352,7 +370,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity.HasKey(e => e.VorgangId).HasName("PK_tblVorgang");
 
-            entity.ToTable("Vorgang");
+            entity.ToTable("Vorgang", tb =>
+                {
+                    tb.HasTrigger("AuditChangesVorgang");
+                    tb.HasTrigger("AuditInsertVorgang");
+                });
 
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)
