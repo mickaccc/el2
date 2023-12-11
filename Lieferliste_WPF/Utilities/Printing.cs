@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Lieferliste_WPF.Planning;
+using System.Globalization;
 
 namespace Lieferliste_WPF.Utilities
 {
@@ -41,17 +42,17 @@ namespace Lieferliste_WPF.Utilities
                 paginator.PageSize = new Size(ia.MediaSizeWidth, ia.MediaSizeHeight);
                 Thickness t = new Thickness(72);  // copy.PagePadding;
                 copy.PagePadding = new Thickness(
-                                 Math.Max(ia.OriginWidth, t.Left),
-                                   Math.Max(ia.OriginHeight, t.Top),
-                                   Math.Max(ia.MediaSizeWidth - (ia.OriginWidth + ia.ExtentWidth), t.Right),
-                                   Math.Max(ia.MediaSizeHeight - (ia.OriginHeight + ia.ExtentHeight), t.Bottom));
+                                 Math.Max(ia.OriginHeight, t.Left),
+                                   Math.Max(ia.OriginWidth, t.Top),
+                                   Math.Max(ia.MediaSizeHeight - (ia.OriginHeight + ia.ExtentHeight), t.Right),
+                                   Math.Max(ia.MediaSizeWidth - (ia.OriginWidth + ia.ExtentWidth), t.Bottom));
 
                 copy.ColumnWidth = double.PositiveInfinity;
                 //copy.PageWidth = 528; // allow the page to be the natural with of the output device
 
                 // Send content to the printer.
                 PrintDialog dialog = new PrintDialog();
-                dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
+                dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Portrait;
                 docWriter.Write(paginator, dialog.PrintTicket);
             }
 
@@ -59,15 +60,14 @@ namespace Lieferliste_WPF.Utilities
         public static FlowDocument CreateFlowDocument(object parameter)
         {
             PlanMachine plm = (PlanMachine)parameter;
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(DateTime.Now.ToLongDateString()).Append(" --- ").Append(DateTime.Now.ToLongTimeString());
+            
             FlowDocument fd = new FlowDocument();
-            Paragraph p1 = new Paragraph(new Run(stringBuilder.ToString()));
+            Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy hh:mm")));
             p1.FontStyle = FontStyles.Normal;
             p1.FontFamily = new FontFamily("Microsoft Sans Serif");
             p1.FontSize = 12;
             fd.Blocks.Add(p1);
-            stringBuilder.Clear();
+            StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append(plm.Name).Append(' ').Append(plm.InventNo);
             Paragraph p = new Paragraph(new Run(stringBuilder.ToString()));
             p.FontStyle = FontStyles.Normal;
@@ -83,7 +83,8 @@ namespace Lieferliste_WPF.Utilities
             fd.BringIntoView();
 
             fd.TextAlignment = TextAlignment.Center;
-            fd.ColumnWidth = 500;
+            fd.ColumnWidth = 600;
+            fd.IsColumnWidthFlexible = true;
             table.CellSpacing = 0;
 
 
@@ -92,8 +93,11 @@ namespace Lieferliste_WPF.Utilities
                 x.Aid,
                 x.AidNavigation.Material,
                 x.AidNavigation.MaterialNavigation?.Bezeichng,
-                x.AidNavigation.Quantity,
+                BeazeEinheit = x.AidNavigation.Quantity.ToString(),
                 x.Text,
+                RstzeEinheit = string.Format("{0} KW{1}",x.SpaetStart.GetValueOrDefault().ToString("dd/MM/yy"),
+                        CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.SpaetStart.GetValueOrDefault(),CalendarWeekRule.FirstFourDayWeek,DayOfWeek.Monday)),
+                SpaetEnd = x.SpaetEnd.GetValueOrDefault().ToShortDateString(),
                 x.BemT
             }).ToArray();
 
@@ -104,17 +108,19 @@ namespace Lieferliste_WPF.Utilities
                 string head;
                 switch (pr.Name)
                 {
-                    case "Aid": head = "Auftragsnummer"; break;
+                    case "Aid": head = "Auftrags-\nnummer"; break;
                     case "Material": head = "Material"; break;
                     case "Bezeichng": head = "Bezeichnung"; break;
-                    case "Quantity": head = "Menge"; break;
+                    case "BeazeEinheit": head = "Menge"; break;
                     case "Text": head = "Kurztext"; break;
+                    case "RstzeEinheit": head = "SpätStart"; break;
+                    case "SpaetEnd": head = "SpätEnd"; break;
                     case "BemT": head = "Kommentar"; break;
                     default: head = "not Valid"; break;
                 }
                 r.Cells.Add(new TableCell(new Paragraph(new Run(head))));
                 r.Cells[i].ColumnSpan = 1;
-                r.Cells[i].Padding = new Thickness(4);
+                r.Cells[i].Padding = new Thickness(2);
 
                 r.Cells[i].BorderBrush = Brushes.Black;
                 r.Cells[i].FontWeight = FontWeights.Bold;

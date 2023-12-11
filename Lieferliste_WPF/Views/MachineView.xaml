@@ -1,15 +1,14 @@
 ﻿<Window
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+    xml:lang="de-AT"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:dd="urn:gong-wpf-dragdrop"
-        xmlns:local="clr-namespace:Lieferliste_WPF.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:wpfControl="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
-        xmlns:UC="clr-namespace:Lieferliste_WPF.UserControls"
-        x:Class="Lieferliste_WPF.Views.MachineView"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    x:Class="Lieferliste_WPF.Views.MachineView"
         
         mc:Ignorable="d"
         Height="450" Width="800" Tag="{Binding Title}" >
@@ -179,7 +178,7 @@
                 <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Bemerkung" Binding="{Binding CommentT, ValidatesOnExceptions=True}"
+                <DataGridTextColumn Header="Bemerkung" Binding="{Binding CommentMach, ValidatesOnExceptions=True}"
                                     EditingElementStyle="{StaticResource CellEditStyle}"/>
                 <DataGridTextColumn Header="Gemeldet" Binding="{Binding QuantityYield}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="offen" Binding="{Binding QuantityMiss}" IsReadOnly="True"/>
