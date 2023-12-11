@@ -120,7 +120,7 @@
                 <DataGridTextColumn Header="Bezeichnung" Binding="{Binding Path=AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Spätstart" Binding="{Binding SpaetStart, StringFormat=\{0:d\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Spätend" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Kurztext" Binding="{Binding Path=Text}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Kurztext" Binding="{Binding Path=Text,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Dauer" IsReadOnly="True">
                     <DataGridTextColumn.Binding>

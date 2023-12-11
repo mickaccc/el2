@@ -253,6 +253,7 @@ namespace ModuleDeliverList.ViewModels
                                         o.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
                                         o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
                                     }
+                                    o.RunPropertyChanged();
                                 }
                             }
                         }

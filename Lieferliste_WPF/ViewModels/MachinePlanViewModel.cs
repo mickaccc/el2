@@ -199,12 +199,13 @@ namespace Lieferliste_WPF.ViewModels
                                     o.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
                                     o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
                                 }
+                                o.RunPropertyChanged();
                             }
                         }
                     }
-                    //ProcessCV.Refresh();
                 });
             }
+            
         }
         private async Task<ICollectionView> LoadMachinesAsync()
         {

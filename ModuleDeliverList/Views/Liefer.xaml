@@ -119,7 +119,7 @@
                             WorkAreaText="{Binding ArbPlSap}"
                             MachineText="{Binding RidNavigation.RessName,NotifyOnTargetUpdated=True}"
                             Comment_Me="{Binding BemM, Mode=TwoWay,NotifyOnTargetUpdated=True}"
-                            Comment_Te="{Binding BemT, Mode=TwoWay,NotifyOnTargetUpdated=True}"
+                            Comment_Te="{Binding BemT, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                             Comment_Ma="{Binding BemMa, Mode=TwoWay,NotifyOnTargetUpdated=True}"
 
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
