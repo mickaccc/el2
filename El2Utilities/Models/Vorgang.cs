@@ -3,7 +3,6 @@
 using El2Core.ViewModelBase;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace El2Core.Models;
 
@@ -14,6 +13,8 @@ public partial class Vorgang : ModelBase
     public string Aid { get; set; } = null!;
 
     public short Vnr { get; set; }
+
+    public int? Bid { get; set; }
 
     public string? ArbPlSap { get; set; }
 
@@ -71,25 +72,17 @@ public partial class Vorgang : ModelBase
 
     public DateTime? ActualEndDate { get; set; }
 
-    public string? CommentM { get; set; }
-
-    public string? CommentT { get; set; }
-
-    public string? CommentMa { get; set; }
-
     public string? Bullet { get; set; }
 
     public int? Spos { get; set; }
 
-    public string? CommentMach { get; set; }
-
     public int? Rid { get; set; }
+
+    public string? CommentMach { get; set; }
 
     public virtual OrderRb AidNavigation { get; set; } = null!;
 
     public virtual WorkSap? ArbPlSapNavigation { get; set; }
 
     public virtual Ressource? RidNavigation { get; set; }
-
-    
 }
