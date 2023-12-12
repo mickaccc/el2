@@ -5,6 +5,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using ModuleDeliverList.UserControls;
+using Prism.Events;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ namespace ModuleDeliverList.ViewModels
         private string _selectedSectionFilter = string.Empty;
         private static System.Timers.Timer? _timer;
         private IContainerProvider _container;
+        IEventAggregator _ea;
         private CmbFilter _selectedDefaultFilter;
         private List<Ressource> _ressources = [];
         private HashSet<string> _sections =[];
@@ -153,11 +155,14 @@ namespace ModuleDeliverList.ViewModels
         }
         
         public LieferViewModel(IContainerProvider container,
-            IApplicationCommands applicationCommands)
+            IApplicationCommands applicationCommands,
+            IEventAggregator ea)
         {
             _applicationCommands = applicationCommands;
             DBctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _container = container;
+            _ea = ea;
+
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
 
@@ -165,15 +170,41 @@ namespace ModuleDeliverList.ViewModels
             ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
             _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
+            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             SetTimer();
 
         }
+
+        private void MessageReceived(Vorgang vrg)
+        {
+            var v = _orders.FirstOrDefault(x => x.VorgangId == vrg.VorgangId);
+            if (v != null)
+            {
+                v.ActualEndDate = vrg.ActualEndDate;
+                v.ActualStartDate = vrg.ActualStartDate;
+                v.Aktuell = vrg.Aktuell;
+                v.SysStatus = vrg.SysStatus;
+                v.Termin = vrg.Termin;
+                v.Text = vrg.Text;
+                v.BemM = vrg.BemM;
+                v.BemMa = vrg.BemMa;
+                v.BemT = vrg.BemT;
+                v.CommentMach = vrg.CommentMach;
+                v.QuantityMiss = vrg.QuantityMiss;
+                v.QuantityRework = vrg.QuantityRework;
+                v.QuantityScrap = vrg.QuantityScrap;
+                v.QuantityYield = vrg.QuantityYield;
+
+                v.RunPropertyChanged();
+            }
+        }
+
         private bool OrdersView_FilterPredicate(object value)
         {
 
             var ord = (Vorgang)value;
 
-            var accepted = true;
+            var accepted = ord.Aktuell;
 
             if (!string.IsNullOrWhiteSpace(_searchFilterText))
             {
@@ -254,6 +285,7 @@ namespace ModuleDeliverList.ViewModels
                                         o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
                                     }
                                     o.RunPropertyChanged();
+                                    _ea.GetEvent<MessageVorgangChanged>().Publish(o);
                                 }
                             }
                         }

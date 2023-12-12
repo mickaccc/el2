@@ -42,18 +42,20 @@ namespace Lieferliste_WPF.Utilities
                 paginator.PageSize = new Size(ia.MediaSizeWidth, ia.MediaSizeHeight);
                 Thickness t = new Thickness(72);  // copy.PagePadding;
                 copy.PagePadding = new Thickness(
-                                 Math.Max(ia.OriginHeight, t.Left),
-                                   Math.Max(ia.OriginWidth, t.Top),
-                                   Math.Max(ia.MediaSizeHeight - (ia.OriginHeight + ia.ExtentHeight), t.Right),
-                                   Math.Max(ia.MediaSizeWidth - (ia.OriginWidth + ia.ExtentWidth), t.Bottom));
+                                 Math.Max(ia.OriginWidth, t.Left),
+                                   Math.Max(ia.OriginHeight, t.Top),
+                                   Math.Max(ia.MediaSizeWidth - (ia.OriginWidth + ia.ExtentWidth), t.Right),
+                                   Math.Max(ia.MediaSizeHeight - (ia.OriginHeight + ia.ExtentHeight), t.Bottom));
 
                 copy.ColumnWidth = double.PositiveInfinity;
                 //copy.PageWidth = 528; // allow the page to be the natural with of the output device
 
                 // Send content to the printer.
-                PrintDialog dialog = new PrintDialog();
-                dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Portrait;
+                PrintDialog dialog = new();
+                dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
+
                 docWriter.Write(paginator, dialog.PrintTicket);
+   
             }
 
         }

@@ -6,7 +6,9 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
+using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
+using Prism.Events;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -40,7 +42,7 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<Vorgang>? Priv_parking { get; set; }
         private DB_COS_LIEFERLISTE_SQLContext _DbCtx;
         private IContainerExtension _container;
-
+        IEventAggregator _ea;
         public ICollectionView RessCV { get; private set; }
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
@@ -81,18 +83,43 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
 
-        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
+        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands, IEventAggregator ea)
         {
             _container = container;
             _applicationCommands = applicationCommands;
+            _ea = ea;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             SetTimer();
+            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
         }
+        private void MessageReceived(Vorgang vrg)
+        {
+            var v = _processesAll.FirstOrDefault(x => x.VorgangId == vrg.VorgangId);
+            if (v != null)
+            {
+                v.ActualEndDate = vrg.ActualEndDate;
+                v.ActualStartDate = vrg.ActualStartDate;
+                v.Aktuell = vrg.Aktuell;
+                v.SysStatus = vrg.SysStatus;
+                v.Termin = vrg.Termin;
+                v.Text = vrg.Text;
+                v.BemM = vrg.BemM;
+                v.BemMa = vrg.BemMa;
+                v.BemT = vrg.BemT;
+                v.CommentMach = vrg.CommentMach;
+                v.QuantityMiss = vrg.QuantityMiss;
+                v.QuantityRework = vrg.QuantityRework;
+                v.QuantityScrap = vrg.QuantityScrap;
+                v.QuantityYield = vrg.QuantityYield;
+                v.Bullet = vrg.Bullet;
 
+                v.RunPropertyChanged();
+            }
+        }
         private bool OnSaveCanExecute(object arg)
         {
             try
@@ -191,6 +218,8 @@ namespace Lieferliste_WPF.ViewModels
                                     o.QuantityRework = vrg.QuantityRework;
                                     o.QuantityScrap = vrg.QuantityScrap;
                                     o.QuantityYield = vrg.QuantityYield;
+
+                                    
                                 }
                                 else if (mess.TableName == "OrderRB")
                                 {
@@ -200,6 +229,7 @@ namespace Lieferliste_WPF.ViewModels
                                     o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
                                 }
                                 o.RunPropertyChanged();
+                                _ea.GetEvent<MessageVorgangChanged>().Publish(o);
                             }
                         }
                     }
@@ -317,7 +347,7 @@ namespace Lieferliste_WPF.ViewModels
             var l = _machines.Where(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
             if (l.Any(x => x.RID == v.ArbPlSapNavigation?.RessourceId))
             {
-                e.Accepted = (!v.SysStatus?.Contains("RÜCK"))??false;
+                e.Accepted = true;
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))
                 {
                     

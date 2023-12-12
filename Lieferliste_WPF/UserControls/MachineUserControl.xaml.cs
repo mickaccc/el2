@@ -43,6 +43,7 @@ namespace Lieferliste_WPF.UserControls
                 if (live != null && live.CanChangeLiveFiltering)
                 {
                     live.LiveFilteringProperties.Add("SysStatus");
+                    live.IsLiveFiltering = true;
                 }
             }
         }

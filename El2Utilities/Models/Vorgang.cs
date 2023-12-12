@@ -14,8 +14,6 @@ public partial class Vorgang : ModelBase
 
     public short Vnr { get; set; }
 
-    public int? Bid { get; set; }
-
     public string? ArbPlSap { get; set; }
 
     public string? Text { get; set; }
@@ -76,9 +74,9 @@ public partial class Vorgang : ModelBase
 
     public int? Spos { get; set; }
 
-    public int? Rid { get; set; }
-
     public string? CommentMach { get; set; }
+
+    public int? Rid { get; set; }
 
     public virtual OrderRb AidNavigation { get; set; } = null!;
 

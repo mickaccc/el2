@@ -97,6 +97,7 @@ namespace Lieferliste_WPF.Planning
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+            ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
         }
 
         private bool OnMachinePrintCanExecute(object arg)
