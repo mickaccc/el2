@@ -6,11 +6,15 @@ using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
+using Prism.Events;
+using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -54,7 +58,6 @@ namespace Lieferliste_WPF.Planning
         public static readonly DependencyProperty VisProperty =
             DependencyProperty.Register("Vis", typeof(bool), typeof(PlanMachine), new PropertyMetadata(true));
 
-
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? OpenMachineCommand { get; private set; }
         public ICommand? MachinePrintCommand {  get; private set; }
@@ -90,7 +93,7 @@ namespace Lieferliste_WPF.Planning
 
         private void Initialize()
         {
-
+            
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
             MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
@@ -98,6 +101,22 @@ namespace Lieferliste_WPF.Planning
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
+            
+        }
+
+        private void MessageReceived(Vorgang vorgang)
+        {
+            var pr = Processes?.FirstOrDefault(x => x.VorgangId == vorgang.VorgangId);
+            if (pr != null)
+            {
+                pr.SysStatus = vorgang.SysStatus;
+                pr.QuantityMiss = vorgang.QuantityMiss;
+                pr.QuantityScrap = vorgang.QuantityScrap;
+                pr.QuantityRework = vorgang.QuantityRework;
+                pr.QuantityYield = vorgang.QuantityYield;
+                pr.BemT = vorgang.BemT;
+
+            }
         }
 
         private bool OnMachinePrintCanExecute(object arg)
@@ -183,7 +202,7 @@ namespace Lieferliste_WPF.Planning
                     ((IList)t.SourceCollection).Insert(v, vrg);
                 }
                 var p = t.SourceCollection as Collection<Vorgang>;
-                Debug.Assert(p != null, nameof(p) + " != null");
+                
                 for (var i = 0; i < p.Count; i++)
                 {
                     p[i].Spos = i;

@@ -3,10 +3,13 @@ using CompositeCommands.Core;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Prism.Events;
+using Prism.Ioc;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -14,13 +17,36 @@ namespace Lieferliste_WPF.ViewModels
 {
     internal class OrderViewModel : ViewModelBase, IDialogAware
     {
-        public OrderViewModel(IApplicationCommands applicationCommands)
+        public OrderViewModel(IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator ea)
         {
             _applicationCommands = applicationCommands;
+            _ea = ea;
+            _container = container;
             VorgangCV = CollectionViewSource.GetDefaultView(Vorgangs);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+            _ea.GetEvent<MessageVorgangChanged>().Subscribe(OnMessageReceived);
         }
 
+        private void OnMessageReceived(Vorgang vorgang)
+        {
+            var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vorgang.VorgangId);
+            if (vo != null)
+            {
+                vo.SysStatus = vorgang.SysStatus;
+                vo.BemM = vorgang.BemM;
+                vo.BemMa = vorgang.BemMa;
+                vo.BemT = vorgang.BemT;
+                vo.QuantityMiss = vorgang.QuantityMiss;
+                vo.QuantityRework = vorgang.QuantityRework;
+                vo.QuantityScrap = vorgang.QuantityScrap;
+                vo.QuantityYield = vorgang.QuantityYield;
+
+                vo.RunPropertyChanged();
+            }
+        }
+
+        private IContainerProvider _container;
+        private readonly IEventAggregator _ea;
         private bool OnSaveCanExecute(object arg)
         {
             return false;
@@ -32,6 +58,22 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         private ObservableCollection<Vorgang> Vorgangs { get; } = new();
+        private RelayCommand? _BemChangedCommand;
+        public RelayCommand BemChangedCommand => _BemChangedCommand ??= new RelayCommand(OnBemChanged);
+
+        private void OnBemChanged(object obj)
+        {
+            if(obj is Vorgang vrg)
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var v = db.Vorgangs.Single<Vorgang>(x => x.VorgangId == vrg.VorgangId);
+                v.BemM = vrg.BemM;
+                v.BemMa = vrg.BemMa;
+                v.BemT = vrg.BemT;
+
+                db.SaveChanges();
+            }
+        }
 
         public event Action<IDialogResult> RequestClose;
         private string _aid;

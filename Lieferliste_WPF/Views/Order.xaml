@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
@@ -86,8 +87,6 @@
             <Label Grid.Column="5" Content="{Binding Items.Count, ConverterParameter=Vorgang;Vorgänge, Converter={StaticResource CountConverter1}, ElementName=listBox1, Mode=OneWay}"
                    HorizontalAlignment="Right" Margin="5" x:Name="Count" VerticalAlignment="Top"
                    Background="#FFEBEB73" Width="71" />
-            <Button Grid.Column="5" Content="Speichern" Height="23" HorizontalAlignment="Left" Margin="5"
-                    Command="{Binding SaveCommand}"/>
             <Button Grid.Column="5" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
                     VerticalAlignment="Top"  SnapsToDevicePixels="True"
                     Command="{Binding Path=ApplicationCommands.ArchivateCommand}" CommandParameter="{Binding Aid}"/>
@@ -106,6 +105,7 @@
                                 <Setter Property="Background" Value="{StaticResource ValueBackground}"/>
                                 <Setter Property="Margin" Value="5"/>
                             </Style>
+
                         </DataTemplate.Resources>
                         <Border BorderThickness="4" CornerRadius="10" Name="ItemBorder" BorderBrush="{Binding Aktuell, 
                             Converter={StaticResource active}}">
@@ -163,31 +163,56 @@
 									Text="{Binding ArbPlSapNavigation/CostId, Mode=OneWay}" ToolTip="Kostenstelle" />
 
 								<GroupBox Grid.Column="7"  ToolTip="Kommentar Meister" 
-			                                      Header="{Binding BemM,
+			                                      Header="{Binding BemM, Mode=OneWay,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                                                                    <TextBox Text="{Binding BemM,
+                                    <TextBox x:Name="bemm" Text="{Binding BemM, Mode=TwoWay, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
 	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
 									                                     Converter={StaticResource Permission}}"
-				                                     TextWrapping="Wrap" /> 
+				                                     TextWrapping="Wrap" >
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="SourceUpdated">
+                                                <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
+                                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                      CommandParameter="{Binding}"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
                                 </GroupBox>
                                 <GroupBox Grid.Column="8"  ToolTip="Kommentar Teamleiter" 
 			                                      Header="{Binding BemT,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                                    <TextBox Text="{Binding BemT,
+                                    <TextBox x:Name="bemt" Text="{Binding BemT, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
 	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
 									                                     Converter={StaticResource Permission}}"
-				                                     TextWrapping="Wrap" />
+				                                     TextWrapping="Wrap">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="SourceUpdated">
+                                                <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
+                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                   CommandParameter="{Binding}"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
+
                                 </GroupBox>
                                 <GroupBox Grid.Column="9"  ToolTip="Kommentar Mitarbeiter" 
                                                   Header="{Binding BemMa,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                                                                        <TextBox Text="{Binding BemMa,
+                                    <TextBox x:Name="bemma" Text="{Binding BemMa, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                                          IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
                                                                          Converter={StaticResource Permission}}"
-                                                     TextWrapping="Wrap" />
+                                                     TextWrapping="Wrap" >
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="SourceUpdated">
+                                                <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
+                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                   CommandParameter="{Binding}"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
                                 </GroupBox>
                             </Grid>
                         </Border>

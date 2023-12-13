@@ -89,7 +89,7 @@
                 </ListBox.Background>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="LeftDoubleClick">
-                        <i:InvokeCommandAction Command="{Binding ApplicationCommands.OpenOderCommand}"
+                        <i:InvokeCommandAction Command="{Binding ApplicationCommands.OpenOrderCommand}"
                                                CommandParameter="{Binding ElementName=parking, Path=SelectedItem}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>

@@ -51,9 +51,9 @@ namespace ModuleDeliverList.ViewModels
         IEventAggregator _ea;
         private CmbFilter _selectedDefaultFilter;
         private List<Ressource> _ressources = [];
-        private HashSet<string> _sections =[];
+        private List<string> _sections =[];
 
-        public HashSet<string> Sections
+        public List<string> Sections
         {
             get { return _sections; }
             set
@@ -66,8 +66,8 @@ namespace ModuleDeliverList.ViewModels
             }
         }
 
-        private HashSet<string> _projects = new();
-        public HashSet<string> Projects
+        private List<string> _projects = new();
+        public List<string> Projects
         {
             get => _projects;
             set
@@ -316,12 +316,21 @@ namespace ModuleDeliverList.ViewModels
 
         private bool OnArchivateCanExecute(object arg)
         {
-            if (arg is string onr)
+            try
             {
-                bool f = _orders.First(x => x.Aid == onr).AidNavigation.Fertig;
-                return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate) && f;
+                if (arg is string onr)
+                {
+                    bool f = _orders.First(x => x.Aid == onr).AidNavigation.Fertig;
+                    return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate) && f;
+                }
+                return false;
             }
-            return false;
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.Message, "ArchiveCan", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
         }
 
         private void OnSaveExecuted(object obj)
@@ -333,6 +342,7 @@ namespace ModuleDeliverList.ViewModels
 
             try
             {
+                DBctx.ChangeTracker.DetectChanges();
                 return DBctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
