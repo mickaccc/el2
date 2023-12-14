@@ -429,6 +429,8 @@ namespace ModuleDeliverList.ViewModels
 
                 lock (_lock)
                 {
+                    SortedSet<string> sec = new();
+                    SortedSet<string> proj = new();
                     HashSet<Vorgang> ol = new();
                     foreach (var v in a)
                     {
@@ -453,7 +455,7 @@ namespace ModuleDeliverList.ViewModels
                             {
                                 var p = x.AidNavigation.ProId;
                                 if (p != null)
-                                    _projects.Add(p);
+                                    proj.Add(p);
                             }
 
                             foreach (var r in ol.Where(x => x.Aktuell))
@@ -463,13 +465,14 @@ namespace ModuleDeliverList.ViewModels
                                 var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea?.Bereich;
                                 if (z != null)
                                 {
-                                    _sections.Add(z);
+                                    sec.Add(z);
                                 }
                             }
 
                         }
                     }
-
+                    _projects.AddRange(proj);
+                    _sections.AddRange(sec);
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
 
                 }
