@@ -39,6 +39,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
         public ICommand OpenArchiveCommand { get; private set; }
+        public ICommand OpenWorkAreaCommand { get; private set; }
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -101,12 +102,22 @@ namespace Lieferliste_WPF.ViewModels
             OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
             OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
             OpenArchiveCommand = new ActionCommand(OnOpenArchiveExecuted, OnOpenArchiveCanExecute);
+            OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
+        }
 
+        private bool OnOpenWorkAreaCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenWorkArea);
+        }
+
+        private void OnOpenWorkAreaExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ShowWorkArea", UriKind.Relative));
         }
 
         private bool OnOpenArchiveCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archiv);
         }
 
         private void OnOpenArchiveExecuted(object obj)

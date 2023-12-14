@@ -51,9 +51,9 @@ namespace ModuleDeliverList.ViewModels
         IEventAggregator _ea;
         private CmbFilter _selectedDefaultFilter;
         private List<Ressource> _ressources = [];
-        private List<string> _sections =[];
+        private SortedDictionary<byte, string> _sections =[];
 
-        public List<string> Sections
+        public SortedDictionary<byte, string> Sections
         {
             get { return _sections; }
             set
@@ -411,7 +411,7 @@ namespace ModuleDeliverList.ViewModels
         public async Task<ICollectionView> LoadDataAsync()
         {
             _projects.Add(String.Empty);
-            _sections.Add(String.Empty);
+            _sections.Add(0, String.Empty);
             var a = await DBctx.OrderRbs
                .Include(v => v.Vorgangs)
                .ThenInclude(r => r.RidNavigation)
@@ -429,8 +429,8 @@ namespace ModuleDeliverList.ViewModels
 
                 lock (_lock)
                 {
-                    SortedSet<string> sec = new();
-                    SortedSet<string> proj = new();
+  
+                    HashSet<string> proj = new();
                     HashSet<Vorgang> ol = new();
                     foreach (var v in a)
                     {
@@ -462,17 +462,18 @@ namespace ModuleDeliverList.ViewModels
                             {
                                 result.Add(r);
                                 var inv = (r.ArbPlSap != null) ? r.ArbPlSap[3..] : string.Empty;
-                                var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea?.Bereich;
+                                var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
                                 if (z != null)
-                                {
-                                    sec.Add(z);
+                                { 
+                                    if(!_sections.Keys.Contains(z.Sort))
+                                    _sections.Add(z.Sort, z.Bereich);
                                 }
                             }
 
                         }
                     }
-                    _projects.AddRange(proj);
-                    _sections.AddRange(sec);
+                    _projects.AddRange(proj.Order());
+
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
 
                 }

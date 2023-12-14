@@ -9,7 +9,7 @@ namespace Lieferliste_WPF.Utilities
     {
         public DB_COS_LIEFERLISTE_SQLContext CreateDbContext(string[]? args = null)
         {
-            string defaultConnection = Settings.Default.ConnectionBosch;
+            string defaultConnection = Settings.Default.ConnectionHome;
 
             var optionsBuilder = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>();
             optionsBuilder.UseSqlServer(defaultConnection);

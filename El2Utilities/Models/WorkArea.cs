@@ -13,7 +13,7 @@ public partial class WorkArea
 
     public string? Abteilung { get; set; }
 
-    public byte? Sort { get; set; }
+    public byte Sort { get; set; }
 
     public virtual ICollection<Ressource> Ressources { get; set; } = new List<Ressource>();
 

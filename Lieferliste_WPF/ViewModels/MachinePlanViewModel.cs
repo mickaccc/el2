@@ -1,5 +1,6 @@
 ﻿
 using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -359,10 +360,13 @@ namespace Lieferliste_WPF.ViewModels
         }
         public void DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is Vorgang)
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachDrop))
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Move;
+                if (dropInfo.Data is Vorgang)
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.Effects = DragDropEffects.Move;
+                }
             }
         }
 

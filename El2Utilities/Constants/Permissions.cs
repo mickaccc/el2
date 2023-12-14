@@ -23,5 +23,7 @@
         public const string MachPrint = "MACHPR";
         public const string OpenMach = "MACH00";
         public const string SETMARK = "SETMARK";
+        public const string MachDrop = "MACHDR";
+        public const string OpenWorkArea = "WORK00";
     }
 }

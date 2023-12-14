@@ -192,6 +192,7 @@ namespace Lieferliste_WPF.Planning
                 if (s.CanRemove) s.Remove(vrg);
                 var v = dropInfo.InsertIndex;
                 vrg.Rid = _rId;
+                t?.SortDescriptions.RemoveAt(0);
                 if (v > t?.Count)
                 {
                     ((IList)t.SourceCollection).Add(vrg);
@@ -207,9 +208,9 @@ namespace Lieferliste_WPF.Planning
                 {
                     p[i].Spos = i;
                 }
-                t.Refresh();
+                t?.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 string str = string.Format(e.Message + "\n" + e.InnerException);
                 MessageBox.Show(str, "ERROR", MessageBoxButton.OK);
@@ -218,10 +219,13 @@ namespace Lieferliste_WPF.Planning
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is Vorgang)
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachDrop))
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                dropInfo.Effects = DragDropEffects.Move;
+                if (dropInfo.Data is Vorgang)
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                    dropInfo.Effects = DragDropEffects.Move;
+                } 
             }
         }
     }
