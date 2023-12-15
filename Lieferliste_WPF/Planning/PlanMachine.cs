@@ -101,7 +101,15 @@ namespace Lieferliste_WPF.Planning
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
-            
+
+            var live = ProcessesCV as ICollectionViewLiveShaping;
+            if (live != null)
+            {
+                live.IsLiveSorting = false;
+                live.LiveFilteringProperties.Add("SysStatus");
+                live.IsLiveFiltering = true;
+            }
+
         }
 
         private void MessageReceived(Vorgang vorgang)
@@ -192,7 +200,7 @@ namespace Lieferliste_WPF.Planning
                 if (s.CanRemove) s.Remove(vrg);
                 var v = dropInfo.InsertIndex;
                 vrg.Rid = _rId;
-                t?.SortDescriptions.RemoveAt(0);
+ 
                 if (v > t?.Count)
                 {
                     ((IList)t.SourceCollection).Add(vrg);
@@ -208,7 +216,7 @@ namespace Lieferliste_WPF.Planning
                 {
                     p[i].Spos = i;
                 }
-                t?.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+                t.Refresh();
             }
             catch (Exception e)
             {

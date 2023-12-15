@@ -4,25 +4,50 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
+             d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}" Name="ShowWorkAreaName">
+    <UserControl.Resources>
+        <conv:AlertColorConverter x:Key="alert" AlertColor="Red"/>
+        <conv:BooleanInverter x:Key="boolInv"/>
+    </UserControl.Resources>
     <Grid>
-        <DataGrid ItemsSource="{Binding WaTask.Result}" AutoGenerateColumns="False"
+        <DataGrid ItemsSource="{Binding WaTask.Result}" AutoGenerateColumns="False" IsReadOnly="{Binding Path=EditMode, Converter={StaticResource boolInv}}"
+                  BorderBrush="{Binding Path=EditMode, Converter={StaticResource alert}}" 
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
-                  dd:DragDrop.DropHandler="{Binding}">
+                  dd:DragDrop.DropHandler="{Binding}" SelectionMode="Single">
             <DataGrid.ContextMenu>
             <ContextMenu>
 
-                    <MenuItem Header="Edit"/>
+                    <MenuItem Header="Bearbeitungsmodus" Command="{Binding EditCommand}"
+                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="Edit"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Neuer Eintrag" Command="{Binding AddCommand}"
+                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="Add"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Eintrag löschen" Command="{Binding DeleteCommand}"
+                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="Delete"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
 
-            </ContextMenu>
+                </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Bereich" Binding="{Binding Path=Bereich}"/>
+                <DataGridTextColumn Header="Bereich" Binding="{Binding Path=Bereich}" />
+                <DataGridTextColumn Header="INFO" Binding="{Binding Path=Info}" />
             </DataGrid.Columns>
         </DataGrid>
 

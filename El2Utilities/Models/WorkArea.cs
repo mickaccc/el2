@@ -11,7 +11,7 @@ public partial class WorkArea
 
     public string? Bereich { get; set; }
 
-    public string? Abteilung { get; set; }
+    public string? Info { get; set; }
 
     public byte Sort { get; set; }
 

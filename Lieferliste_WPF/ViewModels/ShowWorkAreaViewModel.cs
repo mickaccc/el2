@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -29,10 +30,31 @@ namespace Lieferliste_WPF.ViewModels
             set { _title = value; }
         }
 
+        private bool _editMode;
+
+        public bool EditMode
+        {
+            get { return _editMode; }
+            set
+            {
+                if (_editMode != value)
+                {
+                    _editMode = value;
+                    NotifyPropertyChanged(() => EditMode);
+                }
+            }
+        }
         private IContainerProvider _container;
+        public ICommand EditCommand { get; set; }
+        public ICommand DeleteCommand { get; set; }
+        public ICommand AddCommand { get; set; }
+        private RelayCommand? _endEditCommand;
+        public ICommand EndEditCommand => _endEditCommand ??= new RelayCommand(OnEndEdit);
+
         private List<WorkArea> _workAreas = new();
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         public ICollectionView WorkAreas;
+        private CollectionViewSource _workAreaCVS = new();
         private NotifyTaskCompletion<ICollectionView> _waTask;
         public NotifyTaskCompletion<ICollectionView> WaTask
         {
@@ -49,10 +71,59 @@ namespace Lieferliste_WPF.ViewModels
 
         public ShowWorkAreaViewModel(IContainerProvider container)
         {
+            
             _container = container;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            EditCommand = new ActionCommand(OnEditExecuted, OnEditCanExecute);
+            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteExecute);
+            AddCommand = new ActionCommand(OnAddExecuted, OnAddExecute);
             WaTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync());
         }
+
+        private bool OnAddExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnAddExecuted(object obj)
+        {
+            if (obj is WorkArea w)
+            {
+
+            }
+        }
+
+        private bool OnDeleteExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnDeleteExecuted(object obj)
+        {
+            if(obj is WorkArea w)
+            {
+                _workAreas.Remove(w);
+            }
+        }
+
+        private bool OnEditCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnEditExecuted(object obj)
+        {
+            var lcv = WorkAreas as ListCollectionView;
+            lcv.EditItem(obj);
+            EditMode = !EditMode;
+        }
+        private void OnEndEdit(object obj)
+        {
+            EditMode = false;           
+        }
+ 
+
+
         private async Task<ICollectionView> LoadAsync()
         {
             var w = await _dbctx.WorkAreas.ToListAsync();
@@ -64,6 +135,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
+            if (EditMode) return;
             if (dropInfo == null) return;
             
             if (dropInfo.DragInfo.SourceCollection.Equals(dropInfo.TargetCollection))

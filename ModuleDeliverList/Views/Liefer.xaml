@@ -65,9 +65,9 @@
                       materialDesign:HintAssist.Hint="Bereiche"
                       Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           ItemsSource="{Binding Sections}"
-                          DisplayMemberPath="Bereich"
+                          DisplayMemberPath="Value" 
                           SelectedValue="{Binding SelectedSectionFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValuePath="{Binding SelectedSectionFilter}"  />
+                          SelectedValuePath="Value"  />
                 <ComboBox x:Name="FilterComboBox" Width="200" Padding="10"
                     materialDesign:HintAssist.Hint="Filters"                    
                     ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"

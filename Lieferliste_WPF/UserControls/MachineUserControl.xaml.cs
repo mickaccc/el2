@@ -39,12 +39,6 @@ namespace Lieferliste_WPF.UserControls
             {
                 dtx.ProcessesCV.SortDescriptions.Clear();
                 dtx.ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
-                ICollectionViewLiveShaping? live = dtx.ProcessesCV as ICollectionViewLiveShaping;
-                if (live != null && live.CanChangeLiveFiltering)
-                {
-                    live.LiveFilteringProperties.Add("SysStatus");
-                    live.IsLiveFiltering = true;
-                }
             }
         }
 
