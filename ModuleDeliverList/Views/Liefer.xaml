@@ -20,7 +20,7 @@
         <conv:KW_Converter x:Key="Kw-Converter"/>
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
-
+        <conv:AlertColorConverter x:Key="boolalert" AlertColor="Red"/>
 
     </Grid.Resources>
 
@@ -45,7 +45,12 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-
+        <Button Command="{Binding FilterDeleteCommand}" ToolTip="alle Filter rücksetzen" Margin="5">
+            <materialDesign:PackIcon Kind="DeleteEmpty" />
+        </Button>
+        <Button Command="{Binding FilterSaveCommand}" ToolTip="Customfilter speichern" Margin="5">
+            <materialDesign:PackIcon Kind="ContentSaveCog"/>
+        </Button>
         <materialDesign:ColorZone DockPanel.Dock="Right"
             FontSize="14"
             FontWeight="Bold"
@@ -69,12 +74,19 @@
                           SelectedValue="{Binding SelectedSectionFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="Value"  />
                 <ComboBox x:Name="FilterComboBox" Width="200" Padding="10"
+                          Background="{Binding FilterInvers, Converter={StaticResource boolalert}}"
                     materialDesign:HintAssist.Hint="Filters"                    
                     ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
                          SelectedValue="{Binding Path=SelectedDefaultFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          DisplayMemberPath="Description"
-                         SelectedValuePath="Value"/>
+                         SelectedValuePath="Value" >
+                    <ComboBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Filter umkehren" Command="{Binding ToggleFilterCommand}"/>
+                        </ContextMenu>
+                    </ComboBox.ContextMenu>
+                </ComboBox>
 
                 <TextBlock Text="Anzahl Vorgänge:" 
                   AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
@@ -95,9 +107,15 @@
 
     <ListBox x:Name="Lieferlist" Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}"
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                          ScrollViewer.CanContentScroll="True" ItemsSource="{Binding OrderTask.Result}"
+                          ItemsSource="{Binding OrderTask.Result}"
                           HorizontalContentAlignment="Stretch" >
-
+        <ListBox.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Vorgang aus-/einblenden"
+         Command="{Binding InvisibilityCommand}"
+         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},Path=PlacementTarget.SelectedItem}"/>
+            </ContextMenu>
+        </ListBox.ContextMenu>
         <ListBox.ItemTemplate>
             <DataTemplate>
                 <Border x:Name="border" Height="100" CornerRadius="5" BorderBrush="Black" Background="LightGreen"
@@ -125,7 +143,7 @@
 
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}">
-
+   
                     </userControls:LieferlisteControl>
                 </Border>
             </DataTemplate>

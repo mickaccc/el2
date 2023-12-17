@@ -93,14 +93,16 @@ namespace Lieferliste_WPF.Utilities
             var headerList = plm.Processes.OrderBy(x => x.Spos).Select(x => new
             {
                 x.Aid,
+                x.Vnr,
                 x.AidNavigation.Material,
                 x.AidNavigation.MaterialNavigation?.Bezeichng,
                 BeazeEinheit = x.AidNavigation.Quantity.ToString(),
                 x.Text,
-                RstzeEinheit = string.Format("{0} KW{1}",x.SpaetStart.GetValueOrDefault().ToString("dd/MM/yy"),
-                        CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.SpaetStart.GetValueOrDefault(),CalendarWeekRule.FirstFourDayWeek,DayOfWeek.Monday)),
+                RstzeEinheit = string.Format("{0} KW{1}", x.SpaetStart.GetValueOrDefault().ToString("dd/MM/yy"),
+                        CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.SpaetStart.GetValueOrDefault(), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)),
                 SpaetEnd = x.SpaetEnd.GetValueOrDefault().ToShortDateString(),
-                x.BemT
+                x.BemT,
+                WrtzeEinheit = string.Format("{0:F2}h", (x.Beaze + x.Rstze) / 60)
             }).ToArray();
 
             int i = 0;
@@ -117,7 +119,8 @@ namespace Lieferliste_WPF.Utilities
                     case "Text": head = "Kurztext"; break;
                     case "RstzeEinheit": head = "SpätStart"; break;
                     case "SpaetEnd": head = "SpätEnd"; break;
-                    case "BemT": head = "Kommentar"; break;
+                    case "BemT": head = "Bemerkung Teamleiter"; break;
+                    case "WrtzeEinheit": head = "Dauer"; break;
                     default: head = "not Valid"; break;
                 }
                 r.Cells.Add(new TableCell(new Paragraph(new Run(head))));

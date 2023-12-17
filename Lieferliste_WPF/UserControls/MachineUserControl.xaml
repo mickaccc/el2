@@ -10,7 +10,7 @@
     x:Class="Lieferliste_WPF.UserControls.MachineUserControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="250" Unloaded="UserControl_Unloaded" Visibility="{Binding Path=Vis,Converter={StaticResource BooleanToVisibilityConverter}}"
-    DataContextChanged="UserControl_DataContextChanged">
+    DataContextChanged="UserControl_DataContextChanged" MinWidth="50">
             
     <UserControl.Resources>
         <conv:ToIntConverter x:Key="ToIntConverter"/>

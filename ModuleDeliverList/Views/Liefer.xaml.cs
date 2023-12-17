@@ -13,6 +13,5 @@ namespace ModuleDeliverList.Views
             InitializeComponent();
         }
 
-
     }
 }

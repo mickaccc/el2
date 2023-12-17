@@ -7,6 +7,8 @@ namespace El2Core.Utils
     {
         private readonly Action<object> _executeHandler;
         private readonly Func<object, bool> _canExecuteHandler;
+        private Action<object> onSaveExecuted;
+        private object? onSaveCanExecute;
 
         public ActionCommand(Action<object> execute, Func<object, bool> canExecute)
         {
@@ -14,6 +16,11 @@ namespace El2Core.Utils
             _canExecuteHandler = canExecute;
         }
 
+        public ActionCommand(Action<object> onSaveExecuted, object? onSaveCanExecute)
+        {
+            this.onSaveExecuted = onSaveExecuted;
+            this.onSaveCanExecute = onSaveCanExecute;
+        }
 
         public event EventHandler CanExecuteChanged
         {

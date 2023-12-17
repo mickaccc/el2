@@ -1,8 +1,10 @@
 ﻿
 using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Prism.Commands;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
@@ -10,6 +12,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -24,6 +27,7 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             VorgangCV = CollectionViewSource.GetDefaultView(Vorgangs);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(OnMessageReceived);
         }
 
@@ -55,6 +59,25 @@ namespace Lieferliste_WPF.ViewModels
         private void OnSaveExecuted(object obj)
         {
             
+        }
+        private bool OnDeleteCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.LieferVrgDel);
+        }
+
+        private void OnDeleteExecuted(object obj)
+        {
+            if (obj is Vorgang v)
+            {
+                var result = MessageBox.Show(string.Format("Soll der Vorgang {0:d4}\n vom Auftrag {1} gelöscht werden?",v.Vnr,v.Aid), "Information",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    db.Vorgangs.Remove(v);
+                    db.SaveChanges();
+                }
+            }
         }
 
         private ObservableCollection<Vorgang> Vorgangs { get; } = new();
@@ -172,6 +195,13 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private bool _ready;
+
+        public bool Ready
+        {
+            get { return _ready; }
+            set { _ready = value; }
+        }
 
         public ICollectionView VorgangCV { get; }
         private string _title = "Auftragsübersicht";
@@ -199,6 +229,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         public ICommand SaveCommand;
+        public ActionCommand DeleteCommand { get; private set; }
         public bool CanCloseDialog()
         {
             return true;
@@ -225,6 +256,7 @@ namespace Lieferliste_WPF.ViewModels
             Pro = p.ProId;
             ProInfo = p.ProId;
             SysStatus = p.SysStatus;
+            Ready = p.Fertig;
 
             VorgangCV.Refresh();
         }

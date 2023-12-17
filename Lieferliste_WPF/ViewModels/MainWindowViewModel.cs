@@ -4,6 +4,7 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Prism.Ioc;
@@ -55,7 +56,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         public ICommand ExplorerCommand { get; }
         public ICommand OpenOrderCommand { get; }
-
+        public ICommand ArchivateCommand { get; }
         private NotifyTaskCompletion<int>? _onlineTask;
         public NotifyTaskCompletion<int>? OnlineTask
         {
@@ -94,6 +95,8 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
             OpenOrderCommand = new ActionCommand(OnOpenOrderExecuted, OnOpenOrderCanExecute);
             _applicationCommands.OpenOrderCommand.RegisterCommand(OpenOrderCommand);
+            ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
+            _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
 
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
             OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
@@ -105,6 +108,8 @@ namespace Lieferliste_WPF.ViewModels
             OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
         }
 
+
+        #region Commands
         private bool OnOpenWorkAreaCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenWorkArea);
@@ -125,7 +130,37 @@ namespace Lieferliste_WPF.ViewModels
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Archive", UriKind.Relative));
         }
 
-        #region Commands
+        private void OnArchivateExecuted(object obj)
+        {
+            if (obj is object[] onr)
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var v = db.OrderRbs.First(x => x.Aid == (string)onr[0]);
+                v.Abgeschlossen = true;
+                db.SaveChangesAsync();               
+            }
+        }
+
+        private bool OnArchivateCanExecute(object arg)
+        {
+            try
+            {
+                if (arg is object[] onr)
+                {
+                    if (onr[1] is Boolean f)
+                    {
+                        if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate))
+                            return f || Keyboard.IsKeyDown(Key.LeftAlt);
+                    }
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "ArchiveCan", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
         private void OnCloseExecuted(object obj)
         {
             if (obj == null)

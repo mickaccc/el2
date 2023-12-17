@@ -4,6 +4,7 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -45,15 +46,18 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private IContainerProvider _container;
+        private IDialogService _dialogService;
         public ICommand EditCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
         public ICommand AddCommand { get; set; }
+        public ICommand SaveCommand { get; set; }
         private RelayCommand? _endEditCommand;
         public ICommand EndEditCommand => _endEditCommand ??= new RelayCommand(OnEndEdit);
 
         private List<WorkArea> _workAreas = new();
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         public ICollectionView WorkAreas;
+        private ListCollectionView _workAreasList;
         private CollectionViewSource _workAreaCVS = new();
         private NotifyTaskCompletion<ICollectionView> _waTask;
         public NotifyTaskCompletion<ICollectionView> WaTask
@@ -69,40 +73,60 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public ShowWorkAreaViewModel(IContainerProvider container)
+
+        public ShowWorkAreaViewModel(IContainerProvider container, IDialogService dialogService)
         {
             
             _container = container;
+            _dialogService = dialogService;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             EditCommand = new ActionCommand(OnEditExecuted, OnEditCanExecute);
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteExecute);
             AddCommand = new ActionCommand(OnAddExecuted, OnAddExecute);
+            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             WaTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync());
+        }
+
+        private bool OnSaveCanExecute(object arg)
+        {
+            return _dbctx.ChangeTracker.HasChanges();
+        }
+
+        private void OnSaveExecuted(object obj)
+        {
+              _dbctx.SaveChanges();
         }
 
         private bool OnAddExecute(object arg)
         {
-            return true;
+            return !EditMode;
         }
 
         private void OnAddExecuted(object obj)
         {
-            if (obj is WorkArea w)
-            {
+            var param = new DialogParameters();
+            param.Add("SectionList", _workAreas);
+            _dialogService.Show("AddNewWorkArea", param, callback);
+            
+        }
 
-            }
+        private void callback(IDialogResult result)
+        {
+            WorkAreas.Refresh();
         }
 
         private bool OnDeleteExecute(object arg)
         {
-            return true;
+            return !EditMode;
         }
 
         private void OnDeleteExecuted(object obj)
         {
             if(obj is WorkArea w)
             {
-                _workAreas.Remove(w);
+                if(_workAreasList.CanRemove)
+                _workAreasList.Remove(w);
+                
             }
         }
 
@@ -113,8 +137,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnEditExecuted(object obj)
         {
-            var lcv = WorkAreas as ListCollectionView;
-            lcv.EditItem(obj);
+ 
             EditMode = !EditMode;
         }
         private void OnEndEdit(object obj)
@@ -122,14 +145,14 @@ namespace Lieferliste_WPF.ViewModels
             EditMode = false;           
         }
  
-
-
         private async Task<ICollectionView> LoadAsync()
         {
             var w = await _dbctx.WorkAreas.ToListAsync();
             _workAreas.AddRange(w);
             WorkAreas = CollectionViewSource.GetDefaultView(_workAreas);
             WorkAreas.SortDescriptions.Add(new SortDescription("Sort",ListSortDirection.Ascending));
+           
+            _workAreasList = (ListCollectionView) WorkAreas;
             return WorkAreas;
         }
 
@@ -177,7 +200,7 @@ namespace Lieferliste_WPF.ViewModels
                     }
                 }
                 WorkAreas.Refresh();
-                _dbctx.SaveChanges();
+                
             }
         }
     }

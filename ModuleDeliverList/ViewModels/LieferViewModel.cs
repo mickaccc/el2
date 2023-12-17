@@ -30,19 +30,24 @@ namespace ModuleDeliverList.ViewModels
 
         public ICollectionView OrdersView { get; private set; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
+        public ICommand FilterDeleteCommand => _filterDeleteCommand ??= new RelayCommand(OnFilterDelete);
+        public ICommand ToggleFilterCommand => _toggleFilterCommand ??= new RelayCommand(OnToggleFilter);
+
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SortAscCommand { get; private set; }
         public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
-        public ActionCommand ArchivateCommand { get; private set; }
-
+        public ActionCommand FilterSaveCommand { get; private set; }
+        public ActionCommand InvisibilityCommand { get; private set; }
         public string Title { get; } = "Lieferliste";
 
         private readonly Dictionary<string, string> _filterCriterias = new();
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
         private RelayCommand? _textSearchCommand;
+        private RelayCommand? _filterDeleteCommand;
+        private RelayCommand? _toggleFilterCommand;
         private string _searchFilterText = string.Empty;
         private string _selectedProjectFilter = string.Empty;
         private string _selectedSectionFilter = string.Empty;
@@ -79,6 +84,33 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
+        private bool _filterInvers;
+
+        public bool FilterInvers
+        {
+            get { return _filterInvers; }
+            set
+            {
+                if(_filterInvers != value)
+                {
+                    _filterInvers = value;
+                    NotifyPropertyChanged(() => FilterInvers);
+                    OrdersView.Refresh();
+                }
+            }
+        }
+        public string SearchFilterText
+        {
+            get { return _searchFilterText; }
+            set
+            {
+                if (value != _searchFilterText)
+                {
+                    _searchFilterText = value;
+                    NotifyPropertyChanged(() => SearchFilterText);                  
+                }
+            }
+        }
         private static readonly object _lock = new();
         private IApplicationCommands _applicationCommands;
 
@@ -98,7 +130,7 @@ namespace ModuleDeliverList.ViewModels
 
         public enum CmbFilter
         {
-            [Description("")]
+            [Description("Leer")]
             // ReSharper disable once InconsistentNaming
             NOT_SET = 0,
             [Description("ausgeblendet")]
@@ -110,11 +142,12 @@ namespace ModuleDeliverList.ViewModels
             [Description("Entwicklungsmuster")]
             DEVELOP,
             [Description("Verkaufsmuster")]
-            SALES
+            SALES,
+            [Description("EXTERN")]
+            EXERTN
         }
         public CmbFilter SelectedDefaultFilter
         {
-
             get => _selectedDefaultFilter;
             set
             {
@@ -165,14 +198,31 @@ namespace ModuleDeliverList.ViewModels
 
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
+            InvisibilityCommand = new ActionCommand(OnInvisibilityExecuted, OnInvisibilityCanExecute);
 
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
+            FilterSaveCommand = new ActionCommand(OnFilterSaveExecuted, OnFilterSaveCanExecute);
+
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
-            _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
+
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             SetTimer();
 
+        }
+
+
+        private bool OnInvisibilityCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.LieferVrgInvis);
+        }
+
+        private void OnInvisibilityExecuted(object obj)
+        {
+            if(obj is Vorgang v)
+            {
+                v.Visability = !v.Visability;
+                OrdersView.Refresh();
+            }
         }
 
         private void MessageReceived(Vorgang vrg)
@@ -212,19 +262,31 @@ namespace ModuleDeliverList.ViewModels
                     if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
                         accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
             }
-            if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability;
-            if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig;
-            if (accepted && _selectedDefaultFilter == CmbFilter.START) accepted = ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false;
-            if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM");
-            if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM");
-            if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
+            if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = !ord.Visability;
+            if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = ord.Visability == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.START)
+                accepted = (ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false) == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM") == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM") == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.EXERTN) accepted = (ord.ArbPlSap == "_EXTERN_") == !FilterInvers;
 
+            if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
             if (accepted && _selectedProjectFilter != string.Empty) accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
             return accepted;
+        }
 
+        private void OnTextSearch(object commandParameter)
+        {
+            if (commandParameter is not TextChangedEventArgs change) return;
+            var tb = (TextBox)change.OriginalSource;
+            if (tb.Text.Length != 0 && tb.Text.Length < 3) return;
+            SearchFilterText = tb.Text;
+            var uiContext = SynchronizationContext.Current;
+            uiContext?.Send(x => OrdersView.Refresh(), null);
         }
         private void SetTimer()
         {
@@ -293,45 +355,30 @@ namespace ModuleDeliverList.ViewModels
                 });
             }
         }
-        private void OnTextSearch(object commandParameter)
-        {
-            if (commandParameter is not TextChangedEventArgs change) return;
-            var tb = (TextBox)change.OriginalSource;
-            if (tb.Text.Length != 0 && tb.Text.Length < 3) return;
-            _searchFilterText = tb.Text;
-            var uiContext = SynchronizationContext.Current;
-            uiContext?.Send(x => OrdersView.Refresh(), null);
-        }
         #region Commands
- 
-        private void OnArchivateExecuted(object obj)
+        private bool OnFilterSaveCanExecute(object arg)
         {
-            if (obj is string onr)
-            {
-                _orders.First(x => x.Aid == onr).AidNavigation.Abgeschlossen = true;
-                DBctx.SaveChangesAsync();
-                OrdersView.Refresh();
-            }
+            return false;
         }
 
-        private bool OnArchivateCanExecute(object arg)
+        private void OnFilterSaveExecuted(object obj)
         {
-            try
-            {
-                if (arg is string onr)
-                {
-                    bool f = _orders.First(x => x.Aid == onr).AidNavigation.Fertig;
-                    return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate) && f;
-                }
-                return false;
-            }
-            catch (Exception e)
-            {
-
-                MessageBox.Show(e.Message, "ArchiveCan", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
+            throw new NotImplementedException();
         }
+        private void OnFilterDelete(object obj)
+        {
+            SearchFilterText = string.Empty;
+            SelectedDefaultFilter = CmbFilter.NOT_SET;
+            SelectedProjectFilter = string.Empty;
+            SelectedSectionFilter = string.Empty;
+            FilterInvers = false;
+
+        }
+        private void OnToggleFilter(object obj)
+        {
+            FilterInvers = !FilterInvers;
+        }
+  
 
         private void OnSaveExecuted(object obj)
         {
@@ -339,7 +386,6 @@ namespace ModuleDeliverList.ViewModels
         }
         private bool OnSaveCanExecute(object arg)
         {
-
             try
             {
                 DBctx.ChangeTracker.DetectChanges();
@@ -347,7 +393,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (InvalidOperationException e)
             {
-                MessageBox.Show(e.Message, "CanSave", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(e.Message, "CanSave", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;
         }
@@ -410,8 +456,8 @@ namespace ModuleDeliverList.ViewModels
 
         public async Task<ICollectionView> LoadDataAsync()
         {
-            _projects.Add(String.Empty);
-            _sections.Add(0, String.Empty);
+            _projects.Add(string.Empty);
+            _sections.Add(0, string.Empty);
             var a = await DBctx.OrderRbs
                .Include(v => v.Vorgangs)
                .ThenInclude(r => r.RidNavigation)

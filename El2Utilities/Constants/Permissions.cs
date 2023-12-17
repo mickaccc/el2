@@ -25,5 +25,7 @@
         public const string SETMARK = "SETMARK";
         public const string MachDrop = "MACHDR";
         public const string OpenWorkArea = "WORK00";
+        public const string LieferVrgDel = "OO05";
+        public const string LieferVrgInvis = "LIE01";
     }
 }

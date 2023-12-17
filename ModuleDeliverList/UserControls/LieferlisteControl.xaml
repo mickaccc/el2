@@ -72,6 +72,7 @@
     </UserControl.Resources>
 
     <Border >
+
         <StackPanel  x:Name="Liefer" Background="#FFBEC9CE" >
             
             <Grid >
@@ -191,8 +192,14 @@
 
                 <Button Grid.Column="13" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
                         Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
-                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
-                        CommandParameter="{Binding Aid, ElementName=luc}"/>
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}">
+                    <Button.CommandParameter>
+                    <MultiBinding Converter="{StaticResource MultiObject}">
+                        <Binding Path="Aid"/>
+                        <Binding Path="AidNavigation.Fertig"/>
+                    </MultiBinding>
+                    </Button.CommandParameter>
+                </Button>
 
                 <Button Grid.Column="13" Grid.Row="1" Content="Auftrag" 
                         Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
@@ -201,8 +208,6 @@
                 <DockPanel Grid.Column="8" Grid.Row="2" Background="YellowGreen" >
                     <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" Click="Modified" 
                       IsChecked="{Binding Doku, ElementName=luc}"/>
-                    <CheckBox  Height="16" x:Name="chkInvis" Click="Modified" 
-                      IsChecked="{Binding Invisible, ElementName=luc}" Checked="chkInvis_Checked" />
                 </DockPanel>
             </Grid>
         </StackPanel>

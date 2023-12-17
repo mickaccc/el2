@@ -23,6 +23,7 @@
         <conv:PermissionVisibilityConverter x:Key="PermissionVisibilityConverter1" />
         <conv:RessourceToKwConverter x:Key="RessToKW"/>
         <conv:ActivateColorConverter x:Key="active" ActiveColor="{StaticResource ActiveProcess}"/>
+        <conv:MultiObjectConverter x:Key="multiobj"/>
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
@@ -89,144 +90,148 @@
                    Background="#FFEBEB73" Width="71" />
             <Button Grid.Column="5" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
                     VerticalAlignment="Top"  SnapsToDevicePixels="True"
-                    Command="{Binding Path=ApplicationCommands.ArchivateCommand}" CommandParameter="{Binding Aid}"/>
+                    Command="{Binding Path=ApplicationCommands.ArchivateCommand}">
+                <Button.CommandParameter>
+                    <MultiBinding Converter="{StaticResource multiobj}">
+                        <Binding Path="Aid"/>
+                        <Binding Path="Ready"/>
+                    </MultiBinding>
+                </Button.CommandParameter>
+            </Button> 
             <Button Grid.Column="5" Grid.Row="1" Content="Explorer" Height="23" HorizontalAlignment="left" Margin="5" x:Name="btnExplorer"
                     VerticalAlignment="Top" SnapsToDevicePixels="True"
                     Command="{Binding Path=ApplicationCommands.ExplorerCommand}" CommandParameter="{Binding}"/>
         </Grid>
-        <ScrollViewer Grid.Row="1" >
-            <ItemsControl  x:Name="listBox1" ItemsSource="{Binding VorgangCV}" Background="{StaticResource ListBackgroud}"
-                       AlternationCount="2" >
-
-                <ItemsControl.ItemTemplate>
+            <ListBox Grid.Row="1"  x:Name="listBox1" ItemsSource="{Binding VorgangCV}" Background="{StaticResource ListBackgroud}"
+                      HorizontalContentAlignment="Stretch" >
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Vorgang löschen"
+                                  Command="{Binding DeleteCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                            Path=PlacementTarget.SelectedItem}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
                     <DataTemplate>
                         <DataTemplate.Resources>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="Background" Value="{StaticResource ValueBackground}"/>
-                                <Setter Property="Margin" Value="5"/>
+                                <Setter Property="Margin" Value="1"/>
                             </Style>
 
                         </DataTemplate.Resources>
-                        <Border BorderThickness="4" CornerRadius="10" Name="ItemBorder" BorderBrush="{Binding Aktuell, 
+                    <Border BorderThickness="4" CornerRadius="10" Name="ItemBorder" BorderBrush="{Binding Aktuell, 
                             Converter={StaticResource active}}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
 
-                                <TextBlock  Height="23" x:Name="txtEndTermin" Width="65" 
+                            <TextBlock  Height="23" x:Name="txtEndTermin" Width="65" 
                                     Text="{Binding Vnr, StringFormat=\{0:D4\}}"
                                     ToolTip="Vorgangsnummer" />
-                                <TextBlock Grid.Row="1" Height="23" x:Name="txtArbPlNr" Width="65"
+                            <TextBlock Grid.Row="1" Height="23" x:Name="txtArbPlNr" Width="65"
                                     Text="{Binding ArbPlSap, Mode=OneWay}"
                                     ToolTip="Arbeitsplatz SAP" />
-                                <TextBlock Grid.Row="1" Grid.Column="1" Height="23" x:Name="txtArbPlatz" Width="300"
+                            <TextBlock Grid.Row="1" Grid.Column="1" Height="23" x:Name="txtArbPlatz" Width="300"
                                     ToolTip="Ressource bis KW">
-                                    <TextBlock.Text>
-                                        <MultiBinding Converter="{StaticResource RessToKW}">
-                                            <Binding Path="RidNavigation.RessName"/>
-                                            <Binding Path="SpaetEnd"/>
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource RessToKW}">
+                                        <Binding Path="RidNavigation.RessName"/>
+                                        <Binding Path="SpaetEnd"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
 
-                                <TextBlock Grid.Column="1" Height="23" x:Name="txtKurzt" 
+                            <TextBlock Grid.Column="1" Height="23" x:Name="txtKurzt" 
                                     Text="{Binding Text, Mode=OneWay}" Width="295"  ToolTip="Kurztext" />
-                                <TextBlock Grid.Column="2" Height="23" x:Name="txtEndTerm" Width="78" 
+                            <TextBlock Grid.Column="2" Height="23" x:Name="txtEndTerm" Width="78" 
                                     Text="{Binding SpaetEnd, Converter={StaticResource DateConverter1}, Mode=OneWay}"
                                     FontSize="11" ToolTip="Endtermin" />
-                                <TextBlock Grid.Column="2" Grid.Row="1" Height="23" x:Name="txtIstEnd" Width="78" 
+                            <TextBlock Grid.Column="2" Grid.Row="1" Height="23" x:Name="txtIstEnd" Width="78" 
                                     Text="{Binding ActualEndDate, Converter={StaticResource DateConverter1}, Mode=OneWay}" 
                                     FontSize="11" ToolTip="Ist-Ende" />
-                                <TextBlock Grid.Column="3" Height="23" x:Name="txtGut" Width="58" 
+                            <TextBlock Grid.Column="3" Height="23" x:Name="txtGut" Width="58" 
                                     Text="{Binding QuantityYield, Mode=OneWay}" ToolTip="Gutteile zurückgemeldet" />
-                                <TextBox Grid.Row="1" Grid.Column="3" Height="23" x:Name="txtTerm" Width="58" IsReadOnly="True"
+                            <TextBox Grid.Row="1" Grid.Column="3" Height="23" x:Name="txtTerm" Width="58" IsReadOnly="True"
                                     Text="{Binding Termin}" ToolTip="Termin"/>
-                                <TextBlock Grid.Column="4" Height="23" x:Name="txtAuss" Width="58"
+                            <TextBlock Grid.Column="4" Height="23" x:Name="txtAuss" Width="58"
                                     Text="{Binding QuantityScrap, Mode=OneWay}" ToolTip="Ausschußteile zurückgemeldet"/>
-                                <TextBlock Grid.Column="5" Height="23" x:Name="txtOff" Width="58"
+                            <TextBlock Grid.Column="5" Height="23" x:Name="txtOff" Width="58"
                                            Text="{Binding QuantityMiss, Mode=OneWay}" ToolTip="offene Menge"/>
-								<TextBlock Grid.Column="6" Height="23" x:Name="txtKst" Width="70"
+                            <TextBlock Grid.Column="6" Height="23" x:Name="txtKst" Width="70"
 									Text="{Binding ArbPlSapNavigation/CostId, Mode=OneWay}" ToolTip="Kostenstelle" />
 
-								<GroupBox Grid.Column="7"  ToolTip="Kommentar Meister" 
+                            <GroupBox Grid.Column="7"  ToolTip="Kommentar Meister" 
 			                                      Header="{Binding BemM, Mode=OneWay,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                                    <TextBox x:Name="bemm" Text="{Binding BemM, Mode=TwoWay, NotifyOnSourceUpdated=True,
+                                <TextBox x:Name="bemm" Text="{Binding BemM, Mode=TwoWay, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
 	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
 									                                     Converter={StaticResource Permission}}"
 				                                     TextWrapping="Wrap" >
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="SourceUpdated">
-                                                <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SourceUpdated">
+                                            <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                       CommandParameter="{Binding}"/>
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-                                    </TextBox>
-                                </GroupBox>
-                                <GroupBox Grid.Column="8"  ToolTip="Kommentar Teamleiter" 
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                            </GroupBox>
+                            <GroupBox Grid.Column="8"  ToolTip="Kommentar Teamleiter" 
 			                                      Header="{Binding BemT,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                                    <TextBox x:Name="bemt" Text="{Binding BemT, NotifyOnSourceUpdated=True,
+                                <TextBox x:Name="bemt" Text="{Binding BemT, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
 	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
 									                                     Converter={StaticResource Permission}}"
 				                                     TextWrapping="Wrap">
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="SourceUpdated">
-                                                <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SourceUpdated">
+                                            <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
                                                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                    CommandParameter="{Binding}"/>
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-                                    </TextBox>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
 
-                                </GroupBox>
-                                <GroupBox Grid.Column="9"  ToolTip="Kommentar Mitarbeiter" 
+                            </GroupBox>
+                            <GroupBox Grid.Column="9"  ToolTip="Kommentar Mitarbeiter" 
                                                   Header="{Binding BemMa,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                                    <TextBox x:Name="bemma" Text="{Binding BemMa, NotifyOnSourceUpdated=True,
+                                <TextBox x:Name="bemma" Text="{Binding BemMa, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                                          IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
                                                                          Converter={StaticResource Permission}}"
                                                      TextWrapping="Wrap" >
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="SourceUpdated">
-                                                <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SourceUpdated">
+                                            <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
                                                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                    CommandParameter="{Binding}"/>
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-                                    </TextBox>
-                                </GroupBox>
-                            </Grid>
-                        </Border>
-                        <DataTemplate.Triggers>
-                            <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                                <Setter Property="Background" Value="White" TargetName="ItemBorder"/>
-                            </Trigger>
-                            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                                <Setter Property="Background" Value="LightGray"  TargetName="ItemBorder"/>
-                            </Trigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                            </GroupBox>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
     </Grid>
 </UserControl>
