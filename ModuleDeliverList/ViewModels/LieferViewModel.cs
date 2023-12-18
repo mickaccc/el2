@@ -206,9 +206,11 @@ namespace ModuleDeliverList.ViewModels
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
 
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
+            _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             SetTimer();
 
         }
+
 
 
         private bool OnInvisibilityCanExecute(object arg)
@@ -224,7 +226,15 @@ namespace ModuleDeliverList.ViewModels
                 OrdersView.Refresh();
             }
         }
-
+        private void MessageOrderReceived(OrderRb rb)
+        {
+            var o = _orders.FirstOrDefault(x => x.Aid == rb.Aid);
+            if(o != null)
+            {
+                o.AidNavigation.Abgeschlossen = rb.Abgeschlossen;
+                o.RunPropertyChanged();
+            }
+        }
         private void MessageReceived(Vorgang vrg)
         {
             var v = _orders.FirstOrDefault(x => x.VorgangId == vrg.VorgangId);
@@ -262,8 +272,8 @@ namespace ModuleDeliverList.ViewModels
                     if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
                         accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
             }
-            if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = !ord.Visability;
-            if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = ord.Visability == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = ord.Visability;
+            if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.START)
                 accepted = (ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false) == !FilterInvers;
@@ -318,7 +328,6 @@ namespace ModuleDeliverList.ViewModels
                                 var o = _orders.FirstOrDefault(x => x.VorgangId == mess.PrimaryKey);
                                 if (o != null)
                                 {
-
                                     Vorgang vrg = db.Vorgangs.First(x => x.VorgangId == mess.PrimaryKey);
                                     if (mess.TableName == "Vorgang")
                                     {
@@ -346,7 +355,7 @@ namespace ModuleDeliverList.ViewModels
                                         o.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
                                         o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
                                     }
-                                    o.RunPropertyChanged();
+                                    o.RunPropertyChanged();                                 
                                     _ea.GetEvent<MessageVorgangChanged>().Publish(o);
                                 }
                             }
@@ -515,7 +524,6 @@ namespace ModuleDeliverList.ViewModels
                                     _sections.Add(z.Sort, z.Bereich);
                                 }
                             }
-
                         }
                     }
                     _projects.AddRange(proj.Order());
@@ -526,6 +534,17 @@ namespace ModuleDeliverList.ViewModels
             });
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
+            ICollectionViewLiveShaping? live = OrdersView as ICollectionViewLiveShaping;
+            if (live != null)
+            {
+                if(live.CanChangeLiveFiltering)
+                {
+                    live.LiveFilteringProperties.Add("Aktuell");
+                    live.LiveFilteringProperties.Add("AidNavigation.Abgeschlossen");
+                    live.IsLiveFiltering = true;
+                    live.IsLiveSorting = false;
+                }
+            }
             return OrdersView;
         }
     }

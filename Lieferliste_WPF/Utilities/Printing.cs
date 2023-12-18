@@ -93,7 +93,7 @@ namespace Lieferliste_WPF.Utilities
             var headerList = plm.Processes.OrderBy(x => x.Spos).Select(x => new
             {
                 x.Aid,
-                x.Vnr,
+                ProcessingUom = string.Format("{0:d4}",x.Vnr),
                 x.AidNavigation.Material,
                 x.AidNavigation.MaterialNavigation?.Bezeichng,
                 BeazeEinheit = x.AidNavigation.Quantity.ToString(),
@@ -102,7 +102,7 @@ namespace Lieferliste_WPF.Utilities
                         CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.SpaetStart.GetValueOrDefault(), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)),
                 SpaetEnd = x.SpaetEnd.GetValueOrDefault().ToShortDateString(),
                 x.BemT,
-                WrtzeEinheit = string.Format("{0:F2}h", (x.Beaze + x.Rstze) / 60)
+                WrtzeEinheit = string.Format("{0:F2}h", (((x.Beaze == null) ? 0:x.Beaze)  + ((x.Rstze == null) ? 0:x.Rstze)) / 60)
             }).ToArray();
 
             int i = 0;
@@ -113,6 +113,7 @@ namespace Lieferliste_WPF.Utilities
                 switch (pr.Name)
                 {
                     case "Aid": head = "Auftrags-\nnummer"; break;
+                    case "ProcessingUom": head = "Vorgang"; break;
                     case "Material": head = "Material"; break;
                     case "Bezeichng": head = "Bezeichnung"; break;
                     case "BeazeEinheit": head = "Menge"; break;
@@ -150,7 +151,7 @@ namespace Lieferliste_WPF.Utilities
                 foreach (var property in row.GetType().GetProperties())
                 {
 
-                    r.Cells.Add(new TableCell(new Paragraph(new Run((string)property.GetValue(row)))));
+                    r.Cells.Add(new TableCell(new Paragraph(new Run(property.GetValue(row)?.ToString()))));
                     r.Cells[i].ColumnSpan = 1;
                     r.Cells[i].Padding = new Thickness(1);
                     r.Cells[i].BorderBrush = Brushes.DarkGray;

@@ -7,6 +7,7 @@ using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Prism.Events;
 using Prism.Ioc;
 using Prism.Regions;
 using Prism.Services.Dialogs;
@@ -76,15 +77,18 @@ namespace Lieferliste_WPF.ViewModels
         private IRegionManager _regionmanager;
         private readonly IContainerExtension _container;
         private readonly IDialogService _dialogService;
+        private readonly IEventAggregator _ea;
         public MainWindowViewModel(IRegionManager regionManager,
             IContainerExtension container,
             IApplicationCommands applicationCommands,
-            IDialogService dialogService)
+            IDialogService dialogService,
+            IEventAggregator ea)
         {
             _regionmanager = regionManager;
             _container = container;
             _applicationCommands = applicationCommands;
             _dialogService = dialogService;
+            _ea = ea;
 
             RegisterMe();
             SetTimer();
@@ -137,7 +141,12 @@ namespace Lieferliste_WPF.ViewModels
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 var v = db.OrderRbs.First(x => x.Aid == (string)onr[0]);
                 v.Abgeschlossen = true;
-                db.SaveChangesAsync();               
+                foreach (var item in v.Vorgangs.Where(x => x.Visability == false))
+                {
+                    item.Visability = true;
+                }
+                db.SaveChanges();
+                _ea.GetEvent<MessageOrderChanged>().Publish(v);
             }
         }
 
@@ -150,7 +159,7 @@ namespace Lieferliste_WPF.ViewModels
                     if (onr[1] is Boolean f)
                     {
                         if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate))
-                            return f || Keyboard.IsKeyDown(Key.LeftAlt);
+                            return f || (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
                     }
                 }
                 return false;

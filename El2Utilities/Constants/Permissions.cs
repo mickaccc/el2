@@ -27,5 +27,8 @@
         public const string OpenWorkArea = "WORK00";
         public const string LieferVrgDel = "OO05";
         public const string LieferVrgInvis = "LIE01";
+        public const string UserDrop = "UM04";
+        public const string RoleDrop = "RM04";
+
     }
 }

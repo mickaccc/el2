@@ -288,35 +288,38 @@ namespace Lieferliste_WPF.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
-            bool allowed = false;
-            if (!dropInfo.TargetCollection.Equals(dropInfo.DragInfo.SourceCollection))
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.UserDrop))
             {
-                if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName)
+                bool allowed = false;
+                if (!dropInfo.TargetCollection.Equals(dropInfo.DragInfo.SourceCollection))
                 {
-                    if ((dropInfo.Data.GetType() == typeof(Role)
-                        || dropInfo.Data.GetType() == typeof(UserRole))
-                        && UiName.Contains("ROLE"))
+                    if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName)
                     {
-                        allowed = true;
+                        if ((dropInfo.Data.GetType() == typeof(Role)
+                            || dropInfo.Data.GetType() == typeof(UserRole))
+                            && UiName.Contains("ROLE"))
+                        {
+                            allowed = true;
+                        }
+                        if ((dropInfo.Data.GetType() == typeof(WorkArea)
+                            || dropInfo.Data.GetType() == typeof(UserWorkArea))
+                            && UiName.Contains("WORKAREA"))
+                        {
+                            allowed = true;
+                        }
+                        if ((dropInfo.Data.GetType() == typeof(Costunit)
+                            || dropInfo.Data.GetType() == typeof(UserCost))
+                            && UiName.Contains("COSTUNIT"))
+                        {
+                            allowed = true;
+                        }
+                        if (allowed)
+                        {
+                            dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                            dropInfo.Effects = DragDropEffects.Copy;
+                        }
                     }
-                    if ((dropInfo.Data.GetType() == typeof(WorkArea)
-                        || dropInfo.Data.GetType() == typeof(UserWorkArea))
-                        && UiName.Contains("WORKAREA"))
-                    {
-                        allowed = true;
-                    }
-                    if ((dropInfo.Data.GetType() == typeof(Costunit)
-                        || dropInfo.Data.GetType() == typeof(UserCost))
-                        && UiName.Contains("COSTUNIT"))
-                    {
-                        allowed = true;
-                    }
-                    if (allowed)
-                    {
-                        dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                        dropInfo.Effects = DragDropEffects.Copy;
-                    }
-                }
+                } 
             }
         }
 

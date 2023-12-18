@@ -1,4 +1,5 @@
-﻿using El2Core.Models;
+﻿using El2Core.Constants;
+using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
@@ -180,10 +181,13 @@ namespace Lieferliste_WPF.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is Permission || dropInfo.Data is PermissionRole)
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.RoleDrop))
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Move;
+                if (dropInfo.Data is Permission || dropInfo.Data is PermissionRole)
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.Effects = DragDropEffects.Move;
+                } 
             }
         }
 
