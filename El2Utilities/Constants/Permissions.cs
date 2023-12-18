@@ -29,6 +29,10 @@
         public const string LieferVrgInvis = "LIE01";
         public const string UserDrop = "UM04";
         public const string RoleDrop = "RM04";
+        public const string RoleEditValue = "RM01";
+        public const string RoleEditValueInvers = "!RM01";
+        public const string RoleDelValue = "RM02";
+        public const string RoleAddValue = "RM03";
 
     }
 }

@@ -1,201 +1,263 @@
-﻿<UserControl
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
-    xmlns:wpfcontrol="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
-    xmlns:dd="urn:gong-wpf-dragdrop"
-    x:Class="Lieferliste_WPF.UserControls.MachineUserControl"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="250" Unloaded="UserControl_Unloaded" Visibility="{Binding Path=Vis,Converter={StaticResource BooleanToVisibilityConverter}}"
-    DataContextChanged="UserControl_DataContextChanged" MinWidth="50">
-            
-    <UserControl.Resources>
-        <conv:ToIntConverter x:Key="ToIntConverter"/>
-        <conv:MultiObjectConverter x:Key="MultiObject"/>
-        <conv:TTNR_Converter x:Key="TTNR"/>
-        <conv:TextCompareToColorConverter x:Key="txtColor"/>
-        <conv:BullettShapeConverter x:Key="BulletShape"/>
-    </UserControl.Resources>
-    <Border BorderBrush="Black" BorderThickness="1">
-    <Grid x:Name="grid" DataContext="{Binding}">
+﻿<UserControl x:Class="Lieferliste_WPF.UserControls.MachineUserControl"
+			 xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 DataContextChanged="UserControl_DataContextChanged"
+			 xmlns:dd="urn:gong-wpf-dragdrop"
+			 d:DesignHeight="450"
+			 d:DesignWidth="200"
+			 mc:Ignorable="d"
+			 xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 MinWidth="0"
+			 Unloaded="UserControl_Unloaded"
+			 xmlns:wpfcontrol="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="60"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Border CornerRadius="5" ClipToBounds="True" Background="RosyBrown"> 
-            <Grid >
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="30"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
+	<UserControl.Resources>
+		<conv:ToIntConverter x:Key="ToIntConverter"/>
+		<conv:MultiObjectConverter x:Key="MultiObject"/>
+		<conv:TTNR_Converter x:Key="TTNR"/>
+		<conv:TextCompareToColorConverter x:Key="txtColor"/>
+		<conv:BullettShapeConverter x:Key="BulletShape"/>
+	</UserControl.Resources>
 
-                    <Button x:Name="HideDetails" Click="HideDetails_Click"  HorizontalAlignment="Left" Padding="2"
-                        Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialdesign:PackIcon Kind="Hide" Width="25" Height="25" />
-                    </Button>
-                    <Canvas Grid.Row="1" >
-                    <Button HorizontalAlignment="Left" Padding="2" 
-                         ToolTip="Alternativ: Strg + LMB oder Strg + M"
-                        Command="{Binding OpenMachineCommand, Mode=OneWay}"
-                        CommandParameter="{Binding InventNo}"
-                        Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialdesign:PackIcon Kind="Details" Width="25" Height="25"/>
-                    </Button>
-                    <Button Canvas.Left="35" Padding="2" ToolTip="Drucken" 
-                            Command="{Binding MachinePrintCommand}"
-                            CommandParameter="{Binding}"
-                            Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialdesign:PackIcon Kind="PrinterEye"  Width="25" Height="25"/>
-                    </Button>
-                    </Canvas>
-                    <TextBlock Text="{Binding Name}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding InventNo}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Height="Auto"/>
-                
-            </Grid>
-            </Border>
-            <DataGrid x:Name="Planed" Grid.Row="1" ItemsSource="{Binding ProcessesCV}"  AutoGenerateColumns="False"  CanUserSortColumns="False"
-                  RowDetailsVisibilityMode="VisibleWhenSelected" CanUserAddRows="False" CanUserDeleteRows="False"
-                  IsSynchronizedWithCurrentItem="True"
-                  dd:DragDrop.IsDragSource="True"
-                  dd:DragDrop.IsDropTarget="True"
-                  dd:DragDrop.DropHandler="{Binding}"
-                  dd:DragDrop.DragHandler="{Binding}">
-            <DataGrid.InputBindings>
-                <MouseBinding MouseAction="LeftDoubleClick"
-                              Command="{Binding ApplicationCommands.OpenOrderCommand}"
-                              CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"/>
-            </DataGrid.InputBindings>
-            <DataGrid.ContextMenu>
-                <ContextMenu Width="Auto" >
-                    <MenuItem Header="Auftrag öffnen" Command="{Binding ApplicationCommands.OpenOrderCommand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
-                        <MenuItem.Icon>
-                            <Image Source="/Images/planning.png"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Explorer öffnen" Command="{Binding ApplicationCommands.ExplorerCommand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
-                        <MenuItem.Icon>
-                            <Image Source="/Images/files-and-folders.png"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem x:Name="DelBullet" Header="Markierung  löschen" Command="{Binding SetMarkerCommand}" >
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfcontrol:BullettControl BullettColor="White"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem x:Name="Bullet1" Header="roter Punkt"  Command="{Binding SetMarkerCommand}">
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfcontrol:BullettControl BullettColor="Red"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
+	<Grid DataContext="{Binding}"
+		  MinWidth="50"
+		  x:Name="grid">
 
-                    <MenuItem Header="grüner Punkt" Command="{Binding SetMarkerCommand}"
-                              x:Name="Bullet2">
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfcontrol:BullettControl BullettColor="Green"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="gelber Punkt" Command="{Binding SetMarkerCommand}"
-                              x:Name="Bullet3" >
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfcontrol:BullettControl BullettColor="Yellow"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                        <MenuItem Header="blauer Punkt" Command="{Binding SetMarkerCommand}"
-                              x:Name="Bullet4" >
-                            <MenuItem.CommandParameter>
-                                <MultiBinding Converter="{StaticResource MultiObject}">
-                                    <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                    <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.SelectedItem"/>
-                                </MultiBinding>
-                            </MenuItem.CommandParameter>
-                            <MenuItem.Icon>
-                                <wpfcontrol:BullettControl BullettColor="Blue"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </ContextMenu>
-            </DataGrid.ContextMenu>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="60"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<Border Background="RosyBrown"
+				ClipToBounds="True"
+				CornerRadius="5">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="1*"/>
+					<ColumnDefinition Width="3*"/>
+				</Grid.ColumnDefinitions>
 
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                        <Grid Background="LightBlue">
-                        <StackPanel >
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
-                                <TextBlock Text="{Binding Path=AidNavigation.MaterialNavigation.Bezeichng}" Margin="10,0,5,0"/>
-                            </StackPanel>
-                            <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap"/>
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
+				<Button Click="HideDetails_Click"
+						HorizontalAlignment="Left"
+						x:Name="HideDetails"
+						Padding="2"
+						Style="{StaticResource MaterialDesignFlatButton}">
+					<materialdesign:PackIcon Height="25"
+											 Kind="Hide"
+											 Width="25"/>
+				</Button>
+				<Canvas Grid.Row="1">
+					<Button Command="{Binding OpenMachineCommand, Mode=OneWay}"
+							CommandParameter="{Binding InventNo}"
+							HorizontalAlignment="Left"
+							Padding="2"
+							Style="{StaticResource MaterialDesignFlatButton}"
+							ToolTip="Alternativ: Strg + LMB oder Strg + M">
+						<materialdesign:PackIcon Height="25"
+												 Kind="Details"
+												 Width="25"/>
+					</Button>
+					<Button Canvas.Left="35"
+							Command="{Binding MachinePrintCommand}"
+							CommandParameter="{Binding}"
+							Padding="2"
+							Style="{StaticResource MaterialDesignFlatButton}"
+							ToolTip="Drucken">
+						<materialdesign:PackIcon Height="25"
+												 Kind="PrinterEye"
+												 Width="25"/>
+					</Button>
+				</Canvas>
+				<TextBlock Grid.Column="1"
+						   Grid.Row="0"
+						   Height="Auto"
+						   HorizontalAlignment="Left"
+						   Text="{Binding Name}"
+						   TextWrapping="Wrap"/>
+				<TextBlock Grid.Column="1"
+						   Grid.Row="1"
+						   Height="Auto"
+						   HorizontalAlignment="Right"
+						   Text="{Binding InventNo}"/>
 
-            </DataGrid.RowDetailsTemplate>
-            <DataGrid.Columns>
-                <DataGridTemplateColumn x:Name="dataGridTemplateColumn" >
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate >
+			</Grid>
+		</Border>
+		<DataGrid AutoGenerateColumns="False"
+				  CanUserAddRows="False"
+				  CanUserDeleteRows="False"
+				  CanUserSortColumns="False"
+				  dd:DragDrop.DragHandler="{Binding}"
+				  dd:DragDrop.DropHandler="{Binding}"
+				  dd:DragDrop.IsDragSource="True"
+				  dd:DragDrop.IsDropTarget="True"
+				  Grid.Row="1"
+				  IsSynchronizedWithCurrentItem="True"
+				  ItemsSource="{Binding ProcessesCV}"
+				  x:Name="Planed"
+				  RowDetailsVisibilityMode="VisibleWhenSelected">
+			<DataGrid.InputBindings>
+				<MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
+							  CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"
+							  MouseAction="LeftDoubleClick"/>
+			</DataGrid.InputBindings>
+			<DataGrid.ContextMenu>
+				<ContextMenu Width="Auto">
+					<MenuItem Command="{Binding ApplicationCommands.OpenOrderCommand}"
+							  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+							  Header="Auftrag öffnen">
+						<MenuItem.Icon>
+							<Image Source="/Images/planning.png"/>
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Command="{Binding ApplicationCommands.ExplorerCommand}"
+							  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+							  Header="Explorer öffnen">
+						<MenuItem.Icon>
+							<Image Source="/Images/files-and-folders.png"/>
+						</MenuItem.Icon>
+					</MenuItem>
+					<Separator/>
+					<MenuItem Command="{Binding SetMarkerCommand}"
+							  Header="Markierung  löschen"
+							  x:Name="DelBullet">
+						<MenuItem.CommandParameter>
+							<MultiBinding Converter="{StaticResource MultiObject}">
+								<Binding Path="Name"
+										 RelativeSource="{RelativeSource Self}"/>
+								<Binding Path="PlacementTarget.SelectedItem"
+										 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+							</MultiBinding>
+						</MenuItem.CommandParameter>
+						<MenuItem.Icon>
+							<wpfcontrol:BullettControl BullettColor="White"/>
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Command="{Binding SetMarkerCommand}"
+							  Header="roter Punkt"
+							  x:Name="Bullet1">
+						<MenuItem.CommandParameter>
+							<MultiBinding Converter="{StaticResource MultiObject}">
+								<Binding Path="Name"
+										 RelativeSource="{RelativeSource Self}"/>
+								<Binding Path="PlacementTarget.SelectedItem"
+										 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+							</MultiBinding>
+						</MenuItem.CommandParameter>
+						<MenuItem.Icon>
+							<wpfcontrol:BullettControl BullettColor="Red"/>
+						</MenuItem.Icon>
+					</MenuItem>
 
-                            <wpfcontrol:BullettControl HorizontalAlignment="Left" VerticalAlignment="Top"
-                                            BullettColor="{Binding Bullet, TargetNullValue='White'}"
-                                            BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"/>
+					<MenuItem Command="{Binding SetMarkerCommand}"
+							  Header="grüner Punkt"
+							  x:Name="Bullet2">
+						<MenuItem.CommandParameter>
+							<MultiBinding Converter="{StaticResource MultiObject}">
+								<Binding Path="Name"
+										 RelativeSource="{RelativeSource Self}"/>
+								<Binding Path="PlacementTarget.SelectedItem"
+										 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+							</MultiBinding>
+						</MenuItem.CommandParameter>
+						<MenuItem.Icon>
+							<wpfcontrol:BullettControl BullettColor="Green"/>
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Command="{Binding SetMarkerCommand}"
+							  Header="gelber Punkt"
+							  x:Name="Bullet3">
+						<MenuItem.CommandParameter>
+							<MultiBinding Converter="{StaticResource MultiObject}">
+								<Binding Path="Name"
+										 RelativeSource="{RelativeSource Self}"/>
+								<Binding Path="PlacementTarget.SelectedItem"
+										 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+							</MultiBinding>
+						</MenuItem.CommandParameter>
+						<MenuItem.Icon>
+							<wpfcontrol:BullettControl BullettColor="Yellow"/>
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Command="{Binding SetMarkerCommand}"
+							  Header="blauer Punkt"
+							  x:Name="Bullet4">
+						<MenuItem.CommandParameter>
+							<MultiBinding Converter="{StaticResource MultiObject}">
+								<Binding Path="Name"
+										 RelativeSource="{RelativeSource Self}"/>
+								<Binding Path="PlacementTarget.SelectedItem"
+										 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+							</MultiBinding>
+						</MenuItem.CommandParameter>
+						<MenuItem.Icon>
+							<wpfcontrol:BullettControl BullettColor="Blue"/>
+						</MenuItem.Icon>
+					</MenuItem>
+				</ContextMenu>
+			</DataGrid.ContextMenu>
 
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+			<DataGrid.RowDetailsTemplate>
+				<DataTemplate>
+					<Grid Background="LightBlue">
+						<StackPanel>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
+								<TextBlock Margin="10,0,5,0"
+										   Text="{Binding Path=AidNavigation.MaterialNavigation.Bezeichng}"/>
+							</StackPanel>
+							<TextBlock Text="{Binding Path=Text}"
+									   TextWrapping="Wrap"/>
+						</StackPanel>
+					</Grid>
+				</DataTemplate>
 
-                    <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid, Mode=OneTime}" Width="Auto" IsReadOnly="True">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <MultiBinding Converter="{StaticResource txtColor}">
-                                            <Binding Path="Aid"/>
-                                            <Binding Path="Text" ElementName="searchTextBox"/>
-                                        </MultiBinding>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                                    
-                <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}" Width="Auto" IsReadOnly="True"/>
-                    
-                </DataGrid.Columns>
-        </DataGrid>
-    </Grid>
-    </Border>
+			</DataGrid.RowDetailsTemplate>
+			<DataGrid.Columns>
+				<DataGridTemplateColumn x:Name="dataGridTemplateColumn">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+
+							<wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
+													   BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
+													   HorizontalAlignment="Left"
+													   VerticalAlignment="Top"/>
+
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}"
+									Header="Auftrag"
+									IsReadOnly="True"
+									Width="Auto">
+					<DataGridTextColumn.ElementStyle>
+						<Style TargetType="TextBlock">
+							<Setter Property="Background">
+								<Setter.Value>
+									<MultiBinding Converter="{StaticResource txtColor}">
+										<Binding Path="Aid"/>
+										<Binding ElementName="searchTextBox"
+												 Path="Text"/>
+									</MultiBinding>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</DataGridTextColumn.ElementStyle>
+				</DataGridTextColumn>
+
+				<DataGridTextColumn Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}"
+									Header="Vorgang"
+									IsReadOnly="True"
+									Width="Auto"/>
+
+			</DataGrid.Columns>
+		</DataGrid>
+	</Grid>
+
 </UserControl>

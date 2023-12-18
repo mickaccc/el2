@@ -7,9 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"             
     xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+    xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d" MinHeight="250" MinWidth="800" Tag="{Binding Title}" >
 
+    <Grid.Resources>
+        <conv:PermissionConverter x:Key="permission"/>
+    </Grid.Resources>
     <Grid Margin="10,10,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -23,7 +28,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Row="0" Grid.ColumnSpan="4">
-            <Menu DockPanel.Dock="Top" Height="23">
+            <Menu DockPanel.Dock="Top" Height="30">
                 <MenuItem Header="_Speichern" Command="{Binding SaveCommand}"/>
 
             </Menu>
@@ -48,19 +53,18 @@
                   AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
-                  dd:DragDrop.DropHandler="{Binding}" ScrollViewer.CanContentScroll="True"/>
+                  dd:DragDrop.DropHandler="{Binding}" ScrollViewer.CanContentScroll="True"
+                  IsReadOnly="{Binding Converter={StaticResource permission}, ConverterParameter={x:Static const:Permissions.RoleEditValueInvers}}"/>
 
         <DataGrid x:Name="ListPermission" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding PermissionsAvail}"
                   AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
-                  dd:DragDrop.DropHandler="{Binding}" ScrollViewer.CanContentScroll="True" />
+                  dd:DragDrop.DropHandler="{Binding}" ScrollViewer.CanContentScroll="True"
+                  IsReadOnly="{Binding Converter={StaticResource permission},ConverterParameter={x:Static const:Permissions.RoleEditValueInvers}}"/>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Gray" >
 
-            <Button x:Name="btnSave" Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,0,0,0" />
-            <Button x:Name="BtnCancel" Content="Abbrechen" Command="{Binding CloseCommand}"
-                     HorizontalAlignment="Left"  VerticalAlignment="Top" IsCancel="True" Margin="10,0,0,0"/>
         </StackPanel>
     </Grid>
 </Grid>

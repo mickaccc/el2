@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:wpf="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
@@ -43,8 +44,11 @@
         <Grid x:Name="InfoBar" Background="{StaticResource HeaderBackground}" >
             <Grid.Resources>
 
-                <Style TargetType="{x:Type TextBlock}">
+                <Style TargetType="{x:Type wpf:SelectableTextBlock}">
                     <Setter Property="Background" Value="Beige"/>
+                </Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Background" Value="Bisque"/>
                 </Style>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
@@ -59,29 +63,29 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="1" Height="23" Margin="5" x:Name="txtAuftr" VerticalAlignment="Top"
+            <wpf:SelectableTextBlock Grid.Column="1" Height="23" Margin="5" x:Name="txtAuftr" VerticalAlignment="Top"
                        Text="{Binding Aid, Mode=OneWay}"
                        HorizontalAlignment="Right" MinWidth="120" ToolTip="Auftragsnummer"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblOrder, Mode=OneWay}" />
             <Label x:Name="lblOrder" Content="Auftrag" Height="23" HorizontalAlignment="Left" Margin="5"
                    VerticalAlignment="Top" Width="55" Padding="3" />
             <Label Grid.Row="1" x:Name="lblMat" Content="Material" Height="28" HorizontalAlignment="Left"  VerticalAlignment="Top" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="5"  x:Name="txtTTNR" VerticalAlignment="Top"
+            <wpf:SelectableTextBlock Grid.Column="1" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="5"  x:Name="txtTTNR" VerticalAlignment="Top"
                        Text="{Binding Material, Converter={StaticResource TTNR_Converter1}, Mode=OneWay}"
                        MinWidth="120" ToolTip="Typ Teile Nummer"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblMat, Mode=OneWay}" />
-            <TextBlock Grid.Column="2" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtMatBez" VerticalAlignment="Top"
+            <wpf:SelectableTextBlock Grid.Column="2" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtMatBez" VerticalAlignment="Top"
                        Text="{Binding Bezeichnung, Mode=OneWay}" MinWidth="179" ToolTip="Material Kurztext" />
             <TextBlock Grid.Column="3" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtQuant" VerticalAlignment="Top"
                        Text="{Binding Quantity, Mode=OneWay}" MinWidth="120" ToolTip="bestellet Menge"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblQuant, Mode=OneWay}"/>
             <Label Grid.Column="3" x:Name="lblQuant" Content="Menge" Height="28" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" />
             <Label Grid.Column="4" Content="Projekt" Height="28" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" />
-            <TextBlock Grid.Column="4" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtProj"
+            <wpf:SelectableTextBlock Grid.Column="4" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtProj"
                        VerticalAlignment="Top" Width="120" Text="{Binding Pro, Mode=OneWay}" ToolTip="Projekt" />
-            <TextBlock Grid.Row="1" Grid.Column="4" Height="31" HorizontalAlignment="Left" Margin="5" x:Name="txtProjInfo"
+            <wpf:SelectableTextBlock Grid.Row="1" Grid.Column="4" Height="31" HorizontalAlignment="Left" Margin="5" x:Name="txtProjInfo"
                        Text="{Binding ProInfo}" VerticalAlignment="Top" Width="200" ToolTip="Projekt Info" />
-            <TextBlock Grid.Column="3" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="5" x:Name="txtSysStat"
+            <wpf:SelectableTextBlock Grid.Column="3" Grid.Row="1" Height="23" HorizontalAlignment="Left" Margin="5" x:Name="txtSysStat"
                      VerticalAlignment="Top" Text="{Binding SysStatus, Mode=OneWay}" 
                      TextWrapping="WrapWithOverflow" FontSize="9" FontFamily="Modern No. 20" FontStretch="Condensed"
                        MinWidth="180" ToolTip="SAP Systemstatus" />

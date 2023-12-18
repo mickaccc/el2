@@ -66,10 +66,11 @@
         <TextBlock Grid.Row="1" Text="{Binding MachineTask.ErrorMessage}"
                    Visibility="{Binding MachineTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ListBox x:Name="machines" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.Row="1"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding MachineTask.Result}" >
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding MachineTask.Result}"
+                 VirtualizingPanel.IsVirtualizing="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel x:Name="stackPanel" IsItemsHost="True" Orientation="Horizontal"/>
+                    <VirtualizingStackPanel x:Name="stackPanel" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>

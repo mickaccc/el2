@@ -9,6 +9,7 @@ using Lieferliste_WPF.Views;
 using Prism.Events;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -70,6 +71,7 @@ namespace Lieferliste_WPF.Planning
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public int[]? CostUnits { get; set; }
+        public List<User> Employees { get; set; }
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }

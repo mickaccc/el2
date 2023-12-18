@@ -154,12 +154,14 @@ namespace Lieferliste_WPF.ViewModels
         {
             try
             {
-                if (arg is object[] onr)
+                if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate))
                 {
-                    if (onr[1] is Boolean f)
+                    if (arg is object[] onr)
                     {
-                        if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate))
-                            return f || (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
+                        if (onr[1] is Boolean f)
+                        {
+                            return f || (Keyboard.IsKeyDown(Key.LeftAlt));
+                        }
                     }
                 }
                 return false;

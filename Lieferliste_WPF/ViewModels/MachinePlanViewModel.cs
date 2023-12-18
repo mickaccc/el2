@@ -319,7 +319,13 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     if (sel.AddedItems[0] is WorkArea wa)
                     {
-                        RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == wa.WorkAreaId;
+                        RessCV.Filter = f =>
+                        {
+                            PlanMachine plm = f as PlanMachine;
+                            return plm != null
+                                && plm.WorkArea?.WorkAreaId == wa.WorkAreaId
+                                && plm.Vis;
+                        };
                         ParkingCV.Filter = f => (f as Vorgang)?.Rid == wa.WorkAreaId * -1;
 
                         _currentWorkArea = wa.WorkAreaId;
@@ -328,6 +334,7 @@ namespace Lieferliste_WPF.ViewModels
                     }
                 }
             }
+
             catch (Exception e)
             {
 
