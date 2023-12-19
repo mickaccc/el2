@@ -71,9 +71,7 @@
 
     </UserControl.Resources>
 
-    <Border >
-
-        <StackPanel  x:Name="Liefer" Background="#FFBEC9CE" >
+        <StackPanel  x:Name="Liefer"  Background="Transparent">
             
             <Grid >
                 <Grid.RowDefinitions>
@@ -211,6 +209,6 @@
                 </DockPanel>
             </Grid>
         </StackPanel>
-    </Border>
+  
 
 </UserControl>

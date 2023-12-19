@@ -29,5 +29,7 @@ public partial class User
 
     public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
+    public virtual ICollection<UserVorgang> UserVorgangs { get; set; } = new List<UserVorgang>();
+
     public virtual ICollection<UserWorkArea> UserWorkAreas { get; set; } = new List<UserWorkArea>();
 }

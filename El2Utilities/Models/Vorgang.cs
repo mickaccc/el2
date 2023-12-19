@@ -74,13 +74,15 @@ public partial class Vorgang : ModelBase
 
     public int? Spos { get; set; }
 
-    public string? CommentMach { get; set; }
-
     public int? Rid { get; set; }
+
+    public string? CommentMach { get; set; }
 
     public virtual OrderRb AidNavigation { get; set; } = null!;
 
     public virtual WorkSap? ArbPlSapNavigation { get; set; }
 
     public virtual Ressource? RidNavigation { get; set; }
+
+    public virtual ICollection<UserVorgang> UserVorgangs { get; set; } = new List<UserVorgang>();
 }
