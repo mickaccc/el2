@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace ModuleDeliverList.UserControls
@@ -393,11 +394,6 @@ namespace ModuleDeliverList.UserControls
             }
         }
 
-        private void chkInvis_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
 
 
         private void CopyCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -412,9 +408,16 @@ namespace ModuleDeliverList.UserControls
             e.CanExecute = !string.IsNullOrEmpty(textBlock.Text);
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void Border_GotFocus(object sender, RoutedEventArgs e)
         {
+            var b = sender as Border;
+            b.Background = Brushes.LightBlue;
+        }
 
+        private void Border_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var b = sender as Border;
+            b.Background = Brushes.Transparent;
         }
     }
 

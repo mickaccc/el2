@@ -1,4 +1,5 @@
-﻿using CompositeCommands.Core;
+﻿using BionicCode.Utilities.Net.Standard.Extensions;
+using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
@@ -6,7 +7,10 @@ using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Prism.Events;
+using Prism.Ioc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,31 +25,49 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Lieferliste_WPF.Planning
-{
-    internal class PlanMachine : DependencyObject, IDropTarget
+{ 
+    public interface IPlanMachineFactory
+    {
+        IPlanMachine CreatePlanMachine();
+    }
+    internal class PlanMachineFactory : IPlanMachineFactory
+    {
+        public IPlanMachine CreatePlanMachine() => new PlanMachine(0);
+    }
+    public interface IPlanMachine
+    {
+        public int Rid { get; }
+    }
+    internal class PlanMachine : DependencyObject, IPlanMachine, IDropTarget
     {
 
         #region Constructors
-        public PlanMachine() { Initialize(); }
-        public PlanMachine(int RID, string name, string inventarNo)
+        //public PlanMachine() { Initialize(); }
+        ////public PlanMachine(int RID, string name, string inventarNo)
+        ////{
+        ////    Initialize();
+        ////    _rId = RID;
+        ////    Name = name;
+        ////    InventNo = inventarNo;
+        ////}
+
+
+        //public PlanMachine(int RID, string name, string inventarNo, WorkArea workArea, int[] costUnit)
+        //{
+        //    Initialize();
+        //    _rId = RID;
+        //    Name = name;
+        //    InventNo = inventarNo;
+        //    WorkArea = workArea;
+        //    CostUnits = costUnit;
+        //}
+        public PlanMachine(int Rid)
         {
+            //_container = container;
+            _rId = Rid;
             Initialize();
-            _rId = RID;
-            Name = name;
-            InventNo = inventarNo;
+            LoadData();
         }
-
-
-        public PlanMachine(int RID, string name, string inventarNo, WorkArea workArea, int[] costUnit)
-        {
-            Initialize();
-            _rId = RID;
-            Name = name;
-            InventNo = inventarNo;
-            WorkArea = workArea;
-            CostUnits = costUnit;
-        }
-
 
         #endregion
 
@@ -65,18 +87,19 @@ namespace Lieferliste_WPF.Planning
 
         private readonly int _rId;
 
-        public int RID { get { return _rId; } }
+        public int Rid => _rId;
         public string? Name { get; set; }
         public string? Description { get; set; }
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public int[]? CostUnits { get; set; }
-        public List<User> Employees { get; set; }
+        public Dictionary<User, bool> Employees { get; set; }
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
 
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
+        private IContainerProvider _container;
         private IApplicationCommands? _applicationCommands;
 
         public IApplicationCommands? ApplicationCommands
@@ -93,6 +116,40 @@ namespace Lieferliste_WPF.Planning
 
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
+        
+
+        private void LoadData()
+        {
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var res = db.Ressources
+                .Include(x => x.WorkArea)
+                .Include(x => x.WorkSaps)
+                .Include(x => x.RessourceCostUnits)
+                .Include(x => x.RessourceUsers)
+                .ThenInclude(x => x.Us)
+                .First(x => x.RessourceId == Rid);
+
+            CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
+            Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK")==false));
+            WorkArea = res.WorkArea;
+            Name = res.RessName;
+            Vis = res.Visability;
+            Description = res.Info;
+            InventNo = res.Inventarnummer;
+            var empl = db.Users
+                .Include(x => x.UserCosts)
+                .ToList();
+            foreach( var emp in res.RessourceUsers)
+            {
+                for (int i=0; i < CostUnits?.Length; i++)
+                {
+                    if (emp.Us.UserCosts.Any(x => x.CostId == CostUnits[i]))
+                    {
+                        Employees.Add(emp.Us, emp.Rid == Rid);                      
+                    }
+                }
+            }    
+        }
         private void Initialize()
         {
             

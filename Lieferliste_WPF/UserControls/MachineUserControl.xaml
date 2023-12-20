@@ -42,8 +42,8 @@
 					<ColumnDefinition Width="1*"/>
 					<ColumnDefinition Width="3*"/>
 				</Grid.ColumnDefinitions>
-
-				<Button Click="HideDetails_Click"
+                <Canvas>
+                    <Button Click="HideDetails_Click"
 						HorizontalAlignment="Left"
 						x:Name="HideDetails"
 						Padding="2"
@@ -52,8 +52,11 @@
 											 Kind="Hide"
 											 Width="25"/>
 				</Button>
-				<Canvas Grid.Row="1">
-					<Button Command="{Binding OpenMachineCommand, Mode=OneWay}"
+                    <ToggleButton x:Name="emploees" Canvas.Left="35" >
+                        <materialdesign:PackIcon Kind="UserArrowRight"/>
+                    </ToggleButton>
+					<Button Canvas.Top="30"
+                        Command="{Binding OpenMachineCommand, Mode=OneWay}"
 							CommandParameter="{Binding InventNo}"
 							HorizontalAlignment="Left"
 							Padding="2"
@@ -63,7 +66,7 @@
 												 Kind="Details"
 												 Width="25"/>
 					</Button>
-					<Button Canvas.Left="35"
+					<Button Canvas.Left="35" Canvas.Top="30"
 							Command="{Binding MachinePrintCommand}"
 							CommandParameter="{Binding}"
 							Padding="2"
@@ -74,6 +77,15 @@
 												 Width="25"/>
 					</Button>
 				</Canvas>
+                <Popup>
+                    <Border>
+
+                            <DataGrid ItemsSource="{Binding Employees}">
+
+                            </DataGrid>
+  
+                    </Border>
+                </Popup>
 				<TextBlock Grid.Column="1"
 						   Grid.Row="0"
 						   Height="Auto"

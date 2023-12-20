@@ -23,6 +23,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Unity;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -258,15 +259,20 @@ namespace Lieferliste_WPF.ViewModels
                     foreach (var q in re)
                     {
 
-                        PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty)
-                        {
-                            WorkArea = q.WorkArea,
-                            CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
-                            Description = q.Info ?? String.Empty,
-                            ApplicationCommands = _applicationCommands,
-                            Vis = q.Visability
-                        };
-
+                        //PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty)
+                        //{
+                        //    WorkArea = q.WorkArea,
+                        //    CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
+                        //    Description = q.Info ?? String.Empty,
+                        //    ApplicationCommands = _applicationCommands,
+                        //    Vis = q.Visability
+                        //};
+                        IPlanMachine ipl = _container.Resolve<IPlanMachine>();
+                        Unity.Resolution.ParameterOverrides para = new();
+                        para.Add("Rid", 5);
+                        IPlanMachine plm = _container.Resolve<PlanMachine>(para);
+                        var fr = IContainerExtension.Resolve(PlanMachine());
+                        
                         List<Vorgang> VrgList = proc.FindAll(x => x.Rid == q.RessourceId);
 
                         foreach (var vrg in VrgList)

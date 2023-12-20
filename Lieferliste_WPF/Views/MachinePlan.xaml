@@ -73,6 +73,11 @@
                     <VirtualizingStackPanel x:Name="stackPanel" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="1"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <control:MachineUserControl Height="{Binding ActualHeight, ElementName=stackPanel, Mode=OneWay}"/>

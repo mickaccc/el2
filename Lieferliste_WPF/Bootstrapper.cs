@@ -3,6 +3,7 @@ using El2Core.Models;
 using El2Core.Utils;
 using Lieferliste_WPF.Dialogs;
 using Lieferliste_WPF.Dialogs.ViewModels;
+using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +14,10 @@ using Prism.Regions;
 using Prism.Unity;
 using System.IO;
 using System.Windows;
+using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
+using Unity.Resolution;
 
 namespace Lieferliste_WPF
 {
@@ -33,7 +38,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
 
@@ -48,6 +53,8 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<Archive>();
             containerRegistry.RegisterForNavigation<Liefer>();
             containerRegistry.RegisterForNavigation<ShowWorkArea>();
+
+            containerRegistry.GetContainer().RegisterType<IPlanMachine, PlanMachine>();
             containerRegistry.RegisterDialog<Order>();
             containerRegistry.RegisterDialog<MachineView>();
             containerRegistry.RegisterDialog<AddNewWorkArea, AddNewWorkAreaVM>();
