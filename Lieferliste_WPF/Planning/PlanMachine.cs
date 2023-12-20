@@ -28,11 +28,28 @@ namespace Lieferliste_WPF.Planning
 { 
     public interface IPlanMachineFactory
     {
-        IPlanMachine CreatePlanMachine();
+        IContainerProvider Container {  get; }
+        IApplicationCommands ApplicationCommands { get; }
+        IEventAggregator EventAggregator { get; }
     }
     internal class PlanMachineFactory : IPlanMachineFactory
     {
-        public IPlanMachine CreatePlanMachine() => new PlanMachine(0);
+        public IContainerProvider Container { get; }
+
+        public IApplicationCommands ApplicationCommands { get; }
+
+        public IEventAggregator EventAggregator { get; }
+
+        public PlanMachineFactory(IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator)
+        {
+            this.Container = container;
+            this.ApplicationCommands = applicationCommands;
+            this.EventAggregator = eventAggregator;
+        }
+        public PlanMachine CreatePlanMachine(int Rid)
+        {
+            return new PlanMachine(Rid, Container, ApplicationCommands, EventAggregator);
+        }
     }
     public interface IPlanMachine
     {
@@ -61,12 +78,15 @@ namespace Lieferliste_WPF.Planning
         //    WorkArea = workArea;
         //    CostUnits = costUnit;
         //}
-        public PlanMachine(int Rid)
+        public PlanMachine(int Rid, IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator)
         {
-            //_container = container;
+            _container = container;
             _rId = Rid;
+            _applicationCommands = applicationCommands;
+            _eventAggregator = eventAggregator;
             Initialize();
             LoadData();
+            _eventAggregator = eventAggregator;
         }
 
         #endregion
@@ -92,14 +112,15 @@ namespace Lieferliste_WPF.Planning
         public string? Description { get; set; }
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
-        public int[]? CostUnits { get; set; }
-        public Dictionary<User, bool> Employees { get; set; }
+        public List<int> CostUnits { get; set; } = [];
+        public Dictionary<User, bool> Employees { get; set; } = [];
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
 
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         private IContainerProvider _container;
+        private IEventAggregator _eventAggregator;
         private IApplicationCommands? _applicationCommands;
 
         public IApplicationCommands? ApplicationCommands
@@ -125,6 +146,7 @@ namespace Lieferliste_WPF.Planning
                 .Include(x => x.WorkArea)
                 .Include(x => x.WorkSaps)
                 .Include(x => x.RessourceCostUnits)
+                .Include(x => x.Vorgangs)
                 .Include(x => x.RessourceUsers)
                 .ThenInclude(x => x.Us)
                 .First(x => x.RessourceId == Rid);
@@ -139,14 +161,13 @@ namespace Lieferliste_WPF.Planning
             var empl = db.Users
                 .Include(x => x.UserCosts)
                 .ToList();
-            foreach( var emp in res.RessourceUsers)
+            for (int i = 0; i < CostUnits?.Count; i++)
             {
-                for (int i=0; i < CostUnits?.Length; i++)
+                foreach ( var emp in db.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
+                            && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
                 {
-                    if (emp.Us.UserCosts.Any(x => x.CostId == CostUnits[i]))
-                    {
-                        Employees.Add(emp.Us, emp.Rid == Rid);                      
-                    }
+                    if(Employees.Keys.Contains(emp) == false)
+                   Employees.Add(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent));                   
                 }
             }    
         }
@@ -168,6 +189,7 @@ namespace Lieferliste_WPF.Planning
                 live.LiveFilteringProperties.Add("SysStatus");
                 live.IsLiveFiltering = true;
             }
+            _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
 
         }
 

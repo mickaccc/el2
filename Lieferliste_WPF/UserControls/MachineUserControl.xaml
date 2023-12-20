@@ -52,7 +52,7 @@
 											 Kind="Hide"
 											 Width="25"/>
 				</Button>
-                    <ToggleButton x:Name="emploees" Canvas.Left="35" >
+                    <ToggleButton x:Name="emploees" Canvas.Left="70" Canvas.Top="35"  >
                         <materialdesign:PackIcon Kind="UserArrowRight"/>
                     </ToggleButton>
 					<Button Canvas.Top="30"
@@ -77,11 +77,15 @@
 												 Width="25"/>
 					</Button>
 				</Canvas>
-                <Popup>
+                <Popup IsOpen="{Binding Path=IsChecked, ElementName=emploees}" Placement="Mouse" >
                     <Border>
 
-                            <DataGrid ItemsSource="{Binding Employees}">
-
+                            <DataGrid ItemsSource="{Binding Employees}" AutoGenerateColumns="False" Background="LemonChiffon">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Path=Key.UsrName}" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="User" Binding="{Binding Path=Key.UserIdent}" IsReadOnly="True"/>
+                                <DataGridCheckBoxColumn Header="" Binding="{Binding Path=Value, Mode=OneWay}"/>
+                            </DataGrid.Columns>
                             </DataGrid>
   
                     </Border>

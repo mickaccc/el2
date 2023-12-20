@@ -54,7 +54,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<Liefer>();
             containerRegistry.RegisterForNavigation<ShowWorkArea>();
 
-            containerRegistry.GetContainer().RegisterType<IPlanMachine, PlanMachine>();
+            containerRegistry.RegisterSingleton<IPlanMachineFactory, PlanMachineFactory>();
             containerRegistry.RegisterDialog<Order>();
             containerRegistry.RegisterDialog<MachineView>();
             containerRegistry.RegisterDialog<AddNewWorkArea, AddNewWorkAreaVM>();

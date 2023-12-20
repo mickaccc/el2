@@ -255,6 +255,7 @@ namespace Lieferliste_WPF.ViewModels
                 HashSet<PlanMachine> result = [];
                 lock (_lock)
                 {
+                    PlanMachineFactory factory = _container.Resolve<PlanMachineFactory>();
 
                     foreach (var q in re)
                     {
@@ -267,21 +268,8 @@ namespace Lieferliste_WPF.ViewModels
                         //    ApplicationCommands = _applicationCommands,
                         //    Vis = q.Visability
                         //};
-                        IPlanMachine ipl = _container.Resolve<IPlanMachine>();
-                        Unity.Resolution.ParameterOverrides para = new();
-                        para.Add("Rid", 5);
-                        IPlanMachine plm = _container.Resolve<PlanMachine>(para);
-                        var fr = IContainerExtension.Resolve(PlanMachine());
-                        
-                        List<Vorgang> VrgList = proc.FindAll(x => x.Rid == q.RessourceId);
-
-                        foreach (var vrg in VrgList)
-                        {
-                            if (vrg.VorgangId.Length > 0)
-                                plm.Processes?.Add(vrg);
-                        }
-
-                        result.Add(plm);
+ 
+                        result.Add(factory.CreatePlanMachine(q.RessourceId));
                     }
                 }
                 _machines.AddRange(result);
@@ -291,7 +279,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     foreach (var c in UserInfo.User.UserCosts)
                     {
-                        list.AddRange(proc.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.RID &&
+                        list.AddRange(proc.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.Rid &&
                             x.ArbPlSapNavigation.CostId == c.CostId));
                     }
                 }
@@ -360,7 +348,7 @@ namespace Lieferliste_WPF.ViewModels
             Vorgang v = (Vorgang)e.Item;
             e.Accepted = false;
             var l = _machines.Where(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
-            if (l.Any(x => x.RID == v.ArbPlSapNavigation?.RessourceId))
+            if (l.Any(x => x.Rid == v.ArbPlSapNavigation?.RessourceId))
             {
                 e.Accepted = true;
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))
