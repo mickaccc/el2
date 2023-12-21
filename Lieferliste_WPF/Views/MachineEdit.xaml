@@ -15,6 +15,7 @@
          MinHeight="350" MinWidth="800"   x:Name="MachineEditor" Tag="{Binding Title}">
     <Grid.Resources>
         <conv:NullConverter x:Key="NullConv"/>
+        <conv:ListToTextConverter x:Key="listText"/>
     </Grid.Resources>
 
     <Grid Margin="10,10,0,0">
@@ -35,13 +36,7 @@
                 <DataGridTemplateColumn Header="Kostenstellen">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ListBox ItemsSource="{Binding Path=RessourceCostUnits}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding CostId}"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                            <TextBlock Text="{Binding Path=RessourceCostUnits, Converter={StaticResource listText}}" TextWrapping="Wrap" MaxWidth="60"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -57,6 +52,14 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridCheckBoxColumn Header="Sichtbar" Binding="{Binding Path=Visability, Mode=TwoWay}" />
+                <DataGridCheckBoxColumn>
+                    <DataGridCheckBoxColumn.Header>
+                        <TextBlock Text="Vorgang zuteilbar" TextWrapping="Wrap" FontSize="12" Width="50"/>
+                    </DataGridCheckBoxColumn.Header>
+                    <DataGridCheckBoxColumn.Binding>
+                        <Binding Path="ProcessAddable" Mode="TwoWay"/>
+                    </DataGridCheckBoxColumn.Binding>
+                </DataGridCheckBoxColumn>
             </DataGrid.Columns>
         </DataGrid>
         <materialDesign:ColorZone

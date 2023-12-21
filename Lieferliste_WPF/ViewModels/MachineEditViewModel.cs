@@ -19,7 +19,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    public class MachineEditViewModel : ViewModelBase, IDataErrorInfo
+    public class MachineEditViewModel : ViewModelBase
     {
 
         public string Title { get; } = "Maschinen Zuteilung";
@@ -69,7 +69,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else
                 {
-                    accepted = (res.RessName != null) && res.RessName.ToUpper().Contains(_searchFilterText);
+                    if (!(accepted = (res.RessName != null) && res.RessName.ToUpper().Contains(_searchFilterText)))
+                        accepted = (res.WorkArea?.Bereich != null) && res.WorkArea.Bereich.ToUpper().Contains(_searchFilterText);
                 }
             }
             return accepted;
@@ -93,21 +94,7 @@ namespace Lieferliste_WPF.ViewModels
 
 
         }
-        public string Error => null;
 
-        public string this[string columnName]
-        {
-            get
-            {
-                User us = (User)RessourcesCV.CurrentItem;
-                string result = string.Empty;
-                if (columnName == nameof(User.UsrName))
-                {
-                    if (us.UsrName.IsNullOrEmpty()) return "Der Eintrag darf nicht leer sein";
-                }
-                return result;
-            }
-        }
         private void OnCloseExecuted(object obj)
         {
             if (obj is Window ob)

@@ -18,9 +18,9 @@ namespace Lieferliste_WPF.Views
     /// <summary>
     /// Interaction logic for ProjectView.xaml
     /// </summary>
-    public partial class ProjectView : UserControl
+    public partial class ProjectEdit : UserControl
     {
-        public ProjectView()
+        public ProjectEdit()
         {
             InitializeComponent();
         }

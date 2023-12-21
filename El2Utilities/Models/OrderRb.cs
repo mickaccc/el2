@@ -64,5 +64,7 @@ public partial class OrderRb : ModelBase
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
 
+    public virtual Project? Pro { get; set; }
+
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 }

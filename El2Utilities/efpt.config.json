@@ -40,6 +40,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[project]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Ressource]",
          "ObjectType": 0
       },

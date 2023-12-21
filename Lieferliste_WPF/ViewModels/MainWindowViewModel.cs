@@ -42,6 +42,8 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand CloseCommand { get; private set; }
         public ICommand OpenArchiveCommand { get; private set; }
         public ICommand OpenWorkAreaCommand { get; private set; }
+        public ICommand OpenProjectCommand { get; private set; }
+        public ICommand OpenMeasuringCommand { get; private set; }
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -110,10 +112,31 @@ namespace Lieferliste_WPF.ViewModels
             OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
             OpenArchiveCommand = new ActionCommand(OnOpenArchiveExecuted, OnOpenArchiveCanExecute);
             OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
+            OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
+            OpenProjectCommand = new ActionCommand(OnOpenProjectExecuted, OnOpenProjectCanExecute);
         }
 
 
         #region Commands
+        private bool OnOpenProjectCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
+        }
+
+        private void OnOpenProjectExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ProjectEdit", UriKind.Relative));
+        }
+
+        private bool OnOpenMeasuringCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenMeasure);
+        }
+
+        private void OnOpenMeasuringExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MeasuringRoom", UriKind.Relative));
+        }
         private bool OnOpenWorkAreaCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenWorkArea);

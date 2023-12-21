@@ -12,6 +12,7 @@ namespace Lieferliste_WPF.ViewModels
 {
     internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget
     {
+        public string Title { get; } = "Messraum Zuteilung";
         private IContainerProvider _container;
         private IApplicationCommands _applicationCommands;
         public MeasuringRoomViewModel(IContainerProvider container, IApplicationCommands applicationCommands)

@@ -25,6 +25,8 @@ public partial class Ressource
 
     public bool Visability { get; set; }
 
+    public bool ProcessAddable { get; set; }
+
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
     public virtual ICollection<RessourceUser> RessourceUsers { get; set; } = new List<RessourceUser>();

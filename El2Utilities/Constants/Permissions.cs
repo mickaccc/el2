@@ -33,6 +33,9 @@
         public const string RoleEditValueInvers = "!RM01";
         public const string RoleDelValue = "RM02";
         public const string RoleAddValue = "RM03";
+        public const string OpenMeasure = "MEA00";
+        public const string OpenProject = "PROJ00";
+        public const string Employee = "EMP00";
 
     }
 }

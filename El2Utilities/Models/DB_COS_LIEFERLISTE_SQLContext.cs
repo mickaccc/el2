@@ -25,6 +25,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<PermissionRole> PermissionRoles { get; set; }
 
+    public virtual DbSet<Project> Projects { get; set; }
+
     public virtual DbSet<Ressource> Ressources { get; set; }
 
     public virtual DbSet<RessourceCostUnit> RessourceCostUnits { get; set; }
@@ -157,6 +159,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.Material)
                 .HasConstraintName("FK_Order_tblMaterial");
+
+            entity.HasOne(d => d.Pro).WithMany(p => p.OrderRbs)
+                .HasForeignKey(d => d.ProId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Order_project");
         });
 
         modelBuilder.Entity<Permission>(entity =>
@@ -192,6 +199,23 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasForeignKey(d => d.RoleKey)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PermissionRoles_Roles");
+        });
+
+        modelBuilder.Entity<Project>(entity =>
+        {
+            entity.HasKey(e => e.Project1);
+
+            entity.ToTable("project");
+
+            entity.Property(e => e.Project1)
+                .HasMaxLength(50)
+                .HasColumnName("Project");
+            entity.Property(e => e.ProjectColor)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.ProjectType)
+                .HasMaxLength(10)
+                .IsFixedLength();
         });
 
         modelBuilder.Entity<Ressource>(entity =>
