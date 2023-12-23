@@ -36,6 +36,8 @@
         public const string OpenMeasure = "MEA00";
         public const string OpenProject = "PROJ00";
         public const string Employee = "EMP00";
-
+        public const string ConcatProject = "PROJ01";
+        public const string ProjectDesript = "PROJ02";
+        public const string ProjectDescriptInvers = "!PROJ02";
     }
 }

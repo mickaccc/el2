@@ -14,7 +14,7 @@ namespace El2Core.Converters
 
             var strVal = (string)value;
             Regex regex = new Regex("(DS)([0-9]{6})([0-9]{2})*");
-            var match = regex.Match(strVal);
+            var match = regex.Match(strVal.ToUpper());
             if (match.Success)
             {
                 string retVal;
