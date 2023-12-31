@@ -369,7 +369,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity.HasKey(e => new { e.UserId, e.Vid });
 
-            entity.ToTable("User_Vorgang");
+            entity.ToTable("UserVorgang");
 
             entity.Property(e => e.UserId).HasMaxLength(255);
             entity.Property(e => e.Vid)
@@ -383,11 +383,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.UserVorgangs)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK_User_Vorgang_User");
+                .HasConstraintName("FK_UserVorgang_User");
 
             entity.HasOne(d => d.VidNavigation).WithMany(p => p.UserVorgangs)
                 .HasForeignKey(d => d.Vid)
-                .HasConstraintName("FK_User_Vorgang_Vorgang");
+                .HasConstraintName("FK_UserVorgang_Vorgang");
         });
 
         modelBuilder.Entity<UserWorkArea>(entity =>

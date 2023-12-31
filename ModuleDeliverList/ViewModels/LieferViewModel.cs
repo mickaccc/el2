@@ -469,6 +469,7 @@ namespace ModuleDeliverList.ViewModels
                .ThenInclude(r => r.RidNavigation)
                .Include(m => m.MaterialNavigation)
                .Include(d => d.DummyMatNavigation)
+               .Include(p => p.Pro)
                .Where(x => x.Abgeschlossen == false)
                .ToListAsync();
             var ress = await DBctx.Ressources.AsNoTracking()

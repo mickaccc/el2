@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:uc="clr-namespace:Lieferliste_WPF.UserControls"
@@ -14,6 +15,10 @@
              
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
+    <UserControl.Resources>
+        <conv:TTNR_Converter x:Key="ttnr"/>
+        <conv:PlusConverter x:Key="plus"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -23,7 +28,7 @@
         <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="nach Auftragsnummer, Materialnummer oder Materialbezeichnung suchen">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
-                    <i:InvokeCommandAction Command="{Binding TextChangedCommand}"/>
+                    <i:InvokeCommandAction Command="{Binding TextChangedCommand}" CommandParameter="{Binding Path=Text, ElementName=searchTextBox}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
@@ -39,11 +44,29 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>  
         </ListBox>
-        <DataGrid Grid.Row="2" ItemsSource="{Binding VorgangTask.Result}"
+        <DataGrid Grid.Row="2" ItemsSource="{Binding VorgangTask.Result}" IsReadOnly="True" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}">
-            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Auftrag" Binding="{Binding Path=Aid}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Bezeichnung" Binding="{Binding Path=AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Spätstart" Binding="{Binding SpaetStart, StringFormat=\{0:d\}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Spätend" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Kurztext" Binding="{Binding Path=Text,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Dauer" IsReadOnly="True">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding Converter="{StaticResource plus}">
+                            <Binding Path="Beaze"/>
+                            <Binding Path="Rstze"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+
         </DataGrid>
     </Grid>
 </UserControl>

@@ -35,13 +35,23 @@ namespace Lieferliste_WPF.Views
                 txtbx.Text = txt.Aid;
         }
 
-        private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+ 
+        private void searchPsp_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox psp = sender as TextBox;
+            psp.SelectionStart = psp.Text.Length;
+        }
+
+        private void pspTree_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var txtbx = (TextBox)FindName("searchPsp");
-            var tree = (TreeView)sender;
-            var txt = tree.SelectedItem as TreeNode;
-            if(txt != null)
-                txtbx.Text = txt.PSP;
+            var tree = (TextBlock)sender;
+            var txt = tree.Text;
+ 
+            if (txt != null)
+                txtbx.Text = txt;
+
+            e.Handled = true;
         }
     }
 }

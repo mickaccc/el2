@@ -39,5 +39,7 @@
         public const string ConcatProject = "PROJ01";
         public const string ProjectDesript = "PROJ02";
         public const string ProjectDescriptInvers = "!PROJ02";
+        public const string MessDrop = "MEA01";
+        public const string MessSetMark = "MEA02";
     }
 }

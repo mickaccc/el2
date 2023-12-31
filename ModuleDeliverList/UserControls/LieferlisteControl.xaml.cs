@@ -158,6 +158,30 @@ namespace ModuleDeliverList.UserControls
         }
 
 
+        public string Project
+        {
+            get { return (string)GetValue(ProjectProperty); }
+            set { SetValue(ProjectProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Project.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ProjectProperty =
+            DependencyProperty.Register("Project", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+
+
+
+        public string ProjectInfo
+        {
+            get { return (string)GetValue(ProjectInfoProperty); }
+            set { SetValue(ProjectInfoProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ProjectInfo.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ProjectInfoProperty =
+            DependencyProperty.Register("ProjectInfo", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+
+
+
         public string WorkArea
         {
             get { return (string)GetValue(WorkAreaProperty); }

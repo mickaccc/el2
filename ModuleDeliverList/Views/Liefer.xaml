@@ -127,6 +127,8 @@
                             EckEnd="{Binding AidNavigation.Eckende}"
                             Termin="{Binding Termin, Mode=TwoWay,NotifyOnTargetUpdated=True}"
                             Vnr="{Binding Vnr}" 
+                            Project="{Binding AidNavigation.ProId}"
+                            ProjectInfo="{Binding AidNavigation.Pro.ProjectInfo}"
                             Quantity="{Binding AidNavigation.Quantity}" 
                             QuantityYield="{Binding QuantityYield,NotifyOnTargetUpdated=True}" 
                             QuantityScrap="{Binding QuantityScrap,NotifyOnTargetUpdated=True}" 

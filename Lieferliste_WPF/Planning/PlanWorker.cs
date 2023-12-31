@@ -83,6 +83,7 @@ namespace Lieferliste_WPF.Planning
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
+        private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
@@ -110,30 +111,27 @@ namespace Lieferliste_WPF.Planning
 
         private void LoadData()
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var usr = db.Users
+            var usr = _dbctx.Users.AsNoTracking()
                 .Include(x => x.UserRoles)
                 .ThenInclude(x => x.Role)
                 .Include(x => x.UserCosts)
                 .Include(x => x.RessourceUsers)
                 .ThenInclude(x => x.RidNavigation)
+                .Single(x => x.UserIdent == UserId);
+
+            var vrg = _dbctx.Vorgangs
                 .Include(x => x.UserVorgangs)
-                .ThenInclude(x => x.VidNavigation)
-                .First(x => x.UserIdent == UserId);
+                .Where(x => x.UserVorgangs.Any(x => x.UserId == UserId))
+                .ToList();
 
-            foreach ( var vrg in usr.UserVorgangs)
-            {
-                if(vrg.VidNavigation.SysStatus.Contains("RÜCK")==false)
-                Processes.Add(vrg.VidNavigation);
-            }
-
+            Processes.AddRange(vrg);
             Name = usr.UsrName;
             Description = usr.UsrInfo;
     
         }
         private void Initialize()
         {
-            
+            _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
             Processes = new ObservableCollection<Vorgang>();
@@ -163,6 +161,7 @@ namespace Lieferliste_WPF.Planning
                 pr.QuantityRework = vorgang.QuantityRework;
                 pr.QuantityYield = vorgang.QuantityYield;
                 pr.BemT = vorgang.BemT;
+                pr.CommentMach = vorgang.CommentMach;
 
             }
         }
@@ -186,7 +185,7 @@ namespace Lieferliste_WPF.Planning
 
         private static bool OnSetMarkerCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MessSetMark);
         }
 
         private void OnSetMarkerExecuted(object obj)
@@ -208,7 +207,7 @@ namespace Lieferliste_WPF.Planning
             }
             catch (System.Exception e)
             {
-                MessageBox.Show(e.Message, "SetMarker", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "SetMarkerMess", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
         }
@@ -223,15 +222,13 @@ namespace Lieferliste_WPF.Planning
                 var t = dropInfo.TargetCollection as ListCollectionView;
                 if (s.CanRemove) s.Remove(vrg);
                 var v = dropInfo.InsertIndex;
-                vrg.UserVorgangs.Add(new UserVorgang() { Vid = vrg.VorgangId, UserId = this.UserId });
- 
+
                 if (v > t?.Count)
                 {
                     ((IList)t.SourceCollection).Add(vrg);
                 }
                 else
                 {
-                    Debug.Assert(t != null, nameof(t) + " != null");
                     ((IList)t.SourceCollection).Insert(v, vrg);
                 }
                 var p = t.SourceCollection as Collection<Vorgang>;
@@ -239,19 +236,25 @@ namespace Lieferliste_WPF.Planning
                 for (var i = 0; i < p.Count; i++)
                 {
                     p[i].Spos = i;
+
                 }
+
+                _dbctx.UserVorgangs.AddAsync(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
+                _dbctx.SaveChanges();
+
                 t.Refresh();
+
             }
             catch (Exception e)
             {
-                string str = string.Format(e.Message + "\n" + e.InnerException);
+                string str = string.Format("{0}\n{1}",e.Message, e.InnerException);
                 MessageBox.Show(str, "ERROR", MessageBoxButton.OK);
             }
         }
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachDrop))
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MessDrop))
             {
                 if (dropInfo.Data is Vorgang)
                 {

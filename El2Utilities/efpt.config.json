@@ -72,15 +72,15 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[User_Vorgang]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[UserCost]",
          "ObjectType": 0
       },
       {
          "Name": "[dbo].[UserRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserVorgang]",
          "ObjectType": 0
       },
       {
