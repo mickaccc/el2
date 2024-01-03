@@ -147,6 +147,8 @@ namespace Lieferliste_WPF.Planning
                 .Include(x => x.WorkSaps)
                 .Include(x => x.RessourceCostUnits)
                 .Include(x => x.Vorgangs)
+                .ThenInclude(x => x.AidNavigation)
+                .ThenInclude(x => x.MaterialNavigation)
                 .Include(x => x.RessourceUsers)
                 .ThenInclude(x => x.Us)
                 .First(x => x.RessourceId == Rid);
@@ -262,6 +264,7 @@ namespace Lieferliste_WPF.Planning
         {
             var ma = new MachineView();
             ma.DataContext = this;
+            
             ma.Show();
         }
         public void Exit()

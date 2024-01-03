@@ -52,9 +52,7 @@
 											 Kind="Hide"
 											 Width="25"/>
 				</Button>
-                    <ToggleButton x:Name="emploees" Canvas.Left="70" Canvas.Top="35"  >
-                        <materialdesign:PackIcon Kind="UserArrowRight"/>
-                    </ToggleButton>
+
 					<Button Canvas.Top="30"
                         Command="{Binding OpenMachineCommand, Mode=OneWay}"
 							CommandParameter="{Binding InventNo}"

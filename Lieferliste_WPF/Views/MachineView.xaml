@@ -6,30 +6,30 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+    xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:wpfControl="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:dd="urn:gong-wpf-dragdrop"
     x:Class="Lieferliste_WPF.Views.MachineView"
         
         mc:Ignorable="d"
-        Height="450" Width="800" Tag="{Binding Title}" >
+        MinHeight="450" MinWidth="800" SizeToContent="WidthAndHeight" >
 
     <Window.Resources>
         <conv:TTNR_Converter x:Key="ttnr"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:BullettShapeConverter x:Key="BulletShape"/>
+        <conv:PermissionConverter x:Key="permiss"/>
+        <conv:CommentConverter x:Key="comment"/>
+
+        <System:Boolean x:Key="TrueValue">True</System:Boolean>
+        <System:Boolean x:Key="FalseValue">False</System:Boolean>
 
         <Style x:Key="CellEditStyle" TargetType="{x:Type TextBox}">
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Background" Value="LightYellow"/>
             <Setter Property="Padding" Value="2"/>
-            <Style.Triggers>
-                <Trigger Property="Validation.HasError" Value="true">
-                    <Setter Property="ToolTip"
-                            Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                </Trigger>
-                
-            </Style.Triggers>
         </Style>
     </Window.Resources>
 
@@ -180,8 +180,25 @@
                 <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Bemerkung" Binding="{Binding CommentMach, ValidatesOnExceptions=True}"
-                                    EditingElementStyle="{StaticResource CellEditStyle}"/>
+                <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach}"
+                                    EditingElementStyle="{StaticResource CellEditStyle}"
+                                    IsReadOnly="{Binding Converter={StaticResource permiss},
+                    ConverterParameter={x:Static const:Permissions.CommentTeInvers}}"/>
+                <DataGridTemplateColumn Header="Bemerkung Teamleiter">
+                    <DataGridTemplateColumn.CellTemplate >
+                        <DataTemplate>
+                            <GroupBox ToolTip="Bemerkung Teamleiter" 
+                                                Header="{Binding BemT,
+                            Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}">
+                                                <TextBox Text="{Binding BemT,
+                            Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
+                                 IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
+                                                                 Converter={StaticResource permiss}}"
+                                                  TextWrapping="Wrap" />
+                            </GroupBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Gemeldet" Binding="{Binding QuantityYield}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="offen" Binding="{Binding QuantityMiss}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Ausschuss" Binding="{Binding QuantityScrap}" IsReadOnly="True"/>
