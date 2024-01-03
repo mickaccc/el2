@@ -103,12 +103,16 @@ namespace ModuleDeliverList.ViewModels
             {
                 if (value != _searchFilterText)
                 {
+                    _searchTxtLock = true;
                     _searchFilterText = value;
-                    NotifyPropertyChanged(() => SearchFilterText);                  
+                    NotifyPropertyChanged(() => SearchFilterText);
+                    OrdersView.Refresh();
+                    _searchTxtLock = false;
                 }
             }
         }
         private static readonly object _lock = new();
+        private static bool _searchTxtLock;
         private IApplicationCommands _applicationCommands;
 
         public IApplicationCommands ApplicationCommands
@@ -165,7 +169,7 @@ namespace ModuleDeliverList.ViewModels
                 {
                     _selectedProjectFilter = value;
                     NotifyPropertyChanged(() => SelectedProjectFilter);
-                    OrdersView?.Refresh();
+                    OrdersView.Refresh();
                 }
             }
         }
@@ -179,7 +183,7 @@ namespace ModuleDeliverList.ViewModels
                 {
                     _selectedSectionFilter = value;
                     NotifyPropertyChanged(() => SelectedSectionFilter);
-                    OrdersView?.Refresh();
+                    OrdersView.Refresh();
                 }
             }
         }
@@ -279,7 +283,7 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedDefaultFilter == CmbFilter.EXERTN) accepted = (ord.ArbPlSap == "_EXTERN_") == !FilterInvers;
 
             if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
-            if (accepted && _selectedProjectFilter != string.Empty) accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
+            if (accepted && !string.IsNullOrEmpty(_selectedProjectFilter)) accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
@@ -288,12 +292,10 @@ namespace ModuleDeliverList.ViewModels
 
         private void OnTextSearch(object commandParameter)
         {
-            if (commandParameter is not TextChangedEventArgs change) return;
-            var tb = (TextBox)change.OriginalSource;
-            if (tb.Text.Length != 0 && tb.Text.Length < 3) return;
-            SearchFilterText = tb.Text;
-            var uiContext = SynchronizationContext.Current;
-            uiContext?.Send(x => OrdersView.Refresh(), null);
+            if (commandParameter is string search)
+            
+            if (!_searchTxtLock && search.Length >= 3) 
+            SearchFilterText = search;
         }
         private void SetTimer()
         {
@@ -378,7 +380,6 @@ namespace ModuleDeliverList.ViewModels
             SelectedProjectFilter = string.Empty;
             SelectedSectionFilter = string.Empty;
             FilterInvers = false;
-
         }
         private void OnToggleFilter(object obj)
         {
@@ -475,6 +476,7 @@ namespace ModuleDeliverList.ViewModels
             var ress = await DBctx.Ressources.AsNoTracking()
                 .Include(x => x.WorkArea)
                 .ToArrayAsync();
+            var filt = await DBctx.ProductionOrderFilters.AsNoTracking().ToArrayAsync();
             _ressources.AddRange(ress);
             await Task.Factory.StartNew(() =>
             {
@@ -492,7 +494,8 @@ namespace ModuleDeliverList.ViewModels
                         foreach (var x in v.Vorgangs)
                         {
                             ol.Add(x);
-                            if (x.ArbPlSap?.Length >= 3)
+                            if(filt.Any(y => y.OrderNumber ==  x.Aid)) relev = true;
+                            if (x.ArbPlSap?.Length >= 3 && !relev)
                             {
                                 if (int.TryParse(x.ArbPlSap[..3], out int c))
                                     if (UserInfo.User.UserCosts.Any(y => y.CostId == c))

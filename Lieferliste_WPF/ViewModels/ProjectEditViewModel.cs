@@ -36,7 +36,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand DescriptLostFocusCommand { get; private set; }
         private ObservableCollection<OrderRb> _ordersList = [];
         public ICollectionView OrdersCollectionView { get; private set; }
-        private Tree<string> tree = new();
+        private Tree<string> tree;
         public ICollectionView PSP_NodeCollectionView { get; private set; }
         private string _orderSearchText = string.Empty;
         private string _projectSearchText = string.Empty;
@@ -182,16 +182,18 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.OrderRbs)
                 .ToListAsync();
 
+            Tree<string> taskTree = new();
             await Task.Factory.StartNew(() =>
             {
+                
                 foreach (var item in proj.OrderBy(x => x.Project1))
                 {
                     var p = item.Project1.Trim();
 
-                    var root = tree.Nodes.FirstOrDefault(y => p[..9] == y.Value);
+                    var root = taskTree.Nodes.FirstOrDefault(y => p[..9] == y.Value);
                     if (root == null)
                     {
-                        var tr = tree.Begin(p[..9]);
+                        var tr = taskTree.Begin(p[..9]);
                         root = tr.Nodes.Last();
 
                     }
@@ -217,10 +219,11 @@ namespace Lieferliste_WPF.ViewModels
                         }
                         root.Description = item.ProjectInfo ?? string.Empty;
                     }
-                    while (tree.level > 0)
-                        tree.End();
+                    while (taskTree.level > 0)
+                        taskTree.End();                  
                 }
             });
+            tree = taskTree;
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(tree.Nodes);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;

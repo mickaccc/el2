@@ -22,6 +22,10 @@
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <conv:AlertColorConverter x:Key="boolalert" AlertColor="Red"/>
 
+        <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Padding" Value="8"/>
+        </Style>
     </Grid.Resources>
 
 
@@ -37,11 +41,11 @@
             </LinearGradientBrush>
         </DockPanel.Background>
         <Button Content="Speichern" Command="{Binding SaveCommand}"/>
-        <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Background="White" Padding="10"
+        <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Background="White" Padding="10" Text="{Binding SearchFilterText, Mode=OneWay}"
                  materialDesign:HintAssist.Hint="suchen in Auftragsnr, TTNR, Materialtext">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
-                    <i:InvokeCommandAction Command="{Binding TextSearchCommand}" PassEventArgsToCommand="True"/>
+                    <i:InvokeCommandAction Command="{Binding TextSearchCommand}" CommandParameter="{Binding Path=Text, ElementName=SearchBox}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
@@ -59,25 +63,22 @@
             materialDesign:HintAssist.FloatingOffset="1,-10">
             <StackPanel Orientation="Horizontal" >
 
-                <ComboBox x:Name="ProjComboBox" Width="200"  
+                <ComboBox x:Name="ProjComboBox"  
                      materialDesign:HintAssist.Hint="Projekte"
-                     Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                          ItemsSource="{Binding Projects}"
-                          SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValuePath="{Binding SelectedProjectFilter}"/>
+                     
+                          ItemsSource="{Binding Projects}"                        
+                          SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <ComboBox x:Name="SectionComboBox" Width="200" Padding="8"
+                <ComboBox x:Name="SectionComboBox" 
                       materialDesign:HintAssist.Hint="Bereiche"
-                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           ItemsSource="{Binding Sections}"
                           DisplayMemberPath="Value" 
                           SelectedValue="{Binding SelectedSectionFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="Value"  />
-                <ComboBox x:Name="FilterComboBox" Width="200" Padding="10"
+                <ComboBox x:Name="FilterComboBox" 
                           Background="{Binding FilterInvers, Converter={StaticResource boolalert}}"
                     materialDesign:HintAssist.Hint="Filters"                    
                     ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
-                    Style="{StaticResource MaterialDesignOutlinedComboBox}"
                          SelectedValue="{Binding Path=SelectedDefaultFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          DisplayMemberPath="Description"
                          SelectedValuePath="Value" >
