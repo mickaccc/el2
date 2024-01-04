@@ -280,15 +280,15 @@ namespace ModuleDeliverList.UserControls
             DependencyProperty.Register("PrioText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
 
-        public bool Invisible
+        public bool InVisible
         {
-            get { return (bool)GetValue(InvisibleProperty); }
-            set { SetValue(InvisibleProperty, value); }
+            get { return (bool)GetValue(InVisibleProperty); }
+            set { SetValue(InVisibleProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Invisible.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty InvisibleProperty =
-            DependencyProperty.Register("Invisible", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
+        public static readonly DependencyProperty InVisibleProperty =
+            DependencyProperty.Register("InVisible", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
 
 
         public bool Doku

@@ -182,10 +182,11 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.OrderRbs)
                 .ToListAsync();
 
-            Tree<string> taskTree = new();
-            await Task.Factory.StartNew(() =>
+            
+            tree = await Task<Tree<string>>.Run(() =>
             {
-                
+
+                Tree<string> taskTree = new();
                 foreach (var item in proj.OrderBy(x => x.Project1))
                 {
                     var p = item.Project1.Trim();
@@ -222,8 +223,9 @@ namespace Lieferliste_WPF.ViewModels
                     while (taskTree.level > 0)
                         taskTree.End();                  
                 }
-            });
-            tree = taskTree;
+                return taskTree;
+            }).ConfigureAwait(false);
+ 
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(tree.Nodes);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;

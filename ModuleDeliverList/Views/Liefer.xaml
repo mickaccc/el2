@@ -21,7 +21,8 @@
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <conv:AlertColorConverter x:Key="boolalert" AlertColor="Red"/>
-
+        <conv:BooleanInverter x:Key="boolInvert"/>
+        
         <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
             <Setter Property="Width" Value="200"/>
             <Setter Property="Padding" Value="8"/>
@@ -141,7 +142,7 @@
                             Comment_Me="{Binding BemM, Mode=TwoWay,NotifyOnTargetUpdated=True}"
                             Comment_Te="{Binding BemT, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                             Comment_Ma="{Binding BemMa, Mode=TwoWay,NotifyOnTargetUpdated=True}"
-
+                            InVisible="{Binding Visability, Converter={StaticResource boolInvert}}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}">
 

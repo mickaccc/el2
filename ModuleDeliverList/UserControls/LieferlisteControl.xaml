@@ -186,7 +186,8 @@
                                Height="{Binding Path=ActualHeight, ElementName=prio}"
                               Text="{Binding PrioText, ElementName=luc, Mode=TwoWay}" TextWrapping="Wrap"/>
             </Canvas>
-
+                <Label Grid.Column="13" Background="MistyRose" Margin="6" Padding="2" HorizontalAlignment="Center"
+                       Visibility="{Binding InVisible, ElementName=luc, Converter={StaticResource BooleanToVisibilityConverter}}">ausgeblendet</Label>
             <Button Grid.Column="13" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
                         Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}">
