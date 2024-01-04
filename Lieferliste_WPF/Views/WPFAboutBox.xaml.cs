@@ -81,6 +81,7 @@ namespace Lieferliste_WPF.Views
                     // otherwise, just get the name of the assembly itself.
                     result = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location) ?? String.Empty;
                 }
+
                 return result;
             }
         }
@@ -88,7 +89,7 @@ namespace Lieferliste_WPF.Views
         /// <summary>
         /// Gets the application's version information to show.
         /// </summary>
-        public string Version
+        public string Versionl
         {
             get
             {
@@ -105,7 +106,26 @@ namespace Lieferliste_WPF.Views
                     // if that fails, try to get the version from a resource in the Application.
                     result = GetLogicalResourceString(xPathVersion) ?? String.Empty;
                 }
+
                 return result;
+            }
+        }
+        public string VersionLabel
+        {
+            get
+            {
+                bool.TryParse(Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed"), out bool isNetworkDeployed);
+                Version.TryParse(Environment.GetEnvironmentVariable("ClickOnce_CurrentVersion"), out Version currentVersion);
+                if (isNetworkDeployed)
+                {
+                    Version ver = currentVersion;
+                    return string.Format("Product Name: {4}, Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                }
+                else
+                {
+                    var ver = Assembly.GetExecutingAssembly().GetName().Version;
+                    return string.Format("Product Name: {4}, Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                }
             }
         }
 

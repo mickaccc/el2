@@ -385,10 +385,11 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if (dropInfo.Data is Vorgang vrg)
                 {
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     if (name == "parking")
                     {
                         int parkRid = _currentWorkArea * -1;
-                        using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                        
                         if (db.Ressources.All(x => x.RessourceId != parkRid))
                         {
                             
@@ -400,12 +401,16 @@ namespace Lieferliste_WPF.ViewModels
                     else
                     {
                         vrg.Rid = null;
+                        db.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Rid = vrg.Rid;
+                        db.SaveChanges();
                     }
                     var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
                     if (source.IsAddingNew) { source.CommitNew(); }
                     source.Remove(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
+
+                    db.SaveChanges();
                 }
             }
             catch (Exception e)

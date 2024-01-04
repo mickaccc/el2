@@ -68,6 +68,7 @@ namespace Lieferliste_WPF.Planning
             _eventAggregator = eventAggregator;
             Initialize();
             LoadData();
+            
         }
 
         #endregion
@@ -121,21 +122,13 @@ namespace Lieferliste_WPF.Planning
 
             var vrg = _dbctx.Vorgangs
                 .Include(x => x.UserVorgangs)
-                .Where(x => x.UserVorgangs.Any(x => x.UserId == UserId))
+                .Where(x => x.UserVorgangs.Any(x => x.UserId == UserId) && x.SysStatus.Contains("RÜCK") == false)
                 .ToList();
 
             Processes.AddRange(vrg);
             Name = usr.UsrName;
             Description = usr.UsrInfo;
-    
-        }
-        private void Initialize()
-        {
-            _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
-            MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
-            Processes = new ObservableCollection<Vorgang>();
-            ProcessesCVSource.Source = Processes;
+
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
 
@@ -146,6 +139,16 @@ namespace Lieferliste_WPF.Planning
                 live.LiveFilteringProperties.Add("SysStatus");
                 live.IsLiveFiltering = true;
             }
+
+        }
+        private void Initialize()
+        {
+            _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
+            MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
+            Processes = new ObservableCollection<Vorgang>();
+            ProcessesCVSource.Source = Processes;
+
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
 
         }

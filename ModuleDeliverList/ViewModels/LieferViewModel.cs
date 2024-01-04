@@ -267,12 +267,6 @@ namespace ModuleDeliverList.ViewModels
 
             var accepted = ord.Aktuell;
 
-            if (!string.IsNullOrWhiteSpace(_searchFilterText))
-            {
-                if (!(accepted = ord.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
-                    if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
-                        accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
-            }
             if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = ord.Visability;
             if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig == !FilterInvers;
@@ -287,6 +281,13 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
+
+            if (!string.IsNullOrWhiteSpace(_searchFilterText))
+            {
+                if (!(accepted = ord.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
+                    if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
+                        accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
+            }
             return accepted;
         }
 

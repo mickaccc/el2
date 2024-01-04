@@ -81,6 +81,7 @@ namespace Lieferliste_WPF.Planning
         public PlanMachine(int Rid, IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator)
         {
             _container = container;
+            _dbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _rId = Rid;
             _applicationCommands = applicationCommands;
             _eventAggregator = eventAggregator;
@@ -119,6 +120,7 @@ namespace Lieferliste_WPF.Planning
         public ObservableCollection<Vorgang>? Processes { get; set; }
 
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
+        private DB_COS_LIEFERLISTE_SQLContext _dbCtx;
         private IContainerProvider _container;
         private IEventAggregator _eventAggregator;
         private IApplicationCommands? _applicationCommands;
@@ -141,8 +143,7 @@ namespace Lieferliste_WPF.Planning
 
         private void LoadData()
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var res = db.Ressources
+            var res = _dbCtx.Ressources.AsNoTracking()
                 .Include(x => x.WorkArea)
                 .Include(x => x.WorkSaps)
                 .Include(x => x.RessourceCostUnits)
@@ -160,12 +161,12 @@ namespace Lieferliste_WPF.Planning
             Vis = res.Visability;
             Description = res.Info;
             InventNo = res.Inventarnummer;
-            var empl = db.Users
+            var empl = _dbCtx.Users
                 .Include(x => x.UserCosts)
                 .ToList();
             for (int i = 0; i < CostUnits?.Count; i++)
             {
-                foreach ( var emp in db.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
+                foreach ( var emp in _dbCtx.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
                             && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
                 {
                     if(Employees.Keys.Contains(emp) == false)
@@ -284,7 +285,7 @@ namespace Lieferliste_WPF.Planning
                 if (s.CanRemove) s.Remove(vrg);
                 var v = dropInfo.InsertIndex;
                 vrg.Rid = _rId;
- 
+
                 if (v > t?.Count)
                 {
                     ((IList)t.SourceCollection).Add(vrg);
@@ -295,12 +296,17 @@ namespace Lieferliste_WPF.Planning
                     ((IList)t.SourceCollection).Insert(v, vrg);
                 }
                 var p = t.SourceCollection as Collection<Vorgang>;
-                
+ 
                 for (var i = 0; i < p.Count; i++)
                 {
                     p[i].Spos = i;
+                    var vv = _dbCtx.Vorgangs.First(x => x.VorgangId == p[i].VorgangId);
+                    vv.Spos = i;
+                    vv.Rid = _rId;
                 }
                 t.Refresh();
+
+                _dbCtx.SaveChanges();
             }
             catch (Exception e)
             {

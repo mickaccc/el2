@@ -54,7 +54,7 @@ namespace Lieferliste_WPF.ViewModels
                 .ThenInclude(x => x.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.ArbPlSapNavigation)
-                .Where(x => x.ArbPlSapNavigation.Ressource.ProcessAddable == false)
+                .Where(x => x.ArbPlSapNavigation.Ressource.ProcessAddable == false && x.SysStatus.Contains("RÜCK") == false)
                 .ToListAsync();
 
  

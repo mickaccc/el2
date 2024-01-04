@@ -69,7 +69,7 @@
                    Content="{Binding Mode=OneTime, Path=Product}" />
             <StackPanel x:Uid="versionArea" Orientation="Horizontal">
                 <Label x:Name="versionLabel" x:Uid="VersionLabel" Content="Version - " />
-                <Label x:Name="version" x:Uid="version" Content="{Binding Mode=OneTime, Path=Version}" />
+                <Label x:Name="version" x:Uid="version" Content="{Binding Mode=OneTime, Path=VersionLabel}" />
             </StackPanel>
             <Label x:Name="copyright" x:Uid="copyright" Content="{Binding Mode=OneTime, Path=Copyright}"  />
             <Label x:Name="company" x:Uid="company" Content="{Binding Mode=OneTime, Path=Company}" />
