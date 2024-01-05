@@ -4,10 +4,9 @@
     using System.ComponentModel;
     using System.Linq.Expressions;
 
-    public interface IView
-    { }
-    public abstract class ViewModelBase : INotifyPropertyChanged, IView
+    public abstract class ViewModelBase : INotifyPropertyChanged
     {
+        
 
         protected void OnChanged(string propertyName)
         {

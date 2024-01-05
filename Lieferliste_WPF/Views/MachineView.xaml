@@ -180,7 +180,7 @@
                 <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach}"
+                <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach, UpdateSourceTrigger=LostFocus}"
                                     EditingElementStyle="{StaticResource CellEditStyle}"
                                     IsReadOnly="{Binding Converter={StaticResource permiss},
                     ConverterParameter={x:Static const:Permissions.CommentTeInvers}}"/>
@@ -190,7 +190,7 @@
                             <GroupBox ToolTip="Bemerkung Teamleiter" 
                                                 Header="{Binding BemT,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}">
-                                                <TextBox Text="{Binding BemT,
+                                                <TextBox Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
                                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
                                                                  Converter={StaticResource permiss}}"

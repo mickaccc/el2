@@ -4,6 +4,7 @@ using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
@@ -55,29 +56,11 @@ namespace Lieferliste_WPF.Planning
     {
         public int Rid { get; }
     }
-    internal class PlanMachine : DependencyObject, IPlanMachine, IDropTarget
+    internal class PlanMachine : DependencyObject, IPlanMachine, IDropTarget, IViewModel
     {
 
         #region Constructors
-        //public PlanMachine() { Initialize(); }
-        ////public PlanMachine(int RID, string name, string inventarNo)
-        ////{
-        ////    Initialize();
-        ////    _rId = RID;
-        ////    Name = name;
-        ////    InventNo = inventarNo;
-        ////}
-
-
-        //public PlanMachine(int RID, string name, string inventarNo, WorkArea workArea, int[] costUnit)
-        //{
-        //    Initialize();
-        //    _rId = RID;
-        //    Name = name;
-        //    InventNo = inventarNo;
-        //    WorkArea = workArea;
-        //    CostUnits = costUnit;
-        //}
+  
         public PlanMachine(int Rid, IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator)
         {
             _container = container;
@@ -107,7 +90,7 @@ namespace Lieferliste_WPF.Planning
         public ICommand? MachinePrintCommand {  get; private set; }
 
         private readonly int _rId;
-
+        public string Title => throw new NotImplementedException();
         public int Rid => _rId;
         public string? Name { get; set; }
         public string? Description { get; set; }
@@ -139,11 +122,10 @@ namespace Lieferliste_WPF.Planning
 
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
-        
 
         private void LoadData()
         {
-            var res = _dbCtx.Ressources.AsNoTracking()
+            var res = _dbCtx.Ressources
                 .Include(x => x.WorkArea)
                 .Include(x => x.WorkSaps)
                 .Include(x => x.RessourceCostUnits)
@@ -172,7 +154,8 @@ namespace Lieferliste_WPF.Planning
                     if(Employees.Keys.Contains(emp) == false)
                    Employees.Add(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent));                   
                 }
-            }    
+            }
+            
         }
         private void Initialize()
         {
@@ -213,7 +196,8 @@ namespace Lieferliste_WPF.Planning
 
         private bool OnMachinePrintCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
+            return _dbCtx.ChangeTracker.HasChanges();
+            //return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
         }
 
         private void OnMachinePrintExecuted(object obj)
@@ -263,16 +247,27 @@ namespace Lieferliste_WPF.Planning
 
         private void OnOpenMachineExecuted(object obj)
         {
-            var ma = new MachineView();
-            ma.DataContext = this;
-            
-            ma.Show();
-        }
-        public void Exit()
-        {
-            Owner?.Exit();
+            try
+            {
+                var ma = new MachineView();
+                ma.DataContext = this;
+                ma.Closed += MachineClosed;
+                ma.Show();
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.Message, "Error OpenMachine", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
+        private void MachineClosed(object? sender, EventArgs e)
+        {
+            if(_dbCtx.ChangeTracker.HasChanges())
+            {
+                _dbCtx.SaveChanges();
+            }
+        }
 
         public void Drop(IDropInfo dropInfo)
         {
@@ -325,6 +320,11 @@ namespace Lieferliste_WPF.Planning
                     dropInfo.Effects = DragDropEffects.Move;
                 } 
             }
+        }
+
+        void IViewModel.Closing()
+        {
+            if(_dbCtx.ChangeTracker.HasChanges()) _dbCtx.SaveChanges();
         }
     }
 }

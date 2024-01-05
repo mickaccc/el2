@@ -5,6 +5,7 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.Views;
@@ -24,11 +25,12 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Unity;
+using IViewModel = Lieferliste_WPF.Interfaces.IViewModel;
 
 namespace Lieferliste_WPF.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    internal class MachinePlanViewModel : ViewModelBase, IDropTarget
+    internal class MachinePlanViewModel : ViewModelBase, IDropTarget, IViewModel
     {
         public string Title { get; } = "Teamleiter Zuteilung";
         private RelayCommand? _selectionChangeCommand;
@@ -258,17 +260,7 @@ namespace Lieferliste_WPF.ViewModels
                     PlanMachineFactory factory = _container.Resolve<PlanMachineFactory>();
 
                     foreach (var q in re)
-                    {
-
-                        //PlanMachine plm = new(q.RessourceId, q.RessName ?? String.Empty, q.Inventarnummer ?? String.Empty)
-                        //{
-                        //    WorkArea = q.WorkArea,
-                        //    CostUnits = q.RessourceCostUnits.Select(x => x.CostId).ToArray(),
-                        //    Description = q.Info ?? String.Empty,
-                        //    ApplicationCommands = _applicationCommands,
-                        //    Vis = q.Visability
-                        //};
- 
+                    { 
                         result.Add(factory.CreatePlanMachine(q.RessourceId));
                     }
                 }
@@ -420,5 +412,14 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
+        public void Closing()
+        {
+            foreach(var m in _machines)
+            {
+                IViewModel vm = (IViewModel)m;
+                vm.Closing();
+            }
+            if(_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChanges();
+        }
     }
 }

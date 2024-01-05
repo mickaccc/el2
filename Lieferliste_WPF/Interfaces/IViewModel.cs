@@ -2,7 +2,7 @@
 {
     internal interface IViewModel
     {
-        public string Key { get; }
         public string Title { get; }
+        public void Closing();
     }
 }

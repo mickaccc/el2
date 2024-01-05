@@ -211,7 +211,7 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=TabItem}, Path=DataContext.Tag}" />
-                            <Button Command="{Binding DataContext.CloseCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            <Button Command="{Binding DataContext.TabCloseCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=TabItem},Path=Content}">
                                 <Button.Template>
                                     <ControlTemplate>

@@ -4,6 +4,7 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -231,6 +232,12 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnTabCloseExecuted(object obj)
         {
+            if (obj is FrameworkElement f)
+            {
+                Interfaces.IViewModel vm = (Interfaces.IViewModel)f.DataContext;
+                vm.Closing();
+            }
+            
             _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
         }
         private static bool OnOpenOrderCanExecute(object arg)

@@ -25,8 +25,6 @@
             InitializeComponent();
         }
 
-
-
         #region Events
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -35,11 +33,8 @@
             about.ShowDialog();
         }
 
-
-
         private void TabItem_Drag(object sender, MouseEventArgs e)
         {
-
 
             if (e.Source is TabItem tabItem)
             {
@@ -95,7 +90,6 @@
 
             return null;
         }
-
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
