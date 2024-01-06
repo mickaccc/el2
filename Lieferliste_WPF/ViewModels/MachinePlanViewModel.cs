@@ -2,6 +2,7 @@
 using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
@@ -25,7 +26,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Unity;
-using IViewModel = Lieferliste_WPF.Interfaces.IViewModel;
+
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -33,13 +34,12 @@ namespace Lieferliste_WPF.ViewModels
     internal class MachinePlanViewModel : ViewModelBase, IDropTarget, IViewModel
     {
         public string Title { get; } = "Teamleiter Zuteilung";
+        public bool HasChange => Changed();
         private RelayCommand? _selectionChangeCommand;
         private RelayCommand? _textSearchCommand;
         public ICommand SelectionChangeCommand => _selectionChangeCommand ??= new RelayCommand(SelectionChange);
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
-
         public ICommand SaveCommand { get; private set; }
-
         public List<WorkArea> WorkAreas { get; } = [];
         private ConcurrentObservableCollection<PlanMachine> _machines { get; } = new();
         private ObservableCollection<Vorgang>? Priv_processes { get; set; }
@@ -47,11 +47,13 @@ namespace Lieferliste_WPF.ViewModels
         private DB_COS_LIEFERLISTE_SQLContext _DbCtx;
         private IContainerExtension _container;
         IEventAggregator _ea;
+        IUserSettingsService _settingsService;
         public ICollectionView RessCV { get; private set; }
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         private IApplicationCommands _applicationCommands;
         private static System.Timers.Timer? _timer;
+        private static System.Timers.Timer? _autoSaveTimer;
         private NotifyTaskCompletion<ICollectionView> _machineTask;
 
         public NotifyTaskCompletion<ICollectionView> MachineTask
@@ -87,17 +89,19 @@ namespace Lieferliste_WPF.ViewModels
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
 
-        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands, IEventAggregator ea)
+        public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands, IEventAggregator ea, IUserSettingsService settingsService)
         {
             _container = container;
             _applicationCommands = applicationCommands;
             _ea = ea;
+            _settingsService = settingsService;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             SetTimer();
+            if(_settingsService.IsAutoSave) SetAutoSaveTimer();
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
         }
         private void MessageReceived(Vorgang vrg)
@@ -128,7 +132,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             try
             {
-                return _DbCtx.ChangeTracker.HasChanges();
+                return Changed();
             }
             catch (InvalidOperationException e)
             {
@@ -178,12 +182,24 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void SetTimer()
         {
-            // Create a timer with a 30 seconds interval.
+            // Create a timer with a 2 seconds interval.
             _timer = new System.Timers.Timer(2000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
             _timer.Enabled = true;
+        }
+        private void SetAutoSaveTimer()
+        {
+            _autoSaveTimer = new System.Timers.Timer(60000);
+            _autoSaveTimer.Elapsed += OnAutoSave;
+            _autoSaveTimer.AutoReset = true;
+            _autoSaveTimer.Enabled = true;
+        }
+
+        private void OnAutoSave(object? sender, ElapsedEventArgs e)
+        {
+            if(_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
         }
 
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
@@ -377,15 +393,14 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if (dropInfo.Data is Vorgang vrg)
                 {
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     if (name == "parking")
                     {
                         int parkRid = _currentWorkArea * -1;
                         
-                        if (db.Ressources.All(x => x.RessourceId != parkRid))
+                        if (_DbCtx.Ressources.All(x => x.RessourceId != parkRid))
                         {
                             
-                            db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
+                            _DbCtx.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
                             
                         }
                         vrg.Rid = parkRid;
@@ -393,16 +408,14 @@ namespace Lieferliste_WPF.ViewModels
                     else
                     {
                         vrg.Rid = null;
-                        db.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Rid = vrg.Rid;
-                        db.SaveChanges();
+                        _DbCtx.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Rid = vrg.Rid;
+                        
                     }
                     var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
                     if (source.IsAddingNew) { source.CommitNew(); }
                     source.Remove(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
-
-                    db.SaveChanges();
                 }
             }
             catch (Exception e)
@@ -411,7 +424,15 @@ namespace Lieferliste_WPF.ViewModels
                 MessageBox.Show(e.Message, "Method Drop", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        private bool Changed()
+        {
+            var ret = _DbCtx.ChangeTracker.HasChanges();
+            if (!ret)
+            {
+                ret = _machines.Any(x => x.HasChange == true);
+            }
+            return ret;
+        }
         public void Closing()
         {
             foreach(var m in _machines)
@@ -419,7 +440,18 @@ namespace Lieferliste_WPF.ViewModels
                 IViewModel vm = (IViewModel)m;
                 vm.Closing();
             }
-            if(_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChanges();
+            if (_DbCtx.ChangeTracker.HasChanges())
+            {
+                if(_settingsService.IsSaveMessage)
+                {
+                    var result = MessageBox.Show("Sollen die Änderungen in Teamleiter-Zuteilungen gespeichert werden?",
+                        Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        _DbCtx.SaveChanges();
+                    }
+                } else _DbCtx.SaveChanges();
+            }
         }
     }
 }

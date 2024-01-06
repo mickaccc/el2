@@ -1,31 +1,28 @@
 ﻿using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using System;
-using El2Core.Converters;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpCompress.Common;
-using System.Text.RegularExpressions;
-using System.Windows.Input;
-using El2Core.Utils;
-using El2Core.Constants;
-using System.ComponentModel;
-using System.Windows.Data;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.ComponentModel;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.IdentityModel.Tokens;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
     public class ProjectEditViewModel : ViewModelBase
     {
         public string Title { get; } = "Projekt Editor";
+ 
         IContainerProvider _container;
         IApplicationCommands _applicationCommands;
         private RelayCommand? _orderSearchCommand;
@@ -182,11 +179,11 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.OrderRbs)
                 .ToListAsync();
 
-            
-            tree = await Task<Tree<string>>.Run(() =>
+            var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
+            Tree<string> taskTree = new();
+            await Task.Factory.StartNew(() =>
             {
-
-                Tree<string> taskTree = new();
+                               
                 foreach (var item in proj.OrderBy(x => x.Project1))
                 {
                     var p = item.Project1.Trim();
@@ -223,9 +220,9 @@ namespace Lieferliste_WPF.ViewModels
                     while (taskTree.level > 0)
                         taskTree.End();                  
                 }
-                return taskTree;
-            }).ConfigureAwait(false);
- 
+                
+            }, CancellationToken.None, TaskCreationOptions.None, uiContext);
+            tree = taskTree;
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(tree.Nodes);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;
@@ -294,6 +291,11 @@ namespace Lieferliste_WPF.ViewModels
             }
 
             return psp;
+        }
+
+        public void Closing()
+        {
+
         }
     }
 

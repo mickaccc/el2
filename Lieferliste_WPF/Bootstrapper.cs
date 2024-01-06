@@ -1,5 +1,6 @@
 ﻿using CompositeCommands.Core;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using Lieferliste_WPF.Dialogs;
 using Lieferliste_WPF.Dialogs.ViewModels;
@@ -38,13 +39,14 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
 
             containerRegistry.RegisterInstance(builderopt.Options);
             containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
             containerRegistry.RegisterScoped<IRegionManager, RegionManager>();
+            containerRegistry.RegisterSingleton<IUserSettingsService, UserSettingsService>();
             containerRegistry.RegisterForNavigation<UserSettings>();
             containerRegistry.RegisterForNavigation<RoleEdit>();
             containerRegistry.RegisterForNavigation<MachinePlan>();

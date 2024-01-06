@@ -1,8 +1,12 @@
-﻿using Lieferliste_WPF.Interfaces;
+﻿
 using System;
 
-namespace Lieferliste_WPF.Services
+namespace El2Core.Services
 {
+    internal interface ISampleService
+    {
+        string GetCurrentDate();
+    }
     internal class SampleService : ISampleService
     {
         public string GetCurrentDate()

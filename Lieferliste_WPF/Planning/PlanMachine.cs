@@ -2,7 +2,9 @@
 using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
+using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Utilities;
@@ -32,6 +34,7 @@ namespace Lieferliste_WPF.Planning
         IContainerProvider Container {  get; }
         IApplicationCommands ApplicationCommands { get; }
         IEventAggregator EventAggregator { get; }
+        IUserSettingsService SettingsService { get; }
     }
     internal class PlanMachineFactory : IPlanMachineFactory
     {
@@ -41,15 +44,19 @@ namespace Lieferliste_WPF.Planning
 
         public IEventAggregator EventAggregator { get; }
 
-        public PlanMachineFactory(IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator)
+        public IUserSettingsService SettingsService { get; }
+
+        public PlanMachineFactory(IContainerProvider container, IApplicationCommands applicationCommands,
+            IEventAggregator eventAggregator, IUserSettingsService settingsService)
         {
             this.Container = container;
             this.ApplicationCommands = applicationCommands;
             this.EventAggregator = eventAggregator;
+            this.SettingsService = settingsService;
         }
         public PlanMachine CreatePlanMachine(int Rid)
         {
-            return new PlanMachine(Rid, Container, ApplicationCommands, EventAggregator);
+            return new PlanMachine(Rid, Container, ApplicationCommands, EventAggregator, SettingsService);
         }
     }
     public interface IPlanMachine
@@ -61,13 +68,15 @@ namespace Lieferliste_WPF.Planning
 
         #region Constructors
   
-        public PlanMachine(int Rid, IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator)
+        public PlanMachine(int Rid, IContainerProvider container, IApplicationCommands applicationCommands,
+            IEventAggregator eventAggregator, IUserSettingsService settingsService)
         {
             _container = container;
             _dbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _rId = Rid;
             _applicationCommands = applicationCommands;
             _eventAggregator = eventAggregator;
+            _settingsService = settingsService;
             Initialize();
             LoadData();
             _eventAggregator = eventAggregator;
@@ -90,7 +99,9 @@ namespace Lieferliste_WPF.Planning
         public ICommand? MachinePrintCommand {  get; private set; }
 
         private readonly int _rId;
-        public string Title => throw new NotImplementedException();
+        private string _title;
+        public string Title => _title;
+        public bool HasChange => _dbCtx.ChangeTracker.HasChanges();
         public int Rid => _rId;
         public string? Name { get; set; }
         public string? Description { get; set; }
@@ -107,7 +118,7 @@ namespace Lieferliste_WPF.Planning
         private IContainerProvider _container;
         private IEventAggregator _eventAggregator;
         private IApplicationCommands? _applicationCommands;
-
+        private IUserSettingsService _settingsService;
         public IApplicationCommands? ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -140,6 +151,7 @@ namespace Lieferliste_WPF.Planning
             Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK")==false));
             WorkArea = res.WorkArea;
             Name = res.RessName;
+            _title = res.Inventarnummer ?? string.Empty;
             Vis = res.Visability;
             Description = res.Info;
             InventNo = res.Inventarnummer;
@@ -196,8 +208,7 @@ namespace Lieferliste_WPF.Planning
 
         private bool OnMachinePrintCanExecute(object arg)
         {
-            return _dbCtx.ChangeTracker.HasChanges();
-            //return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
         }
 
         private void OnMachinePrintExecuted(object obj)
@@ -265,7 +276,15 @@ namespace Lieferliste_WPF.Planning
         {
             if(_dbCtx.ChangeTracker.HasChanges())
             {
-                _dbCtx.SaveChanges();
+                if(!SaveQuestion())
+                {
+                    var canged = _dbCtx.ChangeTracker.Entries()
+                        .Where(x => x.State == EntityState.Modified).ToList();
+                    foreach(var c in canged)
+                    {
+                        c.State = EntityState.Unchanged;
+                    }
+                }                  
             }
         }
 
@@ -300,8 +319,6 @@ namespace Lieferliste_WPF.Planning
                     vv.Rid = _rId;
                 }
                 t.Refresh();
-
-                _dbCtx.SaveChanges();
             }
             catch (Exception e)
             {
@@ -324,7 +341,28 @@ namespace Lieferliste_WPF.Planning
 
         void IViewModel.Closing()
         {
-            if(_dbCtx.ChangeTracker.HasChanges()) _dbCtx.SaveChanges();
+            if (_dbCtx.ChangeTracker.HasChanges())
+            {
+                SaveQuestion();
+            }
+        }
+        private bool SaveQuestion()
+        {
+            if (!_settingsService.IsSaveMessage)
+            {
+                _dbCtx.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", _title),
+                    _title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    _dbCtx.SaveChangesAsync();
+                    return true;
+                } else return false;
+            }
         }
     }
 }

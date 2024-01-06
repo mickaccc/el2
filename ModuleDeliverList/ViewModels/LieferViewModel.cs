@@ -1,6 +1,7 @@
 ﻿using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -22,7 +24,7 @@ using System.Windows.Input;
 namespace ModuleDeliverList.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    internal class LieferViewModel : ViewModelBase
+    internal class LieferViewModel : ViewModelBase, IViewModel
     {
 
         public ICollectionView OrdersView { get; private set; }
@@ -38,6 +40,7 @@ namespace ModuleDeliverList.ViewModels
         public ActionCommand FilterSaveCommand { get; private set; }
         public ActionCommand InvisibilityCommand { get; private set; }
         public string Title { get; } = "Lieferliste";
+        public bool HasChange => DBctx.ChangeTracker.HasChanges();
 
         private readonly Dictionary<string, string> _filterCriterias = new();
         private readonly string _sortField = string.Empty;
@@ -49,8 +52,10 @@ namespace ModuleDeliverList.ViewModels
         private string _selectedProjectFilter = string.Empty;
         private string _selectedSectionFilter = string.Empty;
         private static System.Timers.Timer? _timer;
+        private static System.Timers.Timer? _autoSaveTimer;
         private IContainerProvider _container;
         IEventAggregator _ea;
+        IUserSettingsService _settingsService;
         private CmbFilter _selectedDefaultFilter;
         private List<Ressource> _ressources = [];
         private SortedDictionary<byte, string> _sections =[];
@@ -187,15 +192,17 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
-        
+
         public LieferViewModel(IContainerProvider container,
             IApplicationCommands applicationCommands,
-            IEventAggregator ea)
+            IEventAggregator ea,
+            IUserSettingsService settingsService)
         {
             _applicationCommands = applicationCommands;
             DBctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _container = container;
             _ea = ea;
+            _settingsService = settingsService;
 
             SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
             SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
@@ -209,7 +216,7 @@ namespace ModuleDeliverList.ViewModels
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             SetTimer();
-
+            if (_settingsService.IsAutoSave) SetAutoSave();
         }
 
 
@@ -310,7 +317,18 @@ namespace ModuleDeliverList.ViewModels
             _timer.AutoReset = true;
             _timer.Enabled = true;
         }
+        private void SetAutoSave()
+        {
+            _autoSaveTimer = new System.Timers.Timer(60000);
+            _autoSaveTimer.Elapsed += OnAutoSave;
+            _autoSaveTimer.AutoReset = true;
+            _autoSaveTimer.Enabled = true;
+        }
 
+        private void OnAutoSave(object? sender, ElapsedEventArgs e)
+        {
+            if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
+        }
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
             if (OrdersView != null)
@@ -551,6 +569,23 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
             return OrdersView;
+        }
+
+        public void Closing()
+        {
+            if (DBctx.ChangeTracker.HasChanges())
+            {
+                if (_settingsService.IsSaveMessage)
+                {
+                    var result = MessageBox.Show("Sollen die Änderungen in Teamleiter-Zuteilungen gespeichert werden?",
+                        Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        DBctx.SaveChanges();
+                    }
+                }
+                else DBctx.SaveChanges();
+            }
         }
     }
 }

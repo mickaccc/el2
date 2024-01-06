@@ -1,6 +1,7 @@
 ﻿using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
@@ -15,17 +16,20 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget
+    internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
     {
         public string Title { get; } = "Messraum Zuteilung";
+        public bool HasChange => _dbctx.ChangeTracker.HasChanges();
         private IContainerProvider _container;
         private IApplicationCommands _applicationCommands;
+        private IUserSettingsService _settingsService;
         private RelayCommand? _textChangedCommand;
         public ICommand TextChangedCommand => _textChangedCommand ??= new RelayCommand(OnTextChanged);
         public NotifyTaskCompletion<ICollectionView> MemberTask {get; private set;}
@@ -34,19 +38,33 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<Vorgang> _vorgangsList = new();
         private List<PlanWorker> _emploeeList = new();
         private string _searchText = string.Empty;
+        private static System.Timers.Timer _autoSaveTimer;
 
         public ICollectionView EmploeeList { get; private set;}
         public ICollectionView VorgangsView { get; private set; }
 
-        public MeasuringRoomViewModel(IContainerProvider container, IApplicationCommands applicationCommands)
+        public MeasuringRoomViewModel(IContainerProvider container, IApplicationCommands applicationCommands, IUserSettingsService settingsService)
         { 
             _container = container;
             _applicationCommands = applicationCommands;
+            _settingsService = settingsService;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             VorgangTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
             MemberTask = new NotifyTaskCompletion<ICollectionView>(LoadMemberAsync());
+            if (_settingsService.IsAutoSave) SetAutoSave();
+        }
+        private void SetAutoSave()
+        {
+            _autoSaveTimer = new System.Timers.Timer(60000);
+            _autoSaveTimer.Elapsed += OnAutoSave;
+            _autoSaveTimer.AutoReset = true;
+            _autoSaveTimer.Enabled = true;
         }
 
+        private void OnAutoSave(object? sender, ElapsedEventArgs e)
+        {
+            if (_dbctx.ChangeTracker.HasChanges()) _dbctx.SaveChangesAsync();
+        }
         private async Task<ICollectionView> LoadDataAsync()
         {
             var ord = await _dbctx.Vorgangs
@@ -121,6 +139,23 @@ namespace Lieferliste_WPF.ViewModels
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 db.UserVorgangs.RemoveRange(db.UserVorgangs.Where(x => x.Vid == vrg.VorgangId));
                 db.SaveChangesAsync();
+            }
+        }
+
+        public void Closing()
+        {
+            if (_dbctx.ChangeTracker.HasChanges())
+            {
+                if (_settingsService.IsSaveMessage)
+                {
+                    var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", Title),
+                        Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        _dbctx.SaveChanges();
+                    }
+                }
+                else _dbctx.SaveChanges();
             }
         }
     }

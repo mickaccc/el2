@@ -1,4 +1,5 @@
 ﻿using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
@@ -19,7 +20,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    public class MachineEditViewModel : ViewModelBase
+    public class MachineEditViewModel : ViewModelBase, IViewModel
     {
 
         public string Title { get; } = "Maschinen Zuteilung";
@@ -31,13 +32,18 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand textSearchCommand;
         private string _searchFilterText = String.Empty;
         private readonly IContainerExtension _container;
+        private readonly IUserSettingsService _settingsService;
         private readonly DB_COS_LIEFERLISTE_SQLContext DBctx;
         private ObservableCollection<Ressource>? _ressources { get; set; }
         public static List<WorkArea> WorkAreas { get; } = new();
-        public MachineEditViewModel(IContainerExtension container)
+
+        public bool HasChange => DBctx.ChangeTracker.HasChanges();
+
+        public MachineEditViewModel(IContainerExtension container, IUserSettingsService settingsService)
         {
             _container = container;
             DBctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            _settingsService = settingsService;
             LoadData();
 
             RessourcesCV = new ListCollectionView(_ressources);
@@ -142,6 +148,23 @@ namespace Lieferliste_WPF.ViewModels
                 .ToList();
             WorkAreas.AddRange(w.Prepend(new WorkArea() { WorkAreaId = 0, Bereich = "nicht zugeteilt" }));
 
+        }
+
+        public void Closing()
+        {
+            if (DBctx.ChangeTracker.HasChanges())
+            {
+                if (_settingsService.IsSaveMessage)
+                {
+                    var result = MessageBox.Show("Sollen die Änderungen in Teamleiter-Zuteilungen gespeichert werden?",
+                        Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        DBctx.SaveChanges();
+                    }
+                }
+                else DBctx.SaveChanges();
+            }
         }
     }
     public class MachineNameValidationRule : ValidationRule

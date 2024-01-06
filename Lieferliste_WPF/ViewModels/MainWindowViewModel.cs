@@ -1,11 +1,10 @@
 ﻿using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Interfaces;
-using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Prism.Events;
@@ -81,17 +80,20 @@ namespace Lieferliste_WPF.ViewModels
         private readonly IContainerExtension _container;
         private readonly IDialogService _dialogService;
         private readonly IEventAggregator _ea;
+        private readonly IUserSettingsService _settingsService;
         public MainWindowViewModel(IRegionManager regionManager,
             IContainerExtension container,
             IApplicationCommands applicationCommands,
             IDialogService dialogService,
-            IEventAggregator ea)
+            IEventAggregator ea,
+            IUserSettingsService settingsService)
         {
             _regionmanager = regionManager;
             _container = container;
             _applicationCommands = applicationCommands;
             _dialogService = dialogService;
             _ea = ea;
+            _settingsService = settingsService;
 
             RegisterMe();
             SetTimer();
@@ -234,8 +236,8 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (obj is FrameworkElement f)
             {
-                Interfaces.IViewModel vm = (Interfaces.IViewModel)f.DataContext;
-                vm.Closing();
+                var vm = f.DataContext as IViewModel;
+                if (vm != null) vm.Closing();
             }
             
             _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
@@ -355,7 +357,7 @@ namespace Lieferliste_WPF.ViewModels
 
             {
                 StringBuilder sb = new();
-                String exp = Properties.Settings.Default.ExplorerPath;
+                String exp = _settingsService.ExplorerPath;
                 string[] pa = exp.Split(',');
 
                 Regex reg2 = new(@"(?<=\[)(.*?)(?=\])");
@@ -392,14 +394,14 @@ namespace Lieferliste_WPF.ViewModels
                 }
 
 
-                if (!Directory.Exists(Properties.Settings.Default.ExplorerRoot))
+                if (!Directory.Exists(_settingsService.ExplorerRoot))
                 {
-                    MessageBox.Show($"Der Hauptpfad '{Properties.Settings.Default.ExplorerRoot}'\nwurde nicht gefunden!"
+                    MessageBox.Show($"Der Hauptpfad '{_settingsService.ExplorerRoot}'\nwurde nicht gefunden!"
                         , "Error", MessageBoxButton.OK);
                 }
                 else
                 {
-                    var p = Path.Combine(@Properties.Settings.Default.ExplorerRoot, sb.ToString());
+                    var p = Path.Combine(@_settingsService.ExplorerRoot, sb.ToString());
                     Process.Start("explorer.exe", @p);
                 }
             }

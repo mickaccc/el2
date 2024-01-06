@@ -1,5 +1,6 @@
 ﻿using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
@@ -20,7 +21,7 @@ using System.Windows.Input;
 namespace Lieferliste_WPF.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    public class UserEditViewModel : ViewModelBase, IDropTarget
+    public class UserEditViewModel : ViewModelBase, IDropTarget, IViewModel
     {
 
         public string Title { get; } = "User Zuteilung";
@@ -45,6 +46,7 @@ namespace Lieferliste_WPF.ViewModels
         private static HashSet<WorkArea> WorkAreas { get; set; } = new();
         private static HashSet<Costunit> CostUnits { get; set; } = new();
         private IContainerExtension _container;
+        private readonly IUserSettingsService _SettingsService;
         internal CollectionViewSource roleSource { get; } = new();
         internal CollectionViewSource workSource { get; } = new();
         internal CollectionViewSource costSource { get; } = new();
@@ -73,10 +75,13 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public UserEditViewModel(IContainerExtension container)
+        public bool HasChange => _dbctx.ChangeTracker.HasChanges();
+
+        public UserEditViewModel(IContainerExtension container, IUserSettingsService settingsService)
         {
             _container = container;
             _dbctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            _SettingsService = settingsService;
             LoadData();
             _usrCV = CollectionViewSource.GetDefaultView(Users);
             _usrCV.MoveCurrentToFirst();
@@ -370,5 +375,21 @@ namespace Lieferliste_WPF.ViewModels
             _usrCV.Refresh();
         }
 
+        public void Closing()
+        {
+            if (_dbctx.ChangeTracker.HasChanges())
+            {
+                if (_SettingsService.IsSaveMessage)
+                {
+                    var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", Title),
+                        Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        _dbctx.SaveChanges();
+                    }
+                }
+                else _dbctx.SaveChanges();
+            }
+        }
     }
 }
