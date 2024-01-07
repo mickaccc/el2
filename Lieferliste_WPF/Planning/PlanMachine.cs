@@ -215,7 +215,7 @@ namespace Lieferliste_WPF.Planning
         {
             try
             {
-                Printing.DoThePrint(Printing.CreateFlowDocument(obj));
+                Printing.DoPrintPreview(Printing.CreateFlowDocument(obj));
             }
             catch (System.Exception e)
             {

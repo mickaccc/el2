@@ -74,14 +74,14 @@ namespace Lieferliste_WPF.Planning
         #endregion
 
         public ICommand? SetMarkerCommand { get; private set; }
-        public ICommand? MachinePrintCommand {  get; private set; }
+        public ICommand? WorkerPrintCommand {  get; private set; }
 
         private readonly string _userId;
 
         public string UserId => _userId;
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public string? InventNo { get; private set; }
+        public int? PersNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
@@ -122,12 +122,15 @@ namespace Lieferliste_WPF.Planning
 
             var vrg = _dbctx.Vorgangs
                 .Include(x => x.UserVorgangs)
+                .Include(x => x.AidNavigation)
+                .ThenInclude(x => x.MaterialNavigation)
                 .Where(x => x.UserVorgangs.Any(x => x.UserId == UserId) && x.SysStatus.Contains("RÜCK") == false)
                 .ToList();
 
             Processes.AddRange(vrg);
             Name = usr.UsrName;
             Description = usr.UsrInfo;
+            PersNo = usr.Personalnumber;
 
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
@@ -145,7 +148,7 @@ namespace Lieferliste_WPF.Planning
         {
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
-            MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
+            WorkerPrintCommand = new ActionCommand(OnWorkerPrintExecuted, OnWorkerPrintCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
 
@@ -169,20 +172,20 @@ namespace Lieferliste_WPF.Planning
             }
         }
 
-        private bool OnMachinePrintCanExecute(object arg)
+        private bool OnWorkerPrintCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
         }
 
-        private void OnMachinePrintExecuted(object obj)
+        private void OnWorkerPrintExecuted(object obj)
         {
             try
             {
-                Printing.DoThePrint(Printing.CreateFlowDocument(obj));
+                Printing.DoPrintPreview(Printing.CreateFlowDocument(obj));
             }
             catch (System.Exception e)
             {
-                MessageBox.Show(e.Message, "MachinePrint", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "WorkerPrint", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -9,12 +9,22 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Lieferliste_WPF.Planning;
 using System.Globalization;
+using System.IO;
+using System.Windows.Xps.Packaging;
+using System.Windows.Xps;
+using Lieferliste_WPF.Views;
+using System.Reflection.Metadata;
+using System.Xml.Linq;
+using System.Windows.Xps.Serialization;
+using System.IO.Packaging;
+using System.Printing;
+using El2Core.Models;
 
 namespace Lieferliste_WPF.Utilities
 {
     static class Printing
     {
-        public static void DoThePrint(System.Windows.Documents.FlowDocument document)
+        public static void DoThePrint(FlowDocument document)
         {
             // Clone the source document's content into a new FlowDocument.
             // This is because the pagination for the printer needs to be
@@ -55,14 +65,33 @@ namespace Lieferliste_WPF.Utilities
                 dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
 
                 docWriter.Write(paginator, dialog.PrintTicket);
-   
+
+
             }
 
         }
         public static FlowDocument CreateFlowDocument(object parameter)
         {
-            PlanMachine plm = (PlanMachine)parameter;
-            
+            string Name;
+            string? Second;
+            string? Description;
+            List<Vorgang> proces;
+            if (parameter is PlanMachine plm)
+            {
+                Name = plm.Name ?? string.Empty;
+                Second = plm.InventNo ?? string.Empty;
+                proces = plm.Processes?.ToList() ?? [];
+                Description = plm.Description ?? string.Empty;
+            }
+            else if (parameter is PlanWorker plw)
+            {
+                Name = plw.Name ?? string.Empty;
+                Second = plw.PersNo.ToString() ?? string.Empty;
+                proces = plw.Processes?.ToList() ?? [];
+                Description = plw.Description ?? string.Empty;
+            }
+            else throw new InvalidDataException();
+
             FlowDocument fd = new FlowDocument();
             Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy hh:mm")));
             p1.FontStyle = FontStyles.Normal;
@@ -70,7 +99,7 @@ namespace Lieferliste_WPF.Utilities
             p1.FontSize = 12;
             fd.Blocks.Add(p1);
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(plm.Name).Append(' ').Append(plm.InventNo);
+            stringBuilder.Append(Name).Append(' ').AppendLine(Second).Append(Description);
             Paragraph p = new Paragraph(new Run(stringBuilder.ToString()));
             p.FontStyle = FontStyles.Normal;
             p.FontWeight = FontWeights.Bold;
@@ -85,15 +114,15 @@ namespace Lieferliste_WPF.Utilities
             fd.BringIntoView();
 
             fd.TextAlignment = TextAlignment.Center;
-            fd.ColumnWidth = 600;
+            fd.ColumnWidth = 800;
             fd.IsColumnWidthFlexible = true;
-            table.CellSpacing = 0;
+            table.CellSpacing = 1;
 
 
-            var headerList = plm.Processes.OrderBy(x => x.Spos).Select(x => new
+            var headerList = proces.OrderBy(x => x.Spos).Select(x => new
             {
                 x.Aid,
-                ProcessingUom = string.Format("{0:d4}",x.Vnr),
+                ProcessingUom = string.Format("{0:d4}", x.Vnr),
                 x.AidNavigation.Material,
                 x.AidNavigation.MaterialNavigation?.Bezeichng,
                 BeazeEinheit = x.AidNavigation.Quantity.ToString(),
@@ -102,7 +131,7 @@ namespace Lieferliste_WPF.Utilities
                         CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.SpaetStart.GetValueOrDefault(), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)),
                 SpaetEnd = x.SpaetEnd.GetValueOrDefault().ToShortDateString(),
                 x.BemT,
-                WrtzeEinheit = string.Format("{0:F2}h", (((x.Beaze == null) ? 0:x.Beaze)  + ((x.Rstze == null) ? 0:x.Rstze)) / 60)
+                WrtzeEinheit = string.Format("{0:F2}h", (((x.Beaze == null) ? 0 : x.Beaze) + ((x.Rstze == null) ? 0 : x.Rstze)) / 60)
             }).ToArray();
 
             int i = 0;
@@ -115,7 +144,7 @@ namespace Lieferliste_WPF.Utilities
                     case "Aid": head = "Auftrags-\nnummer"; break;
                     case "ProcessingUom": head = "Vorgang"; break;
                     case "Material": head = "Material"; break;
-                    case "Bezeichng": head = "Bezeichnung"; break;
+                    case "Bezeichng": head = "Bezeichn- ung"; break;
                     case "BeazeEinheit": head = "Menge"; break;
                     case "Text": head = "Kurztext"; break;
                     case "RstzeEinheit": head = "SpätStart"; break;
@@ -168,5 +197,145 @@ namespace Lieferliste_WPF.Utilities
 
 
         }
+
+        public static void DoPrintPreview(FlowDocument doc)
+        {
+ 
+            PrintDialog dialog = new();
+            dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
+
+            doc.PagePadding = new Thickness(10.0, 20.0, 10.0, 10.0);
+            var fix = Get_Fixed_From_FlowDoc(doc, dialog);
+            var windows = new PrintWindow(fix);
+            windows.ShowDialog();
+        }
+        private static string _previewWindowXaml =
+    @"<Window
+        xmlns ='http://schemas.microsoft.com/netfx/2007/xaml/presentation'
+        xmlns:x ='http://schemas.microsoft.com/winfx/2006/xaml'
+        Title ='Print Preview - @@TITLE'
+        Height ='200' Width ='300'
+        WindowStartupLocation ='CenterOwner'>
+                      <DocumentViewer Name='dv1'/>
+     </Window>";
+
+
+        //public static void DoPreview(string title)
+        //{
+        //    string fileName = System.IO.Path.GetRandomFileName();
+
+
+        //    FlowDocumentScrollViewer visual = (FlowDocumentScrollViewer)_parent.FindName("fdsv1");
+
+        //    try
+        //    {
+        //        // write the XPS document
+        //        using (XpsDocument doc = new XpsDocument(fileName, FileAccess.ReadWrite))
+        //        {
+        //            XpsDocumentWriter writer = XpsDocument.CreateXpsDocumentWriter(doc);
+        //            writer.Write(visual);
+        //        }
+
+        //        // Read the XPS document into a dynamically generated
+        //        // preview Window 
+        //        using (XpsDocument doc = new XpsDocument(fileName, FileAccess.Read))
+        //        {
+        //            FixedDocumentSequence fds = doc.GetFixedDocumentSequence();
+
+        //            string s = _previewWindowXaml;
+        //            s = s.Replace("@@TITLE", title.Replace("'", "&apos;"));
+
+        //            using (var reader = new System.Xml.XmlTextReader(new StringReader(s)))
+        //            {
+        //                Window preview = System.Windows.Markup.XamlReader.Load(reader) as Window;
+
+        //                DocumentViewer dv1 = LogicalTreeHelper.FindLogicalNode(preview, "dv1") as DocumentViewer;
+        //                dv1.Document = fds as IDocumentPaginatorSource;
+
+
+        //                preview.ShowDialog();
+        //            }
+        //        }
+        //    }
+        //    finally
+        //    {
+        //        if (File.Exists(fileName))
+        //        {
+        //            try
+        //            {
+        //                File.Delete(fileName);
+        //            }
+        //            catch
+        //            {
+        //            }
+        //        }
+        //    }
+        //}
+        public static FixedDocument Get_Fixed_From_FlowDoc(FlowDocument flowDoc, PrintDialog printDlg)
+        {
+            var fixedDocument = new FixedDocument();
+            try
+            {
+                var pdlgPrint = printDlg ?? new PrintDialog();
+
+                DocumentPaginator dpPages = (DocumentPaginator)((IDocumentPaginatorSource)flowDoc).DocumentPaginator;
+                dpPages.ComputePageCount();
+                PrintCapabilities capabilities = pdlgPrint.PrintQueue.GetPrintCapabilities(pdlgPrint.PrintTicket);
+
+                for (int iPages = 0; iPages < dpPages.PageCount; iPages++)
+                {
+                    var page = dpPages.GetPage(iPages);
+                    var pageContent = new PageContent();
+                    var fixedPage = new FixedPage();
+
+                    Canvas canvas = new Canvas();
+
+                    VisualBrush vb = new VisualBrush(page.Visual);
+                    vb.Stretch = Stretch.None;
+                    vb.AlignmentX = AlignmentX.Left;
+                    vb.AlignmentY = AlignmentY.Top;
+                    vb.ViewboxUnits = BrushMappingMode.Absolute;
+                    vb.TileMode = TileMode.None;
+                    vb.Viewbox = new Rect(0, 0, capabilities.PageImageableArea.ExtentWidth, capabilities.PageImageableArea.ExtentHeight);
+
+                    FixedPage.SetLeft(canvas, 0);
+                    FixedPage.SetTop(canvas, 0);
+
+                    canvas.Width = capabilities.PageImageableArea.ExtentWidth;
+                    canvas.Height = capabilities.PageImageableArea.ExtentHeight;
+                    canvas.Background = vb;
+
+                    fixedPage.Children.Add(canvas);
+
+                    fixedPage.Height = pdlgPrint.PrintableAreaHeight;
+                    fixedPage.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    pageContent.Child = fixedPage;
+                    
+                    fixedDocument.Pages.Add(pageContent);
+                }
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return fixedDocument;
+        }
+        public static void SaveAsXps(string path, FlowDocument document)
+            {
+                using (Package package = Package.Open(path, FileMode.Create))
+                {
+                    using (var xpsDoc = new XpsDocument(
+                        package, CompressionOption.Maximum))
+                    {
+                        var xpsSm = new XpsSerializationManager(
+                            new XpsPackagingPolicy(xpsDoc), false);
+                        DocumentPaginator dp =
+                            ((IDocumentPaginatorSource)document).DocumentPaginator;
+                        xpsSm.SaveAsXaml(dp);
+                    }
+                }
+            }
+        
     }
 }
