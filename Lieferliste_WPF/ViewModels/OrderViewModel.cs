@@ -4,11 +4,11 @@ using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Prism.Commands;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -31,21 +31,27 @@ namespace Lieferliste_WPF.ViewModels
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(OnMessageReceived);
         }
 
-        private void OnMessageReceived(Vorgang vorgang)
+        private void OnMessageReceived(List<string> vorgangIdList)
         {
-            var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vorgang.VorgangId);
-            if (vo != null)
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            foreach (var vid in vorgangIdList)
             {
-                vo.SysStatus = vorgang.SysStatus;
-                vo.BemM = vorgang.BemM;
-                vo.BemMa = vorgang.BemMa;
-                vo.BemT = vorgang.BemT;
-                vo.QuantityMiss = vorgang.QuantityMiss;
-                vo.QuantityRework = vorgang.QuantityRework;
-                vo.QuantityScrap = vorgang.QuantityScrap;
-                vo.QuantityYield = vorgang.QuantityYield;
+                var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vid);
+                
+                if (vo != null)
+                {
+                    var v = db.Vorgangs.First(x => x.VorgangId == vo.VorgangId);
+                    
+                        vo.SysStatus = v.SysStatus;
+                        vo.BemM = v.BemM;
+                        vo.BemMa = v.BemMa;
+                        vo.BemT = v.BemT;
+                        vo.QuantityMiss = v.QuantityMiss;
+                        vo.QuantityRework = v.QuantityRework;
+                        vo.QuantityScrap = v.QuantityScrap;
+                        vo.QuantityYield = v.QuantityYield;
 
-                vo.RunPropertyChanged();
+                }
             }
         }
 
@@ -58,7 +64,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            
+
         }
         private bool OnDeleteCanExecute(object arg)
         {
@@ -69,7 +75,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (obj is Vorgang v)
             {
-                var result = MessageBox.Show(string.Format("Soll der Vorgang {0:d4}\n vom Auftrag {1} gelöscht werden?",v.Vnr,v.Aid), "Information",
+                var result = MessageBox.Show(string.Format("Soll der Vorgang {0:d4}\n vom Auftrag {1} gelöscht werden?", v.Vnr, v.Aid), "Information",
                     MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
@@ -86,7 +92,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnBemChanged(object obj)
         {
-            if(obj is Vorgang vrg)
+            if (obj is Vorgang vrg)
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 var v = db.Vorgangs.Single<Vorgang>(x => x.VorgangId == vrg.VorgangId);
@@ -152,7 +158,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
- 
+
         private string? _pro;
 
         public string? Pro

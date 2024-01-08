@@ -2,7 +2,9 @@
 using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
+using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
@@ -25,12 +27,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Lieferliste_WPF.Planning
-{ 
+{
     public interface IPlanWorkerFactory
     {
-        IContainerProvider Container {  get; }
+        IContainerProvider Container { get; }
         IApplicationCommands ApplicationCommands { get; }
         IEventAggregator EventAggregator { get; }
+        IUserSettingsService SettingsService { get; }
     }
     internal class PlanWorkerFactory : IPlanWorkerFactory
     {
@@ -40,41 +43,48 @@ namespace Lieferliste_WPF.Planning
 
         public IEventAggregator EventAggregator { get; }
 
-        public PlanWorkerFactory(IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator)
+        public IUserSettingsService SettingsService { get; }
+
+        public PlanWorkerFactory(IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator, IUserSettingsService settingsService)
         {
             this.Container = container;
             this.ApplicationCommands = applicationCommands;
             this.EventAggregator = eventAggregator;
+            this.SettingsService = settingsService;
         }
         public PlanWorker CreatePlanWorker(string UserId)
         {
-            return new PlanWorker(UserId, Container, ApplicationCommands, EventAggregator);
+            return new PlanWorker(UserId, Container, ApplicationCommands, EventAggregator, SettingsService);
         }
     }
     public interface IPlanWorker
     {
         public string UserId { get; }
     }
-    internal class PlanWorker : DependencyObject, IPlanWorker, IDropTarget
+    internal class PlanWorker : DependencyObject, IPlanWorker, IDropTarget, IViewModel
     {
 
         #region Constructors
- 
-        public PlanWorker(string UserId, IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator)
+
+        public PlanWorker(string UserId, IContainerProvider container,
+            IApplicationCommands applicationCommands,
+            IEventAggregator eventAggregator,
+            IUserSettingsService settingsService)
         {
             _container = container;
             _userId = UserId;
             _applicationCommands = applicationCommands;
             _eventAggregator = eventAggregator;
+            _settingsService = settingsService;
             Initialize();
             LoadData();
-            
+
         }
 
         #endregion
 
         public ICommand? SetMarkerCommand { get; private set; }
-        public ICommand? WorkerPrintCommand {  get; private set; }
+        public ICommand? WorkerPrintCommand { get; private set; }
 
         private readonly string _userId;
 
@@ -92,6 +102,7 @@ namespace Lieferliste_WPF.Planning
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         private IContainerProvider _container;
         private IEventAggregator _eventAggregator;
+        private IUserSettingsService _settingsService;
         private IApplicationCommands? _applicationCommands;
 
         public IApplicationCommands? ApplicationCommands
@@ -107,8 +118,10 @@ namespace Lieferliste_WPF.Planning
         }
 
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
+        private string _title = "Messtechnik";
+        public string Title => _title;
 
-        
+        public bool HasChange => _dbctx.ChangeTracker.HasChanges();
 
         private void LoadData()
         {
@@ -156,19 +169,18 @@ namespace Lieferliste_WPF.Planning
 
         }
 
-        private void MessageReceived(Vorgang vorgang)
+        private void MessageReceived(List<string> vorgangIdList)
         {
-            var pr = Processes?.FirstOrDefault(x => x.VorgangId == vorgang.VorgangId);
-            if (pr != null)
+            foreach (var v in vorgangIdList)
             {
-                pr.SysStatus = vorgang.SysStatus;
-                pr.QuantityMiss = vorgang.QuantityMiss;
-                pr.QuantityScrap = vorgang.QuantityScrap;
-                pr.QuantityRework = vorgang.QuantityRework;
-                pr.QuantityYield = vorgang.QuantityYield;
-                pr.BemT = vorgang.BemT;
-                pr.CommentMach = vorgang.CommentMach;
 
+                var pr = Processes?.FirstOrDefault(x => x.VorgangId == v);
+                if (pr != null)
+                {
+                    _dbctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
+
+                    pr.RunPropertyChanged();
+                }
             }
         }
 
@@ -217,7 +229,7 @@ namespace Lieferliste_WPF.Planning
             }
 
         }
- 
+
         public void Drop(IDropInfo dropInfo)
         {
 
@@ -238,7 +250,7 @@ namespace Lieferliste_WPF.Planning
                     ((IList)t.SourceCollection).Insert(v, vrg);
                 }
                 var p = t.SourceCollection as Collection<Vorgang>;
-                
+
                 for (var i = 0; i < p.Count; i++)
                 {
                     p[i].Spos = i;
@@ -246,14 +258,13 @@ namespace Lieferliste_WPF.Planning
                 }
 
                 _dbctx.UserVorgangs.AddAsync(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
-                _dbctx.SaveChanges();
 
                 t.Refresh();
 
             }
             catch (Exception e)
             {
-                string str = string.Format("{0}\n{1}",e.Message, e.InnerException);
+                string str = string.Format("{0}\n{1}", e.Message, e.InnerException);
                 MessageBox.Show(str, "ERROR", MessageBoxButton.OK);
             }
         }
@@ -266,7 +277,34 @@ namespace Lieferliste_WPF.Planning
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
-                } 
+                }
+            }
+        }
+
+        public void Closing()
+        {
+            if (_dbctx.ChangeTracker.HasChanges())
+            {
+                SaveQuestion();
+            }
+        }
+        private bool SaveQuestion()
+        {
+            if (!_settingsService.IsSaveMessage)
+            {
+                _dbctx.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", _title),
+                    _title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    _dbctx.SaveChangesAsync();
+                    return true;
+                }
+                else return false;
             }
         }
     }

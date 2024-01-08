@@ -28,10 +28,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Lieferliste_WPF.Planning
-{ 
+{
     public interface IPlanMachineFactory
     {
-        IContainerProvider Container {  get; }
+        IContainerProvider Container { get; }
         IApplicationCommands ApplicationCommands { get; }
         IEventAggregator EventAggregator { get; }
         IUserSettingsService SettingsService { get; }
@@ -67,7 +67,7 @@ namespace Lieferliste_WPF.Planning
     {
 
         #region Constructors
-  
+
         public PlanMachine(int Rid, IContainerProvider container, IApplicationCommands applicationCommands,
             IEventAggregator eventAggregator, IUserSettingsService settingsService)
         {
@@ -96,7 +96,7 @@ namespace Lieferliste_WPF.Planning
 
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? OpenMachineCommand { get; private set; }
-        public ICommand? MachinePrintCommand {  get; private set; }
+        public ICommand? MachinePrintCommand { get; private set; }
 
         private readonly int _rId;
         private string _title;
@@ -148,7 +148,7 @@ namespace Lieferliste_WPF.Planning
                 .First(x => x.RessourceId == Rid);
 
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
-            Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK")==false));
+            Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK") == false));
             WorkArea = res.WorkArea;
             Name = res.RessName;
             _title = res.Inventarnummer ?? string.Empty;
@@ -160,18 +160,18 @@ namespace Lieferliste_WPF.Planning
                 .ToList();
             for (int i = 0; i < CostUnits?.Count; i++)
             {
-                foreach ( var emp in _dbCtx.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
+                foreach (var emp in _dbCtx.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
                             && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
                 {
-                    if(Employees.Keys.Contains(emp) == false)
-                   Employees.Add(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent));                   
+                    if (Employees.Keys.Contains(emp) == false)
+                        Employees.Add(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent));
                 }
             }
-            
+
         }
         private void Initialize()
         {
-            
+
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
             MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
@@ -191,18 +191,18 @@ namespace Lieferliste_WPF.Planning
 
         }
 
-        private void MessageReceived(Vorgang vorgang)
+        private void MessageReceived(List<string> vorgangIdList)
         {
-            var pr = Processes?.FirstOrDefault(x => x.VorgangId == vorgang.VorgangId);
-            if (pr != null)
+            foreach (string id in vorgangIdList)
             {
-                pr.SysStatus = vorgang.SysStatus;
-                pr.QuantityMiss = vorgang.QuantityMiss;
-                pr.QuantityScrap = vorgang.QuantityScrap;
-                pr.QuantityRework = vorgang.QuantityRework;
-                pr.QuantityYield = vorgang.QuantityYield;
-                pr.BemT = vorgang.BemT;
+                var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
+                if (pr != null)
+                {
 
+                    _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
+
+                    pr.RunPropertyChanged();
+                }
             }
         }
 
@@ -274,17 +274,17 @@ namespace Lieferliste_WPF.Planning
 
         private void MachineClosed(object? sender, EventArgs e)
         {
-            if(_dbCtx.ChangeTracker.HasChanges())
+            if (_dbCtx.ChangeTracker.HasChanges())
             {
-                if(!SaveQuestion())
+                if (!SaveQuestion())
                 {
                     var canged = _dbCtx.ChangeTracker.Entries()
                         .Where(x => x.State == EntityState.Modified).ToList();
-                    foreach(var c in canged)
+                    foreach (var c in canged)
                     {
                         c.State = EntityState.Unchanged;
                     }
-                }                  
+                }
             }
         }
 
@@ -310,10 +310,10 @@ namespace Lieferliste_WPF.Planning
                     ((IList)t.SourceCollection).Insert(v, vrg);
                 }
                 var p = t.SourceCollection as Collection<Vorgang>;
- 
+
                 for (var i = 0; i < p.Count; i++)
                 {
-                    p[i].Spos = i;
+                    p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
                     var vv = _dbCtx.Vorgangs.First(x => x.VorgangId == p[i].VorgangId);
                     vv.Spos = i;
                     vv.Rid = _rId;
@@ -335,7 +335,7 @@ namespace Lieferliste_WPF.Planning
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
-                } 
+                }
             }
         }
 
@@ -361,7 +361,8 @@ namespace Lieferliste_WPF.Planning
                 {
                     _dbCtx.SaveChangesAsync();
                     return true;
-                } else return false;
+                }
+                else return false;
             }
         }
     }

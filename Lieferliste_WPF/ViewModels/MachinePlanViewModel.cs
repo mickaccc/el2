@@ -100,33 +100,48 @@ namespace Lieferliste_WPF.ViewModels
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
-            SetTimer();
-            if(_settingsService.IsAutoSave) SetAutoSaveTimer();
-            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
-        }
-        private void MessageReceived(Vorgang vrg)
-        {
-            var v = _processesAll.FirstOrDefault(x => x.VorgangId == vrg.VorgangId);
-            if (v != null)
-            {
-                v.ActualEndDate = vrg.ActualEndDate;
-                v.ActualStartDate = vrg.ActualStartDate;
-                v.Aktuell = vrg.Aktuell;
-                v.SysStatus = vrg.SysStatus;
-                v.Termin = vrg.Termin;
-                v.Text = vrg.Text;
-                v.BemM = vrg.BemM;
-                v.BemMa = vrg.BemMa;
-                v.BemT = vrg.BemT;
-                v.CommentMach = vrg.CommentMach;
-                v.QuantityMiss = vrg.QuantityMiss;
-                v.QuantityRework = vrg.QuantityRework;
-                v.QuantityScrap = vrg.QuantityScrap;
-                v.QuantityYield = vrg.QuantityYield;
-                v.Bullet = vrg.Bullet;
 
-                v.RunPropertyChanged();
+            if(_settingsService.IsAutoSave) SetAutoSaveTimer();
+            
+        }
+        private void MessageReceived(List<Vorgang> vrgList)
+        {
+            Task.Run(() =>
+            {
+            foreach (var vrg in vrgList)
+            {
+                var v = _processesAll.FirstOrDefault(x => x.VorgangId == vrg.VorgangId);
+                if (v != null)
+                {
+                    if (vrg.AidNavigation == null)
+                    {
+                        v.ActualEndDate = vrg.ActualEndDate;
+                        v.ActualStartDate = vrg.ActualStartDate;
+                        v.Aktuell = vrg.Aktuell;
+                        v.SysStatus = vrg.SysStatus;
+                        v.Termin = vrg.Termin;
+                        v.Text = vrg.Text;
+                        v.BemM = vrg.BemM;
+                        v.BemMa = vrg.BemMa;
+                        v.BemT = vrg.BemT;
+                        v.CommentMach = vrg.CommentMach;
+                        v.QuantityMiss = vrg.QuantityMiss;
+                        v.QuantityRework = vrg.QuantityRework;
+                        v.QuantityScrap = vrg.QuantityScrap;
+                        v.QuantityYield = vrg.QuantityYield;
+                        v.Bullet = vrg.Bullet;
+                    }
+                    else
+                    {
+                        v.AidNavigation.Abgeschlossen = vrg.AidNavigation.Abgeschlossen;
+                        v.AidNavigation.Dringend = vrg.AidNavigation.Dringend;
+                        v.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
+                        v.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
+                    }
+                    v.RunPropertyChanged();
+                }
             }
+            });
         }
         private bool OnSaveCanExecute(object arg)
         {
@@ -180,15 +195,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             return _processesAll;
         }
-        private void SetTimer()
-        {
-            // Create a timer with a 2 seconds interval.
-            _timer = new System.Timers.Timer(2000);
-            // Hook up the Elapsed event for the timer. 
-            _timer.Elapsed += OnTimedEvent;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
-        }
+ 
         private void SetAutoSaveTimer()
         {
             _autoSaveTimer = new System.Timers.Timer(60000);
@@ -202,62 +209,6 @@ namespace Lieferliste_WPF.ViewModels
             if(_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
         }
 
-        private void OnTimedEvent(object? sender, ElapsedEventArgs e)
-        {
-            if (_processesAll != null)
-            {
-                Task.Factory.StartNew(() =>
-                {
-
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    {
-                        var m = db.Msgs
-                            .Include(x => x.Onl)
-                            .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
-                            .ToList();
-                        foreach (var mess in m)
-                        {
-                            db.Database.ExecuteSqlRawAsync(@"DELETE FROM dbo.msg WHERE id={0}", mess.Id);
-                            var o = _processesAll.FirstOrDefault(x => x.VorgangId == mess.PrimaryKey);
-                            if (o != null)
-                            {
-                                Vorgang vrg = db.Vorgangs.First(x => x.VorgangId == mess.PrimaryKey);
-                                if (mess.TableName == "Vorgang")
-                                {
-                                    o.SysStatus = vrg.SysStatus;
-                                    o.Spos = vrg.Spos;
-                                    o.Text = vrg.Text;
-                                    o.ActualEndDate = vrg.ActualEndDate;
-                                    o.ActualStartDate = vrg.ActualStartDate;
-                                    o.Aktuell = vrg.Aktuell;
-                                    o.Bullet = vrg.Bullet;
-                                    o.BemM = vrg.BemM;
-                                    o.BemMa = vrg.BemMa;
-                                    o.BemT = vrg.BemT;
-                                    o.CommentMach = vrg.CommentMach;
-                                    o.QuantityMiss = vrg.QuantityMiss;
-                                    o.QuantityRework = vrg.QuantityRework;
-                                    o.QuantityScrap = vrg.QuantityScrap;
-                                    o.QuantityYield = vrg.QuantityYield;
-
-                                    
-                                }
-                                else if (mess.TableName == "OrderRB")
-                                {
-                                    o.AidNavigation.Abgeschlossen = vrg.AidNavigation.Abgeschlossen;
-                                    o.AidNavigation.Dringend = vrg.AidNavigation.Dringend;
-                                    o.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
-                                    o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
-                                }
-                                o.RunPropertyChanged();
-                                _ea.GetEvent<MessageVorgangChanged>().Publish(o);
-                            }
-                        }
-                    }
-                });
-            }
-            
-        }
         private async Task<ICollectionView> LoadMachinesAsync()
         {
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();

@@ -18,6 +18,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -77,6 +79,7 @@ namespace Lieferliste_WPF.ViewModels
         private static int _onlines;
         private static System.Timers.Timer? _timer;
         private IRegionManager _regionmanager;
+        private static readonly object _lock = new();
         private readonly IContainerExtension _container;
         private readonly IDialogService _dialogService;
         private readonly IEventAggregator _ea;
@@ -97,6 +100,7 @@ namespace Lieferliste_WPF.ViewModels
 
             RegisterMe();
             SetTimer();
+            SetMsgTimer();
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
             _applicationCommands.CloseCommand.RegisterCommand(CloseCommand);
@@ -172,7 +176,7 @@ namespace Lieferliste_WPF.ViewModels
                     item.Visability = true;
                 }
                 db.SaveChanges();
-                _ea.GetEvent<MessageOrderChanged>().Publish(v);
+                _ea.GetEvent<MessageOrderChanged>().Publish([v.Aid]);
             }
         }
 
@@ -435,7 +439,49 @@ namespace Lieferliste_WPF.ViewModels
             OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
             if (OnlineTask.IsCompleted) { Dbctx.Dispose(); }
         }
+        private void SetMsgTimer()
+        {
+            // Create a timer with a 2 seconds interval.
+            _timer = new System.Timers.Timer(20000);
+            // Hook up the Elapsed event for the timer. 
+            _timer.Elapsed += OnMsgTimedEvent;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+        }
+        private async void OnMsgTimedEvent(object? sender, ElapsedEventArgs e)
+        {
+            List<string> msgListV = [];
+            List<string> msgListO = [];
+                await Task.Run(() =>
+                {
+                    lock (_lock)
+                    {
+                        using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                        {
+                            var m = db.Msgs.AsNoTracking()
+                                .Include(x => x.Onl)
+                                .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
+                                .ToListAsync();
 
+                            foreach (var msg in m.Result)
+                            {
+                                if(msg.PrimaryKey != null && msg.TableName == "Vorgang")
+                                    msgListV.Add(msg.PrimaryKey);
+
+                                if (msg.PrimaryKey != null && msg.TableName == "OrderRB")
+                                    msgListO.Add(msg.PrimaryKey);
+                                db.Database.ExecuteSqlRaw(@"DELETE FROM msg WHERE id={0}", msg.Id);
+                            }
+
+                        }
+                    }
+                }, CancellationToken.None);
+                if(msgListV.Count > 0) 
+                _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);
+            if (msgListO.Count > 0)
+                _ea.GetEvent<MessageOrderChanged>().Publish(msgListO);
+
+        }
         private struct ContentTitle
         {
             public const string Settings = "Einstellungen";

@@ -58,7 +58,7 @@ namespace ModuleDeliverList.ViewModels
         IUserSettingsService _settingsService;
         private CmbFilter _selectedDefaultFilter;
         private List<Ressource> _ressources = [];
-        private SortedDictionary<byte, string> _sections =[];
+        private SortedDictionary<byte, string> _sections = [];
 
         public SortedDictionary<byte, string> Sections
         {
@@ -93,7 +93,7 @@ namespace ModuleDeliverList.ViewModels
             get { return _filterInvers; }
             set
             {
-                if(_filterInvers != value)
+                if (_filterInvers != value)
                 {
                     _filterInvers = value;
                     NotifyPropertyChanged(() => FilterInvers);
@@ -215,11 +215,9 @@ namespace ModuleDeliverList.ViewModels
 
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-            SetTimer();
+
             if (_settingsService.IsAutoSave) SetAutoSave();
         }
-
-
 
         private bool OnInvisibilityCanExecute(object arg)
         {
@@ -228,43 +226,39 @@ namespace ModuleDeliverList.ViewModels
 
         private void OnInvisibilityExecuted(object obj)
         {
-            if(obj is Vorgang v)
+            if (obj is Vorgang v)
             {
                 v.Visability = !v.Visability;
                 OrdersView.Refresh();
             }
         }
-        private void MessageOrderReceived(OrderRb rb)
+        private void MessageOrderReceived(List<string> rb)
         {
-            var o = _orders.FirstOrDefault(x => x.Aid == rb.Aid);
-            if(o != null)
+            foreach (string rbId in rb)
             {
-                o.AidNavigation.Abgeschlossen = rb.Abgeschlossen;
-                o.RunPropertyChanged();
+                var o = _orders.FirstOrDefault(x => x.Aid == rbId);
+                if (o != null)
+                {
+                    DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).Reload();
+                    o.RunPropertyChanged();
+                }
+
             }
         }
-        private void MessageReceived(Vorgang vrg)
+        private void MessageReceived(List<string> vrgIdList)
         {
-            var v = _orders.FirstOrDefault(x => x.VorgangId == vrg.VorgangId);
-            if (v != null)
+            Task.Run(() =>
             {
-                v.ActualEndDate = vrg.ActualEndDate;
-                v.ActualStartDate = vrg.ActualStartDate;
-                v.Aktuell = vrg.Aktuell;
-                v.SysStatus = vrg.SysStatus;
-                v.Termin = vrg.Termin;
-                v.Text = vrg.Text;
-                v.BemM = vrg.BemM;
-                v.BemMa = vrg.BemMa;
-                v.BemT = vrg.BemT;
-                v.CommentMach = vrg.CommentMach;
-                v.QuantityMiss = vrg.QuantityMiss;
-                v.QuantityRework = vrg.QuantityRework;
-                v.QuantityScrap = vrg.QuantityScrap;
-                v.QuantityYield = vrg.QuantityYield;
-
-                v.RunPropertyChanged();
-            }
+                foreach (var vrg in vrgIdList)
+                {
+                    var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
+                    if (v != null)
+                    {
+                        DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).Reload();
+                        v.RunPropertyChanged();
+                    }
+                }
+            });
         }
 
         private bool OrdersView_FilterPredicate(object value)
@@ -304,19 +298,11 @@ namespace ModuleDeliverList.ViewModels
         private void OnTextSearch(object commandParameter)
         {
             if (commandParameter is string search)
-            
-            if (!_searchTxtLock && search.Length >= 3) 
-            SearchFilterText = search;
+
+                if (!_searchTxtLock && search.Length >= 3)
+                    SearchFilterText = search;
         }
-        private void SetTimer()
-        {
-            // Create a timer with a 30 seconds interval.
-            _timer = new System.Timers.Timer(2000);
-            // Hook up the Elapsed event for the timer. 
-            _timer.Elapsed += OnTimedEvent;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
-        }
+
         private void SetAutoSave()
         {
             _autoSaveTimer = new System.Timers.Timer(60000);
@@ -329,62 +315,7 @@ namespace ModuleDeliverList.ViewModels
         {
             if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
         }
-        private void OnTimedEvent(object? sender, ElapsedEventArgs e)
-        {
-            if (OrdersView != null)
-            {
-                Task.Factory.StartNew(() =>
-                {
-                    lock (_lock)
-                    {
-                        using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                        {
-                            var m = db.Msgs
-                                .Include(x => x.Onl)
-                                .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
-                                .ToList();
-                            foreach (var mess in m)
-                            {
-                                db.Database.ExecuteSqlRawAsync(@"DELETE FROM msg WHERE id={0}", mess.Id);
-                                var o = _orders.FirstOrDefault(x => x.VorgangId == mess.PrimaryKey);
-                                if (o != null)
-                                {
-                                    Vorgang vrg = db.Vorgangs.First(x => x.VorgangId == mess.PrimaryKey);
-                                    if (mess.TableName == "Vorgang")
-                                    {
-                                        o.SysStatus = vrg.SysStatus;
-                                        o.Spos = vrg.Spos;
-                                        o.Text = vrg.Text;
-                                        o.ActualEndDate = vrg.ActualEndDate;
-                                        o.ActualStartDate = vrg.ActualStartDate;
-                                        o.Aktuell = vrg.Aktuell;
-                                        o.Bullet = vrg.Bullet;
-                                        o.BemM = vrg.BemM;
-                                        o.BemMa = vrg.BemMa;
-                                        o.BemT = vrg.BemT;
-                                        o.CommentMach = vrg.CommentMach;
-                                        o.QuantityMiss = vrg.QuantityMiss;
-                                        o.QuantityRework = vrg.QuantityRework;
-                                        o.QuantityScrap = vrg.QuantityScrap;
-                                        o.QuantityYield = vrg.QuantityYield;
 
-                                    }
-                                    else if (mess.TableName == "OrderRB")
-                                    {
-                                        o.AidNavigation.Abgeschlossen = vrg.AidNavigation.Abgeschlossen;
-                                        o.AidNavigation.Dringend = vrg.AidNavigation.Dringend;
-                                        o.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
-                                        o.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
-                                    }
-                                    o.RunPropertyChanged();                                 
-                                    _ea.GetEvent<MessageVorgangChanged>().Publish(o);
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        }
         #region Commands
         private bool OnFilterSaveCanExecute(object arg)
         {
@@ -407,7 +338,7 @@ namespace ModuleDeliverList.ViewModels
         {
             FilterInvers = !FilterInvers;
         }
-  
+
 
         private void OnSaveExecuted(object obj)
         {
@@ -506,7 +437,7 @@ namespace ModuleDeliverList.ViewModels
 
                 lock (_lock)
                 {
-  
+
                     HashSet<string> proj = new();
                     HashSet<Vorgang> ol = new();
                     foreach (var v in a)
@@ -516,7 +447,7 @@ namespace ModuleDeliverList.ViewModels
                         foreach (var x in v.Vorgangs)
                         {
                             ol.Add(x);
-                            if(filt.Any(y => y.OrderNumber ==  x.Aid)) relev = true;
+                            if (filt.Any(y => y.OrderNumber == x.Aid)) relev = true;
                             if (x.ArbPlSap?.Length >= 3 && !relev)
                             {
                                 if (int.TryParse(x.ArbPlSap[..3], out int c))
@@ -542,9 +473,9 @@ namespace ModuleDeliverList.ViewModels
                                 var inv = (r.ArbPlSap != null) ? r.ArbPlSap[3..] : string.Empty;
                                 var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
                                 if (z != null)
-                                { 
-                                    if(!_sections.Keys.Contains(z.Sort))
-                                    _sections.Add(z.Sort, z.Bereich);
+                                {
+                                    if (!_sections.Keys.Contains(z.Sort))
+                                        _sections.Add(z.Sort, z.Bereich);
                                 }
                             }
                         }
@@ -560,7 +491,7 @@ namespace ModuleDeliverList.ViewModels
             ICollectionViewLiveShaping? live = OrdersView as ICollectionViewLiveShaping;
             if (live != null)
             {
-                if(live.CanChangeLiveFiltering)
+                if (live.CanChangeLiveFiltering)
                 {
                     live.LiveFilteringProperties.Add("Aktuell");
                     live.LiveFilteringProperties.Add("AidNavigation.Abgeschlossen");
