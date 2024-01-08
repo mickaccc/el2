@@ -155,7 +155,6 @@ namespace Lieferliste_WPF.Planning
                 live.LiveFilteringProperties.Add("SysStatus");
                 live.IsLiveFiltering = true;
             }
-
         }
         private void Initialize()
         {
