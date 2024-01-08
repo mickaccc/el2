@@ -217,7 +217,7 @@ namespace Lieferliste_WPF.ViewModels
                             .ToList();
                         foreach (var mess in m)
                         {
-                            db.Database.ExecuteSqlRaw(@"DELETE FROM msg WHERE id={0}", mess.Id);
+                            db.Database.ExecuteSqlRawAsync(@"DELETE FROM dbo.msg WHERE id={0}", mess.Id);
                             var o = _processesAll.FirstOrDefault(x => x.VorgangId == mess.PrimaryKey);
                             if (o != null)
                             {
