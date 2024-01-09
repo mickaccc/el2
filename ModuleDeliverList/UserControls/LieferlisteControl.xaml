@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:Views="clr-namespace:ModuleDeliverList.Views"
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
@@ -66,6 +67,7 @@
             <Setter Property="Padding" Value="1"/>
         </Style>
 
+
     </UserControl.Resources>
     <Border Focusable="True" GotFocus="Border_GotFocus" LostFocus="Border_LostFocus" >
         <StackPanel  x:Name="Liefer"  Background="Transparent" >
@@ -96,8 +98,8 @@
                      ToolTip="Plantermin lt. SAP"
                      Text="{Binding EckEnd, Converter={StaticResource KwConv}, ElementName=luc}"  />
             <TextBox x:Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1"/>
-            <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" Text="{Binding Project, ElementName=luc}" />
-            <TextBox Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" TextWrapping="Wrap"
+                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" Text="{Binding Project, ElementName=luc}"/>
+                <TextBox Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" TextWrapping="Wrap"
                      IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
                                           Text="{Binding ProjectInfo, ElementName=luc}" />
             <Controls:SelectableTextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="txtMatTTNR" >
@@ -202,7 +204,7 @@
             <Button Grid.Column="13" Grid.Row="1" Content="Auftrag" 
                         Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
-                        CommandParameter="{Binding Aid, ElementName=luc}"/>
+                        CommandParameter="{Binding Aid, ElementName=luc}" />
             <DockPanel Grid.Column="8" Grid.Row="2" Background="YellowGreen" >
                 <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" Click="Modified" 
                       IsChecked="{Binding Doku, ElementName=luc}"/>

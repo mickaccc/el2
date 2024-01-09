@@ -8,6 +8,7 @@ namespace CompositeCommands.Core
         CompositeCommand ArchivateCommand { get; }
         CompositeCommand OpenOrderCommand { get; }
         CompositeCommand OpenMachineCommand { get; }
+        CompositeCommand OpenProjectOverViewCommand { get; }
         CompositeCommand CloseCommand { get; }
     }
 
@@ -38,6 +39,12 @@ namespace CompositeCommands.Core
         {
             get { return _openMachineCommand; }
         }
+        private CompositeCommand _openProjectCommand = new();
+        public CompositeCommand OpenProjectOverViewCommand
+        {
+            get { return _openProjectCommand; }
+        }
+
         private CompositeCommand _closeCommand = new();
         public CompositeCommand CloseCommand
         {

@@ -4,6 +4,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,12 +16,11 @@ using System.Windows.Data;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class ProjectsViewModel : ViewModelBase, IViewModel
+    class ProjectsViewModel : ViewModelBase, IDialogAware
     {
         private string _title = "Projektübersicht";
         public string Title => _title;
 
-        public bool HasChange => _dbctx.ChangeTracker.HasChanges();
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private IUserSettingsService _userSettingsService;
         private IContainerProvider _container;
@@ -37,44 +37,77 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private List<Project> _projects;
-        public ICollectionView ProjectView { get; private set; }
+        private string _wbsElement;
+        public string WbsElement
+        {
+            get { return _wbsElement; }
+            private set
+            {
+                if (_wbsElement != value)
+                {
+                    _wbsElement = value;
+                    NotifyPropertyChanged(() => WbsElement);
+                }
+            }
+        }
+        private string _wbsInfo;
+        public string WbsInfo
+        {
+            get { return _wbsInfo; }
+            private set
+            {
+                if (_wbsInfo != value)
+                {
+                    _wbsInfo = value;
+                    NotifyPropertyChanged(() => WbsInfo);
+                }
+            }
+        }
+        private List<OrderRb> _orderRbs;
+
+        public event Action<IDialogResult> RequestClose;
+
+        public ICollectionView OrdersView { get; private set; }
         public ProjectsViewModel(IContainerProvider container, IUserSettingsService userSettingsService)
         {
             _container = container;
             _userSettingsService = userSettingsService;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            ProjTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync());
+            
         }
 
-        private async Task<ICollectionView> LoadAsync()
+        private async Task<ICollectionView> LoadAsync(string projectNo)
         {
             var pro = await _dbctx.Projects
                 .Include(x => x.OrderRbs)
                 .ThenInclude(x => x.MaterialNavigation)
-                .ToListAsync();
+                .FirstAsync(x => x.Project1 == projectNo);
+                
+            this.WbsElement = pro.Project1.Trim() ?? "NULL";
+            this.WbsInfo = pro.ProjectInfo?.Trim() ?? string.Empty;
 
-            _projects = new List<Project>(pro);
-            ProjectView = CollectionViewSource.GetDefaultView(_projects);
-            return ProjectView;
+            _orderRbs = new List<OrderRb>(pro.OrderRbs.ToList());
+            OrdersView = CollectionViewSource.GetDefaultView(_orderRbs);
+            return OrdersView;
         }
 
-        public void Closing()
+ 
+
+        public bool CanCloseDialog()
         {
-            if (_dbctx.ChangeTracker.HasChanges())
-            {
-                if (_userSettingsService.IsSaveMessage)
-                {
-                    var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", _title),
-                        _title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        _dbctx.SaveChanges();
-                    }
-                }
-                else _dbctx.SaveChanges();
-            }
+            return true;
+        }
+
+        public void OnDialogClosed()
+        {
+            
+        }
+
+        public void OnDialogOpened(IDialogParameters parameters)
+        {
+            var p = parameters.GetValue<string>("projectNo");
+            ProjTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync(p));
         }
     }
 }

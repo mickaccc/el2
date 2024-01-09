@@ -156,7 +156,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if (_settingsService.IsSaveMessage)
                 {
-                    var result = MessageBox.Show("Sollen die Änderungen in Teamleiter-Zuteilungen gespeichert werden?",
+                    var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", Title),
                         Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {

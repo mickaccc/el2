@@ -115,8 +115,11 @@
         <ListBox.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Vorgang aus-/einblenden"
-         Command="{Binding InvisibilityCommand}"
-         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},Path=PlacementTarget.SelectedItem}"/>
+                         Command="{Binding InvisibilityCommand}"
+                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},Path=PlacementTarget.SelectedItem}"/>
+                <MenuItem Header="Projekt öffnen"
+                          Command="{Binding ApplicationCommands.OpenProjectOverViewCommand}"
+                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
             </ContextMenu>
         </ListBox.ContextMenu>
         <ListBox.ItemTemplate>

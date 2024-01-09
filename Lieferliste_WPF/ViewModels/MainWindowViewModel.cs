@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -44,9 +45,9 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand CloseCommand { get; private set; }
         public ICommand OpenArchiveCommand { get; private set; }
         public ICommand OpenWorkAreaCommand { get; private set; }
-        public ICommand OpenProjectCommand { get; private set; }
+        public ICommand OpenProjectCombineCommand { get; private set; }
         public ICommand OpenMeasuringCommand { get; private set; }
-        public ICommand OpenProjectOverViewCommand {  get; private set; }
+
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -63,6 +64,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand ExplorerCommand { get; }
         public ICommand OpenOrderCommand { get; }
         public ICommand ArchivateCommand { get; }
+        public ICommand OpenProjectOverViewCommand { get; }
         private NotifyTaskCompletion<int>? _onlineTask;
         public NotifyTaskCompletion<int>? OnlineTask
         {
@@ -111,6 +113,8 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands.OpenOrderCommand.RegisterCommand(OpenOrderCommand);
             ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
             _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
+            OpenProjectOverViewCommand = new ActionCommand(OnOpenProjectOverViewExecuted, OnOpenProjectOverViewCanExecute);
+            _applicationCommands.OpenProjectOverViewCommand.RegisterCommand(OpenProjectOverViewCommand);
 
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
             OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
@@ -121,31 +125,36 @@ namespace Lieferliste_WPF.ViewModels
             OpenArchiveCommand = new ActionCommand(OnOpenArchiveExecuted, OnOpenArchiveCanExecute);
             OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
             OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
-            OpenProjectCommand = new ActionCommand(OnOpenProjectExecuted, OnOpenProjectCanExecute);
-            OpenProjectOverViewCommand = new ActionCommand(OnOpenProjectOverViewExecuted, OnOpenProjectOverViewCanExecute);
+            OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
+
         }
-
-
 
 
         #region Commands
-        private bool OnOpenProjectCanExecute(object arg)
+        private bool OnOpenProjectCombineCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProjectCombine);
         }
 
-        private void OnOpenProjectExecuted(object obj)
+        private void OnOpenProjectCombineExecuted(object obj)
         {
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ProjectEdit", UriKind.Relative));
         }
 
         private bool OnOpenProjectOverViewCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
         }
         private void OnOpenProjectOverViewExecuted(object obj)
         {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Projects", UriKind.Relative));
+            var para = obj as Vorgang;
+            if (para != null) {
+                var pro = para.AidNavigation.ProId;
+                if(string.IsNullOrEmpty(pro)) { return; }
+                var par = new DialogParameters();
+                par.Add("projectNo", pro);
+                _dialogService.Show("Projects", par, null);
+            }
         }
 
 

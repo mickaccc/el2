@@ -42,5 +42,6 @@
         public const string MessDrop = "MEA01";
         public const string MessSetMark = "MEA02";
         public const string CommentTeInvers = "!COM-TE";
+        public const string OpenProjectCombine = "PROJ03";
     }
 }

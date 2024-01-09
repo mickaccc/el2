@@ -22,7 +22,7 @@
         <conv:BullettShapeConverter x:Key="BulletShape"/>
         <conv:PermissionConverter x:Key="permiss"/>
         <conv:CommentConverter x:Key="comment"/>
-
+        <conv:PlusConverter x:Key="plus"/>
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
 
@@ -203,7 +203,14 @@
                 <DataGridTextColumn Header="offen" Binding="{Binding QuantityMiss}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Ausschuss" Binding="{Binding QuantityScrap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="NA" Binding="{Binding QuantityRework}" IsReadOnly="True"/>
-
+                <DataGridTextColumn Header="Dauer" IsReadOnly="True">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding Converter="{StaticResource plus}">
+                            <Binding Path="Beaze"/>
+                            <Binding Path="Rstze"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
 
