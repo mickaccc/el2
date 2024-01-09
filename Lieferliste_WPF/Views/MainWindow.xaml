@@ -159,9 +159,9 @@
                     <MenuItem Header="Einstellungen" Command="{Binding OpenSettingsCommand}" />
                     <MenuItem Header="Produktkatalog">
                         <MenuItem Header="Projekte" 
-                                  Command="{Binding OpenProjectCommand}">
-                            
-                        </MenuItem>
+                                  Command="{Binding OpenProjectCommand}"/>
+                        <MenuItem Header="Projektübersicht"
+                                  Command="{Binding OpenProjectOverViewCommand}"/>
                     </MenuItem>
                     <MenuItem Header="Adminfunktionen">
                         <MenuItem Header="Usermanagment" Command="{Binding OpenUserMgmtCommand}">

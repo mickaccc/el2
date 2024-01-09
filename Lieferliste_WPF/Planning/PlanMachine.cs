@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -108,7 +109,9 @@ namespace Lieferliste_WPF.Planning
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        public Dictionary<User, bool> Employees { get; set; } = [];
+        private List<UserStruct> _employees = [];
+        public List<UserStruct> Employees { get { return _employees; } }
+        public ICollectionView EmployeesView { get; private set; }
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
@@ -130,7 +133,11 @@ namespace Lieferliste_WPF.Planning
                 }
             }
         }
-
+        public struct UserStruct
+        {
+            public User User { get; set; }
+            public bool IsCheck { get; set; }
+        }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
 
@@ -158,16 +165,19 @@ namespace Lieferliste_WPF.Planning
             var empl = _dbCtx.Users
                 .Include(x => x.UserCosts)
                 .ToList();
+
+            
             for (int i = 0; i < CostUnits?.Count; i++)
             {
                 foreach (var emp in _dbCtx.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
                             && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
                 {
-                    if (Employees.Keys.Contains(emp) == false)
-                        Employees.Add(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent));
+  
+                    if(_employees.All(x => x.User != emp))
+                        _employees.Add(new UserStruct() { User = emp, IsCheck = res.RessourceUsers.Any(x => x.UsId == emp.UserIdent) });
                 }
             }
-
+            EmployeesView = CollectionViewSource.GetDefaultView(Employees);
         }
         private void Initialize()
         {

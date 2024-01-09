@@ -46,6 +46,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenWorkAreaCommand { get; private set; }
         public ICommand OpenProjectCommand { get; private set; }
         public ICommand OpenMeasuringCommand { get; private set; }
+        public ICommand OpenProjectOverViewCommand {  get; private set; }
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -121,7 +122,10 @@ namespace Lieferliste_WPF.ViewModels
             OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
             OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
             OpenProjectCommand = new ActionCommand(OnOpenProjectExecuted, OnOpenProjectCanExecute);
+            OpenProjectOverViewCommand = new ActionCommand(OnOpenProjectOverViewExecuted, OnOpenProjectOverViewCanExecute);
         }
+
+
 
 
         #region Commands
@@ -134,6 +138,16 @@ namespace Lieferliste_WPF.ViewModels
         {
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ProjectEdit", UriKind.Relative));
         }
+
+        private bool OnOpenProjectOverViewCanExecute(object arg)
+        {
+            return true;
+        }
+        private void OnOpenProjectOverViewExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Projects", UriKind.Relative));
+        }
+
 
         private bool OnOpenMeasuringCanExecute(object arg)
         {
@@ -442,7 +456,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetMsgTimer()
         {
             // Create a timer with a 2 seconds interval.
-            _timer = new System.Timers.Timer(20000);
+            _timer = new System.Timers.Timer(15000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnMsgTimedEvent;
             _timer.AutoReset = true;

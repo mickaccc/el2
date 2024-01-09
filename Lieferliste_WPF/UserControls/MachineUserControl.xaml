@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="Lieferliste_WPF.UserControls.MachineUserControl"
 			 xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
 			 DataContextChanged="UserControl_DataContextChanged"
 			 xmlns:dd="urn:gong-wpf-dragdrop"
 			 d:DesignHeight="450"
@@ -20,7 +21,8 @@
 		<conv:TTNR_Converter x:Key="TTNR"/>
 		<conv:TextCompareToColorConverter x:Key="txtColor"/>
 		<conv:BullettShapeConverter x:Key="BulletShape"/>
-	</UserControl.Resources>
+        <conv:PermissionConverter x:Key="permiss"/>
+    </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"
 		  MinWidth="50"
@@ -74,15 +76,19 @@
 												 Kind="PrinterEye"
 												 Width="25"/>
 					</Button>
-				</Canvas>
+                    <ToggleButton Canvas.Left="70" Canvas.Top="30" x:Name="emploees"
+                                  Style="{DynamicResource MaterialDesignExpanderToggleButton}"
+                                  IsEnabled="{Binding Converter={StaticResource permiss},
+									ConverterParameter={x:Static const:Permissions.Employee}}"/>
+                </Canvas>
                 <Popup IsOpen="{Binding Path=IsChecked, ElementName=emploees}" Placement="Mouse" >
                     <Border>
 
                             <DataGrid ItemsSource="{Binding Employees}" AutoGenerateColumns="False" Background="LemonChiffon">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding Path=Key.UsrName}" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="User" Binding="{Binding Path=Key.UserIdent}" IsReadOnly="True"/>
-                                <DataGridCheckBoxColumn Header="" Binding="{Binding Path=Value, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Path=User.UsrName}" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="User" Binding="{Binding Path=User.UserIdent}" IsReadOnly="True"/>
+                                <DataGridCheckBoxColumn Header="" Binding="{Binding Path=IsCheck, Mode=TwoWay}"/>
                             </DataGrid.Columns>
                             </DataGrid>
   
