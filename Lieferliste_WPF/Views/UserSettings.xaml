@@ -46,6 +46,7 @@
                         <StackPanel Orientation="Horizontal">
                         <Label Content="Save Message"/>
                         <ToggleButton IsChecked="{Binding SaveMessage}" ToolTip="beim schliessen nachfragen" />
+ 
                         </StackPanel>
                     </materialDesign:Chip>
                 </StackPanel>

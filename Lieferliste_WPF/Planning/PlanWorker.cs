@@ -140,6 +140,7 @@ namespace Lieferliste_WPF.Planning
                 .Where(x => x.UserVorgangs.Any(x => x.UserId == UserId) && x.SysStatus.Contains("RÜCK") == false)
                 .ToList();
 
+
             Processes.AddRange(vrg);
             Name = usr.UsrName;
             Description = usr.UsrInfo;

@@ -1,11 +1,13 @@
 ﻿using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using MaterialDesignThemes.Wpf;
 using Prism.Ioc;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -20,6 +22,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand ResetCommand { get; }
         public ICommand ReloadCommand { get; }
+        public ICommand ChangeThemeCommand { get; }
         public Brush OutOfDate { get; set; }
         public Brush InOfDate { get; set; }
         public string Title { get; } = "Einstellungen";
@@ -31,8 +34,19 @@ namespace Lieferliste_WPF.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             ResetCommand = new ActionCommand(OnResetExecuted, OnResetCanExecute);
             ReloadCommand = new ActionCommand(OnReloadExecuted, OnReloadCanExecute);
+            ChangeThemeCommand = new ActionCommand(OnChangeThemeExecuted, OnChangeThemeCanExecute);
             ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
 
+        }
+
+        private bool OnChangeThemeCanExecute(object arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnChangeThemeExecuted(object obj)
+        {
+            
         }
 
         private bool OnReloadCanExecute(object arg)

@@ -84,7 +84,7 @@
                 <Popup IsOpen="{Binding Path=IsChecked, ElementName=emploees}" Placement="Mouse" >
                     <Border>
 
-                            <DataGrid ItemsSource="{Binding Employees}" AutoGenerateColumns="False" Background="LemonChiffon">
+                            <DataGrid ItemsSource="{Binding EmployeesView}" AutoGenerateColumns="False" Background="LemonChiffon">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Name" Binding="{Binding Path=User.UsrName}" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="User" Binding="{Binding Path=User.UserIdent}" IsReadOnly="True"/>

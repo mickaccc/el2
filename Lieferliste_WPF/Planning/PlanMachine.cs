@@ -64,7 +64,7 @@ namespace Lieferliste_WPF.Planning
     {
         public int Rid { get; }
     }
-    internal class PlanMachine : DependencyObject, IPlanMachine, IDropTarget, IViewModel
+    internal class PlanMachine : ViewModelBase, IPlanMachine, IDropTarget, IViewModel
     {
 
         #region Constructors
@@ -85,16 +85,8 @@ namespace Lieferliste_WPF.Planning
 
         #endregion
 
-        public bool Vis
-        {
-            get { return (bool)GetValue(VisProperty); }
-            set { SetValue(VisProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Vis.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty VisProperty =
-            DependencyProperty.Register("Vis", typeof(bool), typeof(PlanMachine), new PropertyMetadata(true));
-
+        public bool Vis { get; private set; }
+ 
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? OpenMachineCommand { get; private set; }
         public ICommand? MachinePrintCommand { get; private set; }
@@ -102,15 +94,14 @@ namespace Lieferliste_WPF.Planning
         private readonly int _rId;
         private string _title;
         public string Title => _title;
-        public bool HasChange => _dbCtx.ChangeTracker.HasChanges();
+        public bool HasChange => _dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged);
         public int Rid => _rId;
         public string? Name { get; set; }
         public string? Description { get; set; }
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        private List<UserStruct> _employees = [];
-        public List<UserStruct> Employees { get { return _employees; } }
+        private ObservableCollection<UserStruct> _employees = [];
         public ICollectionView EmployeesView { get; private set; }
         protected MachinePlanViewModel? Owner { get; }
 
@@ -132,11 +123,6 @@ namespace Lieferliste_WPF.Planning
                     _applicationCommands = value;
                 }
             }
-        }
-        public struct UserStruct
-        {
-            public User User { get; set; }
-            public bool IsCheck { get; set; }
         }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
@@ -166,18 +152,18 @@ namespace Lieferliste_WPF.Planning
                 .Include(x => x.UserCosts)
                 .ToList();
 
-            
+
             for (int i = 0; i < CostUnits?.Count; i++)
             {
                 foreach (var emp in _dbCtx.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
                             && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
                 {
-  
-                    if(_employees.All(x => x.User != emp))
-                        _employees.Add(new UserStruct() { User = emp, IsCheck = res.RessourceUsers.Any(x => x.UsId == emp.UserIdent) });
+
+                    if (_employees.All(x => x.User != emp))
+                        _employees.Add(new UserStruct(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent)));
                 }
             }
-            EmployeesView = CollectionViewSource.GetDefaultView(Employees);
+            EmployeesView = CollectionViewSource.GetDefaultView(_employees);
         }
         private void Initialize()
         {
@@ -359,13 +345,28 @@ namespace Lieferliste_WPF.Planning
 
         void IViewModel.Closing()
         {
-            if (_dbCtx.ChangeTracker.HasChanges())
+            var emp = _employees.Any(x => x.IsChanged);
+            if (_dbCtx.ChangeTracker.HasChanges() || emp)
             {
                 SaveQuestion();
             }
         }
         private bool SaveQuestion()
         {
+            foreach (var item in _employees.Where(x => x.IsChanged))
+            {
+                if (item.IsCheck)
+                {
+                    if (!_dbCtx.RessourceUsers.Any(x => x.UsId == item.User.UserIdent && x.Rid == this.Rid))
+                        _dbCtx.RessourceUsers.Add(new RessourceUser() { Rid = this.Rid, UsId = item.User.UserIdent });
+                }
+                else
+                {
+                    var ru = _dbCtx.RessourceUsers.SingleOrDefault(x => x.UsId == item.User.UserIdent && x.Rid == this.Rid);
+                    if (ru != null)
+                        _dbCtx.RessourceUsers.Remove(ru);
+                }
+            }
             if (!_settingsService.IsSaveMessage)
             {
                 _dbCtx.SaveChangesAsync();
@@ -381,6 +382,31 @@ namespace Lieferliste_WPF.Planning
                     return true;
                 }
                 else return false;
+            }
+        }
+        public class UserStruct : ViewModelBase
+        {
+            public UserStruct(User usr, bool isc)
+            {
+                this.User = usr;
+                this._isCheck = isc;
+            }
+            private bool _isCheck;
+            public bool IsChanged { get; private set; }
+            public User User { get; }
+            public bool IsCheck
+            {
+                get { return _isCheck; }
+                set
+                {
+                    if (_isCheck != value)
+                    {
+                        _isCheck = value;
+                        IsChanged = !IsChanged;
+                        NotifyPropertyChanged(() => IsCheck);
+                        NotifyPropertyChanged(() => IsChanged);
+                    }
+                }
             }
         }
     }

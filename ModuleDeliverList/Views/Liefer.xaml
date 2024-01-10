@@ -64,7 +64,7 @@
             materialDesign:HintAssist.FloatingOffset="1,-10">
             <StackPanel Orientation="Horizontal" >
 
-                <ComboBox x:Name="ProjComboBox"  
+                <ComboBox x:Name="ProjComboBox" materialDesign:RippleAssist.Feedback="Crimson"
                      materialDesign:HintAssist.Hint="Projekte"
                      
                           ItemsSource="{Binding Projects}"                        
