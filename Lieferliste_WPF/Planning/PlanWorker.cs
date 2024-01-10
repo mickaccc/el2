@@ -170,16 +170,24 @@ namespace Lieferliste_WPF.Planning
 
         private void MessageReceived(List<string> vorgangIdList)
         {
-            foreach (var v in vorgangIdList)
+            try
+            {
+                foreach (var v in vorgangIdList)
+                {
+
+                    var pr = Processes?.FirstOrDefault(x => x.VorgangId == v);
+                    if (pr != null)
+                    {
+                        _dbctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).ReloadAsync();
+
+                        pr.RunPropertyChanged();
+                    }
+                }
+            }
+            catch (Exception ex)
             {
 
-                var pr = Processes?.FirstOrDefault(x => x.VorgangId == v);
-                if (pr != null)
-                {
-                    _dbctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
-
-                    pr.RunPropertyChanged();
-                }
+                MessageBox.Show(ex.Message, "MsgReceivedPlanWorker", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

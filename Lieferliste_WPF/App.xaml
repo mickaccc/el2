@@ -10,7 +10,7 @@
                 <ResourceDictionary Source="/Styles/UIColors.xaml"/>
                 <ResourceDictionary Source="/Styles/DataTemplateItems.xaml"/>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Teal"  SecondaryColor="Lime"/>
-                <!--<materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Chocolate"  SecondaryColor="DarkGreen" />-->
+                <materialDesign:CustomColorTheme BaseTheme="Dark" PrimaryColor="Chocolate"  SecondaryColor="DarkGreen" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 

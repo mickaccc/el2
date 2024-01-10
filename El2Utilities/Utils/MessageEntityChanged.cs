@@ -9,4 +9,6 @@ namespace El2Core.Utils
     }
     public class MessageOrderChanged : PubSubEvent<List<string>>
     { }
+    public class MessageOrderArchivated : PubSubEvent<OrderRb>
+    { }
 }

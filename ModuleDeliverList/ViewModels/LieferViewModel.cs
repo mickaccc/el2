@@ -214,6 +214,7 @@ namespace ModuleDeliverList.ViewModels
 
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
+            _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
 
             if (_settingsService.IsAutoSave) SetAutoSave();
         }
@@ -231,34 +232,70 @@ namespace ModuleDeliverList.ViewModels
                 OrdersView.Refresh();
             }
         }
+        private void MessageOrderArchivated(OrderRb rb)
+        {
+            var o = _orders.FirstOrDefault(x => x.Aid == rb.Aid);
+            if (o != null)
+            {
+                o.AidNavigation.Abgeschlossen = rb.Abgeschlossen;
+                DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
+                OrdersView.Refresh();
+            }
+        }
         private void MessageOrderReceived(List<string> rb)
         {
-            foreach (string rbId in rb)
+            try
             {
-                var o = _orders.FirstOrDefault(x => x.Aid == rbId);
-                if (o != null)
+                Task.Run(() =>
                 {
-                    DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).Reload();
-                    o.RunPropertyChanged();
-                }
+                    lock (_lock)
+                    {
 
+                        foreach (string rbId in rb)
+                        {
+                            var o = _orders.FirstOrDefault(x => x.Aid == rbId);
+                            if (o != null)
+                            {
+                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).ReloadAsync();                              
+                                o.RunPropertyChanged();
+                            }
+
+                        }
+                    }
+                });
+                
             }
-            OrdersView.Refresh();
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "MsgReceivedLieferlisteOrder", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         private void MessageReceived(List<string> vrgIdList)
         {
-            Task.Run(() =>
+            try
             {
-                foreach (var vrg in vrgIdList)
-                {
-                    var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
-                    if (v != null)
-                    {
-                        DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).Reload();
-                        v.RunPropertyChanged();
-                    }
-                }
-            });
+                Task.Run(() =>
+         {
+             lock (_lock)
+             {
+                 foreach (var vrg in vrgIdList)
+                 {
+                     var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
+                     if (v != null)
+                     {
+                         DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).ReloadAsync();
+                         v.RunPropertyChanged();
+                     }
+                 }
+             }
+         });
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "MsgReceivedLieferlisteVorgang", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private bool OrdersView_FilterPredicate(object value)

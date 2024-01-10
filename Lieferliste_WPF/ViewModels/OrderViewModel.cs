@@ -33,15 +33,17 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnMessageReceived(List<string> vorgangIdList)
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            foreach (var vid in vorgangIdList)
+            try
             {
-                var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vid);
-                
-                if (vo != null)
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                foreach (var vid in vorgangIdList)
                 {
-                    var v = db.Vorgangs.First(x => x.VorgangId == vo.VorgangId);
-                    
+                    var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vid);
+
+                    if (vo != null)
+                    {
+                        var v = db.Vorgangs.First(x => x.VorgangId == vo.VorgangId);
+
                         vo.SysStatus = v.SysStatus;
                         vo.BemM = v.BemM;
                         vo.BemMa = v.BemMa;
@@ -51,7 +53,13 @@ namespace Lieferliste_WPF.ViewModels
                         vo.QuantityScrap = v.QuantityScrap;
                         vo.QuantityYield = v.QuantityYield;
 
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "MsgReceivedOrderView", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

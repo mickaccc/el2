@@ -4,7 +4,6 @@ using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Prism.Events;
@@ -16,14 +15,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
@@ -32,7 +28,7 @@ namespace Lieferliste_WPF.ViewModels
     /// Class for the main window's view-model.
     /// </summary>
     [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
-    public class MainWindowViewModel : ViewModelBase, IDropTarget
+    public class MainWindowViewModel : ViewModelBase
     {
 
         public ICommand OpenMachinePlanCommand { get; private set; }
@@ -148,9 +144,10 @@ namespace Lieferliste_WPF.ViewModels
         private void OnOpenProjectOverViewExecuted(object obj)
         {
             var para = obj as Vorgang;
-            if (para != null) {
+            if (para != null)
+            {
                 var pro = para.AidNavigation.ProId;
-                if(string.IsNullOrEmpty(pro)) { return; }
+                if (string.IsNullOrEmpty(pro)) { return; }
                 var par = new DialogParameters();
                 par.Add("projectNo", pro);
                 _dialogService.Show("Projects", par, null);
@@ -198,8 +195,8 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     item.Visability = true;
                 }
-                db.SaveChanges();
-                _ea.GetEvent<MessageOrderChanged>().Publish([v.Aid]);
+                db.SaveChangesAsync();
+                _ea.GetEvent<MessageOrderArchivated>().Publish(v);
             }
         }
 
@@ -266,7 +263,7 @@ namespace Lieferliste_WPF.ViewModels
                 var vm = f.DataContext as IViewModel;
                 if (vm != null) vm.Closing();
             }
-            
+
             _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
         }
         private static bool OnOpenOrderCanExecute(object arg)
@@ -438,7 +435,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetTimer()
         {
             // Create a timer with a 30 seconds interval.
-            _timer = new System.Timers.Timer(30000);
+            _timer = new System.Timers.Timer(40000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -465,7 +462,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetMsgTimer()
         {
             // Create a timer with a 2 seconds interval.
-            _timer = new System.Timers.Timer(15000);
+            _timer = new System.Timers.Timer(30000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnMsgTimedEvent;
             _timer.AutoReset = true;
@@ -475,128 +472,60 @@ namespace Lieferliste_WPF.ViewModels
         {
             List<string> msgListV = [];
             List<string> msgListO = [];
-                await Task.Run(() =>
+            try
+            {
+                await Task.Factory.StartNew(async () =>
+        {
+ 
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 {
-                    lock (_lock)
+                    var m = await db.Msgs.AsNoTracking()
+                        .Include(x => x.Onl)
+                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
+                        .ToListAsync();
+                lock (_lock)
+                {
+                    int IdMin = m.Min(x => x.Id), IdMax = m.Max(x => x.Id);
+                    foreach (var msg in m)
                     {
-                        using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                        {
-                            var m = db.Msgs.AsNoTracking()
-                                .Include(x => x.Onl)
-                                .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
-                                .ToListAsync();
+                        if (msg.PrimaryKey != null && msg.TableName == "Vorgang")
+                            msgListV.Add(msg.PrimaryKey);
 
-                            foreach (var msg in m.Result)
-                            {
-                                if(msg.PrimaryKey != null && msg.TableName == "Vorgang")
-                                    msgListV.Add(msg.PrimaryKey);
-
-                                if (msg.PrimaryKey != null && msg.TableName == "OrderRB")
-                                    msgListO.Add(msg.PrimaryKey);
-                                db.Database.ExecuteSqlRaw(@"DELETE FROM msg WHERE id={0}", msg.Id);
-                            }
-
-                        }
+                        if (msg.PrimaryKey != null && msg.TableName == "OrderRB")
+                            msgListO.Add(msg.PrimaryKey);
+                        
                     }
-                }, CancellationToken.None);
-                if(msgListV.Count > 0) 
+                    db.Database.ExecuteSqlRawAsync(@"DELETE FROM msg WHERE id>={0} AND id<={1}", IdMin, IdMax);
+                }
+            }
+        },TaskCreationOptions.AttachedToParent);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "MsgTimer", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            if (msgListV.Count > 0)
                 _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);
             if (msgListO.Count > 0)
                 _ea.GetEvent<MessageOrderChanged>().Publish(msgListO);
 
-        }
-        private struct ContentTitle
-        {
-            public const string Settings = "Einstellungen";
-            public const string Deliverylist = "Lieferliste";
-            public const string Planning = "Teamleiter Zuteilung";
-            public const string RoleEdit = "Rollen Management";
-            public const string MachineEdit = "Maschinen Management";
-            public const string UserEdit = "User Managment";
-
-        }
-
-        public void DragOver(IDropInfo dropInfo)
-        {
-            if (dropInfo.Data is TabItem)
-            {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Move;
-            }
-        }
-
-        public void Drop(IDropInfo dropInfo)
-        {
-            //if(dropInfo.Data is CodeTypeOfExpression( pg))
-            //{
-            //    if(TabTitles.Contains(pg))
-            //    {
-            //        var newI = dropInfo.InsertIndex - 1;
-            //        var oldI = dropInfo.DragInfo.SourceIndex;
-            //        if (newI > TabTitles.Count-1) newI = TabTitles.Count-1;
-            //        if (newI < 0) newI = 0;
-            //        if (newI != oldI)
-            //        {
-            //            TabTitles.Move(oldI, newI);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        TabTitles.Add(pg);
-            //        //WindowTitles.Remove(pg);
-            //        //if (pg.FindName("tabable") is Window wnd)
-            //        //{
-            //        //    var o = wnd.Owner.OwnedWindows.SyncRoot;
-
-            //        //    wnd.Close();
-            //        //}
-            //    }
-            //}
         }
 
         private void RegisterMe()
         {
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
+                db.Database.BeginTransactionAsync();
+                db.Database.ExecuteSqlRaw("DELETE dbo.Online WHERE UserId=@p0 AND PcId=@p1", UserInfo.User.UserIdent, UserInfo.PC ?? string.Empty);
                 db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Online(UserId,PcId,Login) VALUES({0},{1},{2})",
                     UserInfo.User.UserIdent,
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                db.Database.CommitTransactionAsync();
             }
         }
-        private void DBOperation()
-        {
-            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-            {
-                var vorg = db.WorkSaps.Where(x => x.WorkSapId != null).Select(x => x.WorkSapId).ToList();
-                var varb = vorg.Distinct();
-                foreach (var v in varb)
-                {
-                    if (v.Length > 3)
-                    {
-                        string cost = v[..3];
-                        string inv = v[3..];
-                        int costid;
-                        if (int.TryParse(cost, out costid))
-                        {
-                            var ress = db.Ressources.Where(x => x.Inventarnummer == inv);
-                            var id = ress.FirstOrDefault().RessourceId;
-                            foreach (var r in ress.Skip(1))
-                            {
-                                db.Ressources.Remove(r);
-                            }
-                            if (id != null)
-                            {
-                                var res = db.RessourceCostUnits.FirstOrDefault(x => x.CostId == costid && x.Rid == id);
-                                if (res == null)
-                                    db.RessourceCostUnits.Add(new RessourceCostUnit() { CostId = costid, Rid = id });
-                            }
-                            db.SaveChanges();
-                        }
-                    }
-                }
-            }
-        }
+   
     }
 }
 
