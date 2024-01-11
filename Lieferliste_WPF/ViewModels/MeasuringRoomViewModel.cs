@@ -143,7 +143,11 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (dropInfo.Data is Vorgang vrg)
             {
-
+                var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
+                if (source.IsAddingNew) { source.CommitNew(); }
+                source.Remove(vrg);
+                ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
+                ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
                 _dbctx.UserVorgangs.RemoveRange(_dbctx.UserVorgangs.Where(x => x.Vid.Trim() == vrg.VorgangId));
  
             }

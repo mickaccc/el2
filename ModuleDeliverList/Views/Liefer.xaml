@@ -23,7 +23,7 @@
         <conv:AlertColorConverter x:Key="boolalert" AlertColor="Red"/>
         <conv:BooleanInverter x:Key="boolInvert"/>
         
-        <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+        <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}" >
             <Setter Property="Width" Value="200"/>
             <Setter Property="Padding" Value="8"/>
         </Style>
@@ -63,9 +63,9 @@
             Mode="Standard"
             materialDesign:HintAssist.FloatingOffset="1,-10">
             <StackPanel Orientation="Horizontal" >
-
-                <ComboBox x:Name="ProjComboBox" materialDesign:RippleAssist.Feedback="Crimson"
-                     materialDesign:HintAssist.Hint="Projekte"
+                <TextBlock Text="{Binding render}"/>
+                <ComboBox x:Name="ProjComboBox" 
+                     materialDesign:HintAssist.Hint="Projekte" 
                      
                           ItemsSource="{Binding Projects}"                        
                           SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

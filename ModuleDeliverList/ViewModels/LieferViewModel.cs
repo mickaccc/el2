@@ -19,6 +19,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace ModuleDeliverList.ViewModels
 {
@@ -192,6 +193,7 @@ namespace ModuleDeliverList.ViewModels
             }
         }
 
+
         public LieferViewModel(IContainerProvider container,
             IApplicationCommands applicationCommands,
             IEventAggregator ea,
@@ -217,6 +219,7 @@ namespace ModuleDeliverList.ViewModels
             _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
 
             if (_settingsService.IsAutoSave) SetAutoSave();
+            int renderingTier = (RenderCapability.Tier >> 16);
         }
 
         private bool OnInvisibilityCanExecute(object arg)

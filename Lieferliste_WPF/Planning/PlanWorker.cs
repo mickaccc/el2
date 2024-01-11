@@ -165,17 +165,17 @@ namespace Lieferliste_WPF.Planning
 
         }
 
-        private void MessageReceived(List<string> vorgangIdList)
+        private void MessageReceived(List<string?> vorgangIdList)
         {
             try
             {
-                foreach (var v in vorgangIdList)
+                foreach (var v in vorgangIdList.Where(x => x != null))
                 {
 
                     var pr = Processes?.FirstOrDefault(x => x.VorgangId == v);
                     if (pr != null)
                     {
-                        _dbctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).ReloadAsync();
+                        _dbctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
 
                         pr.RunPropertyChanged();
                     }

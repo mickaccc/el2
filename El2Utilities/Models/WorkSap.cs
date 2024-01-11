@@ -11,7 +11,7 @@ public partial class WorkSap
 
     public int? RessourceId { get; set; }
 
-    public DateTime Created { get; set; }
+    public DateTime? Created { get; set; }
 
     public int? CostId { get; set; }
 

@@ -185,6 +185,7 @@ namespace Lieferliste_WPF.ViewModels
                   .Where(y => y.AidNavigation.Abgeschlossen == false
                     && y.SysStatus != null
                     && y.Text != null
+                    && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
                     && y.Text.ToLower().Contains("starten") == false
                     && y.SysStatus.Contains("RÜCK") == false)
                   .ToListAsync();

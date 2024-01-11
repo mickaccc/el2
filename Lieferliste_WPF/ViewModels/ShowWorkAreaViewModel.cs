@@ -94,7 +94,21 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-              _dbctx.SaveChanges();
+            try
+            {
+                _dbctx.SaveChanges();
+            }
+
+            catch (DbUpdateConcurrencyException e2)
+            {
+                MessageBox.Show(string.Format("{0}\n{1}", e2.Message, e2.InnerException), "Save Changed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (DbUpdateException e)
+            {
+                MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "Save Changed", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            }
+
         }
 
         private bool OnAddCanExecute(object arg)
@@ -119,7 +133,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if(arg is WorkArea w)
             {
-                var b = w.IsLocked ?? false;
+                var b = w.IsLocked;
                 return (!EditMode && !b);
             }
             return !EditMode;
@@ -131,6 +145,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if(_workAreasList.CanRemove)
                 _workAreasList.Remove(w);
+                _dbctx.WorkAreas.Remove(w);
                 
             }
         }
