@@ -47,7 +47,8 @@
         <DataGrid Grid.Row="2" ItemsSource="{Binding VorgangTask.Result}" IsReadOnly="True" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
-                  dd:DragDrop.DragHandler="{Binding}">
+                  dd:DragDrop.DragHandler="{Binding}"
+                  dd:DragDrop.DropHandler="{Binding}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Auftrag" Binding="{Binding Path=Aid}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True" />

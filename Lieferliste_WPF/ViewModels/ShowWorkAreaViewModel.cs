@@ -81,8 +81,8 @@ namespace Lieferliste_WPF.ViewModels
             _dialogService = dialogService;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             EditCommand = new ActionCommand(OnEditExecuted, OnEditCanExecute);
-            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteExecute);
-            AddCommand = new ActionCommand(OnAddExecuted, OnAddExecute);
+            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
+            AddCommand = new ActionCommand(OnAddExecuted, OnAddCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             WaTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync());
         }
@@ -97,7 +97,7 @@ namespace Lieferliste_WPF.ViewModels
               _dbctx.SaveChanges();
         }
 
-        private bool OnAddExecute(object arg)
+        private bool OnAddCanExecute(object arg)
         {
             return !EditMode;
         }
@@ -115,8 +115,13 @@ namespace Lieferliste_WPF.ViewModels
             WorkAreas.Refresh();
         }
 
-        private bool OnDeleteExecute(object arg)
+        private bool OnDeleteCanExecute(object arg)
         {
+            if(arg is WorkArea w)
+            {
+                var b = w.IsLocked ?? false;
+                return (!EditMode && !b);
+            }
             return !EditMode;
         }
 

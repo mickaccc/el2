@@ -15,6 +15,8 @@ public partial class WorkArea
 
     public byte Sort { get; set; }
 
+    public bool? IsLocked { get; set; }
+
     public virtual ICollection<Ressource> Ressources { get; set; } = new List<Ressource>();
 
     public virtual ICollection<UserWorkArea> UserWorkAreas { get; set; } = new List<UserWorkArea>();

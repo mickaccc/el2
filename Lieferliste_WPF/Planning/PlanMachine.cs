@@ -81,6 +81,7 @@ namespace Lieferliste_WPF.Planning
             Initialize();
             LoadData();
             _eventAggregator = eventAggregator;
+            ProcessesCV.Refresh();
         }
 
         #endregion
@@ -187,17 +188,17 @@ namespace Lieferliste_WPF.Planning
 
         }
 
-        private void MessageReceived(List<string> vorgangIdList)
+        private void MessageReceived(List<string?> vorgangIdList)
         {
             try
             {
-                foreach (string id in vorgangIdList)
+                foreach (string id in vorgangIdList.Where(x => x != null))
                 {
                     var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
                     if (pr != null)
                     {
 
-                        _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).ReloadAsync();
+                        _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
 
                         pr.RunPropertyChanged();
                     }

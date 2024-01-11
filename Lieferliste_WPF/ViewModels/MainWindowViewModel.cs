@@ -470,45 +470,41 @@ namespace Lieferliste_WPF.ViewModels
         }
         private async void OnMsgTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            List<string> msgListV = [];
-            List<string> msgListO = [];
+            List<string?> msgListV = [];
+            List<string?> msgListO = [];
             try
             {
-                await Task.Factory.StartNew(async () =>
-        {
- 
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                {
-                    var m = await db.Msgs.AsNoTracking()
-                        .Include(x => x.Onl)
-                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
-                        .ToListAsync();
-                lock (_lock)
-                {
-                    int IdMin = m.Min(x => x.Id), IdMax = m.Max(x => x.Id);
-                    foreach (var msg in m)
-                    {
-                        if (msg.PrimaryKey != null && msg.TableName == "Vorgang")
-                            msgListV.Add(msg.PrimaryKey);
 
-                        if (msg.PrimaryKey != null && msg.TableName == "OrderRB")
-                            msgListO.Add(msg.PrimaryKey);
-                        
+
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    {
+                        var m = await db.Msgs.AsNoTracking()
+                            .Include(x => x.Onl)
+                            .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
+                            .ToListAsync();
+                        if (m.Count > 0)
+                        {
+                            msgListV.AddRange(m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList());
+                            msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
+                            int IdMin = m.Min(x => x.Id), IdMax = m.Max(x => x.Id);
+
+                            await db.Database.ExecuteSqlRawAsync(@"DELETE FROM msg WHERE id>={0} AND id<={1}", IdMin, IdMax);
+                        }
                     }
-                    db.Database.ExecuteSqlRawAsync(@"DELETE FROM msg WHERE id>={0} AND id<={1}", IdMin, IdMax);
-                }
-            }
-        },TaskCreationOptions.AttachedToParent);
+ 
+
+                        if (msgListV.Count > 0)
+                            _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);
+                        if (msgListO.Count > 0)
+                            _ea.GetEvent<MessageOrderChanged>().Publish(msgListO);
+
             }
             catch (Exception ex)
             {
 
                 MessageBox.Show(ex.Message, "MsgTimer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            if (msgListV.Count > 0)
-                _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);
-            if (msgListO.Count > 0)
-                _ea.GetEvent<MessageOrderChanged>().Publish(msgListO);
+
 
         }
 
@@ -525,7 +521,7 @@ namespace Lieferliste_WPF.ViewModels
                 db.Database.CommitTransactionAsync();
             }
         }
-   
+
     }
 }
 

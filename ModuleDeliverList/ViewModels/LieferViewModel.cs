@@ -242,7 +242,7 @@ namespace ModuleDeliverList.ViewModels
                 OrdersView.Refresh();
             }
         }
-        private void MessageOrderReceived(List<string> rb)
+        private void MessageOrderReceived(List<string?> rb)
         {
             try
             {
@@ -251,12 +251,16 @@ namespace ModuleDeliverList.ViewModels
                     lock (_lock)
                     {
 
-                        foreach (string rbId in rb)
+                        foreach (string rbId in rb.Where(x => x != null))
                         {
                             var o = _orders.FirstOrDefault(x => x.Aid == rbId);
                             if (o != null)
                             {
-                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).ReloadAsync();                              
+                                if (DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State != EntityState.Unchanged)
+                                {
+                                    DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State = EntityState.Unchanged;
+                                }
+                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).Reload();                              
                                 o.RunPropertyChanged();
                             }
 
@@ -271,7 +275,7 @@ namespace ModuleDeliverList.ViewModels
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteOrder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void MessageReceived(List<string> vrgIdList)
+        private void MessageReceived(List<string?> vrgIdList)
         {
             try
             {
@@ -279,12 +283,12 @@ namespace ModuleDeliverList.ViewModels
          {
              lock (_lock)
              {
-                 foreach (var vrg in vrgIdList)
+                 foreach (var vrg in vrgIdList.Where(x => x != null))
                  {
                      var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
                      if (v != null)
                      {
-                         DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).ReloadAsync();
+                         DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).Reload();
                          v.RunPropertyChanged();
                      }
                  }

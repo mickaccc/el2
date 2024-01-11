@@ -276,7 +276,7 @@
 									IsReadOnly="True"
 									Width="Auto"/>
 
-			</DataGrid.Columns>
+            </DataGrid.Columns>
 		</DataGrid>
 	</Grid>
 

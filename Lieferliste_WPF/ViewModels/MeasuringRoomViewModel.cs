@@ -13,8 +13,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -32,19 +30,19 @@ namespace Lieferliste_WPF.ViewModels
         private IUserSettingsService _settingsService;
         private RelayCommand? _textChangedCommand;
         public ICommand TextChangedCommand => _textChangedCommand ??= new RelayCommand(OnTextChanged);
-        public NotifyTaskCompletion<ICollectionView> MemberTask {get; private set;}
-        public NotifyTaskCompletion<ICollectionView> VorgangTask { get; private set;}
+        public NotifyTaskCompletion<ICollectionView> MemberTask { get; private set; }
+        public NotifyTaskCompletion<ICollectionView> VorgangTask { get; private set; }
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private ObservableCollection<Vorgang> _vorgangsList = new();
         private List<PlanWorker> _emploeeList = new();
         private string _searchText = string.Empty;
         private static System.Timers.Timer _autoSaveTimer;
 
-        public ICollectionView EmploeeList { get; private set;}
+        public ICollectionView EmploeeList { get; private set; }
         public ICollectionView VorgangsView { get; private set; }
 
         public MeasuringRoomViewModel(IContainerProvider container, IApplicationCommands applicationCommands, IUserSettingsService settingsService)
-        { 
+        {
             _container = container;
             _applicationCommands = applicationCommands;
             _settingsService = settingsService;
@@ -67,19 +65,28 @@ namespace Lieferliste_WPF.ViewModels
         }
         private async Task<ICollectionView> LoadDataAsync()
         {
-            var ord = await _dbctx.Vorgangs
-                .Include(x => x.AidNavigation)
-                .ThenInclude(x => x.MaterialNavigation)
-                .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Include(x => x.ArbPlSapNavigation)
-                .Where(x => x.ArbPlSapNavigation.Ressource.ProcessAddable == false && x.SysStatus.Contains("RÜCK") == false)
-                .ToListAsync();
+            try
+            {
+                var ord = await _dbctx.Vorgangs
+            .Include(x => x.AidNavigation)
+            .ThenInclude(x => x.MaterialNavigation)
+            .Include(x => x.AidNavigation.DummyMatNavigation)
+            .Include(x => x.ArbPlSapNavigation)
+            .Where(x => (x.ArbPlSapNavigation.Ressource != null) && x.ArbPlSapNavigation.Ressource.WorkAreaId == 5 &&
+                    ((x.SysStatus != null) && x.SysStatus.Contains("RÜCK") == false))
+            .ToListAsync();
 
- 
-            _vorgangsList.AddRange(ord.ExceptBy(_dbctx.UserVorgangs.Select(x => x.Vid),x => x.VorgangId));
 
-            VorgangsView = CollectionViewSource.GetDefaultView(_vorgangsList);
-            VorgangsView.Filter += FilterPredicate;
+                _vorgangsList.AddRange(ord.ExceptBy(_dbctx.UserVorgangs.Select(x => x.Vid), x => x.VorgangId));
+
+                VorgangsView = CollectionViewSource.GetDefaultView(_vorgangsList);
+                VorgangsView.Filter += FilterPredicate;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "MeasuringRoom Load Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             return VorgangsView;
 
         }
@@ -88,21 +95,21 @@ namespace Lieferliste_WPF.ViewModels
         {
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var mem = await db.Users
-                .Where(x => x.RessourceUsers.Any(x => x.RidNavigation.ProcessAddable == false))
+                .Where(x => x.RessourceUsers.Any(x => x.RidNavigation.WorkAreaId == 5))
                 .ToListAsync();
 
-                var factory = _container.Resolve<PlanWorkerFactory>();
-                foreach (var item in mem)
-                {
-                    _emploeeList.Add(factory.CreatePlanWorker(item.UserIdent));
-                }
+            var factory = _container.Resolve<PlanWorkerFactory>();
+            foreach (var item in mem)
+            {
+                _emploeeList.Add(factory.CreatePlanWorker(item.UserIdent));
+            }
 
-            EmploeeList = CollectionViewSource.GetDefaultView (_emploeeList);
+            EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);
             return EmploeeList;
         }
         private void OnTextChanged(object obj)
         {
-            if(obj is string s)
+            if (obj is string s)
             {
                 _searchText = s;
                 VorgangsView.Refresh();
@@ -126,7 +133,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if (dropInfo.Data is Vorgang)
                 {
-                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                     dropInfo.Effects = DragDropEffects.Move;
                 }
             }
@@ -134,11 +141,11 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            if(dropInfo.Data is Vorgang vrg)
+            if (dropInfo.Data is Vorgang vrg)
             {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                db.UserVorgangs.RemoveRange(db.UserVorgangs.Where(x => x.Vid == vrg.VorgangId));
-                db.SaveChangesAsync();
+
+                _dbctx.UserVorgangs.RemoveRange(_dbctx.UserVorgangs.Where(x => x.Vid.Trim() == vrg.VorgangId));
+ 
             }
         }
 

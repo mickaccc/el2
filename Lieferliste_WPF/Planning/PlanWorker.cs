@@ -8,9 +8,7 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
-using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -18,10 +16,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -148,7 +144,7 @@ namespace Lieferliste_WPF.Planning
 
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
-
+            ProcessesCV.Refresh();
             var live = ProcessesCV as ICollectionViewLiveShaping;
             if (live != null)
             {
@@ -261,6 +257,7 @@ namespace Lieferliste_WPF.Planning
 
                 for (var i = 0; i < p.Count; i++)
                 {
+                    p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
                     p[i].Spos = i;
 
                 }

@@ -52,14 +52,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridCheckBoxColumn Header="Sichtbar" Binding="{Binding Path=Visability, Mode=TwoWay}" />
-                <DataGridCheckBoxColumn>
-                    <DataGridCheckBoxColumn.Header>
-                        <TextBlock Text="Vorgang zuteilbar" TextWrapping="Wrap" FontSize="12" Width="50"/>
-                    </DataGridCheckBoxColumn.Header>
-                    <DataGridCheckBoxColumn.Binding>
-                        <Binding Path="ProcessAddable" Mode="TwoWay"/>
-                    </DataGridCheckBoxColumn.Binding>
-                </DataGridCheckBoxColumn>
+           
             </DataGrid.Columns>
         </DataGrid>
         <materialDesign:ColorZone
