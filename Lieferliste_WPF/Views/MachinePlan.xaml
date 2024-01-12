@@ -89,12 +89,12 @@
             <ListBox ItemsSource="{Binding ParkingCV}" x:Name="parking"
                      dd:DragDrop.IsDragSource="True"
                      dd:DragDrop.IsDropTarget="True"
-                     dd:DragDrop.DropHandler="{Binding}">
+                     dd:DragDrop.DropHandler="{Binding}" >
                 <ListBox.Background>
                     <ImageBrush ImageSource="/Images/parking.png" />
                 </ListBox.Background>
                 <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="LeftDoubleClick">
+                    <i:EventTrigger EventName="MouseDoubleClick">
                         <i:InvokeCommandAction Command="{Binding ApplicationCommands.OpenOrderCommand}"
                                                CommandParameter="{Binding ElementName=parking, Path=SelectedItem}"/>
                     </i:EventTrigger>

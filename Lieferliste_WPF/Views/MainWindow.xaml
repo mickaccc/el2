@@ -156,7 +156,7 @@
                             <materialdesign:PackIcon Kind="AlphaLBox"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Einstellungen" Command="{Binding OpenSettingsCommand}" />
+                    
                     <MenuItem Header="Produktkatalog">
                         <MenuItem Header="Projekte" 
                                   Command="{Binding OpenProjectCombineCommand}"/>
@@ -186,6 +186,7 @@
                     </MenuItem>
                     <MenuItem Header="Archiv" Command="{Binding OpenArchiveCommand}" />
                     <MenuItem Header="Hilfe" >
+                        <MenuItem Header="Einstellungen" Command="{Binding OpenSettingsCommand}" />
                         <MenuItem Header="About" Click="About_Click"/>
                     </MenuItem>
                 </Menu>

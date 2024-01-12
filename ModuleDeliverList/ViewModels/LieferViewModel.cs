@@ -23,7 +23,7 @@ using System.Windows.Media;
 
 namespace ModuleDeliverList.ViewModels
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class LieferViewModel : ViewModelBase, IViewModel
     {
 
@@ -31,11 +31,11 @@ namespace ModuleDeliverList.ViewModels
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
         public ICommand FilterDeleteCommand => _filterDeleteCommand ??= new RelayCommand(OnFilterDelete);
         public ICommand ToggleFilterCommand => _toggleFilterCommand ??= new RelayCommand(OnToggleFilter);
+        public ICommand SortAscCommand => _sortAscCommand ??= new RelayCommand(OnAscSortExecuted);
+        public ICommand SortDescCommand => _sortDescCommand ??= new RelayCommand(OnDescSortExecuted);
 
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
-        public ActionCommand SortAscCommand { get; private set; }
-        public ActionCommand SortDescCommand { get; private set; }
         public ActionCommand SaveCommand { get; private set; }
         public ActionCommand FilterSaveCommand { get; private set; }
         public ActionCommand InvisibilityCommand { get; private set; }
@@ -48,6 +48,8 @@ namespace ModuleDeliverList.ViewModels
         private RelayCommand? _textSearchCommand;
         private RelayCommand? _filterDeleteCommand;
         private RelayCommand? _toggleFilterCommand;
+        private RelayCommand? _sortAscCommand;
+        private RelayCommand? _sortDescCommand;
         private string _searchFilterText = string.Empty;
         private string _selectedProjectFilter = string.Empty;
         private string _selectedSectionFilter = string.Empty;
@@ -57,35 +59,12 @@ namespace ModuleDeliverList.ViewModels
         IEventAggregator _ea;
         IUserSettingsService _settingsService;
         private CmbFilter _selectedDefaultFilter;
-        private List<Ressource> _ressources = [];
-        private SortedDictionary<byte, string> _sections = [];
+        private static List<Ressource> _ressources = [];
+        private static SortedDictionary<byte, string> _sections = [];
 
-        public SortedDictionary<byte, string> Sections
-        {
-            get { return _sections; }
-            set
-            {
-                if (value != _sections)
-                {
-                    _sections = value;
-                    NotifyPropertyChanged(() => Sections);
-                }
-            }
-        }
-
-        private List<string> _projects = new();
-        public List<string> Projects
-        {
-            get => _projects;
-            set
-            {
-                if (_projects != value)
-                {
-                    _projects = value;
-                    NotifyPropertyChanged(() => Projects);
-                }
-            }
-        }
+        public SortedDictionary<byte, string> Sections => _sections;
+        private static List<string> _projects = new();
+        public static List<string> Projects => _projects;
         private bool _filterInvers;
 
         public bool FilterInvers
@@ -205,8 +184,6 @@ namespace ModuleDeliverList.ViewModels
             _ea = ea;
             _settingsService = settingsService;
 
-            SortAscCommand = new ActionCommand(OnAscSortExecuted, OnAscSortCanExecute);
-            SortDescCommand = new ActionCommand(OnDescSortExecuted, OnDescSortCanExecute);
             InvisibilityCommand = new ActionCommand(OnInvisibilityExecuted, OnInvisibilityCanExecute);
 
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
@@ -401,10 +378,7 @@ namespace ModuleDeliverList.ViewModels
             }
             return false;
         }
-        private bool OnDescSortCanExecute(object arg)
-        {
-            return true;
-        }
+ 
         private void OnDescSortExecuted(object parameter)
         {
 
@@ -416,8 +390,6 @@ namespace ModuleDeliverList.ViewModels
             }
 
         }
-        private bool OnAscSortCanExecute(Object arg)
-        { return true; }
 
         private void OnAscSortExecuted(object parameter)
         {
@@ -428,12 +400,12 @@ namespace ModuleDeliverList.ViewModels
             {
                 OrdersViewSource.SortDescriptions.Clear();
                 OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
-                var uiContext = SynchronizationContext.Current;
-                uiContext?.Send(x => OrdersView.Refresh(), null);
+                OrdersView.Refresh();
             }
         }
         #endregion
-        public string HasMouse;
+
+        public string HasMouse { get; set; }
         private string Translate()
         {
             string v = HasMouse switch

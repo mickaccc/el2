@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -332,12 +333,24 @@ namespace ModuleDeliverList.UserControls
             set { SetValue(AvailableItemsProperty, value); }
         }
 
-        public string HasMouseOver { get; internal set; }
-
-        // Using a DependencyProperty as the backing store for AvailableItems.  This enables animation, styling, binding, etc...
+         // Using a DependencyProperty as the backing store for AvailableItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AvailableItemsProperty =
             DependencyProperty.Register("AvailableItems", typeof(Dictionary<string, object>), typeof(LieferlisteControl));
 
+
+
+        public object  SelectedBinding
+        {
+            get { return (object)GetValue(SelectedBindingProperty); }
+            set { SetValue(SelectedBindingProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedBindingProperty =
+            DependencyProperty.Register("SelectedBinding", typeof(object), typeof(LieferlisteControl), new PropertyMetadata(null));
+
+
+        public string HasMouseOver { get; internal set; }
         #endregion
 
         //public string ToolTip
@@ -396,6 +409,7 @@ namespace ModuleDeliverList.UserControls
                 Storyboard s = (Storyboard)TryFindResource("EnterStoryBoard");
                 Storyboard.SetTarget(s, send);
                 s.Begin();
+                SelectedValue = send.Name;
             }
 
         }
@@ -416,20 +430,6 @@ namespace ModuleDeliverList.UserControls
                 if (send.IsMouseCaptured)
                     send.ReleaseMouseCapture();
             }
-        }
-
-
-
-        private void CopyCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            TextBlock tx = (TextBlock)sender;
-            Clipboard.SetText(tx.Text);
-        }
-
-        private void CopyCommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            TextBlock textBlock = (TextBlock)sender;
-            e.CanExecute = !string.IsNullOrEmpty(textBlock.Text);
         }
 
         private void Border_GotFocus(object sender, RoutedEventArgs e)

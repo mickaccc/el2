@@ -133,7 +133,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if (dropInfo.Data is Vorgang)
                 {
-                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
                 }
             }

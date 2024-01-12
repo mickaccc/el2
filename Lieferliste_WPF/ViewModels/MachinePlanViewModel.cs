@@ -28,7 +28,7 @@ using Unity;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class MachinePlanViewModel : ViewModelBase, IDropTarget, IViewModel
     {
         public string Title { get; } = "Teamleiter Zuteilung";
@@ -257,7 +257,8 @@ namespace Lieferliste_WPF.ViewModels
 
             NotifyPropertyChanged(() => ProcessCV);
             NotifyPropertyChanged(() => ParkingCV);
-            RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == _currentWorkArea;
+            RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == _currentWorkArea &&
+                (f as PlanMachine).Vis;
             ParkingCV.Filter = f => (f as Vorgang)?.Rid == _currentWorkArea * -1;
             ProcessViewSource.Filter += ProcessCV_Filter;
 
@@ -271,18 +272,10 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     if (sel.AddedItems[0] is WorkArea wa)
                     {
-                        RessCV.Filter = f =>
-                        {
-                            PlanMachine plm = f as PlanMachine;
-                            return plm != null
-                                && plm.WorkArea?.WorkAreaId == wa.WorkAreaId
-                                && plm.Vis;
-                        };
-                        ParkingCV.Filter = f => (f as Vorgang)?.Rid == wa.WorkAreaId * -1;
-
                         _currentWorkArea = wa.WorkAreaId;
                         ProcessCV.Refresh();
                         ParkingCV.Refresh();
+                        RessCV?.Refresh();
                     }
                 }
             }
@@ -324,7 +317,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 if (dropInfo.Data is Vorgang)
                 {
-                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
                 }
             }
