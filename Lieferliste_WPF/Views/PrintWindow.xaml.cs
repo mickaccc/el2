@@ -19,10 +19,9 @@ namespace Lieferliste_WPF.Views
     /// </summary>
     public partial class PrintWindow : Window
     {
-        private FixedDocument _document;
         public PrintWindow(FixedDocument document)
         {
-            _document = document;
+
             InitializeComponent();          
             PreviewD.Document = document;
         }

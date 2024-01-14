@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -33,7 +34,7 @@ namespace ModuleDeliverList.ViewModels
         public ICommand ToggleFilterCommand => _toggleFilterCommand ??= new RelayCommand(OnToggleFilter);
         public ICommand SortAscCommand => _sortAscCommand ??= new RelayCommand(OnAscSortExecuted);
         public ICommand SortDescCommand => _sortDescCommand ??= new RelayCommand(OnDescSortExecuted);
-
+        public ActionCommand SetMarkerCommand { get; private set; }
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SaveCommand { get; private set; }
@@ -60,9 +61,9 @@ namespace ModuleDeliverList.ViewModels
         IUserSettingsService _settingsService;
         private CmbFilter _selectedDefaultFilter;
         private static List<Ressource> _ressources = [];
-        private static SortedDictionary<byte, string> _sections = [];
-
-        public SortedDictionary<byte, string> Sections => _sections;
+        private static SortedDictionary<int, string> _sections = [];
+        public SortedDictionary<int, string> Sections => _sections;
+        public List<MenuItem> AttachedMenuItems { get; private set; }
         private static List<string> _projects = new();
         public static List<string> Projects => _projects;
         private bool _filterInvers;
@@ -185,7 +186,7 @@ namespace ModuleDeliverList.ViewModels
             _settingsService = settingsService;
 
             InvisibilityCommand = new ActionCommand(OnInvisibilityExecuted, OnInvisibilityCanExecute);
-
+            SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             FilterSaveCommand = new ActionCommand(OnFilterSaveExecuted, OnFilterSaveCanExecute);
 
@@ -196,7 +197,19 @@ namespace ModuleDeliverList.ViewModels
             _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
 
             if (_settingsService.IsAutoSave) SetAutoSave();
-            int renderingTier = (RenderCapability.Tier >> 16);
+
+            var menu = new MenuItem();
+            menu.Header = "Vorgang ein/ausblenden";
+            menu.Command = InvisibilityCommand;
+            var b = new Binding();
+            b.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ContextMenu), 1);
+            var path = new PropertyPath(ContextMenu.PlacementTargetProperty);
+            path.Path = "PlacementTarget";
+            b.Path = path;
+            //menu.SetValue(MenuItem.CommandParameterProperty, b);
+            BindingOperations.SetBinding(menu, MenuItem.CommandParameterProperty, b);
+            AttachedMenuItems = [menu];
+
         }
 
         private bool OnInvisibilityCanExecute(object arg)
@@ -211,6 +224,35 @@ namespace ModuleDeliverList.ViewModels
                 v.Visability = !v.Visability;
                 OrdersView.Refresh();
             }
+        }
+
+        private static bool OnSetMarkerCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);
+        }
+
+        private void OnSetMarkerExecuted(object obj)
+        {
+            try
+            {
+                if (obj == null) return;
+                var values = (object[])obj;
+                var name = (string)values[0];
+                var desc = (Vorgang)values[1];
+
+                if (name == "DelBullet") desc.Bullet = Brushes.White.ToString();
+                if (name == "Bullet1") desc.Bullet = Brushes.Red.ToString();
+                if (name == "Bullet2") desc.Bullet = Brushes.Green.ToString();
+                if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
+                if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
+
+                //ProcessesCV.Refresh();
+            }
+            catch (System.Exception e)
+            {
+                MessageBox.Show(e.Message, "SetMarker", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
         private void MessageOrderArchivated(OrderRb rb)
         {
@@ -381,11 +423,11 @@ namespace ModuleDeliverList.ViewModels
  
         private void OnDescSortExecuted(object parameter)
         {
-
-            if (parameter is LieferlisteControl lvc)
+            var v = Translate();
+            if (v != string.Empty)
             {
                 OrdersViewSource.SortDescriptions.Clear();
-                OrdersViewSource.SortDescriptions.Add(new SortDescription(lvc.HasMouseOver, ListSortDirection.Descending));
+                OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Descending));
                 OrdersView.Refresh();
             }
 
@@ -398,8 +440,9 @@ namespace ModuleDeliverList.ViewModels
 
             if (v != string.Empty)
             {
-                OrdersViewSource.SortDescriptions.Clear();
-                OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
+                
+                OrdersView.SortDescriptions.Clear();
+                OrdersView.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
                 OrdersView.Refresh();
             }
         }
@@ -499,7 +542,7 @@ namespace ModuleDeliverList.ViewModels
                     _projects.AddRange(proj.Order());
 
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
-
+ 
                 }
             });
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
@@ -509,6 +552,7 @@ namespace ModuleDeliverList.ViewModels
             {
                 if (live.CanChangeLiveFiltering)
                 {
+                    
                     live.LiveFilteringProperties.Add("Aktuell");
                     live.LiveFilteringProperties.Add("AidNavigation.Abgeschlossen");
                     live.IsLiveFiltering = true;

@@ -473,29 +473,27 @@ namespace Lieferliste_WPF.ViewModels
             List<string?> msgListO = [];
             try
             {
-
-
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                {
+                    var m = await db.Msgs.AsNoTracking()
+                        .Include(x => x.Onl)
+                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
+                        .ToListAsync();
+                    if (m.Count > 0)
                     {
-                        var m = await db.Msgs.AsNoTracking()
-                            .Include(x => x.Onl)
-                            .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
-                            .ToListAsync();
-                        if (m.Count > 0)
-                        {
-                            msgListV.AddRange(m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList());
-                            msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
-                            int IdMin = m.Min(x => x.Id), IdMax = m.Max(x => x.Id);
+                        msgListV.AddRange(m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList());
+                        msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
+                        int IdMin = m.Min(x => x.Id), IdMax = m.Max(x => x.Id);
 
-                            await db.Database.ExecuteSqlRawAsync(@"DELETE FROM msg WHERE id>={0} AND id<={1}", IdMin, IdMax);
-                        }
+                        await db.Database.ExecuteSqlRawAsync(@"DELETE FROM msg WHERE id>={0} AND id<={1}", IdMin, IdMax);
                     }
- 
+                }
 
-                        if (msgListV.Count > 0)
-                            _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);
-                        if (msgListO.Count > 0)
-                            _ea.GetEvent<MessageOrderChanged>().Publish(msgListO);
+
+                if (msgListV.Count > 0)
+                    _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);
+                if (msgListO.Count > 0)
+                    _ea.GetEvent<MessageOrderChanged>().Publish(msgListO);
 
             }
             catch (Exception ex)
@@ -503,8 +501,6 @@ namespace Lieferliste_WPF.ViewModels
 
                 MessageBox.Show(ex.Message, "MsgTimer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-
         }
 
         private void RegisterMe()

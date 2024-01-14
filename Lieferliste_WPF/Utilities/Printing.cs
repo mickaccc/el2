@@ -19,6 +19,8 @@ using System.Windows.Xps.Serialization;
 using System.IO.Packaging;
 using System.Printing;
 using El2Core.Models;
+using MaterialDesignThemes.Wpf.Converters;
+using Windows.Graphics.Printing;
 
 namespace Lieferliste_WPF.Utilities
 {
@@ -75,6 +77,10 @@ namespace Lieferliste_WPF.Utilities
             string Name;
             string? Second;
             string? Description;
+            var pd = new PrintDialog();
+            pd.PrintTicket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
+            pd.PrintTicket.PageOrientation = PageOrientation.Landscape;
+            double printSizeWidth = pd.PrintableAreaWidth;
             List<Vorgang> proces;
             if (parameter is PlanMachine plm)
             {
@@ -112,12 +118,10 @@ namespace Lieferliste_WPF.Utilities
             TableRow r = new TableRow();
 
             fd.BringIntoView();
-
-            fd.TextAlignment = TextAlignment.Center;
             fd.ColumnWidth = 800;
-            fd.IsColumnWidthFlexible = true;
+            fd.TextAlignment = TextAlignment.Center;
             table.CellSpacing = 1;
-
+            
 
             var headerList = proces.OrderBy(x => x.Spos).Select(x => new
             {
@@ -137,31 +141,34 @@ namespace Lieferliste_WPF.Utilities
             int i = 0;
             foreach (var pr in headerList.First().GetType().GetProperties())
             {
-
+                TableColumn tabCol = new TableColumn();
                 string head;
                 switch (pr.Name)
                 {
-                    case "Aid": head = "Auftrags-\nnummer"; break;
-                    case "ProcessingUom": head = "Vorgang"; break;
-                    case "Material": head = "Material"; break;
-                    case "Bezeichng": head = "Bezeichn- ung"; break;
-                    case "BeazeEinheit": head = "Menge"; break;
-                    case "Text": head = "Kurztext"; break;
-                    case "RstzeEinheit": head = "SpätStart"; break;
-                    case "SpaetEnd": head = "SpätEnd"; break;
-                    case "BemT": head = "Bemerkung Teamleiter"; break;
-                    case "WrtzeEinheit": head = "Dauer"; break;
+                    case "Aid": head = "Auftrags-\nnummer"; tabCol.Width = new GridLength(printSizeWidth/14); break;
+                    case "ProcessingUom": head = "Vorgang"; tabCol.Width = new GridLength(printSizeWidth/28); break;
+                    case "Material": head = "Material"; tabCol.Width = new GridLength(printSizeWidth/13); break;
+                    case "Bezeichng": head = "Bezeichnung"; tabCol.Width = new GridLength(printSizeWidth/10); break;
+                    case "BeazeEinheit": head = "Stk."; tabCol.Width = new GridLength(printSizeWidth/28); break;
+                    case "Text": head = "Kurztext"; tabCol.Width = new GridLength(printSizeWidth/7); break;
+                    case "RstzeEinheit": head = "SpätStart"; tabCol.Width = new GridLength(printSizeWidth/18.7); break;
+                    case "SpaetEnd": head = "SpätEnd"; tabCol.Width = new GridLength(printSizeWidth/28); break;
+                    case "BemT": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth/11); break;
+                    case "WrtzeEinheit": head = "Dauer"; tabCol.Width = new GridLength(printSizeWidth/22); break;
                     default: head = "not Valid"; break;
                 }
-                r.Cells.Add(new TableCell(new Paragraph(new Run(head))));
-                r.Cells[i].ColumnSpan = 1;
+                r.Cells.Add(new TableCell(new Paragraph(new Run(head)))
+                { BorderThickness = new Thickness(1,0,0,1),
+                BorderBrush = Brushes.Black,
+                Background = Brushes.DarkGray,
+                Foreground = Brushes.White
+                });
                 r.Cells[i].Padding = new Thickness(2);
 
-                r.Cells[i].BorderBrush = Brushes.Black;
-                r.Cells[i].FontWeight = FontWeights.Bold;
-                r.Cells[i].Background = Brushes.DarkGray;
-                r.Cells[i].Foreground = Brushes.White;
-                r.Cells[i].BorderThickness = new Thickness(1, 1, 1, 1);
+                
+                
+                table.Columns.Add(tabCol);
+
                 ++i;
             }
             tableRowGroup.Rows.Add(r);
@@ -181,7 +188,6 @@ namespace Lieferliste_WPF.Utilities
                 {
 
                     r.Cells.Add(new TableCell(new Paragraph(new Run(property.GetValue(row)?.ToString()))));
-                    r.Cells[i].ColumnSpan = 1;
                     r.Cells[i].Padding = new Thickness(1);
                     r.Cells[i].BorderBrush = Brushes.DarkGray;
                     r.Cells[i].BorderThickness = new Thickness(0, 0, 1, 1);
@@ -195,19 +201,20 @@ namespace Lieferliste_WPF.Utilities
 
             return fd;
 
-
         }
 
         public static void DoPrintPreview(FlowDocument doc)
         {
- 
-            PrintDialog dialog = new();
-            dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
 
-            doc.PagePadding = new Thickness(10.0, 20.0, 10.0, 10.0);
+            PrintDialog dialog = new();
+            dialog.PrintTicket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
+            dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
+            
+            doc.PagePadding = new Thickness(12.0, 20.0, 10.0, 10.0);
             var fix = Get_Fixed_From_FlowDoc(doc, dialog);
             var windows = new PrintWindow(fix);
             windows.ShowDialog();
+            
         }
         private static string _previewWindowXaml =
     @"<Window
@@ -218,8 +225,27 @@ namespace Lieferliste_WPF.Utilities
         WindowStartupLocation ='CenterOwner'>
                       <DocumentViewer Name='dv1'/>
      </Window>";
+        public static void PreviewWindowXaml(object usefulData)
+        { 
+        Grid grid;
+            grid = new Grid
+            {
+                //ItemsSource = usefulData
+            };
 
+            FixedDocument fixedDoc = new FixedDocument();
+        PageContent pageContent = new PageContent();
+        FixedPage fixedPage = new FixedPage();
 
+        //Create first page of document
+        fixedPage.Children.Add(grid);
+            ((System.Windows.Markup.IAddChild) pageContent).AddChild(fixedPage);
+        fixedDoc.Pages.Add(pageContent);
+            //Create any other required pages here
+            DocumentViewer documentViewer1 = new DocumentViewer();
+        //View the document
+        documentViewer1.Document = fixedDoc;
+            }
         //public static void DoPreview(string title)
         //{
         //    string fileName = System.IO.Path.GetRandomFileName();

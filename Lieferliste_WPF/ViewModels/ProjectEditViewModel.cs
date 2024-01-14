@@ -216,6 +216,7 @@ namespace Lieferliste_WPF.ViewModels
                             }
                         }
                         root.Description = item.ProjectInfo ?? string.Empty;
+                        root.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
                     }
                     while (taskTree.level > 0)
                         taskTree.End();                  
@@ -233,7 +234,7 @@ namespace Lieferliste_WPF.ViewModels
             var psp = (TreeNode<string>)obj;
 
             bool accepted = psp.Value.Contains(_projectSearchText, StringComparison.CurrentCultureIgnoreCase);
-            if (psp.Children != null)
+            if (psp.Children != null && _projectSearchText != string.Empty)
             {
                 foreach (var tree in psp.Children)
                 {

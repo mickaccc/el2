@@ -1,11 +1,8 @@
-﻿
-using Lieferliste_WPF.Planning;
-using System.ComponentModel;
-using System.DirectoryServices;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Lieferliste_WPF.UserControls
+namespace Lieferliste_WPF.Planning
 {
     /// <summary>
     /// Interaction logic for MachineUserControl.xaml

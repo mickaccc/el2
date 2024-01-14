@@ -13,7 +13,7 @@
                 <!--<materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Chocolate"  SecondaryColor="DarkGreen" />
                 <materialDesign:CustomColorTheme BaseTheme="Dark" PrimaryColor="Teal"  SecondaryColor="Lime" />-->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="/Styles/ComboBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/BulletContextMenu.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

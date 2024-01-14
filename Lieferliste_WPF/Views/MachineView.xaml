@@ -75,7 +75,7 @@
         </DockPanel>
         <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding ProcessesCV}" AutoGenerateColumns="False"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" IsSynchronizedWithCurrentItem="True"
-                  dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" 
+                  dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" ContextMenu="{StaticResource BulletContextMenu}"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"
                   dd:DragDrop.DropHandler="{Binding}" >
@@ -84,84 +84,6 @@
                               Command="{Binding ApplicationCommands.OpenOrderCommand}"
                               CommandParameter="{Binding ElementName=MachProcesses, Path=SelectedValue}"/>
             </DataGrid.InputBindings>
-            <DataGrid.ContextMenu>
-                <ContextMenu Width="Auto">
-                    <MenuItem Header="Auftrag öffnen" Command="{Binding ApplicationCommands.OpenOrderCommand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}">
-                        <MenuItem.Icon>
-                            <Image Source="/Images/plan.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Explorer öffnen" Command="{Binding ApplicationCommands.ExplorerCommand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedValue}">
-                        <MenuItem.Icon>
-                            <Image Source="/Images/files-and-folders.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-
-                    <Separator />
-                    <MenuItem x:Name="DelBullet" Header="Markierung  löschen" Command="{Binding SetMarkerCommand}" >
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfControl:BullettControl BullettColor="White"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem x:Name="Bullet1" Header="roter Punkt"  Command="{Binding SetMarkerCommand}">
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfControl:BullettControl BullettColor="Red" BullettShape="0"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-
-                    <MenuItem Header="grüner Punkt" Command="{Binding SetMarkerCommand}"
-                              x:Name="Bullet2">
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfControl:BullettControl BullettColor="Green" BullettShape="0"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="gelber Punkt" Command="{Binding SetMarkerCommand}"
-                              x:Name="Bullet3" >
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem"/>
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfControl:BullettControl BullettColor="Yellow" BullettShape="0"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="blauer Punkt" Command="{Binding SetMarkerCommand}"
-                              x:Name="Bullet4" >
-                        <MenuItem.CommandParameter>
-                            <MultiBinding Converter="{StaticResource MultiObject}">
-                                <Binding RelativeSource="{RelativeSource Self}" Path="Name" />
-                                <Binding RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}" Path="PlacementTarget.CurrentItem" />
-                            </MultiBinding>
-                        </MenuItem.CommandParameter>
-                        <MenuItem.Icon>
-                            <wpfControl:BullettControl BullettColor="Blue"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-
-                </ContextMenu>
-            </DataGrid.ContextMenu>
 
             <DataGrid.Columns>
                 <DataGridTemplateColumn >

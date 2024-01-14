@@ -242,13 +242,16 @@ namespace Lieferliste_WPF.Planning
                 var name = (string)values[0];
                 var desc = (Vorgang)values[1];
 
-                if (name == "DelBullet") desc.Bullet = Brushes.White.ToString();
-                if (name == "Bullet1") desc.Bullet = Brushes.Red.ToString();
-                if (name == "Bullet2") desc.Bullet = Brushes.Green.ToString();
-                if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
-                if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
+                if (desc != null)
+                {
+                    if (name == "DelBullet") desc.Bullet = Brushes.White.ToString();
+                    if (name == "Bullet1") desc.Bullet = Brushes.Red.ToString();
+                    if (name == "Bullet2") desc.Bullet = Brushes.Green.ToString();
+                    if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
+                    if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
-                ProcessesCV.Refresh();
+                    ProcessesCV.Refresh(); 
+                }
             }
             catch (System.Exception e)
             {

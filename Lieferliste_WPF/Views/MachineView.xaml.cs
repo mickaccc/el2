@@ -36,6 +36,5 @@ namespace Lieferliste_WPF.Views
 
         }
 
-
     }
 }

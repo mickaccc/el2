@@ -1,8 +1,10 @@
-﻿using System;
+﻿using El2Core.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static El2Core.Constants.ProjectTypes;
 
 namespace El2Core.Utils
 {
@@ -51,6 +53,12 @@ namespace El2Core.Utils
         {
             get { return _description; }
             set { _description = value; }
+        }
+        private ProjectType _projectType = ProjectType.None;
+        public ProjectType ProjectType
+        {
+            get { return _projectType; }
+            set { _projectType = value; }
         }
         public string NodeType { get; }
         public T Value { get; }

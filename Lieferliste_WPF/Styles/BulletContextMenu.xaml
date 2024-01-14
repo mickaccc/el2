@@ -1,0 +1,115 @@
+﻿<ResourceDictionary xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+					xmlns:wpfcontrol="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+	<ContextMenu x:Key="BulletContextMenu"
+				 Width="Auto">
+		<ContextMenu.Resources>
+			<conv:MultiObjectConverter x:Key="multi"/>
+		</ContextMenu.Resources>
+		<MenuItem Command="{Binding ApplicationCommands.OpenOrderCommand}"
+				  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+				  Header="Auftrag öffnen">
+			<MenuItem.Icon>
+				<Image Source="/Images/planning.png"/>
+			</MenuItem.Icon>
+		</MenuItem>
+		<MenuItem Command="{Binding ApplicationCommands.ExplorerCommand}"
+				  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+				  Header="Explorer öffnen">
+			<MenuItem.Icon>
+				<Image Source="/Images/files-and-folders.png"/>
+			</MenuItem.Icon>
+		</MenuItem>
+		<Separator>
+			<Separator.Template>
+				<ControlTemplate>
+					<Line Stretch="Fill"
+						  Stroke="Black"
+						  StrokeThickness="1"
+						  X1="0"
+						  X2="1"/>
+				</ControlTemplate>
+			</Separator.Template>
+		</Separator>
+		<MenuItem Command="{Binding SetMarkerCommand}"
+				  Header="Markierung  löschen"
+				  x:Name="DelBullet">
+			<MenuItem.CommandParameter>
+				<MultiBinding Converter="{StaticResource multi}">
+					<Binding Path="Name"
+							 RelativeSource="{RelativeSource Self}"/>
+					<Binding Path="PlacementTarget.SelectedItem"
+							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+				</MultiBinding>
+			</MenuItem.CommandParameter>
+			<MenuItem.Icon>
+
+				<wpfcontrol:BullettControl BullettColor="White"/>
+			</MenuItem.Icon>
+		</MenuItem>
+		<MenuItem Command="{Binding SetMarkerCommand}"
+				  Header="roter Punkt"
+				  x:Name="Bullet1">
+			<MenuItem.CommandParameter>
+				<MultiBinding Converter="{StaticResource multi}">
+					<Binding Path="Name"
+							 RelativeSource="{RelativeSource Self}"/>
+					<Binding Path="PlacementTarget.SelectedItem"
+							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+				</MultiBinding>
+			</MenuItem.CommandParameter>
+			<MenuItem.Icon>
+				<wpfcontrol:BullettControl BullettColor="Red"/>
+			</MenuItem.Icon>
+		</MenuItem>
+
+		<MenuItem Command="{Binding SetMarkerCommand}"
+				  Header="grüner Punkt"
+				  x:Name="Bullet2">
+			<MenuItem.CommandParameter>
+				<MultiBinding Converter="{StaticResource multi}">
+					<Binding Path="Name"
+							 RelativeSource="{RelativeSource Self}"/>
+					<Binding Path="PlacementTarget.SelectedItem"
+							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+				</MultiBinding>
+			</MenuItem.CommandParameter>
+			<MenuItem.Icon>
+				<wpfcontrol:BullettControl BullettColor="Green"/>
+			</MenuItem.Icon>
+		</MenuItem>
+		<MenuItem Command="{Binding SetMarkerCommand}"
+				  Header="gelber Punkt"
+				  x:Name="Bullet3">
+			<MenuItem.CommandParameter>
+				<MultiBinding Converter="{StaticResource multi}">
+					<Binding Path="Name"
+							 RelativeSource="{RelativeSource Self}"/>
+					<Binding Path="PlacementTarget.SelectedItem"
+							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+				</MultiBinding>
+			</MenuItem.CommandParameter>
+			<MenuItem.Icon>
+				<wpfcontrol:BullettControl BullettColor="Yellow"/>
+			</MenuItem.Icon>
+		</MenuItem>
+		<MenuItem Command="{Binding SetMarkerCommand}"
+				  Header="blauer Punkt"
+				  x:Name="Bullet4">
+			<MenuItem.CommandParameter>
+				<MultiBinding Converter="{StaticResource multi}">
+					<Binding Path="Name"
+							 RelativeSource="{RelativeSource Self}"/>
+					<Binding Path="PlacementTarget.SelectedItem"
+							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
+				</MultiBinding>
+			</MenuItem.CommandParameter>
+			<MenuItem.Icon>
+				<wpfcontrol:BullettControl BullettColor="Blue"/>
+			</MenuItem.Icon>
+		</MenuItem>
+	</ContextMenu>
+
+</ResourceDictionary>
