@@ -35,6 +35,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView OrdersCollectionView { get; private set; }
         private Tree<string> tree;
         public ICollectionView PSP_NodeCollectionView { get; private set; }
+        private List<Tree<string>> treeList = new();
         private string _orderSearchText = string.Empty;
         private string _projectSearchText = string.Empty;
         public string ProjectSearchText
@@ -180,14 +181,27 @@ namespace Lieferliste_WPF.ViewModels
                 .ToListAsync();
 
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
+
             Tree<string> taskTree = new();
             await Task.Factory.StartNew(() =>
             {
-                               
+                Tree<string> preTree = new();
+ 
                 foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
                     var p = item.ProjectPsp.Trim();
-
+                    //if (preTree.Nodes.Any(x => p.Contains(x.Value)))
+                    //{
+                    //    taskTree = preTree;
+                    //}
+                    //else
+                    //{
+                    //    taskTree = new();
+                    //    treeList.Add(taskTree);
+                    //}                  
+                    //TreeHelper.TryBuildPspTree(item, ref taskTree);
+                    //preTree = taskTree;
+////////////////////////////////////////////////////////////////////////////
                     var root = taskTree.Nodes.FirstOrDefault(y => p[..9] == y.Value);
                     if (root == null)
                     {
@@ -219,7 +233,7 @@ namespace Lieferliste_WPF.ViewModels
                         root.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
                     }
                     while (taskTree.level > 0)
-                        taskTree.End();                  
+                        taskTree.End();
                 }
                 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
@@ -231,17 +245,18 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool FilterPredicatePsp(object obj)
         {
-            var psp = (TreeNode<string>)obj;
+            //var psp = (TreeNode<string>)obj;
 
-            bool accepted = psp.Value.Contains(_projectSearchText, StringComparison.CurrentCultureIgnoreCase);
-            if (psp.Children != null && _projectSearchText != string.Empty)
-            {
-                foreach (var tree in psp.Children)
-                {
-                    accepted = tree.Value.Contains(_projectSearchText, StringComparison.CurrentCultureIgnoreCase);
-                }
-            }
-            return accepted;
+            //bool accepted = psp.Value.Contains(_projectSearchText, StringComparison.CurrentCultureIgnoreCase);
+            //if (psp.Children != null && _projectSearchText != string.Empty)
+            //{
+            //    foreach (var tree in psp.Children)
+            //    {
+            //        accepted = tree.Value.Contains(_projectSearchText, StringComparison.CurrentCultureIgnoreCase);
+            //    }
+            //}
+            //return accepted;
+            return true;
         }
 
         private bool FilterPredicateOrder(object obj)

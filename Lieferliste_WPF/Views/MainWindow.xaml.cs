@@ -101,7 +101,7 @@
 
             this.aktKW.Text = string.Format("  KW {0}  ", CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now,
                 CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday));
-    
+
         }
 
         private void UpdateTime(object? sender, ElapsedEventArgs e)
@@ -111,10 +111,15 @@
 
         private async void UpdateTimeAsync()
         {
-            await Application.Current.Dispatcher.InvokeAsync(new Action(() =>
+            if (this != null)
             {
-                myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");               
-            }));             
+
+                await this.Dispatcher.InvokeAsync(new Action(() =>
+                    {
+                        myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
+                    })); 
+            }
+
         }
     }
 }

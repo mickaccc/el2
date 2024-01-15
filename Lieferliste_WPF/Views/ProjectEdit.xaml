@@ -8,8 +8,10 @@
              xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:prism="http://prismlibrary.com/"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
+             xmlns:util="clr-namespace:El2Core.Utils;assembly=El2Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
     <UserControl.Resources>
@@ -23,11 +25,76 @@
         <BitmapImage x:Key="PSP-Type" UriSource="pack://application:,,,/Images/CircleRound32.png"/>
         <BitmapImage x:Key="Order-Type" UriSource="pack://application:,,,/Images/OrangeCross32.png"/>
         <const:ProjectTypes x:Key="types"/>
+        <util:StringTree x:Key="st"/>
         <Style x:Key="IconImageStyleSmall" TargetType="Image">
             <Setter Property="MaxWidth" Value="16"/>
             <Setter Property="MaxHeight" Value="16"/>
             <Setter Property="Margin" Value="1"/>
         </Style>
+        
+        <!--<x:Array Type="{x:Type System:Type}" 
+                 x:Key="TreeWithString">
+            <x:Type TypeName="System:String" />
+        </x:Array>
+       
+        <util:GenericType BaseType="{x:Type TypeName=util:Tree`1}"
+                          InnerTypes="{StaticResource TreeWithString}"
+                          x:Key="TreeNode"/>-->
+
+        <HierarchicalDataTemplate x:Key="TreeViewDataTemplate"
+            DataType="{StaticResource st/Nodes}" 
+            ItemsSource="{Binding Children}">
+            <HierarchicalDataTemplate.ItemTemplate>
+                <DataTemplate>
+                    
+
+            <VirtualizingStackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <VirtualizingStackPanel.Children>
+                    <Image>
+                        <Image.Style>
+                            <Style BasedOn="{StaticResource IconImageStyleSmall}" TargetType="Image">
+                                <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=NodeType}"  Value="PSP-Type">
+                                        <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=NodeType}"  Value="Order-Type">
+                                        <Setter Property="Source" Value="{Binding Source={StaticResource Order-Type}, Mode=OneTime}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                    <TextBlock Text="{Binding Path=Value}" Margin="3,0,30,0" MouseLeftButtonDown="pspTree_MouseLeftButtonDown"/>
+                    <TextBox Text="{Binding Description}"
+                                         IsReadOnly="{Binding Converter={StaticResource permiss},
+                                    ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
+                                 HorizontalAlignment="Right" Background="Azure" MinWidth="40">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=NodeType}" Value="Order-Type">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="LostFocus">
+                                <i:InvokeCommandAction Command="{Binding DataContext.DescriptLostFocusCommand, ElementName=pspTree}"
+                                                                   CommandParameter="{Binding}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <ComboBox Margin="15,0,0,0"
+                                    ItemsSource="{Binding Path=ProjectType, Converter={conv:EnumToCollectionConverter}, Mode=OneTime}"
+
+                                    DisplayMemberPath="Description"/>
+                </VirtualizingStackPanel.Children>
+            </VirtualizingStackPanel>
+                </DataTemplate>
+            </HierarchicalDataTemplate.ItemTemplate>
+        </HierarchicalDataTemplate>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -82,57 +149,9 @@
                              Visibility="{Binding PspTask.IsNotCompleted, Converter={StaticResource boolVis}}"/>
                 <TextBlock Text="{Binding PspTask.ErrorMessage}" Visibility="{Binding OrdTask.IsFaulted, Converter={StaticResource boolVis}}"/>
                 <TreeView ItemsSource="{Binding PspTask.Result}" Visibility="{Binding PspTask.IsSuccessfullyCompleted, Converter={StaticResource boolVis}}"
-                          x:Name="pspTree" >
-            <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-         
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                                <StackPanel.Children>
-                                <Image>
-                                    <Image.Style>
-                                        <Style BasedOn="{StaticResource IconImageStyleSmall}" TargetType="Image">
-                                            <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Path=NodeType}"  Value="PSP-Type">
-                                                    <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Path=NodeType}"  Value="Order-Type">
-                                                    <Setter Property="Source" Value="{Binding Source={StaticResource Order-Type}, Mode=OneTime}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                                <TextBlock Text="{Binding Path=Value}" Margin="3,0,30,0" MouseLeftButtonDown="pspTree_MouseLeftButtonDown"/>
-                                <TextBox Text="{Binding Description}"
-                                         IsReadOnly="{Binding Converter={StaticResource permiss},
-                                    ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
-                                 HorizontalAlignment="Right" Background="Azure" MinWidth="40">
-                                        <TextBox.Style>
-                                            <Style TargetType="TextBox">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Path=NodeType}" Value="Order-Type">
-                                                        <Setter Property="Visibility" Value="Hidden"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBox.Style>
-                                        <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="LostFocus">
-                                            <i:InvokeCommandAction Command="{Binding DataContext.DescriptLostFocusCommand, ElementName=pspTree}"
-                                                                   CommandParameter="{Binding}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
-                                <ComboBox Margin="15,0,0,0"
-                                    ItemsSource="{Binding Path=ProjectType, Converter={conv:EnumToCollectionConverter}, Mode=OneTime}"
-
-                                    DisplayMemberPath="Description"/>
-                            </StackPanel.Children>
-                            </StackPanel>
-  
-                        </HierarchicalDataTemplate>
-            </TreeView.ItemTemplate>
+                          x:Name="pspTree" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" >
+ 
+ 
         </TreeView>
         </Grid>
         <Grid Grid.Column="1" Grid.Row="1">

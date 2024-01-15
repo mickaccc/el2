@@ -44,37 +44,7 @@ namespace El2Core.Utils
             level--;
             return this;
         }
-        public Tree<TreeNode<string>> GetPspBranch(Project project, string order, ref Tree<string> tree)
-        {
-            var root = project.ProjectPsp[..9];
-  
-            if (tree.level == 0)
-            {
-                tree.Begin(root);
-            }
 
-            var parent = tree.Nodes.Last();
-            for (int i = 12; i < project.ProjectPsp.Length; i += 3)
-            {
-  
-                var next = parent.Children.FirstOrDefault(x => x.Value == project.ProjectPsp[..i]);
-                if(next == null)
-                    {
-                        next = parent.Add(project.ProjectPsp[..i]);
-                    }
-                parent = next;
-                if(project.ProjectPsp.Length == i)
-                {
-                    parent.Description = project.ProjectInfo ??= string.Empty;
-                    parent.ProjectType = (ProjectType) project.ProjectType;
-                    parent.Add(order);
-                }
- 
-            }
-            
-            while (tree.level > 0) {tree.End(); } // close all
-            return null;
-        }
     }
 
     public class TreeNode<T>
@@ -116,5 +86,48 @@ namespace El2Core.Utils
             Children.Add(node);
             return node;
         }
+    }
+    public static class TreeHelper
+    {
+        public static bool TryBuildPspTree(Project project, ref Tree<string> tree)
+        {
+            var psp = project.ProjectPsp.Trim();
+            var root = psp[..9];
+            var parent = tree.Nodes.FirstOrDefault(x => x.Value == root);
+            if (parent == null)
+            {
+                tree.Begin(root);
+                parent = tree.Nodes.Last();
+            }
+
+
+            for (int i = 9; i <= psp.Length; i += 3)
+            {
+                var next = parent.Children.FirstOrDefault(x => x.Value == psp[..i]);
+                if (next == null && parent.Value != root)
+                {
+                    next = parent.Add(psp[..i]);
+                }
+                if (next != null) parent = next;
+                if (psp.Length == i)
+                {
+                    parent.Description = project.ProjectInfo ??= string.Empty;
+                    parent.ProjectType = (ProjectType)project.ProjectType;
+
+                    foreach (var o in project.OrderRbs)
+                    {
+                        parent.Children.Add(new TreeNode<string>(o.Aid, parent));
+                    }
+                }
+
+            }
+
+            while (tree.level > 0) { tree.End(); } // close all
+            return true;
+        }
+        
+    }
+    public class StringTree : Tree<string>
+    {
     }
 }
