@@ -63,7 +63,6 @@ namespace ModuleDeliverList.ViewModels
         private static List<Ressource> _ressources = [];
         private static SortedDictionary<int, string> _sections = [];
         public SortedDictionary<int, string> Sections => _sections;
-        public List<MenuItem> AttachedMenuItems { get; private set; }
         private static List<string> _projects = new();
         public static List<string> Projects => _projects;
         private bool _filterInvers;
@@ -197,18 +196,6 @@ namespace ModuleDeliverList.ViewModels
             _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
 
             if (_settingsService.IsAutoSave) SetAutoSave();
-
-            var menu = new MenuItem();
-            menu.Header = "Vorgang ein/ausblenden";
-            menu.Command = InvisibilityCommand;
-            var b = new Binding();
-            b.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ContextMenu), 1);
-            var path = new PropertyPath(ContextMenu.PlacementTargetProperty);
-            path.Path = "PlacementTarget";
-            b.Path = path;
-            //menu.SetValue(MenuItem.CommandParameterProperty, b);
-            BindingOperations.SetBinding(menu, MenuItem.CommandParameterProperty, b);
-            AttachedMenuItems = [menu];
 
         }
 

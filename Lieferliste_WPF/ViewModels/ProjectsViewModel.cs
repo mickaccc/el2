@@ -82,9 +82,9 @@ namespace Lieferliste_WPF.ViewModels
             var pro = await _dbctx.Projects
                 .Include(x => x.OrderRbs)
                 .ThenInclude(x => x.MaterialNavigation)
-                .FirstAsync(x => x.Project1 == projectNo);
+                .FirstAsync(x => x.ProjectPsp == projectNo);
                 
-            this.WbsElement = pro.Project1.Trim() ?? "NULL";
+            this.WbsElement = pro.ProjectPsp.Trim() ?? "NULL";
             this.WbsInfo = pro.ProjectInfo?.Trim() ?? string.Empty;
 
             _orderRbs = new List<OrderRb>(pro.OrderRbs.ToList());

@@ -1,4 +1,5 @@
 ﻿using El2Core.Constants;
+using El2Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,12 +44,42 @@ namespace El2Core.Utils
             level--;
             return this;
         }
+        public Tree<TreeNode<string>> GetPspBranch(Project project, string order, ref Tree<string> tree)
+        {
+            var root = project.ProjectPsp[..9];
+  
+            if (tree.level == 0)
+            {
+                tree.Begin(root);
+            }
+
+            var parent = tree.Nodes.Last();
+            for (int i = 12; i < project.ProjectPsp.Length; i += 3)
+            {
+  
+                var next = parent.Children.FirstOrDefault(x => x.Value == project.ProjectPsp[..i]);
+                if(next == null)
+                    {
+                        next = parent.Add(project.ProjectPsp[..i]);
+                    }
+                parent = next;
+                if(project.ProjectPsp.Length == i)
+                {
+                    parent.Description = project.ProjectInfo ??= string.Empty;
+                    parent.ProjectType = (ProjectType) project.ProjectType;
+                    parent.Add(order);
+                }
+ 
+            }
+            
+            while (tree.level > 0) {tree.End(); } // close all
+            return null;
+        }
     }
 
     public class TreeNode<T>
     {
         private string _description = string.Empty;
-
         public string Description
         {
             get { return _description; }

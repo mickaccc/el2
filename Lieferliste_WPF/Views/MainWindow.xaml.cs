@@ -1,11 +1,12 @@
 ﻿namespace Lieferliste_WPF.Views
 {
-    using El2Core.Converters;
-    using SharpCompress.Common;
+    using El2Core.Utils;
     using System;
     using System.Globalization;
     using System.Runtime.Versioning;
-    using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Timers;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -18,8 +19,8 @@
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        [SupportedOSPlatform("windows7.0")]
+        private System.Timers.Timer _timer;
+        [SupportedOSPlatform("windows10.0")]
         public MainWindow()
         {
             InitializeComponent();
@@ -93,14 +94,27 @@
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            DispatcherTimer timer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Normal, (object s, EventArgs ev) =>
-            {
-                this.myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
-            }, this.Dispatcher);
-            timer.Start();
+            _timer = new System.Timers.Timer(1000);
+            _timer.Elapsed += UpdateTime;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+
             this.aktKW.Text = string.Format("  KW {0}  ", CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now,
                 CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday));
     
+        }
+
+        private void UpdateTime(object? sender, ElapsedEventArgs e)
+        {
+            UpdateTimeAsync();
+        }
+
+        private async void UpdateTimeAsync()
+        {
+            await Application.Current.Dispatcher.InvokeAsync(new Action(() =>
+            {
+                myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");               
+            }));             
         }
     }
 }

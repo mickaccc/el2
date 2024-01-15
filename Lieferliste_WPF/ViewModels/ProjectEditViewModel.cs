@@ -75,10 +75,10 @@ namespace Lieferliste_WPF.ViewModels
             if (!string.IsNullOrEmpty(tree.Description))
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var pinfo = db.Projects.First(x => x.Project1 == tree.Value).ProjectInfo;
+                var pinfo = db.Projects.First(x => x.ProjectPsp == tree.Value).ProjectInfo;
                 if (pinfo != tree.Description)
                 {
-                    db.Projects.First(x => x.Project1 == tree.Value).ProjectInfo = tree.Description;
+                    db.Projects.First(x => x.ProjectPsp == tree.Value).ProjectInfo = tree.Description;
                     db.SaveChanges();
                 }
             }
@@ -155,7 +155,7 @@ namespace Lieferliste_WPF.ViewModels
                 root = pre;
             }
 
-            if (db.Projects.All(x => x.Project1 != psp)) db.Database.ExecuteSqlRaw("INSERT INTO DBO.Project(Project) VALUES({0})", psp);
+            if (db.Projects.All(x => x.ProjectPsp != psp)) db.Database.ExecuteSqlRaw("INSERT INTO DBO.Project(Project) VALUES({0})", psp);
 
             db.OrderRbs.First(x => x.Aid == aid).ProId = psp;
             db.SaveChanges();
@@ -184,9 +184,9 @@ namespace Lieferliste_WPF.ViewModels
             await Task.Factory.StartNew(() =>
             {
                                
-                foreach (var item in proj.OrderBy(x => x.Project1))
+                foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
-                    var p = item.Project1.Trim();
+                    var p = item.ProjectPsp.Trim();
 
                     var root = taskTree.Nodes.FirstOrDefault(y => p[..9] == y.Value);
                     if (root == null)
@@ -205,7 +205,7 @@ namespace Lieferliste_WPF.ViewModels
 
                         root = pre;
                     }
-                    if (item.Project1.Trim().Length == p.Length)
+                    if (item.ProjectPsp.Trim().Length == p.Length)
                     {
                         foreach (var o in item.OrderRbs)
                         {

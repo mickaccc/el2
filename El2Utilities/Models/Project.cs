@@ -7,17 +7,15 @@ namespace El2Core.Models;
 
 public partial class Project
 {
-    public string Project1 { get; set; } = null!;
+    public string ProjectPsp { get; set; } = null!;
+
+    public int ProjectType { get; set; }
 
     public string? ProjectInfo { get; set; }
 
     public string? ProjectColor { get; set; }
 
-    public int ProjectType { get; set; }
-
-    public bool Develop { get; set; }
-
-    public bool Sale { get; set; }
+    public DateTime? Timestamp { get; set; }
 
     public virtual ICollection<OrderRb> OrderRbs { get; set; } = new List<OrderRb>();
 }

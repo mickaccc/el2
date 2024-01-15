@@ -115,7 +115,7 @@
                           HorizontalContentAlignment="Stretch" Tag="{Binding Path=ItemTemplate, RelativeSource={RelativeSource self}}"
              >
 
-            <!--<ListBox.ContextMenu>
+            <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Vorgang aus-/einblenden"
                              Command="{Binding InvisibilityCommand}"
@@ -125,7 +125,7 @@
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
 
                 </ContextMenu>
-            </ListBox.ContextMenu>-->
+            </ListBox.ContextMenu>
         <ListBox.ItemTemplate>
             <DataTemplate>
                 <userControls:LieferlisteControl x:Name="ucLiefer"
