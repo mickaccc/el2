@@ -31,9 +31,11 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand ProjectSearchCommand => _projectSearchCommand ??= new RelayCommand(OnProjectSearch);
         public ICommand ConcatCommand { get; private set; }
         public ICommand DescriptLostFocusCommand { get; private set; }
+        public ICommand ProjectTypeCommand { get; private set; }
         private ObservableCollection<OrderRb> _ordersList = [];
         public ICollectionView OrdersCollectionView { get; private set; }
         private Tree<string> tree;
+        private PspTree PspTree;
         public ICollectionView PSP_NodeCollectionView { get; private set; }
         private List<Tree<string>> treeList = new();
         private string _orderSearchText = string.Empty;
@@ -47,9 +49,16 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     _projectSearchText = value;
                     NotifyPropertyChanged(() => ProjectSearchText);
+                    NotifyPropertyChanged(() => IsExpanded);
                 }
             }
         }
+
+        public bool IsExpanded
+        {
+            get { return _projectSearchText.Length >= 5; }
+        }
+
         private static readonly object _lock = new();
 
         public NotifyTaskCompletion<ICollectionView>? OrdTask { get; private set; }
@@ -61,8 +70,24 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands = applicationCommands;
             ConcatCommand = new ActionCommand(OnConcatExecuted, OnConcatCanExecute);
             DescriptLostFocusCommand = new ActionCommand(OnDescriptLostFocusExecuted, OnDescriptLostFocusCanExecute);
+            ProjectTypeCommand = new ActionCommand(OnProjectTypeExecuted, OnProjectTypeCanExecute);
             OrdTask = new NotifyTaskCompletion<ICollectionView>(LoadOrderDataAsync());
             PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync());
+        }
+
+        private bool OnProjectTypeCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnProjectTypeExecuted(object obj)
+        {
+            if(obj is TreeNode<string> node)
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                db.Projects.Single(x => x.ProjectPsp == node.Value).ProjectType = (int)node.ProjectType;
+                db.SaveChangesAsync();
+            }
         }
 
         private bool OnDescriptLostFocusCanExecute(object arg)
@@ -136,7 +161,6 @@ namespace Lieferliste_WPF.ViewModels
             if (root == null)
             {
                 var t = tree.Begin(psp[..9]);
-                t.End();
                 root = t.Nodes.Last();
             }
             for (int i = 12; i <= psp.Length; i += 3)
@@ -146,17 +170,20 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     pre = root.Add(psp[..i]);
                 }
-                if (i == psp.Length)
-                {
-                    if (pre.Children.All(x => x.Value != aid))
-                    {
-                        pre.Add(aid);
-                    }
-                }
+
+ 
                 root = pre;
             }
+            if (root.Value.Length == psp.Length)
+            {
+                if (root.Children.All(x => x.Value != aid))
+                {
+                    root.Add(aid);
+                }
+            }
+            while (tree.level > 0) { tree.End(); }
 
-            if (db.Projects.All(x => x.ProjectPsp != psp)) db.Database.ExecuteSqlRaw("INSERT INTO DBO.Project(Project) VALUES({0})", psp);
+            if (db.Projects.All(x => x.ProjectPsp != psp)) db.Database.ExecuteSqlRaw("INSERT INTO DBO.Project(ProjectPsp) VALUES({0})", psp);
 
             db.OrderRbs.First(x => x.Aid == aid).ProId = psp;
             db.SaveChanges();
@@ -183,6 +210,7 @@ namespace Lieferliste_WPF.ViewModels
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
 
             Tree<string> taskTree = new();
+            PspTree pspTree = new PspTree();
             await Task.Factory.StartNew(() =>
             {
                 Tree<string> preTree = new();
@@ -190,18 +218,7 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
                     var p = item.ProjectPsp.Trim();
-                    //if (preTree.Nodes.Any(x => p.Contains(x.Value)))
-                    //{
-                    //    taskTree = preTree;
-                    //}
-                    //else
-                    //{
-                    //    taskTree = new();
-                    //    treeList.Add(taskTree);
-                    //}                  
-                    //TreeHelper.TryBuildPspTree(item, ref taskTree);
-                    //preTree = taskTree;
-////////////////////////////////////////////////////////////////////////////
+ 
                     var root = taskTree.Nodes.FirstOrDefault(y => p[..9] == y.Value);
                     if (root == null)
                     {
@@ -230,7 +247,7 @@ namespace Lieferliste_WPF.ViewModels
                             }
                         }
                         root.Description = item.ProjectInfo ?? string.Empty;
-                        root.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
+                        root.ProjectType = (ProjectTypes.ProjectType) item.ProjectType;
                     }
                     while (taskTree.level > 0)
                         taskTree.End();
@@ -238,6 +255,7 @@ namespace Lieferliste_WPF.ViewModels
                 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
             tree = taskTree;
+            PspTree = pspTree;
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(tree.Nodes);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;
@@ -245,18 +263,23 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool FilterPredicatePsp(object obj)
         {
-            //var psp = (TreeNode<string>)obj;
+            var psp = (TreeNode<string>)obj;
+            var search = ClearPsp(_projectSearchText);
 
-            //bool accepted = psp.Value.Contains(_projectSearchText, StringComparison.CurrentCultureIgnoreCase);
-            //if (psp.Children != null && _projectSearchText != string.Empty)
-            //{
-            //    foreach (var tree in psp.Children)
-            //    {
-            //        accepted = tree.Value.Contains(_projectSearchText, StringComparison.CurrentCultureIgnoreCase);
-            //    }
-            //}
-            //return accepted;
-            return true;
+            bool accepted = ClearPsp(psp.Value).Contains(search, StringComparison.CurrentCultureIgnoreCase);
+            if (!accepted)
+            {
+                if (psp.Children != null && search != string.Empty)
+                {
+                    foreach (var tree in psp.Children)
+                    {
+                        accepted = ClearPsp(tree.Value).Contains(search, StringComparison.CurrentCultureIgnoreCase);
+                        if (accepted) break;
+                    }
+                }
+            }
+            return accepted;
+            
         }
 
         private bool FilterPredicateOrder(object obj)

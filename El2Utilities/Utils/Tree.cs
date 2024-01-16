@@ -44,7 +44,6 @@ namespace El2Core.Utils
             level--;
             return this;
         }
-
     }
 
     public class TreeNode<T>
@@ -55,12 +54,13 @@ namespace El2Core.Utils
             get { return _description; }
             set { _description = value; }
         }
-        private ProjectType _projectType = ProjectType.None;
+        private ProjectType _projectType = 0;
         public ProjectType ProjectType
         {
             get { return _projectType; }
             set { _projectType = value; }
         }
+        public bool HasOrder { get { return Children.Any(x => x.NodeType == "Order-Type"); } }
         public string NodeType { get; }
         public T Value { get; }
 
@@ -127,7 +127,119 @@ namespace El2Core.Utils
         }
         
     }
-    public class StringTree : Tree<string>
+    public class PspTree
     {
+        private Stack<BranchNode> m_Stack = new Stack<BranchNode>();
+        public int level = 0;
+        public HashSet<BranchNode> Nodes { get; } = new HashSet<BranchNode>();
+
+        public PspTree Begin(Project val, string? order)
+        {
+            if (m_Stack.Count == 0)
+            {
+                var node = new BranchNode(val, null);
+                Nodes.Add(node);
+                m_Stack.Push(node);
+            }
+            else
+            {
+                var node = m_Stack.Peek().Add(val, order);
+                m_Stack.Push(node);
+            }
+            level++;
+            return this;
+        }
+
+        public PspTree Add(Project pro, string? order)
+        {
+            m_Stack.Peek().Add(pro, order);
+            return this;
+        }
+
+        public PspTree End()
+        {
+            m_Stack.Pop();
+            level--;
+            return this;
+        }
     }
+    public class BranchNode
+    {
+        private string _description = string.Empty;
+        public string Description
+        {
+            get { return _description; }
+            set { _description = value; }
+        }
+        private ProjectType _projectType = ProjectType.None;
+        public ProjectType ProjectType
+        {
+            get { return _projectType; }
+            set { _projectType = value; }
+        }
+        public string Value { get; set; }
+        public string NodeType { get; }
+        public BranchNode Parent { get; }
+        public List<BranchNode> Children { get; }
+        public BranchNode() { Value = "test"; }
+        public BranchNode(Project project, string? order)
+        {
+            Value = project.ProjectPsp;
+            _description = project.ProjectInfo ??= string.Empty;
+            _projectType = (ProjectType)project.ProjectType;
+            Parent = this;
+            Children = new List<BranchNode>();
+            
+            if (project.ProjectPsp is string s)
+            {
+                NodeType = s.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? "PSP-Type" : "Order-Type";
+            }
+            else NodeType = "invalid";
+        }
+ 
+        public BranchNode Add(Project project, string? order)
+        {
+            var node = new BranchNode(project, order);
+            Children.Add(node);
+            return node;
+        }
+        public static bool TryBuildPspBranch(Project project, ref PspTree tree)
+        {
+            var psp = project.ProjectPsp.Trim();
+            var root = psp[..9];
+            var parent = tree.Nodes.FirstOrDefault(x => x.Value == root);
+            if (parent == null)
+            {
+                var pro = new Project() { ProjectPsp = root };             
+                tree.Begin(pro, null);
+                parent = tree.Nodes.Last();
+            }
+
+            for (int i = 9; i <= psp.Length; i += 3)
+            {
+                var next = parent.Children.FirstOrDefault(x => x.Value == psp[..i]);
+                if (next == null && parent.Value != root)
+                {
+                    var pro = new Project() { ProjectPsp = psp[..i] };
+                    next = parent.Add(pro, null);
+                }
+                if (next != null) parent = next;
+                if (psp.Length == i)
+                {
+                    parent.Description = project.ProjectInfo ??= string.Empty;
+                    parent.ProjectType = (ProjectType)project.ProjectType;
+
+                    foreach (var o in project.OrderRbs)
+                    {
+                        parent.Children.Add(new BranchNode(project, o.Aid));
+                    }
+                }
+
+            }
+
+            while (tree.level > 0) { tree.End(); } // close all
+            return true;
+        }
+    }
+
 }

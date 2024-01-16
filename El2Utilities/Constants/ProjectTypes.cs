@@ -12,11 +12,11 @@ namespace El2Core.Constants
         public enum ProjectType
         {
             [Description("ohne")]
-            None,
+            None = 0,
             [Description("Entwicklungsmuster")]
-            DevelopeSpecimen,
+            DevelopeSpecimen = 1,
             [Description("Verkaufsmuster")]
-            SaleSpecimen
+            SaleSpecimen = 2
         }
     }
 }
