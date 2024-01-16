@@ -25,6 +25,11 @@ namespace Lieferliste_WPF.ViewModels
  
         IContainerProvider _container;
         IApplicationCommands _applicationCommands;
+        public IApplicationCommands ApplicationCommands
+        {
+            get { return _applicationCommands; }
+            set { _applicationCommands = value; }
+        }
         private RelayCommand? _orderSearchCommand;
         private RelayCommand? _projectSearchCommand;
         public ICommand OrderSearchCommand => _orderSearchCommand ??= new RelayCommand(OnOrderSearch);
@@ -77,7 +82,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnProjectTypeCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectTypeChange);
         }
 
         private void OnProjectTypeExecuted(object obj)
@@ -210,7 +215,7 @@ namespace Lieferliste_WPF.ViewModels
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
 
             Tree<string> taskTree = new();
-            PspTree pspTree = new PspTree();
+
             await Task.Factory.StartNew(() =>
             {
                 Tree<string> preTree = new();
@@ -255,7 +260,6 @@ namespace Lieferliste_WPF.ViewModels
                 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
             tree = taskTree;
-            PspTree = pspTree;
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(tree.Nodes);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;

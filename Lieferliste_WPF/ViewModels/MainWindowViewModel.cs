@@ -142,15 +142,24 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenProjectOverViewExecuted(object obj)
         {
-            var para = obj as Vorgang;
-            if (para != null)
+            string param = string.Empty;
+            if (obj is Vorgang vrg)
             {
-                var pro = para.AidNavigation.ProId;
-                if (string.IsNullOrEmpty(pro)) { return; }
-                var par = new DialogParameters();
-                par.Add("projectNo", pro);
-                _dialogService.Show("Projects", par, null);
+                param = vrg.AidNavigation.ProId ??= string.Empty;
             }
+            else
+            {
+                 if(obj is string s)
+                {
+                    param = s;
+                }
+            }
+            if (param.IsNullOrEmpty()) { return; }
+
+                var par = new DialogParameters();
+                par.Add("projectNo", param);
+                _dialogService.Show("Projects", par, null);
+            
         }
 
 
@@ -243,6 +252,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
             }
+            
         }
 
         private bool OnCloseCanExecute(object arg)

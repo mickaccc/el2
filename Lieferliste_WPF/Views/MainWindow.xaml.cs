@@ -113,13 +113,17 @@
         {
             if (this != null)
             {
-
                 await this.Dispatcher.InvokeAsync(new Action(() =>
                     {
                         myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
                     })); 
             }
 
+        }
+
+        private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _timer.Dispose();
         }
     }
 }
