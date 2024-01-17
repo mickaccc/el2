@@ -287,9 +287,21 @@ namespace ModuleDeliverList.UserControls
             set { SetValue(InVisibleProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Invisible.  This enables animation, styling, binding, etc...
+        // Using a DependencyProperty as the backing store for InVisible.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty InVisibleProperty =
             DependencyProperty.Register("InVisible", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
+
+
+
+        public bool IsSelected
+        {
+            get { return (bool)GetValue(IsSelectedProperty); }
+            set { SetValue(IsSelectedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Invisible.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsSelectedProperty =
+            DependencyProperty.Register("IsSelected", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
 
 
         public bool Doku
@@ -395,10 +407,6 @@ namespace ModuleDeliverList.UserControls
 
         }
 
-        private void Modified(object sender, RoutedEventArgs e)
-        {
-
-        }
 
 
         private void TextBlock_MouseEnter(object sender, MouseEventArgs e)
@@ -432,19 +440,7 @@ namespace ModuleDeliverList.UserControls
             }
         }
 
-        private void Border_GotFocus(object sender, RoutedEventArgs e)
-        {
-            var b = sender as Border;
-            b.Background = Brushes.LightBlue;
-        }
 
-        private void Border_LostFocus(object sender, RoutedEventArgs e)
-        {
-            var b = sender as Border;
-            b.Background = Brushes.Transparent;
-        }
-
-   
     }
 
 

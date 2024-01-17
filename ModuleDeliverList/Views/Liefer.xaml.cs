@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using ModuleDeliverList.UserControls;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ModuleDeliverList.Views
@@ -14,6 +15,11 @@ namespace ModuleDeliverList.Views
             InitializeComponent();
         }
 
- 
+        private void ucLiefer_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var data = e.Source as LieferlisteControl;
+            if (data != null) 
+                Lieferlist.SelectedItem = data.DataContext;
+        }
     }
 }

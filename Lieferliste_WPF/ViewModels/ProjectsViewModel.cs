@@ -1,4 +1,5 @@
-﻿using El2Core.Models;
+﻿using CompositeCommands.Core;
+using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -24,6 +25,12 @@ namespace Lieferliste_WPF.ViewModels
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private IUserSettingsService _userSettingsService;
         private IContainerProvider _container;
+        IApplicationCommands _applicationCommands;
+        public IApplicationCommands ApplicationCommands
+        {
+            get { return _applicationCommands; }
+            set { _applicationCommands = value; }
+        }
         private NotifyTaskCompletion<ICollectionView> _projTask;
         public NotifyTaskCompletion<ICollectionView> ProjTask
         {
@@ -68,10 +75,11 @@ namespace Lieferliste_WPF.ViewModels
         public event Action<IDialogResult> RequestClose;
 
         public ICollectionView OrdersView { get; private set; }
-        public ProjectsViewModel(IContainerProvider container, IUserSettingsService userSettingsService)
+        public ProjectsViewModel(IContainerProvider container, IUserSettingsService userSettingsService, IApplicationCommands applicationCommands)
         {
             _container = container;
             _userSettingsService = userSettingsService;
+            _applicationCommands = applicationCommands; 
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
             

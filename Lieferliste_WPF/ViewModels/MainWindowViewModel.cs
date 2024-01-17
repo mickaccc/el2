@@ -199,7 +199,6 @@ namespace Lieferliste_WPF.ViewModels
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 var v = db.OrderRbs.First(x => x.Aid == (string)onr[0]);
                 v.Abgeschlossen = true;
-                v.Fertig = false;
                 foreach (var item in v.Vorgangs.Where(x => x.Visability == false))
                 {
                     item.Visability = true;
@@ -273,7 +272,6 @@ namespace Lieferliste_WPF.ViewModels
                 var vm = f.DataContext as IViewModel;
                 if (vm != null) vm.Closing();
             }
-
             _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
         }
         private static bool OnOpenOrderCanExecute(object arg)

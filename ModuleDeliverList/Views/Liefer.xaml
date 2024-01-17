@@ -12,7 +12,7 @@
     x:Name="LieferListe" Tag="{Binding Title}"
     x:Class="ModuleDeliverList.Views.Liefer"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="1400" >
+      d:DesignHeight="450" d:DesignWidth="1400">
     <UserControl.Resources>
         <conv:DateConverter x:Key="DateConverter"/>
         <conv:TTNR_Converter x:Key="Ttnr-Converter"/>
@@ -45,6 +45,25 @@
         <ItemsPanelTemplate x:Key="advancedComboxItemsPanelTemplate">
             <StackPanel Grid.IsSharedSizeScope="True" IsItemsHost="True"/>
         </ItemsPanelTemplate>
+
+        <Style x:Key="_ListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="_Border"
+                                Padding="2"
+                                SnapsToDevicePixels="true">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="_Border" Property="Background" Value="LightBlue"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -84,7 +103,7 @@
             <StackPanel Orientation="Horizontal" >
                 
                 <ComboBox x:Name="ProjComboBox" Width="250"
-                     materialDesign:HintAssist.Hint="Projekte" 
+                     materialDesign:HintAssist.Hint="Projekte" materialDesign:HintAssist.IsFloating="True" materialDesign:HintAssist.FloatingOffset="5,-15"
                      
                           ItemsSource="{Binding Projects}"                        
                           SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -100,7 +119,7 @@
                           SelectedValuePath="Value"  />
                 <ComboBox x:Name="FilterComboBox" 
                           Background="{Binding FilterInvers, Converter={StaticResource boolalert}}"
-                    materialDesign:HintAssist.Hint="Filters"                    
+                    materialDesign:HintAssist.Hint="Filters" materialDesign:HintAssist.IsFloating="True" materialDesign:HintAssist.FloatingOffset="5,-15"                   
                     ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
                          SelectedValue="{Binding Path=SelectedDefaultFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          DisplayMemberPath="Description"
@@ -133,7 +152,7 @@
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                           ItemsSource="{Binding OrderTask.Result}"
                           HorizontalContentAlignment="Stretch" Tag="{Binding Path=ItemTemplate, RelativeSource={RelativeSource self}}"
-             >
+             IsSynchronizedWithCurrentItem="True" ItemContainerStyle="{StaticResource _ListBoxItemStyle}" >
 
             <ListBox.ContextMenu>
                 <ContextMenu>
@@ -146,9 +165,9 @@
 
                 </ContextMenu>
             </ListBox.ContextMenu>
-        <ListBox.ItemTemplate>
-            <DataTemplate>
-                    <userControls:LieferlisteControl x:Name="ucLiefer"
+            <ListBox.ItemTemplate>
+                <DataTemplate >
+                    <userControls:LieferlisteControl x:Name="ucLiefer" GotFocus="ucLiefer_GotFocus" 
                             Aid="{Binding Aid}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
                             TTNR="{Binding AidNavigation.Material}"
@@ -169,10 +188,9 @@
                             Comment_Me="{Binding BemM, Mode=TwoWay,NotifyOnTargetUpdated=True}"
                             Comment_Te="{Binding BemT, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                             Comment_Ma="{Binding BemMa, Mode=TwoWay,NotifyOnTargetUpdated=True}"
-                            InVisible="{Binding Visability, Converter={StaticResource boolInvert}}"
-                            Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
-                            Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}"
-                            SelectedValue="{Binding Path=DataContext.HasMouse, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType=ListBox}}">
+                            Visibility="{Binding Visability, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
+                            Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}" >
                     </userControls:LieferlisteControl>
             </DataTemplate>
         </ListBox.ItemTemplate>

@@ -67,9 +67,9 @@
             <Setter Property="Padding" Value="1"/>
         </Style>
 
-
+ 
     </UserControl.Resources>
-    <Border Focusable="True" GotFocus="Border_GotFocus" LostFocus="Border_LostFocus" >
+    <Border Focusable="True" >
         <StackPanel  x:Name="Liefer"  Background="Transparent" >
 
         <Grid >
@@ -205,7 +205,7 @@
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding Aid, ElementName=luc}" />
             <DockPanel Grid.Column="8" Grid.Row="2" Background="YellowGreen" >
-                <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" Click="Modified" 
+                <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" 
                       IsChecked="{Binding Doku, ElementName=luc}"/>
             </DockPanel>
         </Grid>
