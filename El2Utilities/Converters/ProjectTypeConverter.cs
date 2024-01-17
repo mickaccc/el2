@@ -1,4 +1,5 @@
-﻿using System;
+﻿using El2Core.Utils;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,19 +14,16 @@ namespace El2Core.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is int)
+            if(value is Enum v)
             {
-                return (ProjectType)value;
+                return EnumHelper.Description(v);
             }
             return value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is ProjectType p)
-                return ((int)p);
-
-            return 0;
+            throw new NotImplementedException();
         }
     }
 }

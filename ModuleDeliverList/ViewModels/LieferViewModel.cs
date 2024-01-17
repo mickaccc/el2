@@ -63,8 +63,20 @@ namespace ModuleDeliverList.ViewModels
         private static List<Ressource> _ressources = [];
         private static SortedDictionary<int, string> _sections = [];
         public SortedDictionary<int, string> Sections => _sections;
-        private static List<string> _projects = new();
-        public static List<string> Projects => _projects;
+        private SortedSet<ProjectStruct> _projects = new();
+        public SortedSet<ProjectStruct> Projects
+        {
+            get {  return _projects; }
+            set
+            {
+                if(_projects != value)
+                {
+                    _projects = value;
+                    NotifyPropertyChanged(() => Projects);
+                }
+            }
+        }
+
         private bool _filterInvers;
 
         public bool FilterInvers
@@ -243,12 +255,23 @@ namespace ModuleDeliverList.ViewModels
         }
         private void MessageOrderArchivated(OrderRb rb)
         {
-            var o = _orders.FirstOrDefault(x => x.Aid == rb.Aid);
-            if (o != null)
+            try
             {
-                o.AidNavigation.Abgeschlossen = rb.Abgeschlossen;
-                DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
-                OrdersView.Refresh();
+                lock (_lock)
+                {
+                    var o = _orders.FirstOrDefault(x => x.Aid == rb.Aid);
+                    if (o != null)
+                    {
+                        o.AidNavigation.Abgeschlossen = rb.Abgeschlossen;
+                        o.AidNavigation.Fertig = rb.Fertig;
+                        DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
+                        OrdersView.Refresh();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "MsgReceivedArchivated", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void MessageOrderReceived(List<string?> rb)
@@ -259,7 +282,6 @@ namespace ModuleDeliverList.ViewModels
                 {
                     lock (_lock)
                     {
-
                         foreach (string rbId in rb.Where(x => x != null))
                         {
                             var o = _orders.FirstOrDefault(x => x.Aid == rbId);
@@ -272,15 +294,12 @@ namespace ModuleDeliverList.ViewModels
                                 DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).Reload();                              
                                 o.RunPropertyChanged();
                             }
-
                         }
                     }
-                });
-                
+                });             
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteOrder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -331,8 +350,10 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.START)
                 accepted = (ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false) == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = ord.Aid.StartsWith("VM") == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = ord.Aid.StartsWith("EM") == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = (ord.AidNavigation.Pro?.ProjectType ==
+                    (int)ProjectTypes.ProjectType.SaleSpecimen) == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = (ord.AidNavigation.Pro?.ProjectType ==
+                    (int)ProjectTypes.ProjectType.DevelopeSpecimen) == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.EXERTN) accepted = (ord.ArbPlSap == "_EXTERN_") == !FilterInvers;
 
             if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
@@ -462,7 +483,8 @@ namespace ModuleDeliverList.ViewModels
 
         public async Task<ICollectionView> LoadDataAsync()
         {
-            _projects.Add(string.Empty);
+            //_projects.Add(new Project() { ProjectPsp = "leer"});
+            Projects.Add(new());
             _sections.Add(0, string.Empty);
             var a = await DBctx.OrderRbs
                .Include(v => v.Vorgangs)
@@ -483,8 +505,7 @@ namespace ModuleDeliverList.ViewModels
 
                 lock (_lock)
                 {
-
-                    HashSet<string> proj = new();
+                    SortedDictionary<string, ProjectTypes.ProjectType> proj = new();
                     HashSet<Vorgang> ol = new();
                     foreach (var v in a)
                     {
@@ -508,9 +529,12 @@ namespace ModuleDeliverList.ViewModels
 
                             foreach (var x in ol.Where(x => x.AidNavigation.ProId != null))
                             {
-                                var p = x.AidNavigation.ProId;
+                                var p = x.AidNavigation.Pro;
                                 if (p != null)
-                                    proj.Add(p);
+                                    //if(proj.ContainsKey(p.ProjectPsp) == false)
+                                    //    proj.Add(p.ProjectPsp, (ProjectTypes.ProjectType)p.ProjectType);
+                                    
+                                    Projects.Add(new(p.ProjectPsp, (ProjectTypes.ProjectType) p.ProjectType));
                             }
 
                             foreach (var r in ol.Where(x => x.Aktuell))
@@ -526,10 +550,8 @@ namespace ModuleDeliverList.ViewModels
                             }
                         }
                     }
-                    _projects.AddRange(proj.Order());
-
+                    //_projects = proj;
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
- 
                 }
             });
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
@@ -538,8 +560,7 @@ namespace ModuleDeliverList.ViewModels
             if (live != null)
             {
                 if (live.CanChangeLiveFiltering)
-                {
-                    
+                {                  
                     live.LiveFilteringProperties.Add("Aktuell");
                     live.LiveFilteringProperties.Add("AidNavigation.Abgeschlossen");
                     live.IsLiveFiltering = true;
@@ -564,6 +585,27 @@ namespace ModuleDeliverList.ViewModels
                 }
                 else DBctx.SaveChanges();
             }
+        }
+    }
+    public class ProjectStruct : IComparable
+    {
+        public string ProjectPsp { get; } = string.Empty; 
+        public ProjectTypes.ProjectType ProjectType { get; } = ProjectTypes.ProjectType.None;
+
+        public ProjectStruct() { }
+        public ProjectStruct(string ProjectPsp, ProjectTypes.ProjectType ProjectType)
+        {
+            this.ProjectPsp = ProjectPsp;
+            this.ProjectType = ProjectType;
+        }
+        public int CompareTo(object? obj)
+        {
+            if (obj == null) return 1;
+            ProjectStruct? otherProjectStruct = obj as ProjectStruct;
+            if (otherProjectStruct != null)
+                return this.ProjectPsp.CompareTo(otherProjectStruct.ProjectPsp);
+            else
+                throw new ArgumentException("Object is not a ProjectStruct");
         }
     }
 }

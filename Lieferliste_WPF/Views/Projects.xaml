@@ -28,6 +28,13 @@
         <TextBlock Grid.Row="1" Text="{Binding ProjTask.ErrorMessage}"
                    Visibility="{Binding ProjTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <DataGrid Grid.Row="1" ItemsSource="{Binding ProjTask.Result}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Auftrag öffnen"
+                              Command="{Binding ApplicationCommands.OpenOrderCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem.Aid}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Setter Property="Background" >

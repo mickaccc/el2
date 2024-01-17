@@ -22,12 +22,29 @@
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <conv:AlertColorConverter x:Key="boolalert" AlertColor="Red"/>
         <conv:BooleanInverter x:Key="boolInvert"/>
+        <conv:ProjectTypeConverter x:Key="proType"/>
         
         <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}">
             <Setter Property="Width" Value="200"/>
             <Setter Property="Padding" Value="8"/>
         </Style>
 
+        <DataTemplate x:Key="advancedComboxItemDataTemplate">
+            <Grid Width="Auto">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding ProjectPsp}"  Grid.Column="0" TextAlignment="Left"/>
+                <TextBlock Text="{Binding ProjectType, Converter={StaticResource proType}}"
+                           Margin="5,0,5,0" Grid.Column="1" TextAlignment="Left" Background="Moccasin"/>
+
+            </Grid>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="advancedComboxItemsPanelTemplate">
+            <StackPanel Grid.IsSharedSizeScope="True" IsItemsHost="True"/>
+        </ItemsPanelTemplate>
     </UserControl.Resources>
 
     <Grid>
@@ -66,11 +83,14 @@
             materialDesign:HintAssist.FloatingOffset="1,-10">
             <StackPanel Orientation="Horizontal" >
                 
-                <ComboBox x:Name="ProjComboBox"
+                <ComboBox x:Name="ProjComboBox" Width="250"
                      materialDesign:HintAssist.Hint="Projekte" 
                      
                           ItemsSource="{Binding Projects}"                        
-                          SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                          SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedValuePath="ProjectPsp"
+                          ItemTemplate="{StaticResource advancedComboxItemDataTemplate}"
+                          ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
 
                 <ComboBox x:Name="SectionComboBox" 
                       materialDesign:HintAssist.Hint="Bereiche"
@@ -128,7 +148,7 @@
             </ListBox.ContextMenu>
         <ListBox.ItemTemplate>
             <DataTemplate>
-                <userControls:LieferlisteControl x:Name="ucLiefer"
+                    <userControls:LieferlisteControl x:Name="ucLiefer"
                             Aid="{Binding Aid}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
                             TTNR="{Binding AidNavigation.Material}"
@@ -153,9 +173,7 @@
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}"
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}"
                             SelectedValue="{Binding Path=DataContext.HasMouse, Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType=ListBox}}">
-                     
-
-                </userControls:LieferlisteControl>
+                    </userControls:LieferlisteControl>
             </DataTemplate>
         </ListBox.ItemTemplate>
     </ListBox>

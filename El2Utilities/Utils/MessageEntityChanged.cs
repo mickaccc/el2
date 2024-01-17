@@ -11,4 +11,5 @@ namespace El2Core.Utils
     { }
     public class MessageOrderArchivated : PubSubEvent<OrderRb>
     { }
+   
 }
