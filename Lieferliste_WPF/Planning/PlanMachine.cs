@@ -199,8 +199,8 @@ namespace Lieferliste_WPF.Planning
                     {
 
                         _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
-
                         pr.RunPropertyChanged();
+
                     }
                 }
             }

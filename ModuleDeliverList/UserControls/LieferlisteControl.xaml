@@ -42,6 +42,7 @@
           Duration="0:0:1"
           Storyboard.TargetProperty="FontSize"  />
         </Storyboard>
+        
         <Style TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource MaterialDesignTextBlock}">
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="FontFamily" Value="Calibri" />
@@ -52,11 +53,22 @@
             <Setter Property="Margin" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <!--<Setter Property="ContextMenu" Value="{StaticResource DefaultContextMenu}"/>-->
+
             <EventSetter Event="UIElement.MouseEnter" Handler="TextBlock_MouseEnter"/>
             <EventSetter Event="UIElement.MouseLeave" Handler="TextBlock_MouseLeave"/>
- 
+
         </Style>
+        <Style x:Key="AlertStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
+            <Style.Triggers >
+                <DataTrigger Binding="{Binding Path=PrioText.Length, ElementName=luc}" Value="0">
+                    <Setter Property="Background" Value="{DynamicResource ValueBackground}"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
+            <Setter Property="Background" Value="Red"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="MinWidth" Value="20"/>
@@ -114,7 +126,7 @@
 
             <Controls:SelectableTextBlock  x:Name="txtWorkArea" 
                      Text="{Binding WorkArea, ElementName=luc}" Grid.Row="1" Grid.Column="2"  />
-            <Controls:SelectableTextBlock Grid.Column="5" x:Name="txtOrder"
+            <Controls:SelectableTextBlock Grid.Column="5" x:Name="txtOrder" Style="{StaticResource AlertStyle}"
                            Text="{Binding Aid, ElementName=luc}" ToolTip="Auftragsnummer" Grid.ColumnSpan="2" />
             <Controls:SelectableTextBlock Grid.Column="3" Grid.Row="1" x:Name="txtVnr"  ToolTip="Vorgangsnummer" 
                      Text="{Binding Vnr, ElementName=luc, StringFormat=\{0:D4\}}" />
@@ -182,11 +194,12 @@
             <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"/>
-            <Canvas x:Name="prio" Grid.Row="2" Grid.Column="7" >
-                <CheckBox  x:Name="isHighPrio" IsChecked="{Binding Prio, ElementName=luc, Mode=TwoWay}"  />
-                <TextBox  x:Name="CommentHighPrio" Canvas.Left="20"  ToolTip="Priotext" Width="80" 
+                <Canvas x:Name="prio" Grid.Row="2" Grid.Column="7" >
+                    <TextBox  x:Name="CommentHighPrio" Canvas.Left="20"  ToolTip="Priotext" Width="80" TextWrapping="Wrap"
                                Height="{Binding Path=ActualHeight, ElementName=prio}"
-                              Text="{Binding PrioText, ElementName=luc, Mode=TwoWay}" TextWrapping="Wrap"/>
+                              Text="{Binding PrioText, ElementName=luc, Mode=TwoWay}"
+                              IsReadOnly="{Binding Converter={StaticResource Permission},
+                        ConverterParameter={x:Static const:Permissions.VorgangPrioInvers}}"/>
             </Canvas>
                 <Label Grid.Column="13" Background="MistyRose" Margin="6" Padding="2" HorizontalAlignment="Center"
                        Visibility="{Binding InVisible, ElementName=luc, Converter={StaticResource BooleanToVisibilityConverter}}">ausgeblendet</Label>
@@ -207,7 +220,9 @@
                         CommandParameter="{Binding Aid, ElementName=luc}" />
             <DockPanel Grid.Column="8" Grid.Row="2" Background="YellowGreen" >
                 <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" 
-                      IsChecked="{Binding Doku, ElementName=luc}"/>
+                      IsChecked="{Binding Doku, ElementName=luc}"
+                           IsEnabled="{Binding Converter={StaticResource Permission},
+                    ConverterParameter={x:Static const:Permissions.OrderBrief}}"/>
             </DockPanel>
         </Grid>
         </StackPanel>

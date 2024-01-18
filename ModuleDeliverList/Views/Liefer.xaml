@@ -188,6 +188,7 @@
                             Comment_Me="{Binding BemM, Mode=TwoWay,NotifyOnTargetUpdated=True}"
                             Comment_Te="{Binding BemT, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                             Comment_Ma="{Binding BemMa, Mode=TwoWay,NotifyOnTargetUpdated=True}"
+                            PrioText="{Binding AidNavigation.Prio, Mode=TwoWay}"
                             Visibility="{Binding Visability, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}" >

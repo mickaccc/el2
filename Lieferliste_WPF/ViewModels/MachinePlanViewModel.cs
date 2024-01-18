@@ -98,49 +98,33 @@ namespace Lieferliste_WPF.ViewModels
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
-
+            _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             if(_settingsService.IsAutoSave) SetAutoSaveTimer();
             
         }
-        private void MessageReceived(List<Vorgang> vrgList)
+
+        private void MessageOrderReceived(List<string?> list)
         {
-            Task.Run(() =>
+            try
             {
-            foreach (var vrg in vrgList)
-            {
-                var v = _processesAll.FirstOrDefault(x => x.VorgangId == vrg.VorgangId);
-                if (v != null)
+                foreach (var item in list)
                 {
-                    if (vrg.AidNavigation == null)
+                    if (_processesAll.All(x => x.Aid != item))
                     {
-                        v.ActualEndDate = vrg.ActualEndDate;
-                        v.ActualStartDate = vrg.ActualStartDate;
-                        v.Aktuell = vrg.Aktuell;
-                        v.SysStatus = vrg.SysStatus;
-                        v.Termin = vrg.Termin;
-                        v.Text = vrg.Text;
-                        v.BemM = vrg.BemM;
-                        v.BemMa = vrg.BemMa;
-                        v.BemT = vrg.BemT;
-                        v.CommentMach = vrg.CommentMach;
-                        v.QuantityMiss = vrg.QuantityMiss;
-                        v.QuantityRework = vrg.QuantityRework;
-                        v.QuantityScrap = vrg.QuantityScrap;
-                        v.QuantityYield = vrg.QuantityYield;
-                        v.Bullet = vrg.Bullet;
+                        Task.Factory.StartNew(async () =>
+                        {
+                            await GetVorgangsAsync(item);
+                        });
+                        Priv_processes.AddRange(_processesAll.Where(x => x.Aid == item));
                     }
-                    else
-                    {
-                        v.AidNavigation.Abgeschlossen = vrg.AidNavigation.Abgeschlossen;
-                        v.AidNavigation.Dringend = vrg.AidNavigation.Dringend;
-                        v.AidNavigation.Fertig = vrg.AidNavigation.Fertig;
-                        v.AidNavigation.Mappe = vrg.AidNavigation.Mappe;
-                    }
-                    v.RunPropertyChanged();
                 }
             }
-            });
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "MessageOrderReceved MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
         private bool OnSaveCanExecute(object arg)
         {
             try
@@ -172,10 +156,9 @@ namespace Lieferliste_WPF.ViewModels
             WorkAreas.AddRange(work);
 
         }
-        private async Task<List<Vorgang>> GetVorgangsAsync()
+        private async Task<List<Vorgang>> GetVorgangsAsync(string? aid)
         {
-            if (_processesAll == null)
-            {
+
                 var query = await _DbCtx.Vorgangs
                   .Include(x => x.AidNavigation)
                   .ThenInclude(x => x.MaterialNavigation)
@@ -189,9 +172,12 @@ namespace Lieferliste_WPF.ViewModels
                     && y.Text.ToLower().Contains("starten") == false
                     && y.SysStatus.Contains("RÜCK") == false)
                   .ToListAsync();
-                  
-                _processesAll = query;
-            }
+                 
+                if(_processesAll == null)
+                    _processesAll = query;
+                else if(aid != null && query != null)
+                    _processesAll.AddRange(query.Where(x => x.Aid == aid).ToList());
+
             return _processesAll;
         }
  
@@ -216,7 +202,7 @@ namespace Lieferliste_WPF.ViewModels
             .Include(x => x.WorkArea)
             .Where(x => (x.WorkArea != null) && WorkAreas.Contains(x.WorkArea)).ToListAsync();
 
-            var proc = await GetVorgangsAsync();
+            var proc = await GetVorgangsAsync(null);
 
             await Task.Factory.StartNew(() =>
             {

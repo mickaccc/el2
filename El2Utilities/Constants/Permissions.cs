@@ -44,5 +44,9 @@
         public const string CommentTeInvers = "!COM-TE";
         public const string OpenProjectCombine = "PROJ03";
         public const string ProjectTypeChange = "PROJ04";
+        public const string VorgangPrio = "VRGPRIO";
+        public const string VorgangPrioInvers = "!VRGPRIO";
+        public const string OrderBrief = "ORDERBRIEF";
+        public const string OrderBriefInvers = "!ORDERBRIEF";
     }
 }
