@@ -10,6 +10,7 @@ using Prism.Events;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
@@ -63,13 +64,13 @@ namespace ModuleDeliverList.ViewModels
         private static List<Ressource> _ressources = [];
         private static SortedDictionary<int, string> _sections = [];
         public SortedDictionary<int, string> Sections => _sections;
-        private SortedSet<ProjectStruct> _projects = new();
-        public SortedSet<ProjectStruct> Projects
+        private ObservableCollection<ProjectStruct> _projects = new();
+        public ObservableCollection<ProjectStruct> Projects
         {
-            get {  return _projects; }
+            get { return _projects; }
             set
             {
-                if(_projects != value)
+                if (_projects != value)
                 {
                     _projects = value;
                     NotifyPropertyChanged(() => Projects);
@@ -203,7 +204,7 @@ namespace ModuleDeliverList.ViewModels
 
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
 
-            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
+            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
 
@@ -262,8 +263,11 @@ namespace ModuleDeliverList.ViewModels
                     var o = _orders.FirstOrDefault(x => x.Aid == rb.Aid);
                     if (o != null)
                     {
-                        o.AidNavigation.Abgeschlossen = rb.Abgeschlossen;
-                        o.AidNavigation.Fertig = rb.Fertig;
+
+                        if (rb.Abgeschlossen)
+                        {
+                            _orders.Remove(o);
+                        }
                         DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
                         OrdersView.Refresh();
                     }
@@ -291,19 +295,19 @@ namespace ModuleDeliverList.ViewModels
                                 {
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State = EntityState.Unchanged;
                                 }
-                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).Reload();                              
+                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).Reload();
                                 o.RunPropertyChanged();
                             }
                         }
                     }
-                });             
+                });
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteOrder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void MessageReceived(List<string?> vrgIdList)
+        private void MessageVorgangReceived(List<string?> vrgIdList)
         {
             try
             {
@@ -318,6 +322,22 @@ namespace ModuleDeliverList.ViewModels
                      {
                          DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).Reload();
                          v.RunPropertyChanged();
+                         if (v.Aktuell == false)
+                         {
+                             _orders.Remove(v);
+                             DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
+                         }
+                     }
+                     else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg).Aktuell)
+                     {
+                         var vrgAdd = DBctx.Vorgangs
+                             .Include(x => x.AidNavigation)
+                             .ThenInclude(x => x.MaterialNavigation)
+                             .Include(x => x.AidNavigation.DummyMatNavigation)
+                             .Include(x => x.RidNavigation)
+                             .First(x => x.VorgangId.Trim() == vrg);
+                         _orders.Add(vrgAdd);
+                         DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vrgAdd.VorgangId).State = EntityState.Unchanged;
                      }
                  }
              }
@@ -428,7 +448,7 @@ namespace ModuleDeliverList.ViewModels
             }
             return false;
         }
- 
+
         private void OnDescSortExecuted(object parameter)
         {
             var v = Translate();
@@ -448,7 +468,7 @@ namespace ModuleDeliverList.ViewModels
 
             if (v != string.Empty)
             {
-                
+
                 OrdersView.SortDescriptions.Clear();
                 OrdersView.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
                 OrdersView.Refresh();
@@ -484,8 +504,8 @@ namespace ModuleDeliverList.ViewModels
         public async Task<ICollectionView> LoadDataAsync()
         {
             //_projects.Add(new Project() { ProjectPsp = "leer"});
-            Projects.Add(new());
-            _sections.Add(0, string.Empty);
+
+            if (!_sections.Keys.Contains(0)) _sections.Add(0, string.Empty);
             var a = await DBctx.OrderRbs
                .Include(v => v.Vorgangs)
                .ThenInclude(r => r.RidNavigation)
@@ -499,6 +519,7 @@ namespace ModuleDeliverList.ViewModels
                 .ToArrayAsync();
             var filt = await DBctx.ProductionOrderFilters.AsNoTracking().ToArrayAsync();
             _ressources.AddRange(ress);
+            SortedSet<ProjectStruct> pl = [new(string.Empty, ProjectTypes.ProjectType.None)];
             await Task.Factory.StartNew(() =>
             {
                 HashSet<Vorgang> result = new();
@@ -507,6 +528,7 @@ namespace ModuleDeliverList.ViewModels
                 {
                     SortedDictionary<string, ProjectTypes.ProjectType> proj = new();
                     HashSet<Vorgang> ol = new();
+
                     foreach (var v in a)
                     {
                         ol.Clear();
@@ -533,8 +555,8 @@ namespace ModuleDeliverList.ViewModels
                                 if (p != null)
                                     //if(proj.ContainsKey(p.ProjectPsp) == false)
                                     //    proj.Add(p.ProjectPsp, (ProjectTypes.ProjectType)p.ProjectType);
-                                    
-                                    Projects.Add(new(p.ProjectPsp, (ProjectTypes.ProjectType) p.ProjectType));
+
+                                    pl.Add(new(p.ProjectPsp, (ProjectTypes.ProjectType)p.ProjectType));
                             }
 
                             foreach (var r in ol.Where(x => x.Aktuell))
@@ -550,17 +572,20 @@ namespace ModuleDeliverList.ViewModels
                             }
                         }
                     }
+
                     //_projects = proj;
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
                 }
             });
+            Projects.AddRange(pl);
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
             ICollectionViewLiveShaping? live = OrdersView as ICollectionViewLiveShaping;
             if (live != null)
             {
+
                 if (live.CanChangeLiveFiltering)
-                {                  
+                {
                     live.LiveFilteringProperties.Add("Aktuell");
                     live.LiveFilteringProperties.Add("AidNavigation.Abgeschlossen");
                     live.IsLiveFiltering = true;
@@ -589,8 +614,8 @@ namespace ModuleDeliverList.ViewModels
     }
     public class ProjectStruct : IComparable
     {
-        public string ProjectPsp { get; } = string.Empty; 
-        public ProjectTypes.ProjectType ProjectType { get; } = ProjectTypes.ProjectType.None;
+        public string ProjectPsp { get; }
+        public ProjectTypes.ProjectType ProjectType { get; }
 
         public ProjectStruct() { }
         public ProjectStruct(string ProjectPsp, ProjectTypes.ProjectType ProjectType)

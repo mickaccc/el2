@@ -31,6 +31,12 @@
             <Setter Property="Background" Value="LightYellow"/>
             <Setter Property="Padding" Value="2"/>
         </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -100,7 +106,13 @@
                 <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Bezeichnung" Binding="{Binding AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}"  Width="120" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach, UpdateSourceTrigger=LostFocus}"
                                     EditingElementStyle="{StaticResource CellEditStyle}"
@@ -109,7 +121,7 @@
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <GroupBox ToolTip="Bemerkung Teamleiter" 
+                            <GroupBox ToolTip="Bemerkung Teamleiter" Width="150"
                                                 Header="{Binding BemT,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}">
                                                 <TextBox Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
