@@ -138,7 +138,7 @@ namespace Lieferliste_WPF.ViewModels
                     PermissionsInter.Add(new PermissionRole()
                     {
                         Created = p.Created,
-                        PermissionKey = p.PermissionKey,                      
+                        PermissionKey = p.PermissionKey,
                         RoleKey = p.RoleKey,
                     });
 
@@ -187,7 +187,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                     dropInfo.Effects = DragDropEffects.Move;
-                } 
+                }
             }
         }
 

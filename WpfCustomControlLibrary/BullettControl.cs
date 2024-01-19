@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Runtime.CompilerServices;
 
 namespace WpfCustomControlLibrary
 {
@@ -20,7 +13,7 @@ namespace WpfCustomControlLibrary
         {
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(BullettControl),
-                new FrameworkPropertyMetadata( typeof(BullettControl) ) );
+                new FrameworkPropertyMetadata(typeof(BullettControl)));
         }
 
         private Ellipse _ellipse;
@@ -61,7 +54,7 @@ namespace WpfCustomControlLibrary
 
 
         private static void OnBulletShapeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        { 
+        {
             var bul = (BullettControl)d;
             if (bul._rectangle != null)
             {

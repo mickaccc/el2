@@ -1,13 +1,10 @@
 ﻿using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using MaterialDesignThemes.Wpf;
-using Prism.Ioc;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -28,7 +25,7 @@ namespace Lieferliste_WPF.ViewModels
         public string Title { get; } = "Einstellungen";
         public UserSettingsViewModel(IUserSettingsService settingsService)
         {
-            
+
             _settingsService = settingsService;
             var br = new BrushConverter();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
@@ -46,7 +43,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnChangeThemeExecuted(object obj)
         {
-            
+
         }
 
         private bool OnReloadCanExecute(object arg)
@@ -84,7 +81,7 @@ namespace Lieferliste_WPF.ViewModels
             get { return _settingsService.ExplorerPath; }
             set { _settingsService.ExplorerPath = value; }
         }
- 
+
         public string ExplorerRoot
         {
             get { return _settingsService.ExplorerRoot; }

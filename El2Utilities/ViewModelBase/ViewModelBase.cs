@@ -6,7 +6,7 @@
 
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
-        
+
 
         protected void OnChanged(string propertyName)
         {

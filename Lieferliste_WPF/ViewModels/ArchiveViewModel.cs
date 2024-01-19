@@ -1,27 +1,21 @@
-﻿using CompositeCommands.Core;
-using El2Core.Constants;
+﻿using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    
-    internal class ArchiveViewModel: ViewModelBase
+
+    internal class ArchiveViewModel : ViewModelBase
     {
-        IContainerExtension _container;
+        private IContainerExtension _container;
         private NotifyTaskCompletion<ICollectionView> _contentTask;
         public string Title { get; } = "Archiv";
         private string _searchValue;
@@ -79,7 +73,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private async Task<ICollectionView> LoadAsync()
         {
-            
+
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 var ord = await db.OrderRbs.AsNoTracking()
@@ -89,7 +83,7 @@ namespace Lieferliste_WPF.ViewModels
                     .ToListAsync();
                 result.AddRange(ord);
             }
-   
+
             CollectionView = CollectionViewSource.GetDefaultView(result);
             CollectionView.Filter += OnFilter;
             return CollectionView;

@@ -10,7 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -158,15 +157,15 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnCloseExecuted(object obj)
         {
- 
-                _dbctx.ChangeTracker.DetectChanges();
-                if (_dbctx.ChangeTracker.HasChanges())
-                {
-                    MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
-                        , MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes) { _dbctx.SaveChangesAsync(); }
 
-                }
+            _dbctx.ChangeTracker.DetectChanges();
+            if (_dbctx.ChangeTracker.HasChanges())
+            {
+                MessageBoxResult result = MessageBox.Show("Wollen Sie die Änderungen noch Speichern?", "Datenbank Speichern"
+                    , MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes) { _dbctx.SaveChangesAsync(); }
+
+            }
 
         }
 
@@ -200,7 +199,7 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         private void OnNewExecuted(object obj)
-        {           
+        {
             var u = Users?.AddNew();
 
             _usrCV.MoveCurrentTo(u);
@@ -266,7 +265,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            Users = new ();
+            Users = new();
             var u = _dbctx.Users
                 .Include(x => x.UserWorkAreas)
                 .Include(y => y.UserRoles)
@@ -324,7 +323,7 @@ namespace Lieferliste_WPF.ViewModels
                             dropInfo.Effects = DragDropEffects.Copy;
                         }
                     }
-                } 
+                }
             }
         }
 

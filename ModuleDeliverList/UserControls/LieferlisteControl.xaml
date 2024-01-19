@@ -26,6 +26,8 @@
         <conv:PermissionConverter x:Key="Permission"/>
         <conv:KW_Converter x:Key="KwConv"/>
         <conv:CommentConverter x:Key="CommentConv"/>
+        <conv:NullStringToBoolConverter x:Key="stringEmpty"/>
+        
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <System:DateTime x:Key="datetime"/>
@@ -60,13 +62,11 @@
         </Style>
         <Style x:Key="AlertStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
             <Style.Triggers >
-                <DataTrigger Binding="{Binding Path=PrioText.Length, ElementName=luc}" Value="0">
-                    <Setter Property="Background" Value="{DynamicResource ValueBackground}"/>
-                    <Setter Property="Foreground" Value="Black"/>
+                <DataTrigger Binding="{Binding Path=PrioText, ElementName=luc, Converter={StaticResource stringEmpty}}" Value="False">
+                    <Setter Property="Background" Value="red"/>
+                    <Setter Property="Foreground" Value="White"/>
                 </DataTrigger>
             </Style.Triggers>
-            <Setter Property="Background" Value="Red"/>
-            <Setter Property="Foreground" Value="White"/>
         </Style>
         
         <Style TargetType="{x:Type TextBox}">

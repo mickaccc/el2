@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace El2Core.ViewModelBase
 {
@@ -12,7 +7,7 @@ namespace El2Core.ViewModelBase
         public event PropertyChangedEventHandler? PropertyChanged;
         public void RunPropertyChanged()
         {
-            PropertyChanged?.Invoke(this,new PropertyChangedEventArgs(""));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(""));
         }
 
     }

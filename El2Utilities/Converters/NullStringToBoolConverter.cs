@@ -1,18 +1,16 @@
-﻿using El2Core.Utils;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Data;
 
 namespace El2Core.Converters
 {
-    public class ProjectTypeConverter : IValueConverter
+    [ValueConversion(typeof(string), typeof(bool))]
+    public class NullStringToBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Enum v)
-            {
-                return EnumHelper.Description(v);
-            }
+            if (value is string s)
+                return string.IsNullOrEmpty(s);
             return value;
         }
 

@@ -1,17 +1,13 @@
 ﻿namespace Lieferliste_WPF.Views
 {
-    using El2Core.Utils;
     using System;
     using System.Globalization;
     using System.Runtime.Versioning;
-    using System.Threading;
-    using System.Threading.Tasks;
     using System.Timers;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
-    using System.Windows.Threading;
 
 
     /// <summary>
@@ -116,7 +112,7 @@
                 await this.Dispatcher.InvokeAsync(new Action(() =>
                     {
                         myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
-                    })); 
+                    }));
             }
 
         }

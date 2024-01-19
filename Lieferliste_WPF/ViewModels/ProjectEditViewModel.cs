@@ -22,9 +22,9 @@ namespace Lieferliste_WPF.ViewModels
     public class ProjectEditViewModel : ViewModelBase
     {
         public string Title { get; } = "Projekt Editor";
- 
-        IContainerProvider _container;
-        IApplicationCommands _applicationCommands;
+
+        private IContainerProvider _container;
+        private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -87,7 +87,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnProjectTypeExecuted(object obj)
         {
-            if(obj is TreeNode<string> node)
+            if (obj is TreeNode<string> node)
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 db.Projects.Single(x => x.ProjectPsp == node.Value).ProjectType = (int)node.ProjectType;
@@ -176,7 +176,7 @@ namespace Lieferliste_WPF.ViewModels
                     pre = root.Add(psp[..i]);
                 }
 
- 
+
                 root = pre;
             }
             if (root.Value.Length == psp.Length)
@@ -219,11 +219,11 @@ namespace Lieferliste_WPF.ViewModels
             await Task.Factory.StartNew(() =>
             {
                 Tree<string> preTree = new();
- 
+
                 foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
                     var p = item.ProjectPsp.Trim();
- 
+
                     var root = taskTree.Nodes.FirstOrDefault(y => p[..9] == y.Value);
                     if (root == null)
                     {
@@ -252,12 +252,12 @@ namespace Lieferliste_WPF.ViewModels
                             }
                         }
                         root.Description = item.ProjectInfo ?? string.Empty;
-                        root.ProjectType = (ProjectTypes.ProjectType) item.ProjectType;
+                        root.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
                     }
                     while (taskTree.level > 0)
                         taskTree.End();
                 }
-                
+
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
             tree = taskTree;
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(tree.Nodes);
@@ -283,7 +283,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
             return accepted;
-            
+
         }
 
         private bool FilterPredicateOrder(object obj)

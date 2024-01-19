@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
+﻿using El2Core.Models;
 using Lieferliste_WPF.Planning;
+using Lieferliste_WPF.Views;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Windows.Xps.Packaging;
-using System.Windows.Xps;
-using Lieferliste_WPF.Views;
-using System.Reflection.Metadata;
-using System.Xml.Linq;
-using System.Windows.Xps.Serialization;
 using System.IO.Packaging;
+using System.Linq;
 using System.Printing;
-using El2Core.Models;
-using MaterialDesignThemes.Wpf.Converters;
-using Windows.Graphics.Printing;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Xps.Packaging;
+using System.Windows.Xps.Serialization;
 
 namespace Lieferliste_WPF.Utilities
 {
-    static class Printing
+    internal static class Printing
     {
         public static void DoThePrint(FlowDocument document)
         {
@@ -121,7 +115,7 @@ namespace Lieferliste_WPF.Utilities
             fd.ColumnWidth = 800;
             fd.TextAlignment = TextAlignment.Center;
             table.CellSpacing = 1;
-            
+
 
             var headerList = proces.OrderBy(x => x.Spos).Select(x => new
             {
@@ -145,28 +139,29 @@ namespace Lieferliste_WPF.Utilities
                 string head;
                 switch (pr.Name)
                 {
-                    case "Aid": head = "Auftrags-\nnummer"; tabCol.Width = new GridLength(printSizeWidth/14); break;
-                    case "ProcessingUom": head = "Vorgang"; tabCol.Width = new GridLength(printSizeWidth/28); break;
-                    case "Material": head = "Material"; tabCol.Width = new GridLength(printSizeWidth/13); break;
-                    case "Bezeichng": head = "Bezeichnung"; tabCol.Width = new GridLength(printSizeWidth/10); break;
-                    case "BeazeEinheit": head = "Stk."; tabCol.Width = new GridLength(printSizeWidth/28); break;
-                    case "Text": head = "Kurztext"; tabCol.Width = new GridLength(printSizeWidth/7); break;
-                    case "RstzeEinheit": head = "SpätStart"; tabCol.Width = new GridLength(printSizeWidth/18.7); break;
-                    case "SpaetEnd": head = "SpätEnd"; tabCol.Width = new GridLength(printSizeWidth/28); break;
-                    case "BemT": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth/11); break;
-                    case "WrtzeEinheit": head = "Dauer"; tabCol.Width = new GridLength(printSizeWidth/22); break;
+                    case "Aid": head = "Auftrags-\nnummer"; tabCol.Width = new GridLength(printSizeWidth / 14); break;
+                    case "ProcessingUom": head = "Vorgang"; tabCol.Width = new GridLength(printSizeWidth / 28); break;
+                    case "Material": head = "Material"; tabCol.Width = new GridLength(printSizeWidth / 13); break;
+                    case "Bezeichng": head = "Bezeichnung"; tabCol.Width = new GridLength(printSizeWidth / 10); break;
+                    case "BeazeEinheit": head = "Stk."; tabCol.Width = new GridLength(printSizeWidth / 28); break;
+                    case "Text": head = "Kurztext"; tabCol.Width = new GridLength(printSizeWidth / 7); break;
+                    case "RstzeEinheit": head = "SpätStart"; tabCol.Width = new GridLength(printSizeWidth / 18.7); break;
+                    case "SpaetEnd": head = "SpätEnd"; tabCol.Width = new GridLength(printSizeWidth / 28); break;
+                    case "BemT": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth / 11); break;
+                    case "WrtzeEinheit": head = "Dauer"; tabCol.Width = new GridLength(printSizeWidth / 22); break;
                     default: head = "not Valid"; break;
                 }
                 r.Cells.Add(new TableCell(new Paragraph(new Run(head)))
-                { BorderThickness = new Thickness(1,0,0,1),
-                BorderBrush = Brushes.Black,
-                Background = Brushes.DarkGray,
-                Foreground = Brushes.White
+                {
+                    BorderThickness = new Thickness(1, 0, 0, 1),
+                    BorderBrush = Brushes.Black,
+                    Background = Brushes.DarkGray,
+                    Foreground = Brushes.White
                 });
                 r.Cells[i].Padding = new Thickness(2);
 
-                
-                
+
+
                 table.Columns.Add(tabCol);
 
                 ++i;
@@ -209,12 +204,12 @@ namespace Lieferliste_WPF.Utilities
             PrintDialog dialog = new();
             dialog.PrintTicket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
             dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
-            
+
             doc.PagePadding = new Thickness(12.0, 20.0, 10.0, 10.0);
             var fix = Get_Fixed_From_FlowDoc(doc, dialog);
             var windows = new PrintWindow(fix);
             windows.ShowDialog();
-            
+
         }
         private static string _previewWindowXaml =
     @"<Window
@@ -226,26 +221,26 @@ namespace Lieferliste_WPF.Utilities
                       <DocumentViewer Name='dv1'/>
      </Window>";
         public static void PreviewWindowXaml(object usefulData)
-        { 
-        Grid grid;
+        {
+            Grid grid;
             grid = new Grid
             {
                 //ItemsSource = usefulData
             };
 
             FixedDocument fixedDoc = new FixedDocument();
-        PageContent pageContent = new PageContent();
-        FixedPage fixedPage = new FixedPage();
+            PageContent pageContent = new PageContent();
+            FixedPage fixedPage = new FixedPage();
 
-        //Create first page of document
-        fixedPage.Children.Add(grid);
-            ((System.Windows.Markup.IAddChild) pageContent).AddChild(fixedPage);
-        fixedDoc.Pages.Add(pageContent);
+            //Create first page of document
+            fixedPage.Children.Add(grid);
+            ((System.Windows.Markup.IAddChild)pageContent).AddChild(fixedPage);
+            fixedDoc.Pages.Add(pageContent);
             //Create any other required pages here
             DocumentViewer documentViewer1 = new DocumentViewer();
-        //View the document
-        documentViewer1.Document = fixedDoc;
-            }
+            //View the document
+            documentViewer1.Document = fixedDoc;
+        }
         //public static void DoPreview(string title)
         //{
         //    string fileName = System.IO.Path.GetRandomFileName();
@@ -336,7 +331,7 @@ namespace Lieferliste_WPF.Utilities
                     fixedPage.Height = pdlgPrint.PrintableAreaHeight;
                     fixedPage.HorizontalAlignment = HorizontalAlignment.Stretch;
                     pageContent.Child = fixedPage;
-                    
+
                     fixedDocument.Pages.Add(pageContent);
                 }
 
@@ -348,20 +343,20 @@ namespace Lieferliste_WPF.Utilities
             return fixedDocument;
         }
         public static void SaveAsXps(string path, FlowDocument document)
+        {
+            using (Package package = Package.Open(path, FileMode.Create))
             {
-                using (Package package = Package.Open(path, FileMode.Create))
+                using (var xpsDoc = new XpsDocument(
+                    package, CompressionOption.Maximum))
                 {
-                    using (var xpsDoc = new XpsDocument(
-                        package, CompressionOption.Maximum))
-                    {
-                        var xpsSm = new XpsSerializationManager(
-                            new XpsPackagingPolicy(xpsDoc), false);
-                        DocumentPaginator dp =
-                            ((IDocumentPaginatorSource)document).DocumentPaginator;
-                        xpsSm.SaveAsXaml(dp);
-                    }
+                    var xpsSm = new XpsSerializationManager(
+                        new XpsPackagingPolicy(xpsDoc), false);
+                    DocumentPaginator dp =
+                        ((IDocumentPaginatorSource)document).DocumentPaginator;
+                    xpsSm.SaveAsXaml(dp);
                 }
             }
-        
+        }
+
     }
 }

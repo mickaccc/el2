@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.Views
@@ -49,7 +48,7 @@ namespace Lieferliste_WPF.Views
             if (e.PropertyName == "PermissionKeyNavigation")
             {
                 var pr = e.PropertyType.GetField("Description");
-                
+
             }
         }
     }

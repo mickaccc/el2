@@ -44,8 +44,8 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<Vorgang>? Priv_parking { get; set; }
         private DB_COS_LIEFERLISTE_SQLContext _DbCtx;
         private IContainerExtension _container;
-        IEventAggregator _ea;
-        IUserSettingsService _settingsService;
+        private IEventAggregator _ea;
+        private IUserSettingsService _settingsService;
         public ICollectionView RessCV { get; private set; }
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
@@ -99,8 +99,8 @@ namespace Lieferliste_WPF.ViewModels
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-            if(_settingsService.IsAutoSave) SetAutoSaveTimer();
-            
+            if (_settingsService.IsAutoSave) SetAutoSaveTimer();
+
         }
 
         private void MessageOrderReceived(List<string?> list)
@@ -134,9 +134,9 @@ namespace Lieferliste_WPF.ViewModels
             catch (InvalidOperationException e)
             {
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                MessageBox.Show(e.Message,"SaveCanExecute",MessageBoxButton.OK,MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "SaveCanExecute", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;
         }
@@ -159,28 +159,28 @@ namespace Lieferliste_WPF.ViewModels
         private async Task<List<Vorgang>> GetVorgangsAsync(string? aid)
         {
 
-                var query = await _DbCtx.Vorgangs
-                  .Include(x => x.AidNavigation)
-                  .ThenInclude(x => x.MaterialNavigation)
-                  .Include(x => x.AidNavigation.DummyMatNavigation)
-                  .Include(x => x.ArbPlSapNavigation)
-                  .Include(x => x.RidNavigation)
-                  .Where(y => y.AidNavigation.Abgeschlossen == false
-                    && y.SysStatus != null
-                    && y.Text != null
-                    && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
-                    && y.Text.ToLower().Contains("starten") == false
-                    && y.SysStatus.Contains("RÜCK") == false)
-                  .ToListAsync();
-                 
-                if(_processesAll == null)
-                    _processesAll = query;
-                else if(aid != null && query != null)
-                    _processesAll.AddRange(query.Where(x => x.Aid == aid).ToList());
+            var query = await _DbCtx.Vorgangs
+              .Include(x => x.AidNavigation)
+              .ThenInclude(x => x.MaterialNavigation)
+              .Include(x => x.AidNavigation.DummyMatNavigation)
+              .Include(x => x.ArbPlSapNavigation)
+              .Include(x => x.RidNavigation)
+              .Where(y => y.AidNavigation.Abgeschlossen == false
+                && y.SysStatus != null
+                && y.Text != null
+                && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
+                && y.Text.ToLower().Contains("starten") == false
+                && y.SysStatus.Contains("RÜCK") == false)
+              .ToListAsync();
+
+            if (_processesAll == null)
+                _processesAll = query;
+            else if (aid != null && query != null)
+                _processesAll.AddRange(query.Where(x => x.Aid == aid).ToList());
 
             return _processesAll;
         }
- 
+
         private void SetAutoSaveTimer()
         {
             _autoSaveTimer = new System.Timers.Timer(60000);
@@ -191,7 +191,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnAutoSave(object? sender, ElapsedEventArgs e)
         {
-            if(_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
+            if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
         }
 
         private async Task<ICollectionView> LoadMachinesAsync()
@@ -212,7 +212,7 @@ namespace Lieferliste_WPF.ViewModels
                     PlanMachineFactory factory = _container.Resolve<PlanMachineFactory>();
 
                     foreach (var q in re)
-                    { 
+                    {
                         result.Add(factory.CreatePlanMachine(q.RessourceId));
                     }
                 }
@@ -227,18 +227,18 @@ namespace Lieferliste_WPF.ViewModels
                             x.ArbPlSapNavigation.CostId == c.CostId));
                     }
                 }
-            
-            Priv_processes = list.FindAll(x => x.Rid == null)
-                .ToObservableCollection();
-            Priv_parking = list.FindAll(x => x.Rid < 0)
-                .ToObservableCollection();
-            ProcessViewSource.Source = Priv_processes;
-            ParkingViewSource.Source = Priv_parking;
-            
-            RessCV = CollectionViewSource.GetDefaultView(_machines);
-            RessCV.MoveCurrentToFirst();
+
+                Priv_processes = list.FindAll(x => x.Rid == null)
+                    .ToObservableCollection();
+                Priv_parking = list.FindAll(x => x.Rid < 0)
+                    .ToObservableCollection();
+                ProcessViewSource.Source = Priv_processes;
+                ParkingViewSource.Source = Priv_parking;
+
+                RessCV = CollectionViewSource.GetDefaultView(_machines);
+                RessCV.MoveCurrentToFirst();
                 _currentWorkArea = ((PlanMachine)RessCV.CurrentItem).WorkArea.WorkAreaId;
-  
+
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
 
             NotifyPropertyChanged(() => ProcessCV);
@@ -290,7 +290,7 @@ namespace Lieferliste_WPF.ViewModels
                 e.Accepted = true;
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))
                 {
-                    
+
                     if (!(e.Accepted = v.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
                         if (!(e.Accepted = v.AidNavigation?.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
                             e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
@@ -325,12 +325,12 @@ namespace Lieferliste_WPF.ViewModels
                     if (name == "parking")
                     {
                         int parkRid = _currentWorkArea * -1;
-                        
+
                         if (_DbCtx.Ressources.All(x => x.RessourceId != parkRid))
                         {
-                            
+
                             _DbCtx.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
-                            
+
                         }
                         vrg.Rid = parkRid;
                     }
@@ -338,7 +338,7 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         vrg.Rid = null;
                         _DbCtx.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Rid = vrg.Rid;
-                        
+
                     }
                     var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
                     if (source.IsAddingNew) { source.CommitNew(); }
@@ -364,14 +364,14 @@ namespace Lieferliste_WPF.ViewModels
         }
         public void Closing()
         {
-            foreach(var m in _machines)
+            foreach (var m in _machines)
             {
                 IViewModel vm = (IViewModel)m;
                 vm.Closing();
             }
             if (_DbCtx.ChangeTracker.HasChanges())
             {
-                if(_settingsService.IsSaveMessage)
+                if (_settingsService.IsSaveMessage)
                 {
                     var result = MessageBox.Show("Sollen die Änderungen in Teamleiter-Zuteilungen gespeichert werden?",
                         Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -379,7 +379,8 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         _DbCtx.SaveChanges();
                     }
-                } else _DbCtx.SaveChanges();
+                }
+                else _DbCtx.SaveChanges();
             }
         }
     }

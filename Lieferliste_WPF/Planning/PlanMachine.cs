@@ -6,12 +6,10 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Interfaces;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -21,9 +19,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Policy;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -87,7 +83,7 @@ namespace Lieferliste_WPF.Planning
         #endregion
 
         public bool Vis { get; private set; }
- 
+
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? OpenMachineCommand { get; private set; }
         public ICommand? MachinePrintCommand { get; private set; }
@@ -177,13 +173,13 @@ namespace Lieferliste_WPF.Planning
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
 
-            var live = ProcessesCV as ICollectionViewLiveShaping;
-            if (live != null)
-            {
-                live.IsLiveSorting = false;
-                live.LiveFilteringProperties.Add("SysStatus");
-                live.IsLiveFiltering = true;
-            }
+            //var live = ProcessesCV as ICollectionViewLiveShaping;
+            //if (live != null)
+            //{
+            //    live.IsLiveSorting = false;
+            //    live.LiveFilteringProperties.Add("SysStatus");
+            //    live.IsLiveFiltering = true;
+            //}
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
 
         }
@@ -192,7 +188,7 @@ namespace Lieferliste_WPF.Planning
         {
             try
             {
-                foreach (string id in vorgangIdList.Where(x => x != null))
+                foreach (string? id in vorgangIdList.Where(x => x != null))
                 {
                     var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
                     if (pr != null)
@@ -200,6 +196,11 @@ namespace Lieferliste_WPF.Planning
 
                         _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
                         pr.RunPropertyChanged();
+                        if (pr.SysStatus?.Contains("RÜCK") ?? false)
+                        {
+                            Processes?.Remove(pr);
+                            _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != pr.VorgangId).State = EntityState.Unchanged;
+                        }
 
                     }
                 }
@@ -250,7 +251,7 @@ namespace Lieferliste_WPF.Planning
                     if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
                     if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
-                    ProcessesCV.Refresh(); 
+                    ProcessesCV.Refresh();
                 }
             }
             catch (System.Exception e)

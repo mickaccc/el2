@@ -1,11 +1,7 @@
-﻿using El2Core.Models;
-using Lieferliste_WPF.ViewModels;
-using System;
+﻿using Lieferliste_WPF.ViewModels;
 using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
 
 namespace Lieferliste_WPF.Views
 {

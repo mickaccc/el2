@@ -214,7 +214,14 @@ namespace Lieferliste_WPF.ViewModels
         public bool Ready
         {
             get { return _ready; }
-            set { _ready = value; }
+            set
+            {
+                if (_ready != value)
+                {
+                    _ready = value;
+                    NotifyPropertyChanged(() => Ready);
+                }
+            }
         }
 
         public ICollectionView VorgangCV { get; }
@@ -256,21 +263,21 @@ namespace Lieferliste_WPF.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-            var p = parameters.GetValue<OrderRb>("vrgList");
+            var p = parameters.GetValue<List<Vorgang>>("vrgList");
 
-            foreach (var item in p.Vorgangs)
+            foreach (var item in p)
             {
                 Vorgangs.Add(item);
             }
-
-            Aid = p.Aid;
-            Material = p.Material;
-            Bezeichnung = p.MaterialNavigation?.Bezeichng;
-            Quantity = p.Quantity;
-            Pro = p.ProId;
-            ProInfo = p.ProId;
-            SysStatus = p.SysStatus;
-            Ready = p.Fertig;
+            var v = p.First();
+            Aid = v.Aid;
+            Material = v.AidNavigation.Material;
+            Bezeichnung = v.AidNavigation.MaterialNavigation?.Bezeichng;
+            Quantity = v.AidNavigation.Quantity;
+            Pro = v.AidNavigation.ProId;
+            ProInfo = v.AidNavigation.Pro?.ProjectInfo;
+            SysStatus = v.AidNavigation.SysStatus;
+            Ready = v.AidNavigation.Fertig;
 
             VorgangCV.Refresh();
         }

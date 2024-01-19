@@ -149,17 +149,17 @@ namespace Lieferliste_WPF.ViewModels
             }
             else
             {
-                 if(obj is string s)
+                if (obj is string s)
                 {
                     param = s;
                 }
             }
             if (param.IsNullOrEmpty()) { return; }
 
-                var par = new DialogParameters();
-                par.Add("projectNo", param);
-                _dialogService.Show("Projects", par, null);
-            
+            var par = new DialogParameters();
+            par.Add("projectNo", param);
+            _dialogService.Show("Projects", par, null);
+
         }
 
 
@@ -212,14 +212,12 @@ namespace Lieferliste_WPF.ViewModels
         {
             try
             {
-                if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate))
+                if (arg is object[] onr)
                 {
-                    if (arg is object[] onr)
+                    if (onr[1] is Boolean f)
                     {
-                        if (onr[1] is Boolean f)
-                        {
-                            return f || (Keyboard.IsKeyDown(Key.LeftAlt));
-                        }
+                        return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate) &&
+                            (f || Keyboard.IsKeyDown(Key.LeftAlt));
                     }
                 }
                 return false;
@@ -252,7 +250,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
             }
-            
+
         }
 
         private bool OnCloseCanExecute(object arg)
@@ -270,7 +268,7 @@ namespace Lieferliste_WPF.ViewModels
             if (obj is FrameworkElement f)
             {
                 var vm = f.DataContext as IViewModel;
-                if (vm != null) vm.Closing();
+                vm?.Closing();
             }
             _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
         }
@@ -280,25 +278,31 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenOrderExecuted(object parameter)
         {
-            if (parameter != null)
+            if (parameter is Vorgang y)
             {
-                string? para;
-                if (parameter is Vorgang y) para = y.Aid; else para = parameter.ToString();
-                OrderRb? ord;
+
                 using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
-                    ord = db.OrderRbs
-                        .Include(x => x.MaterialNavigation)
-                        .Include(x => x.DummyMatNavigation)
-                        .Include(x => x.Vorgangs)
-                        .ThenInclude(x => x.RidNavigation)
-                        .FirstOrDefault(x => x.Aid == para);
-                }
-                if (ord != null)
-                {
-                    var par = new DialogParameters();
-                    par.Add("vrgList", ord);
-                    _dialogService.Show("Order", par, null);
+                    var vrgs = db.Vorgangs
+                        .Include(x => x.AidNavigation)
+                        .Include(x => x.AidNavigation.DummyMatNavigation)
+                        .Include(x => x.AidNavigation.MaterialNavigation)
+                        .Include(x => x.AidNavigation.Pro)
+                        .Include(x => x.RidNavigation)
+                        .Include(x => x.ArbPlSapNavigation)
+                        .ThenInclude(x => x.Ressource)
+                        .ThenInclude(X => X.WorkArea)
+                        .Where(x => x.Aid == y.Aid)
+                        .ToList();
+
+
+
+                    if (vrgs != null)
+                    {
+                        var par = new DialogParameters();
+                        par.Add("vrgList", vrgs);
+                        _dialogService.Show("Order", par, null);
+                    }
                 }
             }
         }

@@ -10,14 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class ProjectsViewModel : ViewModelBase, IDialogAware
+    internal class ProjectsViewModel : ViewModelBase, IDialogAware
     {
         private string _title = "Projektübersicht";
         public string Title => _title;
@@ -25,7 +23,7 @@ namespace Lieferliste_WPF.ViewModels
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private IUserSettingsService _userSettingsService;
         private IContainerProvider _container;
-        IApplicationCommands _applicationCommands;
+        private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -79,10 +77,10 @@ namespace Lieferliste_WPF.ViewModels
         {
             _container = container;
             _userSettingsService = userSettingsService;
-            _applicationCommands = applicationCommands; 
+            _applicationCommands = applicationCommands;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            
+
         }
 
         private async Task<ICollectionView> LoadAsync(string projectNo)
@@ -91,7 +89,7 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.OrderRbs)
                 .ThenInclude(x => x.MaterialNavigation)
                 .FirstAsync(x => x.ProjectPsp == projectNo);
-                
+
             this.WbsElement = pro.ProjectPsp.Trim() ?? "NULL";
             this.WbsInfo = pro.ProjectInfo?.Trim() ?? string.Empty;
 
@@ -100,7 +98,7 @@ namespace Lieferliste_WPF.ViewModels
             return OrdersView;
         }
 
- 
+
 
         public bool CanCloseDialog()
         {
@@ -109,7 +107,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void OnDialogClosed()
         {
-            
+
         }
 
         public void OnDialogOpened(IDialogParameters parameters)

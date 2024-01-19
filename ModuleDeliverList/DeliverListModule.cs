@@ -12,7 +12,7 @@ namespace ModuleDeliverList
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            
+
         }
     }
 }

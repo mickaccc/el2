@@ -181,6 +181,7 @@
                             QuantityYield="{Binding QuantityYield,NotifyOnTargetUpdated=True}" 
                             QuantityScrap="{Binding QuantityScrap,NotifyOnTargetUpdated=True}" 
                             QuantityMiss="{Binding QuantityMiss,NotifyOnTargetUpdated=True}"
+                            QuantityRework="{Binding QuantityRework, NotifyOnSourceUpdated=True}"
                             VgText="{Binding Text}"
                             WorkArea="{Binding ArbPlSap}"
                             WorkAreaText="{Binding ArbPlSap}"

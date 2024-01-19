@@ -4,16 +4,13 @@ using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
     internal class AddNewWorkAreaVM : BindableBase, IDialogAware
     {
- 
+
         private DelegateCommand<string> _closeDialogCommand;
         public DelegateCommand<string> CloseDialogCommand =>
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand<string>(CloseDialog));
@@ -46,8 +43,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             if (parameter?.ToLower() == "true")
             {
 
-                var by = workA.Max(x => x.Sort)+1;
-                var wa = new WorkArea() { Bereich=Section, Info = Info, Sort=(Convert.ToByte(by)) };
+                var by = workA.Max(x => x.Sort) + 1;
+                var wa = new WorkArea() { Bereich = Section, Info = Info, Sort = (Convert.ToByte(by)) };
                 workA.Add(wa);
                 result = ButtonResult.OK;
             }
@@ -70,7 +67,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void OnDialogClosed()
         {
-            
+
         }
 
         public void OnDialogOpened(IDialogParameters parameters)

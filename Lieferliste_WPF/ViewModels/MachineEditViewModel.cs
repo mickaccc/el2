@@ -47,7 +47,7 @@ namespace Lieferliste_WPF.ViewModels
             LoadData();
 
             RessourcesCV = new ListCollectionView(_ressources);
- 
+
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
 

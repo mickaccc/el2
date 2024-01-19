@@ -5,15 +5,10 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.DirectoryServices;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -21,7 +16,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    class ShowWorkAreaViewModel : ViewModelBase, IDropTarget
+    internal class ShowWorkAreaViewModel : ViewModelBase, IDropTarget
     {
         private string _title = "Bereich Editor";
 
@@ -76,7 +71,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public ShowWorkAreaViewModel(IContainerProvider container, IDialogService dialogService)
         {
-            
+
             _container = container;
             _dialogService = dialogService;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -121,7 +116,7 @@ namespace Lieferliste_WPF.ViewModels
             var param = new DialogParameters();
             param.Add("SectionList", _workAreas);
             _dialogService.Show("AddNewWorkArea", param, callback);
-            
+
         }
 
         private void callback(IDialogResult result)
@@ -131,7 +126,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnDeleteCanExecute(object arg)
         {
-            if(arg is WorkArea w)
+            if (arg is WorkArea w)
             {
                 var b = w.IsLocked;
                 return (!EditMode && !b);
@@ -141,12 +136,12 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnDeleteExecuted(object obj)
         {
-            if(obj is WorkArea w)
+            if (obj is WorkArea w)
             {
-                if(_workAreasList.CanRemove)
-                _workAreasList.Remove(w);
+                if (_workAreasList.CanRemove)
+                    _workAreasList.Remove(w);
                 _dbctx.WorkAreas.Remove(w);
-                
+
             }
         }
 
@@ -157,22 +152,22 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnEditExecuted(object obj)
         {
- 
+
             EditMode = !EditMode;
         }
         private void OnEndEdit(object obj)
         {
-            EditMode = false;           
+            EditMode = false;
         }
- 
+
         private async Task<ICollectionView> LoadAsync()
         {
             var w = await _dbctx.WorkAreas.ToListAsync();
             _workAreas.AddRange(w);
             WorkAreas = CollectionViewSource.GetDefaultView(_workAreas);
-            WorkAreas.SortDescriptions.Add(new SortDescription("Sort",ListSortDirection.Ascending));
-           
-            _workAreasList = (ListCollectionView) WorkAreas;
+            WorkAreas.SortDescriptions.Add(new SortDescription("Sort", ListSortDirection.Ascending));
+
+            _workAreasList = (ListCollectionView)WorkAreas;
             return WorkAreas;
         }
 
@@ -180,14 +175,14 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (EditMode) return;
             if (dropInfo == null) return;
-            
+
             if (dropInfo.DragInfo.SourceCollection.Equals(dropInfo.TargetCollection))
             {
                 if (dropInfo.Data is WorkArea)
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
-                } 
+                }
             }
         }
 
@@ -220,7 +215,7 @@ namespace Lieferliste_WPF.ViewModels
                     }
                 }
                 WorkAreas.Refresh();
-                
+
             }
         }
     }

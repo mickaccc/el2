@@ -1,11 +1,9 @@
 ﻿using El2Core.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace El2Core.Converters
@@ -18,11 +16,11 @@ namespace El2Core.Converters
             {
                 var cost = l.Select(x => x.CostId).ToArray();
                 StringBuilder sb = new StringBuilder();
-                foreach(var item in cost)
+                foreach (var item in cost)
                 {
                     sb.Append(string.Format("{0} ", item));
                 }
-                
+
                 return sb.ToString();
             }
             return value;

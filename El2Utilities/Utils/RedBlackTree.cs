@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace El2Core.Utils
 {
@@ -100,7 +96,7 @@ namespace El2Core.Utils
         Left,
         Right
     }
- 
+
     public class Node
     {
         public IComparable data;

@@ -36,7 +36,18 @@
             <Setter Property="Margin" Value="1"/>
             <Setter Property="Padding" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="IsHitTestVisible" Value="true"/>
+
         </Style>
+        <!--<Style TargetType="{x:Type DataGridRow}">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="Background" Value="Transparent" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>-->
+
     </Window.Resources>
 
     <Grid>
@@ -80,7 +91,7 @@
             
         </DockPanel>
         <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding ProcessesCV}" AutoGenerateColumns="False"
-                  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" IsSynchronizedWithCurrentItem="True"
+                  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"
                   dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" ContextMenu="{StaticResource BulletContextMenu}"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"
@@ -90,9 +101,27 @@
                               Command="{Binding ApplicationCommands.OpenOrderCommand}"
                               CommandParameter="{Binding ElementName=MachProcesses, Path=SelectedValue}"/>
             </DataGrid.InputBindings>
-
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="Transparent"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="Blue"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
             <DataGrid.Columns>
-                <DataGridTemplateColumn >
+                <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate >
                             <wpfControl:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"

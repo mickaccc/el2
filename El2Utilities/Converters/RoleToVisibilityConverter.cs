@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
-using System.Linq;
 
 namespace El2Core.Converters
 {

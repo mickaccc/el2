@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace El2Core.Utils
 {
@@ -13,7 +10,7 @@ namespace El2Core.Utils
                                           INotifyCollectionChanged,
                                           INotifyPropertyChanged
     {
-        readonly SortedSet<T> _innerCollection = new SortedSet<T>();
+        private readonly SortedSet<T> _innerCollection = new SortedSet<T>();
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -74,11 +71,11 @@ namespace El2Core.Utils
         }
         private void OnCollectionChanged(NotifyCollectionChangedAction action, T elements)
         {
-            if(CollectionChanged != null && elements != null)
+            if (CollectionChanged != null && elements != null)
             {
-                    var eventArgs = new NotifyCollectionChangedEventArgs(action, elements);
-                    CollectionChanged(this, eventArgs); 
-                
+                var eventArgs = new NotifyCollectionChangedEventArgs(action, elements);
+                CollectionChanged(this, eventArgs);
+
             }
         }
         // TODO: possibly add some specific methods, if needed

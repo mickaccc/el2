@@ -5,7 +5,6 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
-using ModuleDeliverList.UserControls;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -14,11 +13,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -58,8 +55,8 @@ namespace ModuleDeliverList.ViewModels
         private static System.Timers.Timer? _timer;
         private static System.Timers.Timer? _autoSaveTimer;
         private IContainerProvider _container;
-        IEventAggregator _ea;
-        IUserSettingsService _settingsService;
+        private IEventAggregator _ea;
+        private IUserSettingsService _settingsService;
         private CmbFilter _selectedDefaultFilter;
         private static List<Ressource> _ressources = [];
         private static SortedDictionary<int, string> _sections = [];
@@ -298,6 +295,13 @@ namespace ModuleDeliverList.ViewModels
                                 DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).Reload();
                                 o.RunPropertyChanged();
                             }
+                            else
+                            {
+                                foreach (var v in DBctx.Vorgangs.Where(x => x.Aid == rbId))
+                                {
+                                    AddRelevantProcess(v.VorgangId);
+                                }
+                            }
                         }
                     }
                 });
@@ -330,14 +334,8 @@ namespace ModuleDeliverList.ViewModels
                      }
                      else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg).Aktuell)
                      {
-                         var vrgAdd = DBctx.Vorgangs
-                             .Include(x => x.AidNavigation)
-                             .ThenInclude(x => x.MaterialNavigation)
-                             .Include(x => x.AidNavigation.DummyMatNavigation)
-                             .Include(x => x.RidNavigation)
-                             .First(x => x.VorgangId.Trim() == vrg);
-                         _orders.Add(vrgAdd);
-                         DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vrgAdd.VorgangId).State = EntityState.Unchanged;
+                         if (vrg != null)
+                             AddRelevantProcess(vrg);
                      }
                  }
              }
@@ -594,7 +592,27 @@ namespace ModuleDeliverList.ViewModels
             }
             return OrdersView;
         }
+        private bool AddRelevantProcess(string vid)
+        {
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var vrgAdd = db.Vorgangs
+               .Include(x => x.AidNavigation)
+               .ThenInclude(x => x.MaterialNavigation)
+               .Include(x => x.AidNavigation.DummyMatNavigation)
+               .Include(x => x.RidNavigation)
+               .First(x => x.VorgangId.Trim() == vid);
 
+            if (vrgAdd.ArbPlSap?.Length >= 3)
+            {
+                if (int.TryParse(vrgAdd.ArbPlSap[..3], out int c))
+                    if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
+                    {
+                        _orders.Add(vrgAdd);
+                        return true;
+                    }
+            }
+            return false;
+        }
         public void Closing()
         {
             if (DBctx.ChangeTracker.HasChanges())

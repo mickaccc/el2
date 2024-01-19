@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace ModuleDeliverList.UserControls
@@ -345,13 +343,13 @@ namespace ModuleDeliverList.UserControls
             set { SetValue(AvailableItemsProperty, value); }
         }
 
-         // Using a DependencyProperty as the backing store for AvailableItems.  This enables animation, styling, binding, etc...
+        // Using a DependencyProperty as the backing store for AvailableItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AvailableItemsProperty =
             DependencyProperty.Register("AvailableItems", typeof(Dictionary<string, object>), typeof(LieferlisteControl));
 
 
 
-        public object  SelectedBinding
+        public object SelectedBinding
         {
             get { return (object)GetValue(SelectedBindingProperty); }
             set { SetValue(SelectedBindingProperty, value); }

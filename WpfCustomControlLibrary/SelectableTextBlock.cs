@@ -1,41 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows;
 
 namespace WpfCustomControlLibrary
 {
     public class SelectableTextBlock : TextBlock
     {
-        static readonly Type TextEditorType
+        private static readonly Type TextEditorType
 = Type.GetType("System.Windows.Documents.TextEditor, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
-
-        static readonly PropertyInfo IsReadOnlyProp
+        private static readonly PropertyInfo IsReadOnlyProp
             = TextEditorType.GetProperty("IsReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        static readonly PropertyInfo TextViewProp
+        private static readonly PropertyInfo TextViewProp
             = TextEditorType.GetProperty("TextView", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        static readonly MethodInfo RegisterMethod
+        private static readonly MethodInfo RegisterMethod
             = TextEditorType.GetMethod("RegisterCommandHandlers",
             BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(Type), typeof(bool), typeof(bool), typeof(bool) }, null);
-
-        static readonly Type TextContainerType
+        private static readonly Type TextContainerType
             = Type.GetType("System.Windows.Documents.ITextContainer, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
-        static readonly PropertyInfo TextContainerTextViewProp
+        private static readonly PropertyInfo TextContainerTextViewProp
             = TextContainerType.GetProperty("TextView");
-
-        static readonly PropertyInfo TextContainerTextSelectionProp
+        private static readonly PropertyInfo TextContainerTextSelectionProp
             = TextContainerType.GetProperty("TextSelection");
+        private static readonly PropertyInfo TextContainerProp = typeof(TextBlock).GetProperty("TextContainer", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        static readonly PropertyInfo TextContainerProp = typeof(TextBlock).GetProperty("TextContainer", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        static void RegisterCommandHandlers(Type controlType, bool acceptsRichContent, bool readOnly, bool registerEventListeners)
+        private static void RegisterCommandHandlers(Type controlType, bool acceptsRichContent, bool readOnly, bool registerEventListeners)
         {
             RegisterMethod.Invoke(null, new object[] { controlType, acceptsRichContent, readOnly, registerEventListeners });
         }
@@ -50,8 +40,8 @@ namespace WpfCustomControlLibrary
         }
 
         //private readonly TextEditorWrapper _editor;
-        object? textContainer;
-        object? editor;
+        private object? textContainer;
+        private object? editor;
         public TextSelection TextSelection { get; private set; }
 
         public SelectableTextBlock()

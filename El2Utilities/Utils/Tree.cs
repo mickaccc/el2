@@ -1,10 +1,7 @@
-﻿using El2Core.Constants;
-using El2Core.Models;
+﻿using El2Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static El2Core.Constants.ProjectTypes;
 
 namespace El2Core.Utils
@@ -125,7 +122,7 @@ namespace El2Core.Utils
             while (tree.level > 0) { tree.End(); } // close all
             return true;
         }
-        
+
     }
     public class PspTree
     {
@@ -189,14 +186,14 @@ namespace El2Core.Utils
             _projectType = (ProjectType)project.ProjectType;
             Parent = this;
             Children = new List<BranchNode>();
-            
+
             if (project.ProjectPsp is string s)
             {
                 NodeType = s.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? "PSP-Type" : "Order-Type";
             }
             else NodeType = "invalid";
         }
- 
+
         public BranchNode Add(Project project, string? order)
         {
             var node = new BranchNode(project, order);
@@ -210,7 +207,7 @@ namespace El2Core.Utils
             var parent = tree.Nodes.FirstOrDefault(x => x.Value == root);
             if (parent == null)
             {
-                var pro = new Project() { ProjectPsp = root };             
+                var pro = new Project() { ProjectPsp = root };
                 tree.Begin(pro, null);
                 parent = tree.Nodes.Last();
             }

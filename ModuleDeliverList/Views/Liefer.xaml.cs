@@ -18,7 +18,7 @@ namespace ModuleDeliverList.Views
         private void ucLiefer_GotFocus(object sender, RoutedEventArgs e)
         {
             var data = e.Source as LieferlisteControl;
-            if (data != null) 
+            if (data != null)
                 Lieferlist.SelectedItem = data.DataContext;
         }
     }
