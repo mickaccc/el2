@@ -243,7 +243,6 @@ namespace ModuleDeliverList.ViewModels
                 if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
                 if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
-                //ProcessesCV.Refresh();
             }
             catch (System.Exception e)
             {

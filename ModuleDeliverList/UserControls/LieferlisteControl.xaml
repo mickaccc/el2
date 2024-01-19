@@ -83,7 +83,7 @@
  
     </UserControl.Resources>
     <Border Focusable="True" >
-        <StackPanel  x:Name="Liefer"  Background="Transparent" >
+        <VirtualizingStackPanel  x:Name="Liefer"  Background="Transparent" >
 
         <Grid >
             <Grid.RowDefinitions>
@@ -182,7 +182,12 @@
                                                Converter={StaticResource Permission}}"
                                    TextWrapping="Wrap"/>
             </GroupBox>
-            <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" 
+                <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Orientation="Horizontal">
+                    <Label Content="TABG" Background="Pink"/>
+                    <Label Content="EROF" Background="Pink"/>
+                </VirtualizingStackPanel>
+                
+                <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" 
                          ToolTip="Endtermin" Grid.Row="1" 
                          Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
                          Background="{Binding EndDate, Converter={StaticResource DateLost}, ElementName=luc}"/>
@@ -225,7 +230,7 @@
                     ConverterParameter={x:Static const:Permissions.OrderBrief}}"/>
             </DockPanel>
         </Grid>
-        </StackPanel>
+        </VirtualizingStackPanel>
     </Border>
 
 </UserControl>
