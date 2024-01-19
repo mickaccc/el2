@@ -152,7 +152,8 @@
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                           ItemsSource="{Binding OrderTask.Result}"
                           HorizontalContentAlignment="Stretch" Tag="{Binding Path=ItemTemplate, RelativeSource={RelativeSource self}}"
-             IsSynchronizedWithCurrentItem="True" ItemContainerStyle="{StaticResource _ListBoxItemStyle}" >
+             IsSynchronizedWithCurrentItem="True" ItemContainerStyle="{StaticResource _ListBoxItemStyle}"
+             VirtualizingPanel.VirtualizationMode="Recycling">
 
             <ListBox.ContextMenu>
                 <ContextMenu>
