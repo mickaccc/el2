@@ -66,15 +66,12 @@ namespace Lieferliste_WPF.Utilities
             }
 
         }
-        public static FlowDocument CreateFlowDocument(object parameter)
+        public static FlowDocument CreateFlowDocument(object parameter, PrintDialog printDlg)
         {
             string Name;
             string? Second;
             string? Description;
-            var pd = new PrintDialog();
-            pd.PrintTicket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
-            pd.PrintTicket.PageOrientation = PageOrientation.Landscape;
-            double printSizeWidth = pd.PrintableAreaWidth;
+            double printSizeWidth = printDlg.PrintableAreaWidth - 22;
             List<Vorgang> proces;
             if (parameter is PlanMachine plm)
             {
@@ -94,6 +91,9 @@ namespace Lieferliste_WPF.Utilities
 
             FlowDocument fd = new FlowDocument();
             Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy hh:mm")));
+            fd.PageWidth = printDlg.PrintableAreaWidth;
+            fd.PageHeight = printDlg.PrintableAreaHeight;
+            fd.PagePadding = new Thickness(12.0, 5.0, 10.0, 5.0);
             p1.FontStyle = FontStyles.Normal;
             p1.FontFamily = new FontFamily("Microsoft Sans Serif");
             p1.FontSize = 12;
@@ -139,16 +139,16 @@ namespace Lieferliste_WPF.Utilities
                 string head;
                 switch (pr.Name)
                 {
-                    case "Aid": head = "Auftrags-\nnummer"; tabCol.Width = new GridLength(printSizeWidth / 14); break;
-                    case "ProcessingUom": head = "Vorgang"; tabCol.Width = new GridLength(printSizeWidth / 28); break;
-                    case "Material": head = "Material"; tabCol.Width = new GridLength(printSizeWidth / 13); break;
-                    case "Bezeichng": head = "Bezeichnung"; tabCol.Width = new GridLength(printSizeWidth / 10); break;
-                    case "BeazeEinheit": head = "Stk."; tabCol.Width = new GridLength(printSizeWidth / 28); break;
-                    case "Text": head = "Kurztext"; tabCol.Width = new GridLength(printSizeWidth / 7); break;
-                    case "RstzeEinheit": head = "SpätStart"; tabCol.Width = new GridLength(printSizeWidth / 18.7); break;
-                    case "SpaetEnd": head = "SpätEnd"; tabCol.Width = new GridLength(printSizeWidth / 28); break;
-                    case "BemT": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth / 11); break;
-                    case "WrtzeEinheit": head = "Dauer"; tabCol.Width = new GridLength(printSizeWidth / 22); break;
+                    case "Aid": head = "Auftrags-\nnummer"; tabCol.Width = new GridLength(printSizeWidth * 0.07); break;
+                    case "ProcessingUom": head = "Vorgang"; tabCol.Width = new GridLength(printSizeWidth * 0.035); break;
+                    case "Material": head = "Material"; tabCol.Width = new GridLength(printSizeWidth * 0.09); break;
+                    case "Bezeichng": head = "Bezeichnung"; tabCol.Width = new GridLength(printSizeWidth * 0.1); break;
+                    case "BeazeEinheit": head = "Stk."; tabCol.Width = new GridLength(printSizeWidth * 0.035); break;
+                    case "Text": head = "Kurztext"; tabCol.Width = new GridLength(printSizeWidth * 0.19); break;
+                    case "RstzeEinheit": head = "SpätStart"; tabCol.Width = new GridLength(printSizeWidth * 0.06); break;
+                    case "SpaetEnd": head = "SpätEnd"; tabCol.Width = new GridLength(printSizeWidth * 0.07); break;
+                    case "BemT": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth * 0.3); break;
+                    case "WrtzeEinheit": head = "Dauer"; tabCol.Width = new GridLength(printSizeWidth * 0.05); break;
                     default: head = "not Valid"; break;
                 }
                 r.Cells.Add(new TableCell(new Paragraph(new Run(head)))
@@ -198,15 +198,10 @@ namespace Lieferliste_WPF.Utilities
 
         }
 
-        public static void DoPrintPreview(FlowDocument doc)
+        public static void DoPrintPreview(object obj, PrintDialog print)
         {
-
-            PrintDialog dialog = new();
-            dialog.PrintTicket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
-            dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
-
-            doc.PagePadding = new Thickness(12.0, 20.0, 10.0, 10.0);
-            var fix = Get_Fixed_From_FlowDoc(doc, dialog);
+            var doc = CreateFlowDocument(obj, print);
+            var fix = Get_Fixed_From_FlowDoc(doc, print);
             var windows = new PrintWindow(fix);
             windows.ShowDialog();
 
@@ -308,7 +303,7 @@ namespace Lieferliste_WPF.Utilities
                     var page = dpPages.GetPage(iPages);
                     var pageContent = new PageContent();
                     var fixedPage = new FixedPage();
-
+                    
                     Canvas canvas = new Canvas();
 
                     VisualBrush vb = new VisualBrush(page.Visual);
@@ -327,7 +322,7 @@ namespace Lieferliste_WPF.Utilities
                     canvas.Background = vb;
 
                     fixedPage.Children.Add(canvas);
-
+                    fixedPage.Width = pdlgPrint.PrintableAreaWidth;
                     fixedPage.Height = pdlgPrint.PrintableAreaHeight;
                     fixedPage.HorizontalAlignment = HorizontalAlignment.Stretch;
                     pageContent.Child = fixedPage;

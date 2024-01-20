@@ -27,7 +27,8 @@
         <conv:KW_Converter x:Key="KwConv"/>
         <conv:CommentConverter x:Key="CommentConv"/>
         <conv:NullStringToBoolConverter x:Key="stringEmpty"/>
-        
+        <conv:SysStatusToVisibilityConverter x:Key="sysVisible"/>
+
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <System:DateTime x:Key="datetime"/>
@@ -183,8 +184,10 @@
                                    TextWrapping="Wrap"/>
             </GroupBox>
                 <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Orientation="Horizontal">
-                    <Label Content="TABG" Background="Pink"/>
-                    <Label Content="EROF" Background="Pink"/>
+                    <Label Content="TABG" Background="Pink" Visibility="{Binding Path=SysStatus, ElementName=luc,
+                        Converter={StaticResource sysVisible}, ConverterParameter=TABG}"/>
+                    <Label Content="EROF" Background="Pink" Visibility="{Binding Path=SysStaus, ElementName=luc,
+                        Converter={StaticResource sysVisible}, ConverterParameter=EROF}"/>
                 </VirtualizingStackPanel>
                 
                 <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" 

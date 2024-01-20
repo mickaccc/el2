@@ -121,6 +121,18 @@ namespace ModuleDeliverList.UserControls
                 , typeof(LieferlisteControl));
 
 
+
+        public string SysStatus
+        {
+            get { return (string)GetValue(SysStatusProperty); }
+            set { SetValue(SysStatusProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SysStatus.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SysStatusProperty =
+            DependencyProperty.Register("SysStatus", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+
+
         public int QuantityMiss
         {
             get { return (int)GetValue(QuantityMissProperty); }

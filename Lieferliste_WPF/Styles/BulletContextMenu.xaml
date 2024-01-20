@@ -22,7 +22,10 @@
 				<Image Source="/Images/files-and-folders.png"/>
 			</MenuItem.Icon>
 		</MenuItem>
-		<Separator>
+        <MenuItem Command="{Binding HistoryCommand}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+                  Header="Material History" Name="HystoryMenu"/>
+        <Separator>
 			<Separator.Template>
 				<ControlTemplate>
 					<Line Stretch="Fill"

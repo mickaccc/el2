@@ -17,7 +17,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Printing;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -197,7 +199,12 @@ namespace Lieferliste_WPF.Planning
         {
             try
             {
-                Printing.DoPrintPreview(Printing.CreateFlowDocument(obj));
+                var print = new PrintDialog();
+                var ticket = new PrintTicket();
+                ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
+                ticket.PageOrientation = PageOrientation.Portrait;
+                print.PrintTicket = ticket;
+                Printing.DoPrintPreview(obj, print);
             }
             catch (System.Exception e)
             {

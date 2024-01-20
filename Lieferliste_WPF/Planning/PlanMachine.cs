@@ -12,6 +12,7 @@ using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Prism.Events;
 using Prism.Ioc;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,7 +20,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Printing;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -32,6 +35,7 @@ namespace Lieferliste_WPF.Planning
         IApplicationCommands ApplicationCommands { get; }
         IEventAggregator EventAggregator { get; }
         IUserSettingsService SettingsService { get; }
+        IDialogService DialogService { get; }
     }
     internal class PlanMachineFactory : IPlanMachineFactory
     {
@@ -43,17 +47,21 @@ namespace Lieferliste_WPF.Planning
 
         public IUserSettingsService SettingsService { get; }
 
+        public IDialogService DialogService { get; }
+
+
         public PlanMachineFactory(IContainerProvider container, IApplicationCommands applicationCommands,
-            IEventAggregator eventAggregator, IUserSettingsService settingsService)
+            IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
         {
             this.Container = container;
             this.ApplicationCommands = applicationCommands;
             this.EventAggregator = eventAggregator;
             this.SettingsService = settingsService;
+            this.DialogService = dialogService;
         }
         public PlanMachine CreatePlanMachine(int Rid)
         {
-            return new PlanMachine(Rid, Container, ApplicationCommands, EventAggregator, SettingsService);
+            return new PlanMachine(Rid, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
         }
     }
     public interface IPlanMachine
@@ -66,7 +74,7 @@ namespace Lieferliste_WPF.Planning
         #region Constructors
 
         public PlanMachine(int Rid, IContainerProvider container, IApplicationCommands applicationCommands,
-            IEventAggregator eventAggregator, IUserSettingsService settingsService)
+            IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
         {
             _container = container;
             _dbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -74,6 +82,7 @@ namespace Lieferliste_WPF.Planning
             _applicationCommands = applicationCommands;
             _eventAggregator = eventAggregator;
             _settingsService = settingsService;
+            _dialogService = dialogService;
             Initialize();
             LoadData();
             _eventAggregator = eventAggregator;
@@ -87,6 +96,7 @@ namespace Lieferliste_WPF.Planning
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? OpenMachineCommand { get; private set; }
         public ICommand? MachinePrintCommand { get; private set; }
+        public ICommand? HistoryCommand { get; private set; }
 
         private readonly int _rId;
         private string _title;
@@ -110,6 +120,7 @@ namespace Lieferliste_WPF.Planning
         private IEventAggregator _eventAggregator;
         private IApplicationCommands? _applicationCommands;
         private IUserSettingsService _settingsService;
+        private readonly IDialogService _dialogService;
         public IApplicationCommands? ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -168,6 +179,7 @@ namespace Lieferliste_WPF.Planning
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
             MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
+            HistoryCommand = new ActionCommand(OnHistoryExecuted, OnHistoryCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
@@ -201,7 +213,6 @@ namespace Lieferliste_WPF.Planning
                             Processes?.Remove(pr);
                             _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != pr.VorgangId).State = EntityState.Unchanged;
                         }
-
                     }
                 }
             }
@@ -209,6 +220,31 @@ namespace Lieferliste_WPF.Planning
             {
 
                 MessageBox.Show(ex.Message, "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private bool OnHistoryCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.HistoryDialog);
+        }
+
+        private void OnHistoryExecuted(object obj)
+        {
+            if(obj is Vorgang vrg)
+            {
+                var matInfo = _dbCtx.OrderRbs.AsNoTracking()
+                    .Include(x => x.MaterialNavigation)
+                    .Include(x => x.DummyMatNavigation)
+                    .Include(x => x.Vorgangs)
+                    .Where(x => x.Material == vrg.AidNavigation.Material)
+                    .ToList();
+
+                if (matInfo != null)
+                {
+                    var par = new DialogParameters();
+                    par.Add("orderList", matInfo);
+                    par.Add("VNR", vrg.Vnr);
+                    _dialogService.Show("HistoryDialog", par, null);
+                }
             }
         }
 
@@ -221,7 +257,12 @@ namespace Lieferliste_WPF.Planning
         {
             try
             {
-                Printing.DoPrintPreview(Printing.CreateFlowDocument(obj));
+                var print = new PrintDialog();
+                var ticket = new PrintTicket();
+                ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
+                ticket.PageOrientation = PageOrientation.Landscape;
+                print.PrintTicket = ticket;
+                Printing.DoPrintPreview(obj, print);
             }
             catch (System.Exception e)
             {

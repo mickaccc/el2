@@ -80,7 +80,8 @@
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <control:MachineUserControl Height="{Binding ActualHeight, ElementName=stackPanel, Mode=OneWay}"/>
+                    <control:MachineUserControl Height="{Binding ActualHeight, ElementName=stackPanel, Mode=OneWay}"
+                                                Width="{Binding Path=Value, ElementName=slider}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
 
@@ -108,8 +109,10 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </Border>
 
+        </Border>
+        <Slider x:Name="slider" Width="200" Minimum="30" Maximum="240" Margin="10"
+                    Value="240" HorizontalAlignment="Right" />
         <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
                   CanUserAddRows="False" CanUserDeleteRows="False" HorizontalContentAlignment="Center" ColumnWidth="Auto"

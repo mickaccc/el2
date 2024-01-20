@@ -5,12 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lieferliste_WPF.Views"
         mc:Ignorable="d"
-        Title="PrintWindow" MinHeight="450" MinWidth="800" SizeToContent="Manual">
+        Title="PrintWindow" MinHeight="450" MinWidth="800">
     <Grid>
-  
+        <DocumentViewer  x:Name="PreviewD"  IsManipulationEnabled="True" >
+            <DocumentViewer.LayoutTransform>
+                <TransformGroup>
+                    <ScaleTransform  />
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </DocumentViewer.LayoutTransform>
 
-        <DocumentViewer  x:Name="PreviewD"  >
- 
         </DocumentViewer>
  
     </Grid>
