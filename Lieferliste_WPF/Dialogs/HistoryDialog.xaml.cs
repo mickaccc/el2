@@ -26,9 +26,9 @@ namespace Lieferliste_WPF.Dialogs
         {
             InitializeComponent();
         }
+        public IDialogResult Result { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public Window Owner { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IDialogResult Result { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public event EventHandler Closed;
         public event CancelEventHandler Closing;

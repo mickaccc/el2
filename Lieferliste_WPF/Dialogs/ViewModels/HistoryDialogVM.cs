@@ -17,7 +17,7 @@ namespace Lieferliste_WPF.Dialogs
         private string? _material;
         public string? MatDescription => _matDescription;
         private string? _matDescription;
-        private List<OrderRb>? _orderList;
+        private List<Vorgang>? _orderList;
         public ICollectionView OrderList { get; private set; }
         
         public event Action<IDialogResult> RequestClose;
@@ -39,9 +39,22 @@ namespace Lieferliste_WPF.Dialogs
 
             _material = ord.First().Material;
             _matDescription = ord.First().MaterialNavigation?.Bezeichng;
-
-            _orderList = new List<OrderRb>(ord.Where(x => x.Vorgangs.Any(x => x.Vnr == vnr)));
+            var list = new List<Vorgang>();
+            foreach (var o in ord)
+            {
+  
+                Vorgang vrg;
+                var ind = o.Vorgangs.OrderBy(x => x.Vnr).Select((x, i) => new { vrg = x, Index = i }).First(x => x.vrg.Vnr >= vnr)?.Index;
+                if (ind != null)
+                {
+                    list.Add(o.Vorgangs.ElementAt(ind.Value - 1));
+                    list.Add(o.Vorgangs.ElementAt(ind.Value));
+                    list.Add(o.Vorgangs.ElementAt(ind.Value + 1));
+                }
+            }
+                _orderList = new List<Vorgang>(list);
             OrderList = CollectionViewSource.GetDefaultView(_orderList);
+            OrderList.GroupDescriptions.Add(new PropertyGroupDescription("Aid"));
         }
     }
 }

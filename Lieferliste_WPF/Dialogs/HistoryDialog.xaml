@@ -5,24 +5,46 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Lieferliste_WPF.Dialogs"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <StackPanel>
-            <TextBlock Text="{Binding Material}"/>
-            <TextBlock Text="{Binding MatDescription}"/>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="5"/>
+            </Style>
+        </Grid.Resources>
+        <StackPanel Background="Gainsboro">
+            <TextBlock Text="{Binding Material}" FontWeight="Bold" FontSize="18"/>
+            <TextBlock Text="{Binding MatDescription}" FontSize="16"/>
         </StackPanel>
-        <ListBox x:Name="histoList" Grid.Row="1" ItemsSource="{Binding OrderList}">
-            <ListBox.ItemTemplate>
+        <ListView x:Name="histoList" Grid.Row="1" ItemsSource="{Binding OrderList}" >
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+            <ListView.ItemTemplate>
+               
                 <DataTemplate>
-                    <VirtualizingStackPanel>
-                        <TextBlock Text="{Binding Aid}"/>
-                    </VirtualizingStackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Vnr}" />
+                        <TextBlock Text="{Binding Text}"/>
+                        <TextBox Text="{Binding BemT}" IsReadOnly="True" TextWrapping="Wrap"/>
+                    </StackPanel>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ListView.ItemTemplate>
+        </ListView>
+        <DockPanel Grid.Row="2" HorizontalAlignment="Right">
+            <Button Content="Übernehmen" Margin="5"/>
+            <Button Content="Abbrechen" Margin="5"/>
+        </DockPanel>
     </Grid>
 </UserControl>
