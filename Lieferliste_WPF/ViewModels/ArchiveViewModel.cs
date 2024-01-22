@@ -1,4 +1,5 @@
-﻿using El2Core.Constants;
+﻿using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -16,6 +17,19 @@ namespace Lieferliste_WPF.ViewModels
     internal class ArchiveViewModel : ViewModelBase
     {
         private IContainerExtension _container;
+        private IApplicationCommands _applicationCommands;
+        public IApplicationCommands ApplicationCommands
+        {
+            get { return _applicationCommands; }
+            set
+            {
+                if (_applicationCommands != null)
+                {
+                    _applicationCommands = value;
+                    NotifyPropertyChanged(() => ApplicationCommands);
+                }
+            }
+        }
         private NotifyTaskCompletion<ICollectionView> _contentTask;
         public string Title { get; } = "Archiv";
         private string _searchValue;
@@ -46,9 +60,10 @@ namespace Lieferliste_WPF.ViewModels
             CollectionView.Refresh();
         }
 
-        public ArchiveViewModel(IContainerExtension container)
+        public ArchiveViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
         {
             _container = container;
+            _applicationCommands = applicationCommands;
             DeArchivateCommand = new ActionCommand(OnDeArchivateExecuted, OnDeArchivateCanExecute);
             ContentTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync());
         }

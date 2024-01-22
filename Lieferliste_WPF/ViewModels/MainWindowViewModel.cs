@@ -278,9 +278,12 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenOrderExecuted(object parameter)
         {
-            if (parameter is Vorgang y)
-            {
+            var aid = string.Empty;
+            if (parameter is Vorgang y) aid = y.Aid;
+            else if (parameter is string) aid = (string)parameter;
 
+            if (string.IsNullOrEmpty(aid) == false)
+            {
                 using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                 {
                     var vrgs = db.Vorgangs
@@ -292,7 +295,7 @@ namespace Lieferliste_WPF.ViewModels
                         .Include(x => x.ArbPlSapNavigation)
                         .ThenInclude(x => x.Ressource)
                         .ThenInclude(X => X.WorkArea)
-                        .Where(x => x.Aid == y.Aid)
+                        .Where(x => x.Aid == aid)
                         .ToList();
 
 

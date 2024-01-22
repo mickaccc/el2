@@ -39,6 +39,9 @@
                   ItemsSource="{Binding ContentTask.Result}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Auftrag öffnen" Command="{Binding ApplicationCommands.OpenOrderCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
+                        Path=PlacementTarget.SelectedItem.Aid}"/>
                     <MenuItem Header="Eintrag kopieren" Command="Copy" 
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
                         Path=PlacementTarget.SelectedItem}"/>

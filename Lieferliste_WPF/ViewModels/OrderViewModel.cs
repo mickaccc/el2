@@ -265,21 +265,26 @@ namespace Lieferliste_WPF.ViewModels
         {
             var p = parameters.GetValue<List<Vorgang>>("vrgList");
 
-            foreach (var item in p)
+            if (p.Count > 0)
             {
-                Vorgangs.Add(item);
-            }
-            var v = p.First();
-            Aid = v.Aid;
-            Material = v.AidNavigation.Material;
-            Bezeichnung = v.AidNavigation.MaterialNavigation?.Bezeichng;
-            Quantity = v.AidNavigation.Quantity;
-            Pro = v.AidNavigation.ProId;
-            ProInfo = v.AidNavigation.Pro?.ProjectInfo;
-            SysStatus = v.AidNavigation.SysStatus;
-            Ready = v.AidNavigation.Fertig;
+                foreach (var item in p)
+                {
+                    Vorgangs.Add(item);
+                }
+                var v = p.First();
+                Aid = v.Aid;
+                Material = v.AidNavigation.Material;
+                Bezeichnung = v.AidNavigation.MaterialNavigation?.Bezeichng;
+                Quantity = v.AidNavigation.Quantity;
+                Pro = v.AidNavigation.ProId;
+                ProInfo = v.AidNavigation.Pro?.ProjectInfo;
+                SysStatus = v.AidNavigation.SysStatus;
+                Ready = v.AidNavigation.Fertig;
 
-            VorgangCV.Refresh();
+                VorgangCV.Refresh(); 
+            }
+            else
+                MessageBox.Show("keine Vorgänge vorhanden", Title,MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

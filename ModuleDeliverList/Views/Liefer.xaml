@@ -43,7 +43,7 @@
         </DataTemplate>
 
         <ItemsPanelTemplate x:Key="advancedComboxItemsPanelTemplate">
-            <StackPanel Grid.IsSharedSizeScope="True" IsItemsHost="True"/>
+            <VirtualizingStackPanel Grid.IsSharedSizeScope="True" IsItemsHost="True"/>
         </ItemsPanelTemplate>
 
         <Style x:Key="_ListBoxItemStyle" TargetType="ListBoxItem">
@@ -102,7 +102,7 @@
             materialDesign:HintAssist.FloatingOffset="1,-10">
             <StackPanel Orientation="Horizontal" >
                 
-                <ComboBox x:Name="ProjComboBox" Width="250"
+                <ComboBox x:Name="ProjComboBox" Width="250"  VirtualizingPanel.IsVirtualizing="True"
                      materialDesign:HintAssist.Hint="Projekte" materialDesign:HintAssist.IsFloating="True" materialDesign:HintAssist.FloatingOffset="5,-15"
                      
                           ItemsSource="{Binding Projects}"                        
@@ -111,19 +111,23 @@
                           ItemTemplate="{StaticResource advancedComboxItemDataTemplate}"
                           ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
 
-                <ComboBox x:Name="SectionComboBox" 
+                    <ComboBox x:Name="SectionComboBox" 
                       materialDesign:HintAssist.Hint="Bereiche"
                           ItemsSource="{Binding Sections}"
                           DisplayMemberPath="Value" 
                           SelectedValue="{Binding SelectedSectionFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          SelectedValuePath="Value"  />
-                <ComboBox x:Name="FilterComboBox" 
+                          SelectedValuePath="Value" VirtualizingPanel.IsVirtualizing="True"
+                          ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
+
+
+                    <ComboBox x:Name="FilterComboBox" 
                           Background="{Binding FilterInvers, Converter={StaticResource boolalert}}"
                     materialDesign:HintAssist.Hint="Filters" materialDesign:HintAssist.IsFloating="True" materialDesign:HintAssist.FloatingOffset="5,-15"                   
                     ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
                          SelectedValue="{Binding Path=SelectedDefaultFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          DisplayMemberPath="Description"
-                         SelectedValuePath="Value" >
+                         SelectedValuePath="Value"
+                         ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}">
                     <ComboBox.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Filter umkehren" Command="{Binding ToggleFilterCommand}"/>
@@ -147,7 +151,6 @@
                    Visibility="{Binding OrderTask.IsFaulted, Converter={StaticResource BoolToVis}}"/>
     </StackPanel>
 
-
     <ListBox x:Name="Lieferlist" Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}"
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                           ItemsSource="{Binding OrderTask.Result}"
@@ -156,7 +159,7 @@
              VirtualizingPanel.VirtualizationMode="Recycling">
 
             <ListBox.ContextMenu>
-                <ContextMenu>
+                <ContextMenu ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}" VirtualizingPanel.IsVirtualizing="True">
                     <MenuItem Header="Vorgang aus-/einblenden"
                              Command="{Binding InvisibilityCommand}"
                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},Path=PlacementTarget.SelectedItem}"/>

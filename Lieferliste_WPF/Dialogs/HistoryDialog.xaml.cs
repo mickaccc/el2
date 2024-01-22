@@ -20,32 +20,11 @@ namespace Lieferliste_WPF.Dialogs
     /// <summary>
     /// Interaction logic for HistoryDialog.xaml
     /// </summary>
-    public partial class HistoryDialog : UserControl, IDialogWindow
+    public partial class HistoryDialog : UserControl
     {
         public HistoryDialog()
         {
             InitializeComponent();
-        }
-        public IDialogResult Result { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public Window Owner { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public event EventHandler Closed;
-        public event CancelEventHandler Closing;
-
-        public void Close()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Show()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool? ShowDialog()
-        {
-            throw new NotImplementedException();
         }
     }
 }

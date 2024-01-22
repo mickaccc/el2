@@ -1,6 +1,7 @@
 ﻿using BionicCode.Utilities.Net.Standard.Extensions;
 using CompositeCommands.Core;
 using El2Core.Constants;
+using El2Core.Converters;
 using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
@@ -21,6 +22,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Printing;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -235,7 +237,7 @@ namespace Lieferliste_WPF.Planning
                     .Include(x => x.MaterialNavigation)
                     .Include(x => x.DummyMatNavigation)
                     .Include(x => x.Vorgangs)
-                    .Where(x => x.Material == vrg.AidNavigation.Material)
+                    .Where(x => x.Material == vrg.AidNavigation.Material && x.Aid != vrg.Aid)
                     .ToList();
 
                 if (matInfo != null)
@@ -243,7 +245,24 @@ namespace Lieferliste_WPF.Planning
                     var par = new DialogParameters();
                     par.Add("orderList", matInfo);
                     par.Add("VNR", vrg.Vnr);
-                    _dialogService.Show("HistoryDialog", par, null);
+                    par.Add("VID", vrg.VorgangId);
+                    _dialogService.Show("HistoryDialog", par, HistoryCallBack);
+                }
+            }
+        }
+
+        private void HistoryCallBack(IDialogResult result)
+        {
+            if (result.Result == ButtonResult.Yes)
+            {
+                string[] bemt = [];
+                var vid = result.Parameters.GetValue<string>("VID");
+                var bem = result.Parameters.GetValue<string>("Comment");
+                if(bem != null) bemt = bem.Split(';');
+                if (bemt.Length > 1)
+                {
+                    Processes.First(x => x.VorgangId == vid).BemT = String.Format("[{0}-{1}];{2}",
+                        UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), bemt[1]);
                 }
             }
         }

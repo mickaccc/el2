@@ -186,7 +186,7 @@
                 <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Orientation="Horizontal">
                     <Label Content="TABG" Background="Pink" Visibility="{Binding Path=SysStatus, ElementName=luc,
                         Converter={StaticResource sysVisible}, ConverterParameter=TABG}"/>
-                    <Label Content="EROF" Background="Pink" Visibility="{Binding Path=SysStaus, ElementName=luc,
+                    <Label Content="EROF" Background="Pink" Visibility="{Binding Path=SysStatus, ElementName=luc,
                         Converter={StaticResource sysVisible}, ConverterParameter=EROF}"/>
                 </VirtualizingStackPanel>
                 
