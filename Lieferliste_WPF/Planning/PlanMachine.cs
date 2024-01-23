@@ -343,7 +343,7 @@ namespace Lieferliste_WPF.Planning
 
         private void MachineClosed(object? sender, EventArgs e)
         {
-            if (_dbCtx.ChangeTracker.HasChanges())
+            if (_dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged))
             {
                 if (!SaveQuestion())
                 {

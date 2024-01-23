@@ -30,6 +30,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Background" Value="LightYellow"/>
             <Setter Property="Padding" Value="2"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
         </Style>
         <Style TargetType="DataGridCell">
             <Setter Property="BorderThickness" Value="0"/>
@@ -157,7 +158,7 @@
                             Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
                                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
                                                                  Converter={StaticResource permiss}}"
-                                                  TextWrapping="Wrap" />
+                                                  TextWrapping="Wrap" AcceptsReturn="True" />
                             </GroupBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

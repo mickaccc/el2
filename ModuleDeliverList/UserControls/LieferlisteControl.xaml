@@ -162,7 +162,7 @@
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
                                                  Converter={StaticResource Permission}}"
-                             TextWrapping="Wrap" />
+                             TextWrapping="Wrap" AcceptsReturn="True" />
             </GroupBox>
 
             <GroupBox Grid.Column="10"  ToolTip="Kommentar Teamleiter"
@@ -172,7 +172,7 @@
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
                                                  Converter={StaticResource Permission}}"
-                                  TextWrapping="Wrap" />
+                                  TextWrapping="Wrap" AcceptsReturn="True" />
             </GroupBox>
             <GroupBox Grid.Column="11"  ToolTip="Kommentar Mitarbeiter"
                           Header="{Binding Comment_Ma, ElementName=luc,
@@ -181,7 +181,7 @@
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                    IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
                                                Converter={StaticResource Permission}}"
-                                   TextWrapping="Wrap"/>
+                                   TextWrapping="Wrap" AcceptsReturn="True"/>
             </GroupBox>
                 <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Orientation="Horizontal">
                     <Label Content="TABG" Background="Pink" Visibility="{Binding Path=SysStatus, ElementName=luc,

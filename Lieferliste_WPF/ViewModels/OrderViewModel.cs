@@ -267,7 +267,7 @@ namespace Lieferliste_WPF.ViewModels
 
             if (p.Count > 0)
             {
-                foreach (var item in p)
+                foreach (var item in p.OrderBy(x => x.Vnr))
                 {
                     Vorgangs.Add(item);
                 }

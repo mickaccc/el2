@@ -13,7 +13,7 @@
     prism:ViewModelLocator.AutoWireViewModel="True"
     x:Class="Lieferliste_WPF.Views.Order"
         mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="1000" MaxHeight="600" MinWidth="1000" Tag="{Binding Title}" >
+    d:DesignHeight="450" d:DesignWidth="1000" MinWidth="1000" Tag="{Binding Title}" >
 
 
     <UserControl.Resources>
@@ -191,7 +191,7 @@
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
 	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
 									                                     Converter={StaticResource Permission}}"
-				                                     TextWrapping="Wrap" >
+				                                     TextWrapping="Wrap" AcceptsReturn="True" >
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SourceUpdated">
                                             <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
@@ -208,7 +208,7 @@
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
 	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
 									                                     Converter={StaticResource Permission}}"
-				                                     TextWrapping="Wrap">
+				                                     TextWrapping="Wrap" AcceptsReturn="True">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SourceUpdated">
                                             <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
@@ -226,7 +226,7 @@
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                                          IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
                                                                          Converter={StaticResource Permission}}"
-                                                     TextWrapping="Wrap" >
+                                                     TextWrapping="Wrap" AcceptsReturn="True" >
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SourceUpdated">
                                             <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
