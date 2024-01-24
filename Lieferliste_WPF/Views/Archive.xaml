@@ -16,11 +16,11 @@
             
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="25"/>
             <RowDefinition Height="10*"/>
         </Grid.RowDefinitions>
         <DockPanel>
-        <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="suche nach Auftragsnummer, TTNR, Materialbezeichnung"
+        <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="suche nach Auftragsnummer, TTNR, Materialbezeichnung oder Projekt"
                  materialDesign:TextFieldAssist.HasClearButton="True"
                  Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
             <i:Interaction.Triggers>

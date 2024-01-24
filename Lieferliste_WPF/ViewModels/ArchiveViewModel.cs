@@ -113,7 +113,8 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     ret = o.Aid.Contains(_searchValue) ||
                         ((o.Material != null) && o.Material.Contains(_searchValue)) ||
-                        ((o.MaterialNavigation != null) && o.MaterialNavigation.Ttnr.Contains(_searchValue));
+                        ((o.MaterialNavigation != null) && o.MaterialNavigation.Ttnr.Contains(_searchValue)) ||
+                        ((o.ProId != null) && o.ProId.Contains(_searchValue));
                 }
             }
             return ret;

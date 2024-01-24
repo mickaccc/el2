@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:prism="http://prismlibrary.com/"
@@ -27,14 +28,12 @@
                      Visibility="{Binding ProjTask.IsNotCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <TextBlock Grid.Row="1" Text="{Binding ProjTask.ErrorMessage}"
                    Visibility="{Binding ProjTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding ProjTask.Result}" AutoGenerateColumns="False" IsReadOnly="True">
-            <DataGrid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Auftrag öffnen"
-                              Command="{Binding ApplicationCommands.OpenOrderCommand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem.Aid}"/>
-                </ContextMenu>
-            </DataGrid.ContextMenu>
+        <DataGrid x:Name="orders" Grid.Row="1" ItemsSource="{Binding ProjTask.Result}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.InputBindings>
+                <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
+					  CommandParameter="{Binding ElementName=orders, Path=SelectedItem}"
+					  MouseAction="LeftDoubleClick"/>
+            </DataGrid.InputBindings>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Setter Property="Background" >

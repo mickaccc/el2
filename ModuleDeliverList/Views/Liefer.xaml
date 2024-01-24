@@ -101,8 +101,9 @@
             Mode="Standard"
             materialDesign:HintAssist.FloatingOffset="1,-10">
             <StackPanel Orientation="Horizontal" >
-                
-                <ComboBox x:Name="ProjComboBox" Width="250"  VirtualizingPanel.IsVirtualizing="True"
+                    <TextBox x:Name="MarkerCode" Width="40" Background="DimGray" Foreground="White"
+                             Text="{Binding MarkerCode, Mode=OneWayToSource}"/>
+                    <ComboBox x:Name="ProjComboBox" Width="250"
                      materialDesign:HintAssist.Hint="Projekte" materialDesign:HintAssist.IsFloating="True" materialDesign:HintAssist.FloatingOffset="5,-15"
                      
                           ItemsSource="{Binding Projects}"                        
@@ -195,6 +196,7 @@
                             Comment_Ma="{Binding BemMa, Mode=TwoWay,NotifyOnTargetUpdated=True}"
                             PrioText="{Binding AidNavigation.Prio, Mode=TwoWay}"
                             SysStatus="{Binding AidNavigation.sysStatus}"
+                            Marker="{Binding Marker, Mode=TwoWay}"
                             Visibility="{Binding Visability, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}" >

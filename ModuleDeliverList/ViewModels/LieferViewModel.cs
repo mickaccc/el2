@@ -32,7 +32,6 @@ namespace ModuleDeliverList.ViewModels
         public ICommand ToggleFilterCommand => _toggleFilterCommand ??= new RelayCommand(OnToggleFilter);
         public ICommand SortAscCommand => _sortAscCommand ??= new RelayCommand(OnAscSortExecuted);
         public ICommand SortDescCommand => _sortDescCommand ??= new RelayCommand(OnDescSortExecuted);
-        public ActionCommand SetMarkerCommand { get; private set; }
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SaveCommand { get; private set; }
@@ -52,6 +51,7 @@ namespace ModuleDeliverList.ViewModels
         private string _searchFilterText = string.Empty;
         private string _selectedProjectFilter = string.Empty;
         private string _selectedSectionFilter = string.Empty;
+        private string _markerCode = string.Empty;
         private static System.Timers.Timer? _timer;
         private static System.Timers.Timer? _autoSaveTimer;
         private IContainerProvider _container;
@@ -103,6 +103,16 @@ namespace ModuleDeliverList.ViewModels
                     OrdersView.Refresh();
                     _searchTxtLock = false;
                 }
+            }
+        }
+        public string MarkerCode
+        {
+            get { return _markerCode; }
+            set
+            {
+                _markerCode = value;
+                NotifyPropertyChanged(() => MarkerCode);
+                OrdersView.Refresh();
             }
         }
         private static readonly object _lock = new();
@@ -195,7 +205,6 @@ namespace ModuleDeliverList.ViewModels
             _settingsService = settingsService;
 
             InvisibilityCommand = new ActionCommand(OnInvisibilityExecuted, OnInvisibilityCanExecute);
-            SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             FilterSaveCommand = new ActionCommand(OnFilterSaveExecuted, OnFilterSaveCanExecute);
 
@@ -223,33 +232,7 @@ namespace ModuleDeliverList.ViewModels
             }
         }
 
-        private static bool OnSetMarkerCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);
-        }
-
-        private void OnSetMarkerExecuted(object obj)
-        {
-            try
-            {
-                if (obj == null) return;
-                var values = (object[])obj;
-                var name = (string)values[0];
-                var desc = (Vorgang)values[1];
-
-                if (name == "DelBullet") desc.Bullet = Brushes.White.ToString();
-                if (name == "Bullet1") desc.Bullet = Brushes.Red.ToString();
-                if (name == "Bullet2") desc.Bullet = Brushes.Green.ToString();
-                if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
-                if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
-
-            }
-            catch (System.Exception e)
-            {
-                MessageBox.Show(e.Message, "SetMarker", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-        }
+ 
         private void MessageOrderArchivated(OrderRb rb)
         {
             try
@@ -378,7 +361,7 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
-
+            if (accepted && _markerCode != string.Empty) accepted = _markerCode.Equals(ord.Marker, StringComparison.InvariantCultureIgnoreCase);
 
             return accepted;
         }
