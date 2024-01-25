@@ -137,21 +137,16 @@
                 <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Bezeichnung" Binding="{Binding AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
-                <DataGridTemplateColumn Header="Meistertermin">
+                <DataGridTemplateColumn Header="TL-Termin">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Termin}"/>
+                            <DatePicker FirstDayOfWeek="Monday" ToolTip="voraussichtlicher Termin lt. Teamleiter" VerticalAlignment="Top"
+                                      SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                      DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
+                                      IsEnabled="{Binding Converter={StaticResource permiss},
+                                      ConverterParameter={x:Static const:Permissions.TLTermin}}" SnapsToDevicePixels="True"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    <DataGridTemplateColumn.CellEditingTemplate>
-                        <DataTemplate>
-                            <DatePicker FirstDayOfWeek="Monday" ToolTip="voraussichtlicher Termin lt. Meister"
-                                        SelectedDate="{Binding Termin, StringFormat=\{0:d\}}"
-                                        DisplayDate="{Binding Now}"
-                                        IsEnabled="{Binding Converter={StaticResource permiss},
-                                        ConverterParameter={x:Static const:Permissions.MasterTermin}}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}"  Width="120" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
@@ -171,7 +166,7 @@
                             <GroupBox ToolTip="Bemerkung Teamleiter" Width="150"
                                                 Header="{Binding BemT,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}">
-                                                <TextBox Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
+                                <TextBox Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
                                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
                                                                  Converter={StaticResource permiss}}"
@@ -194,7 +189,5 @@
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-
-
     </Grid>
 </Window>

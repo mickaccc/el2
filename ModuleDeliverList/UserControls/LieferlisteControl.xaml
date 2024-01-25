@@ -195,11 +195,11 @@
                          Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
                          Background="{Binding EndDate, Converter={StaticResource DateLost}, ElementName=luc}"/>
             <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"  
-                            HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Voraussichtlicher Termin lt. Meister"
+                            HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
                             IsEnabled="{Binding Converter={StaticResource Permission},
-                            ConverterParameter={x:Static const:Permissions.MasterTermin}}"/>
+                            ConverterParameter={x:Static const:Permissions.TLTermin}}"/>
 
             <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"

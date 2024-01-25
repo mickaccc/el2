@@ -70,6 +70,18 @@ namespace Lieferliste_WPF.ViewModels
         }
         private List<OrderRb> _orderRbs;
         private List<string> _attachments;
+        public List<string> Attachments
+        {
+            get { return _attachments; }
+            set
+            {
+                if (value != _attachments)
+                {
+                    _attachments = value;
+                    NotifyPropertyChanged(() => Attachments);
+                }
+            }
+        }
         public event Action<IDialogResult> RequestClose;
 
         public ICollectionView OrdersView { get; private set; }
@@ -80,6 +92,13 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands = applicationCommands;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
+            _attachments = new List<string>()
+            {
+                "test1",
+                "test2",
+                "test3",
+                "test4"
+            };
 
         }
 

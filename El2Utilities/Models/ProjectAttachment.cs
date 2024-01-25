@@ -11,7 +11,7 @@ public partial class ProjectAttachment
 
     public string? Attachment { get; set; }
 
-    public DateTime? Timestamp { get; set; }
+    public DateTime Timestamp { get; set; }
 
     public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
 }

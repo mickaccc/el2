@@ -36,7 +36,7 @@
         <DataGrid x:Name="orders" Grid.Row="1" ItemsSource="{Binding ProjTask.Result}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.InputBindings>
                 <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
-					  CommandParameter="{Binding ElementName=orders, Path=SelectedItem}"
+					  CommandParameter="{Binding ElementName=orders, Path=SelectedItem.Aid}"
 					  MouseAction="LeftDoubleClick"/>
             </DataGrid.InputBindings>
             <DataGrid.RowStyle>
@@ -55,8 +55,12 @@
                 <DataGridTextColumn Header="Menge" Binding="{Binding Quantity}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <WrapPanel x:Name="Attachs" Grid.Row="1" Grid.Column="1">
-            
-        </WrapPanel>
+        <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Attachments}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </Grid>
 </UserControl>

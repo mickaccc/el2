@@ -49,7 +49,7 @@
         public const string OrderBrief = "ORDERBRIEF";
         public const string OrderBriefInvers = "!ORDERBRIEF";
         public const string HistoryDialog = "HISTDIALOG";
-        public const string MasterTermin = "TERMMAST";
+        public const string TLTermin = "TERMTL";
         public const string ProjAttach = "PROJ05";
     }
 }

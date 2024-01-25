@@ -176,11 +176,19 @@
                                     FontSize="11" ToolTip="Ist-Ende" />
                             <TextBlock Grid.Column="3" Height="23" x:Name="txtGut" Width="58" 
                                     Text="{Binding QuantityYield, Mode=OneWay}" ToolTip="Gutteile zurückgemeldet" />
-                            <DatePicker Grid.Row="1" Grid.Column="3" Height="23" x:Name="txtTerm" Width="58"
+                            <DatePicker Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Height="23" x:Name="txtTerm" 
                                     DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"          
-                                    SelectedDate="{Binding Termin}" ToolTip="Voraussichtlicher Termin lt. Meister"
+                                    SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnSourceUpdated=True}" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
                                     IsEnabled="{Binding Converter={StaticResource Permission},
-                                    ConverterParameter={x:Static const:Permissions.MasterTermin}}"/>
+                                    ConverterParameter={x:Static const:Permissions.TLTermin}}" SelectedDateFormat="Long">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SourceUpdated">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.DateChangedCommand,
+                                            RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                               CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </DatePicker>
                             <TextBlock Grid.Column="4" Height="23" x:Name="txtAuss" Width="58"
                                     Text="{Binding QuantityScrap, Mode=OneWay}" ToolTip="Ausschußteile zurückgemeldet"/>
                             <TextBlock Grid.Column="5" Height="23" x:Name="txtOff" Width="58"

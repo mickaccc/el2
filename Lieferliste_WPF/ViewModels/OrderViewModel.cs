@@ -111,6 +111,20 @@ namespace Lieferliste_WPF.ViewModels
                 db.SaveChanges();
             }
         }
+        private RelayCommand? _DateChangedCommand;
+        public RelayCommand DateChangedCommand => _DateChangedCommand ??= new RelayCommand(OnDateChanged);
+
+        private void OnDateChanged(object obj)
+        {
+            if (obj is Vorgang vrg)
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var v = db.Vorgangs.Single<Vorgang>(x => x.VorgangId==vrg.VorgangId);
+                v.Termin = vrg.Termin;
+
+                db.SaveChanges(true);
+            }
+        }
 
         public event Action<IDialogResult> RequestClose;
         private string _aid;
