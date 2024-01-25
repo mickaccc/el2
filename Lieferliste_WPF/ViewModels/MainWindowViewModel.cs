@@ -122,6 +122,7 @@ namespace Lieferliste_WPF.ViewModels
             OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
             OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
 
+            DbOperations();
         }
 
 
@@ -530,6 +531,26 @@ namespace Lieferliste_WPF.ViewModels
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 db.Database.CommitTransactionAsync();
+            }
+        }
+        private void DbOperations()
+        {
+            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            {
+                var ord = db.OrderRbs
+                    .Include(X => X.Vorgangs)
+                    .Where(x => x.Fertig == true && x.Abgeschlossen == false)
+                    .ToList();
+                
+                foreach(var o in ord)
+                {
+                    if((o.Vorgangs.Any(x => x.ArbPlSap?.StartsWith("121") ?? true) ||
+                        o.Vorgangs.Any(x => x.ArbPlSap?.StartsWith("128") ?? true)) == false)
+                    {
+                        o.Abgeschlossen = true;
+                    }
+                }
+                db.SaveChanges();
             }
         }
 

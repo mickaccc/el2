@@ -69,7 +69,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private List<OrderRb> _orderRbs;
-
+        private List<string> _attachments;
         public event Action<IDialogResult> RequestClose;
 
         public ICollectionView OrdersView { get; private set; }

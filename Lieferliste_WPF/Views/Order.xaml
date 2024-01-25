@@ -28,6 +28,7 @@
         <conv:MultiObjectConverter x:Key="multiobj"/>
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
+        <System:DateTime x:Key="datetime"/>
         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
 
@@ -175,8 +176,11 @@
                                     FontSize="11" ToolTip="Ist-Ende" />
                             <TextBlock Grid.Column="3" Height="23" x:Name="txtGut" Width="58" 
                                     Text="{Binding QuantityYield, Mode=OneWay}" ToolTip="Gutteile zurückgemeldet" />
-                            <TextBox Grid.Row="1" Grid.Column="3" Height="23" x:Name="txtTerm" Width="58" IsReadOnly="True"
-                                    Text="{Binding Termin}" ToolTip="Termin"/>
+                            <DatePicker Grid.Row="1" Grid.Column="3" Height="23" x:Name="txtTerm" Width="58"
+                                    DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"          
+                                    SelectedDate="{Binding Termin}" ToolTip="Voraussichtlicher Termin lt. Meister"
+                                    IsEnabled="{Binding Converter={StaticResource Permission},
+                                    ConverterParameter={x:Static const:Permissions.MasterTermin}}"/>
                             <TextBlock Grid.Column="4" Height="23" x:Name="txtAuss" Width="58"
                                     Text="{Binding QuantityScrap, Mode=OneWay}" ToolTip="Ausschußteile zurückgemeldet"/>
                             <TextBlock Grid.Column="5" Height="23" x:Name="txtOff" Width="58"

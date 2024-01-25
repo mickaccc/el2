@@ -110,9 +110,12 @@ namespace ModuleDeliverList.ViewModels
             get { return _markerCode; }
             set
             {
-                _markerCode = value;
-                NotifyPropertyChanged(() => MarkerCode);
-                OrdersView.Refresh();
+                if (value != _markerCode)
+                {
+                    _markerCode = value;
+                    NotifyPropertyChanged(() => MarkerCode);
+                    OrdersView.Refresh();
+                }
             }
         }
         private static readonly object _lock = new();

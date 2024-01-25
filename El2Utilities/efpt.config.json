@@ -48,6 +48,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ProjectAttachment]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Ressource]",
          "ObjectType": 0
       },
@@ -104,7 +108,7 @@
          "ObjectType": 0
       }
    ],
-   "UiHint": "DESKTOP-MEMDFDP\\SQLEXPRESS.DB_COS_LIEFERLISTE_SQL",
+   "UiHint": "hl0vm00069.DB_COS_LIEFERLISTE_SQL.dbo",
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,

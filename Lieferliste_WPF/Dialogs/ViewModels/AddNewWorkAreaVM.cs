@@ -39,19 +39,21 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         protected virtual void CloseDialog(string parameter)
         {
             ButtonResult result = ButtonResult.None;
-
+            IDialogParameters parameters = new DialogParameters();
             if (parameter?.ToLower() == "true")
             {
 
                 var by = workA.Max(x => x.Sort) + 1;
                 var wa = new WorkArea() { Bereich = Section, Info = Info, Sort = (Convert.ToByte(by)) };
-                workA.Add(wa);
+                
+                parameters.Add("new", wa);
                 result = ButtonResult.OK;
+                
             }
             else if (parameter?.ToLower() == "false")
                 result = ButtonResult.Cancel;
 
-            RaiseRequestClose(new DialogResult(result));
+            RaiseRequestClose(new DialogResult(result, parameters));
         }
 
         public virtual void RaiseRequestClose(IDialogResult dialogResult)

@@ -19,7 +19,12 @@
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <DockPanel Background="{DynamicResource HeaderBackground}" HorizontalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1*"/>
+
+        </Grid.ColumnDefinitions>
+        <DockPanel Background="{DynamicResource HeaderBackground}" HorizontalAlignment="Stretch" Grid.ColumnSpan="2">
             <TextBox x:Name="search" materialDesign:HintAssist.Hint="Auftrag filtern" Background="AntiqueWhite"/>
             <TextBlock Text="{Binding WbsElement}" FontSize="20" FontWeight="Bold" DockPanel.Dock="Top"/>
             <TextBlock Text="{Binding WbsInfo}" TextWrapping="Wrap" DockPanel.Dock="Right"/>
@@ -50,5 +55,8 @@
                 <DataGridTextColumn Header="Menge" Binding="{Binding Quantity}"/>
             </DataGrid.Columns>
         </DataGrid>
+        <WrapPanel x:Name="Attachs" Grid.Row="1" Grid.Column="1">
+            
+        </WrapPanel>
     </Grid>
 </UserControl>

@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -84,6 +85,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
+            _dbctx.ChangeTracker.DetectChanges();
             return _dbctx.ChangeTracker.HasChanges();
         }
 
@@ -121,7 +123,13 @@ namespace Lieferliste_WPF.ViewModels
 
         private void callback(IDialogResult result)
         {
-            WorkAreas.Refresh();
+            if(result.Result == ButtonResult.OK)
+            {
+                _workAreas.Add(result.Parameters.GetValue<WorkArea>("new"));
+                _dbctx.WorkAreas.Add(result.Parameters.GetValue<WorkArea>("new"));
+                WorkAreas.Refresh();
+            }
+            
         }
 
         private bool OnDeleteCanExecute(object arg)
@@ -163,7 +171,7 @@ namespace Lieferliste_WPF.ViewModels
         private async Task<ICollectionView> LoadAsync()
         {
             var w = await _dbctx.WorkAreas.ToListAsync();
-            _workAreas.AddRange(w);
+            _workAreas.AddRange(w.OrderBy(x => x.Sort));
             WorkAreas = CollectionViewSource.GetDefaultView(_workAreas);
             WorkAreas.SortDescriptions.Add(new SortDescription("Sort", ListSortDirection.Ascending));
 

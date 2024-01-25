@@ -28,8 +28,8 @@
                      Text="{Binding Path=Info, BindsDirectlyToSource=True}"/>
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Speichern" TabIndex="2" Command="{Binding CloseDialogCommand}" CommandParameter="true"/>
-            <Button Content="Abbrechen" Command="{Binding CloseDialogCommand}" CommandParameter="false"/>
+            <Button Content="OK" TabIndex="2" Command="{Binding CloseDialogCommand}" CommandParameter="true" Margin="5"/>
+            <Button Content="Abbrechen" Command="{Binding CloseDialogCommand}" CommandParameter="false" Margin="5"/>
         </StackPanel>
     </Grid>
 </UserControl>
