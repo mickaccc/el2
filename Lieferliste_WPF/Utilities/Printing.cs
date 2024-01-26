@@ -71,7 +71,7 @@ namespace Lieferliste_WPF.Utilities
             string Name;
             string? Second;
             string? Description;
-            double printSizeWidth = printDlg.PrintableAreaWidth - 22;
+            double printSizeWidth = printDlg.PrintableAreaWidth - 35;
             List<Vorgang> proces;
             if (parameter is PlanMachine plm)
             {
@@ -93,7 +93,7 @@ namespace Lieferliste_WPF.Utilities
             Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy hh:mm")));
             fd.PageWidth = printDlg.PrintableAreaWidth;
             fd.PageHeight = printDlg.PrintableAreaHeight;
-            fd.PagePadding = new Thickness(12.0, 5.0, 10.0, 5.0);
+            fd.PagePadding = new Thickness(20.0, 20.0, 10.0, 15.0);
             p1.FontStyle = FontStyles.Normal;
             p1.FontFamily = new FontFamily("Microsoft Sans Serif");
             p1.FontSize = 12;
@@ -128,7 +128,7 @@ namespace Lieferliste_WPF.Utilities
                 RstzeEinheit = string.Format("{0} KW{1}", x.SpaetStart.GetValueOrDefault().ToString("dd/MM/yy"),
                         CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.SpaetStart.GetValueOrDefault(), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)),
                 SpaetEnd = x.SpaetEnd.GetValueOrDefault().ToShortDateString(),
-                x.BemT,
+                BemTL = (x.BemT != null) ? x.BemT.Split((char)134)[1] : string.Empty,
                 WrtzeEinheit = string.Format("{0:F2}h", (((x.Beaze == null) ? 0 : x.Beaze) + ((x.Rstze == null) ? 0 : x.Rstze)) / 60)
             }).ToArray();
 
@@ -142,12 +142,12 @@ namespace Lieferliste_WPF.Utilities
                     case "Aid": head = "Auftrags-\nnummer"; tabCol.Width = new GridLength(printSizeWidth * 0.07); break;
                     case "ProcessingUom": head = "Vorgang"; tabCol.Width = new GridLength(printSizeWidth * 0.035); break;
                     case "Material": head = "Material"; tabCol.Width = new GridLength(printSizeWidth * 0.09); break;
-                    case "Bezeichng": head = "Bezeichnung"; tabCol.Width = new GridLength(printSizeWidth * 0.1); break;
+                    case "Bezeichng": head = "Bezeichnung"; tabCol.Width = new GridLength(printSizeWidth * 0.13); break;
                     case "BeazeEinheit": head = "Stk."; tabCol.Width = new GridLength(printSizeWidth * 0.035); break;
                     case "Text": head = "Kurztext"; tabCol.Width = new GridLength(printSizeWidth * 0.19); break;
                     case "RstzeEinheit": head = "SpätStart"; tabCol.Width = new GridLength(printSizeWidth * 0.06); break;
                     case "SpaetEnd": head = "SpätEnd"; tabCol.Width = new GridLength(printSizeWidth * 0.07); break;
-                    case "BemT": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth * 0.3); break;
+                    case "BemTL": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth * 0.27); break;
                     case "WrtzeEinheit": head = "Dauer"; tabCol.Width = new GridLength(printSizeWidth * 0.05); break;
                     default: head = "not Valid"; break;
                 }

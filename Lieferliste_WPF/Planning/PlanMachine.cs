@@ -99,7 +99,8 @@ namespace Lieferliste_WPF.Planning
         public ICommand? OpenMachineCommand { get; private set; }
         public ICommand? MachinePrintCommand { get; private set; }
         public ICommand? HistoryCommand { get; private set; }
-
+        private RelayCommand? _dateChangedCommand;
+        public RelayCommand DateChangedCommand => _dateChangedCommand ??= new RelayCommand(OnDateChanged);
         private readonly int _rId;
         private string _title;
         public string Title => _title;
@@ -340,7 +341,13 @@ namespace Lieferliste_WPF.Planning
                 MessageBox.Show(e.Message, "Error OpenMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        private void OnDateChanged(object obj)
+        {
+            if(obj is Vorgang vrg)
+            {
+                _dbCtx.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Termin = vrg.Termin;
+            }
+        }
         private void MachineClosed(object? sender, EventArgs e)
         {
             if (_dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged))

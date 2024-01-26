@@ -27,11 +27,12 @@
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <System:DateTime x:Key="datetime"/>
 
-        <Style x:Key="CellEditStyle" TargetType="{x:Type TextBox}">
+        <Style x:Key="CellEditStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBoxBase}">
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Background" Value="LightYellow"/>
             <Setter Property="Padding" Value="2"/>
             <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="IsEnabled" Value="{Binding Converter={StaticResource permiss}, ConverterParameter={x:Static const:Permissions.CommentTe}}"/>
         </Style>
         <Style TargetType="DataGridCell">
             <Setter Property="BorderThickness" Value="0"/>
@@ -143,10 +144,15 @@
                             <DatePicker FirstDayOfWeek="Monday" ToolTip="voraussichtlicher Termin lt. Teamleiter" VerticalAlignment="Top"
                                       SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnSourceUpdated=True}"
                                       DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
-                                      IsEnabled="{Binding Converter={StaticResource permiss},
-                                      ConverterParameter={x:Static const:Permissions.TLTermin}}" SnapsToDevicePixels="True"/>
+                                      IsEnabled="False"  SnapsToDevicePixels="True"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
+                    <!--<i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SourceUpdated">
+                            <i:InvokeCommandAction Command="{Binding DataContext.DateChangedCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                   CommandParameter="{Binding}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>-->
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}"  Width="120" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
@@ -157,9 +163,7 @@
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach, UpdateSourceTrigger=LostFocus}"
-                                    EditingElementStyle="{StaticResource CellEditStyle}"
-                                    IsReadOnly="{Binding Converter={StaticResource permiss},
-                    ConverterParameter={x:Static const:Permissions.CommentTeInvers}}"/>
+                                    EditingElementStyle="{StaticResource CellEditStyle}"/>
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
