@@ -122,7 +122,7 @@ namespace Lieferliste_WPF.ViewModels
             OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
             OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
 
-            DbOperations();
+            //DbOperations();
         }
 
 
@@ -537,18 +537,18 @@ namespace Lieferliste_WPF.ViewModels
         {
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                var ord = db.OrderRbs
-                    .Include(X => X.Vorgangs)
-                    .Where(x => x.Fertig == true && x.Abgeschlossen == false)
+                var ord = db.Vorgangs
+                    .Where(x => x.BemM != null || x.BemMa != null || x.BemT != null)
                     .ToList();
                 
                 foreach(var o in ord)
-                {
-                    if((o.Vorgangs.Any(x => x.ArbPlSap?.StartsWith("121") ?? true) ||
-                        o.Vorgangs.Any(x => x.ArbPlSap?.StartsWith("128") ?? true)) == false)
-                    {
-                        o.Abgeschlossen = true;
-                    }
+                { char a;
+                    //foreach (var m in o.BemM) { a = Convert.ToChar(m); var b = (char)134; var c = Convert.ToChar(134); }
+                    //foreach (var m in o.BemT) a = (char)m;
+                    //foreach (var m in o.BemMa) a = (char)m;
+                    o.BemM = o.BemM?.Replace(';', (char)29);
+                    o.BemT = o.BemT?.Replace(';', (char)29);
+                    o.BemMa = o.BemMa?.Replace(';', (char)29);
                 }
                 db.SaveChanges();
             }

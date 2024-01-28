@@ -3,11 +3,34 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Printing="clr-namespace:System.Drawing.Printing;assembly=System.Drawing"
         xmlns:local="clr-namespace:Lieferliste_WPF.Views"
         mc:Ignorable="d"
         Title="PrintWindow" MinHeight="450" MinWidth="800">
     <Grid>
-        <DocumentViewer  x:Name="PreviewD"  IsManipulationEnabled="True" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Background="LightGray">
+            <ComboBox Name="cmbPrinterSelection"
+                      ItemsSource="{x:Static Printing:PrinterSettings.InstalledPrinters}"/>
+            <Label>Exemplare</Label>
+            <TextBox x:Name="copies">1</TextBox>
+        </StackPanel>
+        <DocumentViewer Grid.Column="1"  x:Name="PreviewD"  IsManipulationEnabled="True" >
+            <DocumentViewer.Resources>
+                <Style TargetType="ContentControl">
+                    <Style.Triggers>
+                        <Trigger Property="Name" Value="PART_FindToolBarHost">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DocumentViewer.Resources>
+            <DocumentViewer.CommandBindings>
+                <CommandBinding Command="ApplicationCommands.Print" Executed="Executed_Print"/>
+            </DocumentViewer.CommandBindings>
             <DocumentViewer.LayoutTransform>
                 <TransformGroup>
                     <ScaleTransform  />

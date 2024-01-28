@@ -3,19 +3,24 @@ using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    internal class ProjectsViewModel : ViewModelBase, IDialogAware
+    internal class ProjectsViewModel : ViewModelBase, IDialogAware, IDropTarget
     {
         private string _title = "Projektübersicht";
         public string Title => _title;
@@ -23,6 +28,10 @@ namespace Lieferliste_WPF.ViewModels
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private IUserSettingsService _userSettingsService;
         private IContainerProvider _container;
+        private ICommand? _addFileCommand;
+        public ICommand AddFileCommand => _addFileCommand ??= new ActionCommand(OnAddFileExecuted, OnAddFileCanExecute);
+
+
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -69,8 +78,8 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private List<OrderRb> _orderRbs;
-        private List<string> _attachments;
-        public List<string> Attachments
+        private List<Attachment> _attachments;
+        public List<Attachment> Attachments
         {
             get { return _attachments; }
             set
@@ -92,14 +101,18 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands = applicationCommands;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            _attachments = new List<string>()
+            _attachments = new List<Attachment>()
             {
-                "test1",
-                "test2",
-                "test3",
-                "test4"
+                new() { Content = "TETST!!"},
+                new() { Content = new object() },
+                new() { Content = new Bitmap("C:\\Users\\mgsch\\Pictures\\DB_Y.png") }
             };
-
+            //{
+            //    new() { Name = "test1" },
+            //    new() { Name = "test2" },
+            //    new() { Name = "test3" },
+            //    new() { Name = "test4" }
+            //};
         }
 
         private async Task<ICollectionView> LoadAsync(string projectNo)
@@ -133,6 +146,29 @@ namespace Lieferliste_WPF.ViewModels
         {
             var p = parameters.GetValue<string>("projectNo");
             ProjTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync(p));
+        }
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+            dropInfo.Effects = DragDropEffects.Move;
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            if(dropInfo.Data is object ob)
+            {
+
+            }
+        }
+        private bool OnAddFileCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnAddFileExecuted(object obj)
+        {
+            
         }
     }
 }

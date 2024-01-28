@@ -17,7 +17,7 @@ namespace El2Core.Converters
             if (!string.IsNullOrEmpty(strVal))
             {
 
-                string[] val = strVal.Split(';');
+                string[] val = strVal.Split((char)29);
                 if ((bool)parameter)
                 {
                     return val[0];
@@ -34,7 +34,7 @@ namespace El2Core.Converters
             if (value != null)
             {
                 string info = "[" + UserInfo.User.UserIdent + " - " + DateTime.Now.ToShortDateString() + "]";
-                return info + ";" + value;
+                return info + (char)29 + value;
             }
             return string.Empty;
         }

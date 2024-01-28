@@ -71,7 +71,7 @@ namespace Lieferliste_WPF.Utilities
             string Name;
             string? Second;
             string? Description;
-            double printSizeWidth = printDlg.PrintableAreaWidth - 35;
+
             List<Vorgang> proces;
             if (parameter is PlanMachine plm)
             {
@@ -93,7 +93,8 @@ namespace Lieferliste_WPF.Utilities
             Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy hh:mm")));
             fd.PageWidth = printDlg.PrintableAreaWidth;
             fd.PageHeight = printDlg.PrintableAreaHeight;
-            fd.PagePadding = new Thickness(20.0, 20.0, 10.0, 15.0);
+            fd.PagePadding = new Thickness(96/3);
+            double printSizeWidth = fd.PageWidth - 96/3*2;
             p1.FontStyle = FontStyles.Normal;
             p1.FontFamily = new FontFamily("Microsoft Sans Serif");
             p1.FontSize = 12;
@@ -123,13 +124,13 @@ namespace Lieferliste_WPF.Utilities
                 ProcessingUom = string.Format("{0:d4}", x.Vnr),
                 x.AidNavigation.Material,
                 x.AidNavigation.MaterialNavigation?.Bezeichng,
-                BeazeEinheit = x.AidNavigation.Quantity.ToString(),
+                QuantString = x.AidNavigation.Quantity.ToString(),
                 x.Text,
-                RstzeEinheit = string.Format("{0} KW{1}", x.SpaetStart.GetValueOrDefault().ToString("dd/MM/yy"),
+                StartKW = string.Format("{0} KW{1}", x.SpaetStart.GetValueOrDefault().ToString("dd/MM/yy"),
                         CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.SpaetStart.GetValueOrDefault(), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)),
                 SpaetEnd = x.SpaetEnd.GetValueOrDefault().ToShortDateString(),
-                BemTL = (x.BemT != null) ? x.BemT.Split((char)134)[1] : string.Empty,
-                WrtzeEinheit = string.Format("{0:F2}h", (((x.Beaze == null) ? 0 : x.Beaze) + ((x.Rstze == null) ? 0 : x.Rstze)) / 60)
+                BemTL = (x.BemT != null && x.BemT.Split((char)29).Length == 2) ? x.BemT.Split((char)29)[1] : string.Empty,
+                TimeLength = string.Format("{0:F2}h", (((x.Beaze == null) ? 0 : x.Beaze) + ((x.Rstze == null) ? 0 : x.Rstze)) / 60)
             }).ToArray();
 
             int i = 0;
@@ -139,16 +140,16 @@ namespace Lieferliste_WPF.Utilities
                 string head;
                 switch (pr.Name)
                 {
-                    case "Aid": head = "Auftrags-\nnummer"; tabCol.Width = new GridLength(printSizeWidth * 0.07); break;
+                    case "Aid": head = "Auftrags-\nnummer"; tabCol.Width = new GridLength(printSizeWidth * 0.08); break;
                     case "ProcessingUom": head = "Vorgang"; tabCol.Width = new GridLength(printSizeWidth * 0.035); break;
                     case "Material": head = "Material"; tabCol.Width = new GridLength(printSizeWidth * 0.09); break;
                     case "Bezeichng": head = "Bezeichnung"; tabCol.Width = new GridLength(printSizeWidth * 0.13); break;
-                    case "BeazeEinheit": head = "Stk."; tabCol.Width = new GridLength(printSizeWidth * 0.035); break;
+                    case "QuantString": head = "Stk."; tabCol.Width = new GridLength(printSizeWidth * 0.035); break;
                     case "Text": head = "Kurztext"; tabCol.Width = new GridLength(printSizeWidth * 0.19); break;
-                    case "RstzeEinheit": head = "SpätStart"; tabCol.Width = new GridLength(printSizeWidth * 0.06); break;
+                    case "StartKW": head = "SpätStart"; tabCol.Width = new GridLength(printSizeWidth * 0.06); break;
                     case "SpaetEnd": head = "SpätEnd"; tabCol.Width = new GridLength(printSizeWidth * 0.07); break;
-                    case "BemTL": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth * 0.27); break;
-                    case "WrtzeEinheit": head = "Dauer"; tabCol.Width = new GridLength(printSizeWidth * 0.05); break;
+                    case "BemTL": head = "Bemerkung Teamleiter"; tabCol.Width = new GridLength(printSizeWidth * 0.24); break;
+                    case "TimeLength": head = "Dauer"; tabCol.Width = new GridLength(printSizeWidth * 0.06); break;
                     default: head = "not Valid"; break;
                 }
                 r.Cells.Add(new TableCell(new Paragraph(new Run(head)))
@@ -159,9 +160,6 @@ namespace Lieferliste_WPF.Utilities
                     Foreground = Brushes.White
                 });
                 r.Cells[i].Padding = new Thickness(2);
-
-
-
                 table.Columns.Add(tabCol);
 
                 ++i;
@@ -186,6 +184,7 @@ namespace Lieferliste_WPF.Utilities
                     r.Cells[i].Padding = new Thickness(1);
                     r.Cells[i].BorderBrush = Brushes.DarkGray;
                     r.Cells[i].BorderThickness = new Thickness(0, 0, 1, 1);
+                    if (i == 8) r.Cells[i].TextAlignment = TextAlignment.Left;
                     ++i;
                 }
 
