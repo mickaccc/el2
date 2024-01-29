@@ -33,8 +33,7 @@ namespace El2Core.Converters
         {
             if (value != null)
             {
-                string info = "[" + UserInfo.User.UserIdent + " - " + DateTime.Now.ToShortDateString() + "]";
-                return info + (char)29 + value;
+                return string.Format("[{0} - {1}]{2}{3}", UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), (char)29, value);
             }
             return string.Empty;
         }

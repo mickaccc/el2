@@ -16,8 +16,8 @@
             
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
-            <RowDefinition Height="10*"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="80*"/>
         </Grid.RowDefinitions>
         <DockPanel>
         <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="suche nach Auftragsnummer, TTNR, Materialbezeichnung oder Projekt"

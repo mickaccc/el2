@@ -90,7 +90,7 @@ namespace Lieferliste_WPF.Utilities
             else throw new InvalidDataException();
 
             FlowDocument fd = new FlowDocument();
-            Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy hh:mm")));
+            Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy HH:mm")));
             fd.PageWidth = printDlg.PrintableAreaWidth;
             fd.PageHeight = printDlg.PrintableAreaHeight;
             fd.PagePadding = new Thickness(96/3);

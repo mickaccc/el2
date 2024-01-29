@@ -101,18 +101,8 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands = applicationCommands;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            _attachments = new List<Attachment>()
-            {
-                new() { Content = "TETST!!"},
-                new() { Content = new object() },
-                new() { Content = new Bitmap("C:\\Users\\mgsch\\Pictures\\DB_Y.png") }
-            };
-            //{
-            //    new() { Name = "test1" },
-            //    new() { Name = "test2" },
-            //    new() { Name = "test3" },
-            //    new() { Name = "test4" }
-            //};
+ 
+ 
         }
 
         private async Task<ICollectionView> LoadAsync(string projectNo)

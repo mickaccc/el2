@@ -64,6 +64,17 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="MyFocusVisual" TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="Background" Value="Gold"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Background" Value="DimGray"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -100,10 +111,10 @@
             Margin="5,1,5,1"
             Mode="Standard"
             materialDesign:HintAssist.FloatingOffset="1,-10">
-            <StackPanel Orientation="Horizontal" >
-                    <TextBox x:Name="MarkerCode" Width="40" Background="DimGray" Foreground="White"
-                             Text="{Binding MarkerCode, Mode=OneWayToSource}"/>
-                    <ComboBox x:Name="ProjComboBox" Width="250"
+                <StackPanel Orientation="Horizontal" >
+                    <TextBox x:Name="MarkerCode" Width="40" Style="{DynamicResource MyFocusVisual}" 
+                             Text="{Binding MarkerCode, Mode=TwoWay}"/>
+                     <ComboBox x:Name="ProjComboBox" Width="250"
                      materialDesign:HintAssist.Hint="Projekte" materialDesign:HintAssist.IsFloating="True" materialDesign:HintAssist.FloatingOffset="5,-15"
                      
                           ItemsSource="{Binding Projects}"                        

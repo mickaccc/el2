@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace ModuleDeliverList.ViewModels
 {
@@ -235,7 +236,6 @@ namespace ModuleDeliverList.ViewModels
             }
         }
 
- 
         private void MessageOrderArchivated(OrderRb rb)
         {
             try
@@ -284,7 +284,7 @@ namespace ModuleDeliverList.ViewModels
                             {
                                 foreach (var v in DBctx.Vorgangs.Where(x => x.Aid == rbId))
                                 {
-                                    AddRelevantProcess(v.VorgangId);
+                                    Application.Current.Dispatcher.Invoke(AddRelevantProcess, v.VorgangId);
                                 }
                             }
                         }
@@ -320,7 +320,7 @@ namespace ModuleDeliverList.ViewModels
                      else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg).Aktuell)
                      {
                          if (vrg != null)
-                             AddRelevantProcess(vrg);
+                             Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
                      }
                  }
              }
@@ -364,7 +364,7 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
-            if (accepted && _markerCode != string.Empty) accepted = _markerCode.Equals(ord.Marker, StringComparison.InvariantCultureIgnoreCase);
+            if (accepted && _markerCode != string.Empty) accepted = _markerCode.Equals(ord.Marker?.Trim(), StringComparison.InvariantCultureIgnoreCase);
 
             return accepted;
         }
@@ -406,6 +406,7 @@ namespace ModuleDeliverList.ViewModels
             SelectedDefaultFilter = CmbFilter.NOT_SET;
             SelectedProjectFilter = string.Empty;
             SelectedSectionFilter = string.Empty;
+            MarkerCode = string.Empty;
             FilterInvers = false;
         }
         private void OnToggleFilter(object obj)
@@ -604,7 +605,7 @@ namespace ModuleDeliverList.ViewModels
             {
                 if (_settingsService.IsSaveMessage)
                 {
-                    var result = MessageBox.Show("Sollen die Änderungen in Teamleiter-Zuteilungen gespeichert werden?",
+                    var result = MessageBox.Show("Sollen die Änderungen in Lieferliste gespeichert werden?",
                         Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {

@@ -115,7 +115,7 @@ namespace Lieferliste_WPF.ViewModels
                         {
                             await GetVorgangsAsync(item);
                         });
-                        Priv_processes.AddRange(_processesAll.Where(x => x.Aid == item));
+                        Application.Current.Dispatcher.Invoke(AddProcesses, item);
                     }
                 }
             }
@@ -124,7 +124,10 @@ namespace Lieferliste_WPF.ViewModels
                 MessageBox.Show(ex.Message, "MessageOrderReceved MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        private void AddProcesses(string aid)
+        {
+            Priv_processes.AddRange(_processesAll.Where(x => x.Aid == aid));
+        }
         private bool OnSaveCanExecute(object arg)
         {
             try
