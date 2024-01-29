@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Printing;
+using System.Runtime;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -330,10 +331,13 @@ namespace Lieferliste_WPF.Planning
         {
             try
             {
-                var ma = new MachineView();
-                ma.DataContext = this;
-                ma.Closed += MachineClosed;
-                ma.Show();
+                var par = new DialogParameters();
+                par.Add("processList", this.Processes.ToList());
+                par.Add("InvNo", this.InventNo);
+                par.Add("Name", this.Name);
+                par.Add("Description", this.Description);
+                par.Add("CostUnits", this.CostUnits);
+                _dialogService.Show("MachineView", par, null);
             }
             catch (Exception e)
             {

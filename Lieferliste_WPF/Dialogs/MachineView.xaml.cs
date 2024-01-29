@@ -4,12 +4,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Lieferliste_WPF.Views
+namespace Lieferliste_WPF.Dialogs
 {
     /// <summary>
     /// Interaction logic for MachineView.xaml
     /// </summary>
-    public partial class MachineView : Window
+    public partial class MachineView : UserControl
     {
         public MachineView()
         {
