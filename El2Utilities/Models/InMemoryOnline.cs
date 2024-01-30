@@ -9,11 +9,9 @@ public partial class InMemoryOnline
 {
     public int OnlId { get; set; }
 
-    public string? Userid { get; set; }
+    public string UserId { get; set; } = null!;
 
-    public string? PcId { get; set; }
+    public string PcId { get; set; } = null!;
 
     public DateTime Login { get; set; }
-
-    public virtual ICollection<InMemoryMsg> InMemoryMsgs { get; set; } = new List<InMemoryMsg>();
 }

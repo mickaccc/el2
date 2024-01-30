@@ -144,7 +144,8 @@
                             <DatePicker FirstDayOfWeek="Monday" ToolTip="voraussichtlicher Termin lt. Teamleiter" VerticalAlignment="Top" SnapsToDevicePixels="True"
                                       SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnSourceUpdated=True}"
                                       DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
-                                      IsEnabled="{Binding Converter={StaticResource permiss}, ConverterParameter={x:Static const:Permissions.TLTermin}}" />
+                                      IsEnabled="{Binding Converter={StaticResource permiss}, ConverterParameter={x:Static const:Permissions.TLTermin}}"
+                                       SelectedDateChanged="DatePicker_SelectedDateChanged"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <!--<i:Interaction.Triggers>
@@ -168,16 +169,15 @@
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
                             <StackPanel ToolTip="Bemerkung Teamleiter" Width="150" >
-                                <TextBlock Text="{Binding DataContext.BemT, NotifyOnSourceUpdated=True,
+                                <TextBlock x:Name="BemTInfo" Text="{Binding BemT, NotifyOnSourceUpdated=True,
                            Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}"/>
-                                <TextBox Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
+
+                                <TextBox x:Name="BemTText" Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
                                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
                                                                  Converter={StaticResource permiss}}"
-                                                  TextWrapping="Wrap" AcceptsReturn="True" />
+                                                  TextWrapping="Wrap" AcceptsReturn="True" LostFocus="BemTText_LostFocus" />
 
- 
- 
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

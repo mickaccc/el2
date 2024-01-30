@@ -3,6 +3,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Unity.Injection;
 
 namespace Lieferliste_WPF.Dialogs
 {
@@ -11,6 +12,19 @@ namespace Lieferliste_WPF.Dialogs
     /// </summary>
     public partial class MachineView : UserControl
     {
+
+
+        public string BemTInfo
+        {
+            get { return (string)GetValue(BemTInfoProperty); }
+            set { SetValue(BemTInfoProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BemTInfo.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BemTInfoProperty =
+            DependencyProperty.Register("BemTInfo", typeof(string), typeof(MachineView), new PropertyMetadata(""));
+
+
         public MachineView()
         {
             InitializeComponent();
@@ -33,8 +47,19 @@ namespace Lieferliste_WPF.Dialogs
                 DateConverter con = new();
                 (dgtc.Binding as Binding).Converter = con;
             }
-
         }
 
+        private void BemTText_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var vrg = FindName("MachProcesses") as DataGrid;
+            if (vrg != null) { }
+            TextBlock tx = FindName("BemTInfo") as TextBlock;
+            
+        }
+
+        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
