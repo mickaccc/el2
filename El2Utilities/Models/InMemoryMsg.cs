@@ -5,11 +5,9 @@ using System.Collections.Generic;
 
 namespace El2Core.Models;
 
-public partial class Msg
+public partial class InMemoryMsg
 {
-    public int Id { get; set; }
-
-    public int OnlId { get; set; }
+    public int MsgId { get; set; }
 
     public string? TableName { get; set; }
 
@@ -21,5 +19,7 @@ public partial class Msg
 
     public string? NewValue { get; set; }
 
-    public virtual Online Onl { get; set; } = null!;
+    public int? OnlId { get; set; }
+
+    public virtual InMemoryOnline? Onl { get; set; }
 }

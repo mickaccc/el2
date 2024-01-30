@@ -20,11 +20,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[msg]",
+         "Name": "[dbo].[InMemoryMsg]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Online]",
+         "Name": "[dbo].[InMemoryOnline]",
          "ObjectType": 0
       },
       {
@@ -108,7 +108,7 @@
          "ObjectType": 0
       }
    ],
-   "UiHint": "DESKTOP-MEMDFDP\\SQLEXPRESS.DB_COS_LIEFERLISTE_SQL",
+   "UiHint": "hl0vm00069.DB_COS_LIEFERLISTE_SQL.dbo",
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,

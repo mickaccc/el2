@@ -50,5 +50,11 @@ namespace CompositeCommands.Core
         {
             get { return _closeCommand; }
         }
+
+        private CompositeCommand _machinePrintCommand = new();
+        public CompositeCommand MachinePrintCommand
+        {
+            get { return _machinePrintCommand; }
+        }
     }
 }

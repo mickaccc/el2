@@ -4,6 +4,7 @@ using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Prism.Events;
@@ -15,10 +16,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Printing;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
@@ -243,8 +246,10 @@ namespace Lieferliste_WPF.ViewModels
                         if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
                     }
 
-                    var del = Dbctx.Onlines.Where(x => x.UserId.Equals(UserInfo.User.UserIdent)
-                     && x.PcId.Equals(UserInfo.PC)).ExecuteDelete();
+                    var del = Dbctx.InMemoryOnlines.Where(x => x.Userid.Equals(UserInfo.User.UserIdent)
+                     && x.PcId.Equals(UserInfo.PC));
+                    Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().OnlId)).ExecuteDelete();
+                    del.ExecuteDelete();
                 }
             }
             else
@@ -446,7 +451,27 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private bool OnMachinePrintCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
+        }
 
+        private void OnMachinePrintExecuted(object obj)
+        {
+            try
+            {
+                var print = new PrintDialog();
+                var ticket = new PrintTicket();
+                ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
+                ticket.PageOrientation = PageOrientation.Landscape;
+                print.PrintTicket = ticket;
+                Printing.DoPrintPreview(obj, print);
+            }
+            catch (System.Exception e)
+            {
+                MessageBox.Show(e.Message, "MachinePrint", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         #endregion
         private void SetTimer()
         {
@@ -472,7 +497,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
             var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            OnlineTask = new NotifyTaskCompletion<int>(Dbctx.Onlines.CountAsync());
+            OnlineTask = new NotifyTaskCompletion<int>(Dbctx.InMemoryOnlines.CountAsync());
             if (OnlineTask.IsCompleted) { Dbctx.Dispose(); }
         }
         private void SetMsgTimer()
@@ -492,17 +517,17 @@ namespace Lieferliste_WPF.ViewModels
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 {
-                    var m = await db.Msgs.AsNoTracking()
+                    var m = await db.InMemoryMsgs.AsNoTracking()
                         .Include(x => x.Onl)
-                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.UserId == UserInfo.User.UserIdent)
+                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.Userid == UserInfo.User.UserIdent)
                         .ToListAsync();
                     if (m.Count > 0)
                     {
                         msgListV.AddRange(m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList());
                         msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
-                        int IdMin = m.Min(x => x.Id), IdMax = m.Max(x => x.Id);
+                        int IdMin = m.Min(x => x.MsgId), IdMax = m.Max(x => x.MsgId);
 
-                        await db.Database.ExecuteSqlRawAsync(@"DELETE FROM msg WHERE id>={0} AND id<={1}", IdMin, IdMax);
+                        await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId>={0} AND MsgId<={1}", IdMin, IdMax);
                     }
                 }
 
@@ -525,8 +550,13 @@ namespace Lieferliste_WPF.ViewModels
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 db.Database.BeginTransactionAsync();
-                db.Database.ExecuteSqlRaw("DELETE dbo.Online WHERE UserId=@p0 AND PcId=@p1", UserInfo.User.UserIdent, UserInfo.PC ?? string.Empty);
-                db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Online(UserId,PcId,Login) VALUES({0},{1},{2})",
+                var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserIdent && x.PcId == UserInfo.PC);
+                if (onl != null)
+                {
+                    db.Database.ExecuteSqlRaw("DELETE dbo.InMemoryMsg WHERE OnlId=@p0", onl.OnlId);
+                    db.Database.ExecuteSqlRaw("DELETE dbo.InMemoryOnline WHERE OnlId=@p0", onl.OnlId);
+                }
+                db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.InMemoryOnline(Userid,PcId,Login) VALUES({0},{1},{2})",
                     UserInfo.User.UserIdent,
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));

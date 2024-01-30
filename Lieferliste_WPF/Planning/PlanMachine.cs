@@ -100,8 +100,7 @@ namespace Lieferliste_WPF.Planning
         public ICommand? OpenMachineCommand { get; private set; }
         public ICommand? MachinePrintCommand { get; private set; }
         public ICommand? HistoryCommand { get; private set; }
-        private RelayCommand? _dateChangedCommand;
-        public RelayCommand DateChangedCommand => _dateChangedCommand ??= new RelayCommand(OnDateChanged);
+
         private readonly int _rId;
         private string _title;
         public string Title => _title;
@@ -182,7 +181,6 @@ namespace Lieferliste_WPF.Planning
 
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
-            MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
             HistoryCommand = new ActionCommand(OnHistoryExecuted, OnHistoryCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
@@ -269,27 +267,7 @@ namespace Lieferliste_WPF.Planning
             }
         }
 
-        private bool OnMachinePrintCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
-        }
 
-        private void OnMachinePrintExecuted(object obj)
-        {
-            try
-            {
-                var print = new PrintDialog();
-                var ticket = new PrintTicket();
-                ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
-                ticket.PageOrientation = PageOrientation.Landscape;
-                print.PrintTicket = ticket;
-                Printing.DoPrintPreview(obj, print);
-            }
-            catch (System.Exception e)
-            {
-                MessageBox.Show(e.Message, "MachinePrint", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         private static bool OnSetMarkerCanExecute(object arg)
         {
@@ -337,7 +315,7 @@ namespace Lieferliste_WPF.Planning
                 par.Add("Name", this.Name);
                 par.Add("Description", this.Description);
                 par.Add("CostUnits", this.CostUnits);
-                _dialogService.Show("MachineView", par, null);
+                _dialogService.Show("MachineView", par, MachineViewCallBack);
             }
             catch (Exception e)
             {
@@ -345,6 +323,23 @@ namespace Lieferliste_WPF.Planning
                 MessageBox.Show(e.Message, "Error OpenMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void MachineViewCallBack(IDialogResult result)
+        {
+            if (result.Result == ButtonResult.Yes)
+            {
+                string[] bemt = [];
+                var vid = result.Parameters.GetValue<string>("VID");
+                var bem = result.Parameters.GetValue<string>("Comment");
+                if (bem != null) bemt = bem.Split(';');
+                if (bemt.Length > 1)
+                {
+                    Processes.First(x => x.VorgangId == vid).BemT = String.Format("[{0}-{1}];{2}",
+                        UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), bemt[1]);
+                }
+            }
+        }
+
         private void OnDateChanged(object obj)
         {
             if(obj is Vorgang vrg)

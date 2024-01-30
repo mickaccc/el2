@@ -67,7 +67,7 @@
 												 Width="25"/>
 					</Button>
 					<Button Canvas.Left="35" Canvas.Top="30"
-							Command="{Binding MachinePrintCommand}"
+							Command="{Binding ApplicationCommands.MachinePrintCommand}"
 							CommandParameter="{Binding}"
 							Padding="2"
 							Style="{StaticResource MaterialDesignFlatButton}"

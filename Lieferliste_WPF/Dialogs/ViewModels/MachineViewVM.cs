@@ -1,8 +1,10 @@
 ﻿using CompositeCommands.Core;
 using El2Core.Models;
+using El2Core.Utils;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -18,7 +20,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<int>? CostUnits { get; private set; }
-        private List<Vorgang>? Processes { get; set; }
+        private ObservableCollection<Vorgang>? Processes { get; set; } = new();
+        private List<Vorgang> ChangedVrgs { get; set; } = new();
         public ICollectionView? ProcessesCV { get; private set; }
         public event Action<IDialogResult> RequestClose;
         private IApplicationCommands _applicationCommands;
@@ -33,6 +36,16 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 }
             }
         }
+        private RelayCommand? _ChangedCommand;
+        public RelayCommand DateChangedCommand => _ChangedCommand ??= new RelayCommand(OnChanged);
+
+        private void OnChanged(object obj)
+        {
+            if (obj is Vorgang vrg)
+                ChangedVrgs.Add(vrg);
+           
+        }
+
         public MachineViewVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public bool CanCloseDialog()
         {
@@ -50,8 +63,17 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             InventNo = parameters.GetValue<string>("InvNo");
             Description = parameters.GetValue<string>("Description");
             CostUnits = parameters.GetValue<List<int>>("CostUnits");
-            Processes = parameters.GetValue<List<Vorgang>>("processList");
+            Processes.AddRange(parameters.GetValue<List<Vorgang>>("processList"));
             ProcessesCV = CollectionViewSource.GetDefaultView(Processes);
+            foreach (Vorgang v in Processes)
+            {
+                v.PropertyChanged += VorgChanged;
+            }
+        }
+
+        private void VorgChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            
         }
     }
 }
