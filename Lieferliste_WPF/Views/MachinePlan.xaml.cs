@@ -10,19 +10,11 @@ namespace Lieferliste_WPF.Views
     /// </summary>
     public partial class MachinePlan : UserControl
     {
-        [SupportedOSPlatform("windows7.0")]
+        [SupportedOSPlatform("windows10.0")]
         public MachinePlan()
         {
             InitializeComponent();
 
         }
-
-
-
-        private void MPL_Unloaded(object sender, RoutedEventArgs e)
-        {
-            (Main.DataContext as MachinePlanViewModel).Exit();
-        }
-
     }
 }

@@ -1,15 +1,12 @@
 ﻿using BionicCode.Utilities.Net.Standard.Extensions;
 using CompositeCommands.Core;
 using El2Core.Constants;
-using El2Core.Converters;
 using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
-using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Prism.Events;
 using Prism.Ioc;
@@ -21,11 +18,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Printing;
-using System.Runtime;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -137,7 +130,10 @@ namespace Lieferliste_WPF.Planning
         }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
-
+        public void SaveAll()
+        {
+            _dbCtx.SaveChanges();
+        }
         private void LoadData()
         {
             var res = _dbCtx.Ressources
@@ -152,7 +148,7 @@ namespace Lieferliste_WPF.Planning
                 .First(x => x.RessourceId == Rid);
 
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
-            Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK") == false));
+            Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK") == false).OrderBy(x => x.Spos));
             WorkArea = res.WorkArea;
             Name = res.RessName;
             _title = res.Inventarnummer ?? string.Empty;
@@ -220,7 +216,6 @@ namespace Lieferliste_WPF.Planning
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message, "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -267,8 +262,6 @@ namespace Lieferliste_WPF.Planning
             }
         }
 
-
-
         private static bool OnSetMarkerCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);
@@ -298,7 +291,6 @@ namespace Lieferliste_WPF.Planning
             {
                 MessageBox.Show(e.Message, "SetMarker", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
         private bool OnOpenMachineCanExecute(object arg)
         {
@@ -331,22 +323,10 @@ namespace Lieferliste_WPF.Planning
                 string[] bemt = [];
                 var vid = result.Parameters.GetValue<string>("VID");
                 var bem = result.Parameters.GetValue<string>("Comment");
-                if (bem != null) bemt = bem.Split(';');
-                if (bemt.Length > 1)
-                {
-                    Processes.First(x => x.VorgangId == vid).BemT = String.Format("[{0}-{1}];{2}",
-                        UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), bemt[1]);
-                }
+
             }
         }
 
-        private void OnDateChanged(object obj)
-        {
-            if(obj is Vorgang vrg)
-            {
-                _dbCtx.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Termin = vrg.Termin;
-            }
-        }
         private void MachineClosed(object? sender, EventArgs e)
         {
             if (_dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged))

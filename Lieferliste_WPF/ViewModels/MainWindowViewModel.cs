@@ -63,6 +63,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenOrderCommand { get; }
         public ICommand ArchivateCommand { get; }
         public ICommand OpenProjectOverViewCommand { get; }
+        public ICommand MachinePrintCommand { get; }
         private NotifyTaskCompletion<int>? _onlineTask;
         public NotifyTaskCompletion<int>? OnlineTask
         {
@@ -113,6 +114,8 @@ namespace Lieferliste_WPF.ViewModels
             _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
             OpenProjectOverViewCommand = new ActionCommand(OnOpenProjectOverViewExecuted, OnOpenProjectOverViewCanExecute);
             _applicationCommands.OpenProjectOverViewCommand.RegisterCommand(OpenProjectOverViewCommand);
+            MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
+            _applicationCommands.MachinePrintCommand.RegisterCommand(MachinePrintCommand);
 
             OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
             OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);

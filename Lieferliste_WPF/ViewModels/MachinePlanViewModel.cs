@@ -12,9 +12,11 @@ using Microsoft.EntityFrameworkCore;
 using Prism.Events;
 using Prism.Ioc;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -147,6 +149,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnSaveExecuted(object obj)
         {
             _DbCtx.SaveChanges();
+            foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
         }
 
         private void LoadWorkAreas()
@@ -195,6 +198,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnAutoSave(object? sender, ElapsedEventArgs e)
         {
             if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
+            foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
         }
 
         private async Task<ICollectionView> LoadMachinesAsync()
@@ -203,7 +207,7 @@ namespace Lieferliste_WPF.ViewModels
             var re = await _DbCtx.Ressources
             .Include(x => x.RessourceCostUnits)
             .Include(x => x.WorkArea)
-            .Where(x => (x.WorkArea != null) && WorkAreas.Contains(x.WorkArea)).ToListAsync();
+            .Where(x => (x.WorkArea != null) && WorkAreas.Contains(x.WorkArea)).OrderBy(x => x.Sort).ToListAsync();
 
             var proc = await GetVorgangsAsync(null);
 
@@ -310,12 +314,16 @@ namespace Lieferliste_WPF.ViewModels
                     dropInfo.Effects = DragDropEffects.Move;
                 }
             }
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachSort))
+            {
+                if(dropInfo.Data is PlanMachine)
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                    dropInfo.Effects = DragDropEffects.Move;
+                }
+            }
         }
 
-        internal void Exit()
-        {
-            _DbCtx.SaveChanges();
-        }
 
         public void Drop(IDropInfo dropInfo)
 
@@ -331,9 +339,9 @@ namespace Lieferliste_WPF.ViewModels
 
                         if (_DbCtx.Ressources.All(x => x.RessourceId != parkRid))
                         {
-
+                            _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource ON");
                             _DbCtx.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
-
+                            _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource OFF");
                         }
                         vrg.Rid = parkRid;
                     }
@@ -349,6 +357,23 @@ namespace Lieferliste_WPF.ViewModels
                     ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
                 }
+                else if(dropInfo.Data is PlanMachine plm)
+                {
+                    var s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
+                    var t = dropInfo.TargetCollection as ListCollectionView;
+                    if (s.CanRemove) s.Remove(plm);
+                    var v = dropInfo.InsertIndex;
+
+                        Debug.Assert(t != null, nameof(t) + " != null");
+                        ((IList)t.SourceCollection).Insert(v, plm);
+                    }
+
+
+                for (var i = 0; i < _machines.Count; i++)
+                {
+                    var vv = _DbCtx.Ressources.First(x => x.RessourceId == _machines[i].Rid);
+                    vv.Sort = (vv.Visability) ? i : 1000;
+                }              
             }
             catch (Exception e)
             {

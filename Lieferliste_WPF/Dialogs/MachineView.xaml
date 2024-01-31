@@ -98,7 +98,7 @@
                   dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" ContextMenu="{StaticResource BulletContextMenu}"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"
-                  dd:DragDrop.DropHandler="{Binding}" >
+                  dd:DragDrop.DropHandler="{Binding}">
             <DataGrid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick"
                               Command="{Binding ApplicationCommands.OpenOrderCommand}"
@@ -142,18 +142,12 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <DatePicker FirstDayOfWeek="Monday" ToolTip="voraussichtlicher Termin lt. Teamleiter" VerticalAlignment="Top" SnapsToDevicePixels="True"
-                                      SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                      SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}"
                                       DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
                                       IsEnabled="{Binding Converter={StaticResource permiss}, ConverterParameter={x:Static const:Permissions.TLTermin}}"
                                        SelectedDateChanged="DatePicker_SelectedDateChanged"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    <!--<i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SourceUpdated">
-                            <i:InvokeCommandAction Command="{Binding DataContext.DateChangedCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                   CommandParameter="{Binding}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>-->
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Text}"  Width="120" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
@@ -170,13 +164,13 @@
                         <DataTemplate>
                             <StackPanel ToolTip="Bemerkung Teamleiter" Width="150" >
                                 <TextBlock x:Name="BemTInfo" Text="{Binding BemT, NotifyOnSourceUpdated=True,
-                           Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}"/>
+                           Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}" Background="Gold"/>
 
                                 <TextBox x:Name="BemTText" Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
                                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
                                                                  Converter={StaticResource permiss}}"
-                                                  TextWrapping="Wrap" AcceptsReturn="True" LostFocus="BemTText_LostFocus" />
+                                                  TextWrapping="Wrap" AcceptsReturn="True" SourceUpdated="BemTText_LostFocus" />
 
                             </StackPanel>
                         </DataTemplate>

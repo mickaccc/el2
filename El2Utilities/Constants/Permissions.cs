@@ -51,5 +51,6 @@
         public const string HistoryDialog = "HISTDIALOG";
         public const string TLTermin = "TERMTL";
         public const string ProjAttach = "PROJ05";
+        public const string MachSort = "MACHSORT";
     }
 }

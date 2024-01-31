@@ -9,11 +9,9 @@ public partial class ProjectAttachment
 {
     public int AttachId { get; set; }
 
-    public string? AttachmentLink { get; set; }
+    public string? Attachment { get; set; }
 
-    public byte[]? AttachmentBin { get; set; }
-
-    public DateTime Timestamp { get; set; }
+    public DateTime? Timestamp { get; set; }
 
     public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
 }

@@ -1,26 +1,32 @@
 ﻿using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
+using GongSolutions.Wpf.DragDrop;
 using Prism.Services.Dialogs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
-    class MachineViewVM : IDialogAware
+    class MachineViewVM : IDialogAware, IDropTarget
     {
         public string Title => "Maschinen Details";
         public string InventNo { get; private set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<int>? CostUnits { get; private set; }
-        private ObservableCollection<Vorgang>? Processes { get; set; } = new();
+        public ObservableCollection<Vorgang>? Processes { get; set; } = new();
         private List<Vorgang> ChangedVrgs { get; set; } = new();
         public ICollectionView? ProcessesCV { get; private set; }
         public event Action<IDialogResult> RequestClose;
@@ -35,15 +41,6 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                     _applicationCommands = value;
                 }
             }
-        }
-        private RelayCommand? _ChangedCommand;
-        public RelayCommand DateChangedCommand => _ChangedCommand ??= new RelayCommand(OnChanged);
-
-        private void OnChanged(object obj)
-        {
-            if (obj is Vorgang vrg)
-                ChangedVrgs.Add(vrg);
-           
         }
 
         public MachineViewVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
@@ -65,15 +62,49 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             CostUnits = parameters.GetValue<List<int>>("CostUnits");
             Processes.AddRange(parameters.GetValue<List<Vorgang>>("processList"));
             ProcessesCV = CollectionViewSource.GetDefaultView(Processes);
-            foreach (Vorgang v in Processes)
+            
+        }
+        public void Drop(IDropInfo dropInfo)
+        {
+
+            try
             {
-                v.PropertyChanged += VorgChanged;
+                var vrg = (Vorgang)dropInfo.Data;
+                var s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
+                var t = dropInfo.TargetCollection as ListCollectionView;
+                var v = dropInfo.InsertIndex;
+                if (s.CanRemove) s.Remove(vrg);
+
+                Debug.Assert(t != null, nameof(t) + " != null");
+                    ((IList)t.SourceCollection).Insert(v, vrg);
+                
+                var p = t.SourceCollection as Collection<Vorgang>;
+
+                for (var i = 0; i < p.Count; i++)
+                {
+                    p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
+                    var vv = Processes?.First(x => x.VorgangId == p[i].VorgangId);
+                    vv.Spos = i;
+                }
+                t.Refresh();
+            }
+            catch (Exception e)
+            {
+                string str = string.Format(e.Message + "\n" + e.InnerException);
+                MessageBox.Show(str, "ERROR", MessageBoxButton.OK);
             }
         }
 
-        private void VorgChanged(object? sender, PropertyChangedEventArgs e)
+        public void DragOver(IDropInfo dropInfo)
         {
-            
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachDrop))
+            {
+                if (dropInfo.Data is Vorgang)
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                    dropInfo.Effects = DragDropEffects.Move;
+                }
+            }
         }
     }
 }

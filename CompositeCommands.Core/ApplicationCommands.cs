@@ -10,6 +10,7 @@ namespace CompositeCommands.Core
         CompositeCommand OpenMachineCommand { get; }
         CompositeCommand OpenProjectOverViewCommand { get; }
         CompositeCommand CloseCommand { get; }
+        CompositeCommand MachinePrintCommand { get; }
     }
 
     public class ApplicationCommands : IApplicationCommands

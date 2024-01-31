@@ -1,4 +1,5 @@
 ﻿using El2Core.Models;
+using Lieferliste_WPF.Dialogs.ViewModels;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Views;
 using System;
@@ -86,6 +87,13 @@ namespace Lieferliste_WPF.Utilities
                 Second = plw.PersNo.ToString() ?? string.Empty;
                 proces = plw.Processes?.ToList() ?? [];
                 Description = plw.Description ?? string.Empty;
+            }
+            else if (parameter is MachineViewVM mvvm)
+            {
+                Name= mvvm.Name ?? string.Empty;
+                Second = mvvm.InventNo ?? string.Empty;
+                proces = mvvm.Processes?.ToList() ?? [];
+                Description= mvvm.Description ?? string.Empty;
             }
             else throw new InvalidDataException();
 

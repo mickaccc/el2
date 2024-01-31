@@ -1,4 +1,5 @@
 ﻿using El2Core.Converters;
+using El2Core.Models;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -59,7 +60,9 @@ namespace Lieferliste_WPF.Dialogs
 
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            var dp = sender as DatePicker;
+            var vrg = dp?.DataContext as Vorgang;
+            if (vrg != null) { vrg.Termin = dp?.SelectedDate; }
         }
     }
 }

@@ -19,7 +19,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows7.0")]
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public class UserEditViewModel : ViewModelBase, IDropTarget, IViewModel
     {
 
@@ -227,6 +227,7 @@ namespace Lieferliste_WPF.ViewModels
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                             return;
                         }
+                        user.Exited = false;
                         _dbctx.Users.Add((User)user);
                     }
 
