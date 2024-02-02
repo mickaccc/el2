@@ -364,7 +364,7 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
-            if (accepted && _markerCode != string.Empty) accepted = _markerCode.Equals(ord.Marker?.Trim(), StringComparison.InvariantCultureIgnoreCase);
+            if (accepted && _markerCode != string.Empty) accepted = _markerCode.Contains(ord.Marker?.Trim(), StringComparison.InvariantCultureIgnoreCase);
 
             return accepted;
         }

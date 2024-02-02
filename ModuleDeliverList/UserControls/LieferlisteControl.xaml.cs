@@ -34,7 +34,14 @@ namespace ModuleDeliverList.UserControls
             = DependencyProperty.Register("TTNR"
                 , typeof(string)
                 , typeof(LieferlisteControl),
-                new PropertyMetadata("", OnPropertyChanged));
+                new PropertyMetadata("", OnPropertyChanged, OnTrim));
+
+        private static object OnTrim(DependencyObject d, object baseValue)
+        {
+            if (baseValue is string bsv) return bsv.Trim();
+            return baseValue;
+        }
+
         public string TTNR
         {
             get { return (string)GetValue(TtnrProperty); }

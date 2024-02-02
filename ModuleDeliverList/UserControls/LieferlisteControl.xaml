@@ -83,13 +83,13 @@
 
  
     </UserControl.Resources>
-    <Border Focusable="True" >
+    <Border Focusable="True" BorderThickness="1" BorderBrush="Black" >
         <VirtualizingStackPanel  x:Name="Liefer"  Background="Transparent" >
 
         <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition Height="33"/>
-                <RowDefinition Height="23*"/>
+                <RowDefinition Height="34"/>
                 <RowDefinition Height="33"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -102,9 +102,7 @@
                 <ColumnDefinition Width="80*"/>
                 <ColumnDefinition Width="100*"/>
                 <ColumnDefinition Width="100*"/>
-                <ColumnDefinition Width="150"/>
-                <ColumnDefinition Width="150"/>
-                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="450"/>
                 <ColumnDefinition Width="100*"/>
             </Grid.ColumnDefinitions>
 
@@ -118,7 +116,7 @@
                                           Text="{Binding ProjectInfo, ElementName=luc}" />
             <Controls:SelectableTextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="txtMatTTNR" >
                 <Controls:SelectableTextBlock.Text>
-                    <MultiBinding StringFormat=" {0} {1}">
+                    <MultiBinding StringFormat=" {0} - {1}">
                         <Binding Path="TTNR" ElementName="luc"/>
                         <Binding Path="MatText" ElementName="luc"/>
                     </MultiBinding>
@@ -154,35 +152,41 @@
                     </MultiBinding>
                 </Controls:SelectableTextBlock.Text>
             </Controls:SelectableTextBlock>
-
-            <GroupBox Grid.Column="9"  ToolTip="Kommentar Meister" 
+                <Grid Grid.Column="9" Grid.RowSpan="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="30"/>
+                        <ColumnDefinition Width="{Binding Path=ActualWidth, ElementName=txtT}" />
+                        <ColumnDefinition MinWidth="30"/>
+                    </Grid.ColumnDefinitions>
+            <GroupBox ToolTip="Kommentar Meister" VerticalAlignment="Stretch" MinWidth="30" MaxWidth="390"
                           Header="{Binding Comment_Me, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
                 <TextBox Text="{Binding Comment_Me, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
                                                  Converter={StaticResource Permission}}"
-                             TextWrapping="Wrap" AcceptsReturn="True" />
+                             TextWrapping="Wrap"  AcceptsReturn="True"  />
             </GroupBox>
 
-            <GroupBox Grid.Column="10"  ToolTip="Kommentar Teamleiter"
+            <GroupBox Grid.Column="1"  ToolTip="Kommentar Teamleiter" MinWidth="30"  MaxWidth="380"  
                           Header="{Binding Comment_Te, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                <TextBox Text="{Binding Comment_Te, ElementName=luc,
+                <TextBox x:Name="txtT" Text="{Binding Comment_Te, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                  IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
                                                  Converter={StaticResource Permission}}"
-                                  TextWrapping="Wrap" AcceptsReturn="True" />
+                                  TextWrapping="Wrap"  AcceptsReturn="True" MaxWidth="380" />
             </GroupBox>
-            <GroupBox Grid.Column="11"  ToolTip="Kommentar Mitarbeiter"
+            <GroupBox Grid.Column="2"  ToolTip="Kommentar Mitarbeiter" MinWidth="30" MaxWidth="390" 
                           Header="{Binding Comment_Ma, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                <TextBox Text="{Binding Comment_Ma, ElementName=luc,
+                <TextBox x:Name="txtMa" Text="{Binding Comment_Ma, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
                    IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
                                                Converter={StaticResource Permission}}"
-                                   TextWrapping="Wrap" AcceptsReturn="True"/>
+                                   TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch"/>
             </GroupBox>
+                </Grid>
                 <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Orientation="Horizontal">
                     <Label Content="TABG" Background="Pink" Visibility="{Binding Path=SysStatus, ElementName=luc,
                         Converter={StaticResource sysVisible}, ConverterParameter=TABG}"/>
@@ -190,7 +194,7 @@
                         Converter={StaticResource sysVisible}, ConverterParameter=EROF}"/>
                 </VirtualizingStackPanel>
                 
-                <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" 
+                <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd"
                          ToolTip="Endtermin" Grid.Row="1" 
                          Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
                          Background="{Binding EndDate, Converter={StaticResource DateLost}, ElementName=luc}"/>
@@ -211,9 +215,9 @@
                               IsReadOnly="{Binding Converter={StaticResource Permission},
                         ConverterParameter={x:Static const:Permissions.VorgangPrioInvers}}"/>
             </Canvas>
-                <Label Grid.Column="13" Background="MistyRose" Margin="6" Padding="2" HorizontalAlignment="Center"
+                <Label Grid.Column="10" Background="MistyRose" Margin="6" Padding="2" HorizontalAlignment="Center"
                        Visibility="{Binding InVisible, ElementName=luc, Converter={StaticResource BooleanToVisibilityConverter}}">ausgeblendet</Label>
-            <Button Grid.Column="13" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
+            <Button Grid.Column="10" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
                         Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}">
                 <Button.CommandParameter>
@@ -224,7 +228,7 @@
                 </Button.CommandParameter>
             </Button>
 
-            <Button Grid.Column="13" Grid.Row="1" Content="Auftrag" 
+            <Button Grid.Column="10" Grid.Row="1" Content="Auftrag" 
                         Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding Aid, ElementName=luc}" />

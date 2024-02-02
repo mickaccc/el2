@@ -259,6 +259,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void SelectionChange(object commandParameter)
         {
+            //TODO: Permission Foreign Workareas
             try
             {
                 if (commandParameter is SelectionChangedEventArgs sel)
