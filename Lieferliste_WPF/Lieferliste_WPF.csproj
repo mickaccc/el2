@@ -153,6 +153,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Themes\" />
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 

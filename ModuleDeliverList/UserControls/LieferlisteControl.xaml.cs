@@ -247,6 +247,19 @@ namespace ModuleDeliverList.UserControls
             DependencyProperty.Register("MachineText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
 
+
+        public string User
+        {
+            get { return (string)GetValue(UserProperty); }
+            set { SetValue(UserProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for User.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty UserProperty =
+            DependencyProperty.Register("User", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+
+
+
         public string Comment_Me
         {
             get { return (string)GetValue(Comment_MeProperty); }

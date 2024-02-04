@@ -44,6 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Themes\CommentControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Themes\LoadingSpinner.xaml">
       <SubType>Designer</SubType>
     </Page>
