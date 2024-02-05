@@ -1,6 +1,7 @@
-﻿<Window
+﻿<control:MetroWindow 
     xml:lang="de-AT"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,6 +16,11 @@
     x:Class="Lieferliste_WPF.Views.MainWindow"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MahApps.Fonts.Family.Window.Title}"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+        ResizeMode="CanResizeWithGrip"
+        Style="{StaticResource MaterialDesignWindow}"
+        WindowTransitionsEnabled="True"
         x:Name="mainWindow"
         Title="LieferListe El2" Height="900" WindowStartupLocation="CenterScreen" 
         Loaded="mainWindow_Loaded" Closing="mainWindow_Closing" >
@@ -108,7 +114,7 @@
                 <Setter.Value>
                     <LinearGradientBrush EndPoint="0.5,1"
                            StartPoint="0.5,0">
-                        <GradientStop Color="{DynamicResource ControlMediumColor}"
+                        <GradientStop Color="{DynamicResource ControlLightColor}"
                       Offset="0" />
                         <GradientStop Color="{DynamicResource ControlDarkColor}"
                       Offset="1" />
@@ -116,7 +122,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
@@ -255,4 +260,4 @@
             </StatusBarItem>
         </StatusBar>
     </Grid>
-</Window>
+</control:MetroWindow>

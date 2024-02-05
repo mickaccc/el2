@@ -142,7 +142,10 @@
             </ListBox.Background>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Path=WorkArea.Bereich}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Path=FullAccess}"/>
+                        <TextBlock Text="{Binding Path=WorkArea.Bereich}"/>
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
 

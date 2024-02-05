@@ -7,6 +7,7 @@ using System.Collections.Generic;
 namespace El2Core.Models;
 
 public partial class OrderRb : ModelBase
+
 {
     public string Aid { get; set; } = null!;
 
@@ -54,9 +55,9 @@ public partial class OrderRb : ModelBase
 
     public string? OrderType { get; set; }
 
-    public string? ProductionSupervisor { get; set; }
-
     public string? OrderCategory { get; set; }
+
+    public string? ProductionSupervisor { get; set; }
 
     public string? Wbselement { get; set; }
 

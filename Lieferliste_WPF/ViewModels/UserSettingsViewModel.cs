@@ -1,9 +1,12 @@
 ﻿using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using MaterialDesignColors;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -23,6 +26,20 @@ namespace Lieferliste_WPF.ViewModels
         public Brush OutOfDate { get; set; }
         public Brush InOfDate { get; set; }
         public string Title { get; } = "Einstellungen";
+        private bool _isDarkTheme;
+        public bool IsDarkTheme
+        {
+            get => _isDarkTheme;
+            set
+            {
+                if (_isDarkTheme != value)
+                {
+                    _isDarkTheme = value;
+                    NotifyPropertyChanged(() => IsDarkTheme);
+                    //ApplyBase(value);
+                }
+            }
+        }
         public UserSettingsViewModel(IUserSettingsService settingsService)
         {
 
@@ -34,8 +51,55 @@ namespace Lieferliste_WPF.ViewModels
             ChangeThemeCommand = new ActionCommand(OnChangeThemeExecuted, OnChangeThemeCanExecute);
             ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
 
+            //Swatches = new SwatchesProvider().Swatches;
+
+            //PaletteHelper paletteHelper = new PaletteHelper();
+            //Theme theme = paletteHelper.GetTheme();
+
+            //IsDarkTheme = theme.GetBaseTheme() == BaseTheme.Dark;
+
         }
 
+
+        //private static void ApplyStyle(bool alternate)
+        //{
+        //    var resourceDictionary = new ResourceDictionary
+        //    {
+        //        Source = new Uri(@"pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml")
+        //    };
+
+        //    var styleKey = alternate ? "MaterialDesignAlternateTabablzControlStyle" : "MaterialDesignTabablzControlStyle";
+        //    var style = (Style)resourceDictionary[styleKey];
+
+        //    foreach (var tabablzControl in Dragablz.TabablzControl.GetLoadedInstances())
+        //    {
+        //        tabablzControl.Style = style;
+        //    }
+        //}
+
+        //private static void ApplyBase(bool isDark)
+        //    => ModifyTheme(theme => theme.SetBaseTheme(isDark ? BaseTheme.Dark : BaseTheme.Light));
+
+        private static void ApplyPrimary(Swatch swatch)
+            => ModifyTheme(theme => theme.SetPrimaryColor(swatch.ExemplarHue.Color));
+
+        private static void ApplyAccent(Swatch swatch)
+        {
+            if (swatch.AccentExemplarHue is Hue accentHue)
+            {
+                ModifyTheme(theme => theme.SetSecondaryColor(accentHue.Color));
+            }
+        }
+
+        private static void ModifyTheme(Action<Theme> modificationAction)
+        {
+            //PaletteHelper paletteHelper = new PaletteHelper();
+            //Theme theme = paletteHelper.GetTheme();
+
+            //modificationAction?.Invoke(theme);
+
+            //paletteHelper.SetTheme(theme);
+        }
         private bool OnChangeThemeCanExecute(object arg)
         {
             throw new NotImplementedException();

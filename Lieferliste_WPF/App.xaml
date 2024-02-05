@@ -7,13 +7,28 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/AnimColors.xaml"/>
-                <ResourceDictionary Source="/Styles/UIColors.xaml"/>
-                <ResourceDictionary Source="/Styles/DataTemplateItems.xaml"/>
+                <!--<ResourceDictionary Source="/Styles/UIColors.xaml"/>-->
+                <!--<ResourceDictionary Source="/Styles/DataTemplateItems.xaml"/>-->
+                <ResourceDictionary Source="/Styles/BulletContextMenu.xaml"/>
                 <!--<materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Teal"  SecondaryColor="Lime"/>
                 <materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Chocolate"  SecondaryColor="DarkGreen"  />-->
-                <materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Teal"  SecondaryColor="Lime" />
+                <!--<materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Teal"  SecondaryColor="Lime" />-->
+
+                <materialDesign:MahAppsBundledTheme BaseTheme="Inherit"
+                                            PrimaryColor="DeepPurple"
+                                            SecondaryColor="Purple" />
+
+                <!-- MahApps -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+
+                <!-- Material Design -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="/Styles/BulletContextMenu.xaml"/>
+
+                <!-- Material Design: MahApps Compatibility -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>
