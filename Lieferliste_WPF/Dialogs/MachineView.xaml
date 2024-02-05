@@ -21,6 +21,7 @@
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:BullettShapeConverter x:Key="BulletShape"/>
         <conv:PermissionConverter x:Key="permiss"/>
+        <conv:RelativePermissionConverter x:Key="Relpermiss"/>
         <conv:CommentConverter x:Key="comment"/>
         <conv:PlusConverter x:Key="plus"/>
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
@@ -32,7 +33,14 @@
             <Setter Property="Background" Value="LightYellow"/>
             <Setter Property="Padding" Value="2"/>
             <Setter Property="AcceptsReturn" Value="True"/>
-            <Setter Property="IsEnabled" Value="{Binding Converter={StaticResource permiss}, ConverterParameter={x:Static const:Permissions.CommentTe}}"/>
+            <Setter Property="IsEnabled">
+                <Setter.Value>
+                    <MultiBinding Converter="{StaticResource Relpermiss}">
+                        <Binding Source="{x:Static const:Permissions.CommentTe}"/>
+                        <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.WorkAreaId"/>
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style TargetType="DataGridCell">
             <Setter Property="BorderThickness" Value="0"/>
@@ -144,8 +152,14 @@
                             <DatePicker FirstDayOfWeek="Monday" ToolTip="voraussichtlicher Termin lt. Teamleiter" VerticalAlignment="Top" SnapsToDevicePixels="True"
                                       SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}"
                                       DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
-                                      IsEnabled="{Binding Converter={StaticResource permiss}, ConverterParameter={x:Static const:Permissions.TLTermin}}"
-                                       SelectedDateChanged="DatePicker_SelectedDateChanged"/>
+                                       SelectedDateChanged="DatePicker_SelectedDateChanged">
+                                <DatePicker.IsEnabled>
+                                    <MultiBinding Converter="{StaticResource Relpermiss}">
+                                        <Binding Source="{x:Static const:Permissions.TLTermin}"/>
+                                        <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.WorkAreaId"/>
+                                    </MultiBinding>
+                                </DatePicker.IsEnabled>
+                            </DatePicker>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -159,6 +173,7 @@
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach, UpdateSourceTrigger=LostFocus}"
                                     EditingElementStyle="{StaticResource CellEditStyle}"/>
+
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
@@ -168,9 +183,15 @@
 
                                 <TextBox x:Name="BemTText" Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
-                                 IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
-                                                                 Converter={StaticResource permiss}}"
-                                                  TextWrapping="Wrap" AcceptsReturn="True" SourceUpdated="BemTText_LostFocus" />
+
+                                                  TextWrapping="Wrap" AcceptsReturn="True" SourceUpdated="BemTText_LostFocus">
+                                    <TextBox.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource Relpermiss}">
+                                            <Binding Source="{x:Static const:Permissions.CommentTe}"/>
+                                            <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.WorkAreaId"/>
+                                        </MultiBinding>
+                                    </TextBox.IsEnabled>
+                                </TextBox>
 
                             </StackPanel>
                         </DataTemplate>

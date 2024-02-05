@@ -11,6 +11,8 @@ public partial class UserWorkArea
 
     public string UserId { get; set; } = null!;
 
+    public bool FullAccess { get; set; }
+
     public virtual User User { get; set; } = null!;
 
     public virtual WorkArea WorkArea { get; set; } = null!;

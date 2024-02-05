@@ -21,6 +21,7 @@
         <conv:TTNR_Converter x:Key="TTNR_Converter1" />
         <conv:CountConverter x:Key="CountConverter1" />
         <conv:PermissionConverter x:Key="Permission" />
+        <conv:RelativePermissionConverter x:Key="Relpermiss"/>
         <conv:CommentConverter x:Key="CommentConv"/>
         <conv:PermissionVisibilityConverter x:Key="PermissionVisibilityConverter1" />
         <conv:RessourceToKwConverter x:Key="RessToKW"/>
@@ -179,8 +180,13 @@
                             <DatePicker Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Height="23" x:Name="txtTerm" 
                                     DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"          
                                     SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnSourceUpdated=True}" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
-                                    IsEnabled="{Binding Converter={StaticResource Permission},
-                                    ConverterParameter={x:Static const:Permissions.TLTermin}}" SelectedDateFormat="Long">
+                                    SelectedDateFormat="Long">
+                                <DatePicker.IsEnabled>
+                                    <MultiBinding Converter="{StaticResource Relpermiss}">
+                                        <Binding Source="{x:Static const:Permissions.TLTermin}"/>
+                                        <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                    </MultiBinding>
+                                </DatePicker.IsEnabled>
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="SourceUpdated">
                                         <i:InvokeCommandAction Command="{Binding DataContext.DateChangedCommand,
@@ -201,9 +207,13 @@
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
                                 <TextBox x:Name="bemm" Text="{Binding BemM, Mode=TwoWay, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
-	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
-									                                     Converter={StaticResource Permission}}"
 				                                     TextWrapping="Wrap" AcceptsReturn="True" >
+                                    <TextBox.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource Relpermiss}">
+                                            <Binding Source="{x:Static const:Permissions.CommentMe}"/>
+                                            <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                        </MultiBinding>
+                                    </TextBox.IsEnabled>
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SourceUpdated">
                                             <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
@@ -218,9 +228,13 @@
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
                                 <TextBox x:Name="bemt" Text="{Binding BemT, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
-	                                     IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
-									                                     Converter={StaticResource Permission}}"
 				                                     TextWrapping="Wrap" AcceptsReturn="True">
+                                    <TextBox.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource Relpermiss}">
+                                            <Binding Source="{x:Static const:Permissions.CommentTe}"/>
+                                            <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                        </MultiBinding>
+                                    </TextBox.IsEnabled>
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SourceUpdated">
                                             <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,
@@ -236,9 +250,13 @@
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
                                 <TextBox x:Name="bemma" Text="{Binding BemMa, NotifyOnSourceUpdated=True,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
-                                         IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
-                                                                         Converter={StaticResource Permission}}"
                                                      TextWrapping="Wrap" AcceptsReturn="True" >
+                                    <TextBox.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource Relpermiss}">
+                                            <Binding Source="{x:Static const:Permissions.CommentMa}"/>
+                                            <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                        </MultiBinding>
+                                    </TextBox.IsEnabled>
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SourceUpdated">
                                             <i:InvokeCommandAction Command="{Binding DataContext.BemChangedCommand,

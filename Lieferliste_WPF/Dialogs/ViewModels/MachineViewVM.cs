@@ -25,6 +25,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public string InventNo { get; private set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public int WorkAreaId { get; private set; }
         public List<int>? CostUnits { get; private set; }
         public ObservableCollection<Vorgang>? Processes { get; set; } = new();
         private List<Vorgang> ChangedVrgs { get; set; } = new();
@@ -60,6 +61,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             InventNo = parameters.GetValue<string>("InvNo");
             Description = parameters.GetValue<string>("Description");
             CostUnits = parameters.GetValue<List<int>>("CostUnits");
+            WorkAreaId = parameters.GetValue<int>("WorkAreaId");
             Processes.AddRange(parameters.GetValue<List<Vorgang>>("processList"));
             ProcessesCV = CollectionViewSource.GetDefaultView(Processes);
             
@@ -97,7 +99,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachDrop))
+            if (PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachDrop, WorkAreaId))
             {
                 if (dropInfo.Data is Vorgang)
                 {

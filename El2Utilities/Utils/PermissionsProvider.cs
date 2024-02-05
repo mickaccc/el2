@@ -9,7 +9,7 @@ namespace El2Core.Utils
         private static PermissionsProvider? _instance;
 
         private HashSet<string> _permissions = new();
-
+        private HashSet<int> _fullAccesses = new();
 
         public static PermissionsProvider GetInstance()
         {
@@ -36,13 +36,24 @@ namespace El2Core.Utils
                     _permissions.Add(permission.PermissionKey.Trim());
                 }
             }
+            foreach (var access in user.UserWorkAreas)
+            {
+                if (access.FullAccess) _fullAccesses.Add(access.WorkAreaId);
+            }
         }
 
         public bool GetUserPermission(string permission)
         {
             return _permissions.Contains(permission);
         }
-
+        public bool GetRelativeUserPermission(string permission, int workAreaId)
+        {
+            if(_permissions.Contains(permission))
+            {
+                return _fullAccesses.Contains(workAreaId);
+            }
+            return false;
+        }
 
     }
 }

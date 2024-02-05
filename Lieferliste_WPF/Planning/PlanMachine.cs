@@ -307,6 +307,7 @@ namespace Lieferliste_WPF.Planning
                 par.Add("Name", this.Name);
                 par.Add("Description", this.Description);
                 par.Add("CostUnits", this.CostUnits);
+                par.Add("WorkAreaId", this.WorkArea?.WorkAreaId);
                 _dialogService.Show("MachineView", par, MachineViewCallBack);
             }
             catch (Exception e)
@@ -384,7 +385,7 @@ namespace Lieferliste_WPF.Planning
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachDrop))
+            if (PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachDrop, WorkArea?.WorkAreaId ?? 0))
             {
                 if (dropInfo.Data is Vorgang)
                 {

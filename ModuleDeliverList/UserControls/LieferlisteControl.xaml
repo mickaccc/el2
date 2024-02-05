@@ -24,6 +24,7 @@
         <conv:RessourceToKwConverter x:Key="RtKw"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:PermissionConverter x:Key="Permission"/>
+        <conv:RelativePermissionConverter x:Key="Relpermiss"/>
         <conv:KW_Converter x:Key="KwConv"/>
         <conv:CommentConverter x:Key="CommentConv"/>
         <conv:NullStringToBoolConverter x:Key="stringEmpty"/>
@@ -164,30 +165,45 @@
                     <GroupBox ToolTip="Kommentar Meister" VerticalAlignment="Stretch" MinWidth="30" MaxWidth="390"
                           Header="{Binding Comment_Me, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                <TextBox Text="{Binding Comment_Me, ElementName=luc,
+                        <TextBox Text="{Binding Comment_Me, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
-                 IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMe},
-                                                 Converter={StaticResource Permission}}"
-                             TextWrapping="Wrap"  AcceptsReturn="True"  />
+                             TextWrapping="Wrap"  AcceptsReturn="True">
+                            <TextBox.IsEnabled>
+                                <MultiBinding Converter="{StaticResource Relpermiss}">
+                                    <Binding Source="{x:Static const:Permissions.CommentMe}"/>
+                                    <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                </MultiBinding>
+                            </TextBox.IsEnabled>
+                        </TextBox>
             </GroupBox>
 
             <GroupBox Grid.Column="1"  ToolTip="Kommentar Teamleiter" MinWidth="30"  MaxWidth="380"  
                           Header="{Binding Comment_Te, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                <TextBox x:Name="txtT" Text="{Binding Comment_Te, ElementName=luc,
+                        <TextBox x:Name="txtT" Text="{Binding Comment_Te, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
-                 IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentTe},
-                                                 Converter={StaticResource Permission}}"
-                                  TextWrapping="Wrap"  AcceptsReturn="True" MaxWidth="380" />
+                                  TextWrapping="Wrap"  AcceptsReturn="True" MaxWidth="380">
+                            <TextBox.IsEnabled>
+                                <MultiBinding Converter="{StaticResource Relpermiss}">
+                                    <Binding Source="{x:Static const:Permissions.CommentTe}"/>
+                                    <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                </MultiBinding>
+                            </TextBox.IsEnabled>
+                        </TextBox>
             </GroupBox>
             <GroupBox Grid.Column="2"  ToolTip="Kommentar Mitarbeiter" MinWidth="30" MaxWidth="390" 
                           Header="{Binding Comment_Ma, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
-                <TextBox x:Name="txtMa" Text="{Binding Comment_Ma, ElementName=luc,
+                        <TextBox x:Name="txtMa" Text="{Binding Comment_Ma, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource FalseValue}}"
-                   IsEnabled="{Binding ConverterParameter={x:Static const:Permissions.CommentMa},
-                                               Converter={StaticResource Permission}}"
-                                   TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch"/>
+                                   TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch">
+                            <TextBox.IsEnabled>
+                                <MultiBinding Converter="{StaticResource Relpermiss}">
+                                    <Binding Source="{x:Static const:Permissions.CommentMa}"/>
+                                    <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                </MultiBinding>
+                            </TextBox.IsEnabled>
+                        </TextBox>
             </GroupBox>
                 </Grid>
                 <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Orientation="Horizontal">
@@ -201,12 +217,18 @@
                          ToolTip="Endtermin" Grid.Row="1" 
                          Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
                          Background="{Binding EndDate, Converter={StaticResource DateLost}, ElementName=luc}"/>
-            <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"  
+                <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"  
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"
-                            DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
-                            IsEnabled="{Binding Converter={StaticResource Permission},
-                            ConverterParameter={x:Static const:Permissions.TLTermin}}"/>
+                            DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}">
+                    <DatePicker.IsEnabled>
+                        <MultiBinding Converter="{StaticResource Relpermiss}">
+                            <Binding Source="{x:Static const:Permissions.TLTermin}"/>
+                            <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                        </MultiBinding>
+                    </DatePicker.IsEnabled>
+                </DatePicker>
+
 
             <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"

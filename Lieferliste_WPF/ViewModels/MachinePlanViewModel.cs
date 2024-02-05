@@ -157,9 +157,10 @@ namespace Lieferliste_WPF.ViewModels
 
             var work = _DbCtx.WorkAreas
                 .Include(x => x.UserWorkAreas)
-                .Where(x => x.UserWorkAreas.Any(x => x.UserId.Equals(UserInfo.User.UserIdent)));
+                .Where(x => x.UserWorkAreas.Any(x => x.UserId.Equals(UserInfo.User.UserIdent)))
+                .ToList();
 
-            WorkAreas.AddRange(work);
+            WorkAreas.AddRange(work.OrderByDescending(x => x.UserWorkAreas.FirstOrDefault(x => x.FullAccess)));
 
         }
         private async Task<List<Vorgang>> GetVorgangsAsync(string? aid)
@@ -243,7 +244,7 @@ namespace Lieferliste_WPF.ViewModels
                 ParkingViewSource.Source = Priv_parking;
 
                 RessCV = CollectionViewSource.GetDefaultView(_machines);
-                RessCV.MoveCurrentToFirst();
+                RessCV.MoveCurrentTo(_machines.First(x => x.WorkArea?.WorkAreaId == WorkAreas[0].WorkAreaId));
                 _currentWorkArea = ((PlanMachine)RessCV.CurrentItem).WorkArea.WorkAreaId;
 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
@@ -298,7 +299,6 @@ namespace Lieferliste_WPF.ViewModels
                 e.Accepted = true;
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))
                 {
-
                     if (!(e.Accepted = v.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
                         if (!(e.Accepted = v.AidNavigation?.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
                             e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
@@ -306,8 +306,8 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         public void DragOver(IDropInfo dropInfo)
-        {
-            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachDrop))
+        {           
+            if (PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachDrop, _currentWorkArea))
             {
                 if (dropInfo.Data is Vorgang)
                 {
@@ -315,7 +315,7 @@ namespace Lieferliste_WPF.ViewModels
                     dropInfo.Effects = DragDropEffects.Move;
                 }
             }
-            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachSort))
+            if (PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachSort, _currentWorkArea))
             {
                 if(dropInfo.Data is PlanMachine)
                 {

@@ -328,7 +328,6 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteVorgang", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -358,13 +357,12 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = (ord.AidNavigation.Pro?.ProjectType ==
                     (int)ProjectTypes.ProjectType.DevelopeSpecimen) == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.EXERTN) accepted = (ord.ArbPlSap == "_EXTERN_") == !FilterInvers;
-
             if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
             if (accepted && !string.IsNullOrEmpty(_selectedProjectFilter)) accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
-            if (accepted && _markerCode != string.Empty) accepted = _markerCode.Contains(ord.Marker?.Trim(), StringComparison.InvariantCultureIgnoreCase);
+            if (accepted && _markerCode != string.Empty) accepted = ord.Marker?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
 
             return accepted;
         }
@@ -423,12 +421,11 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                DBctx.ChangeTracker.DetectChanges();
                 return DBctx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
             {
-                //MessageBox.Show(e.Message, "CanSave", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "CanSave", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;
         }
@@ -442,7 +439,6 @@ namespace ModuleDeliverList.ViewModels
                 OrdersViewSource.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Descending));
                 OrdersView.Refresh();
             }
-
         }
 
         private void OnAscSortExecuted(object parameter)
@@ -452,7 +448,6 @@ namespace ModuleDeliverList.ViewModels
 
             if (v != string.Empty)
             {
-
                 OrdersView.SortDescriptions.Clear();
                 OrdersView.SortDescriptions.Add(new SortDescription(v, ListSortDirection.Ascending));
                 OrdersView.Refresh();
@@ -567,7 +562,6 @@ namespace ModuleDeliverList.ViewModels
             ICollectionViewLiveShaping? live = OrdersView as ICollectionViewLiveShaping;
             if (live != null)
             {
-
                 if (live.CanChangeLiveFiltering)
                 {
                     live.LiveFilteringProperties.Add("Aktuell");
