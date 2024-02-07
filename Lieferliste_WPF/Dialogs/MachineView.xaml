@@ -37,7 +37,7 @@
                 <Setter.Value>
                     <MultiBinding Converter="{StaticResource Relpermiss}">
                         <Binding Source="{x:Static const:Permissions.CommentTe}"/>
-                        <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.WorkAreaId"/>
+                        <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
                     </MultiBinding>
                 </Setter.Value>
             </Setter>
@@ -175,7 +175,7 @@
                                 <DatePicker.IsEnabled>
                                     <MultiBinding Converter="{StaticResource Relpermiss}">
                                         <Binding Source="{x:Static const:Permissions.TLTermin}"/>
-                                        <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.WorkAreaId"/>
+                                        <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
                                     </MultiBinding>
                                 </DatePicker.IsEnabled>
                             </DatePicker>
@@ -207,7 +207,7 @@
                                     <TextBox.IsEnabled>
                                         <MultiBinding Converter="{StaticResource Relpermiss}">
                                             <Binding Source="{x:Static const:Permissions.CommentTe}"/>
-                                            <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.WorkAreaId"/>
+                                            <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
                                         </MultiBinding>
                                     </TextBox.IsEnabled>
                                 </TextBox>
