@@ -16,12 +16,14 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Data;
+using Lieferliste_WPF.Planning;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
     class MachineViewVM : IDialogAware, IDropTarget
     {
         public string Title => "Maschinen Details";
+        public PlanMachine PlanMachine { get; private set; }
         public string InventNo { get; private set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -57,13 +59,9 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-            Name = parameters.GetValue<string>("Name");
-            InventNo = parameters.GetValue<string>("InvNo");
-            Description = parameters.GetValue<string>("Description");
-            CostUnits = parameters.GetValue<List<int>>("CostUnits");
-            WorkAreaId = parameters.GetValue<int>("WorkAreaId");
-            Processes.AddRange(parameters.GetValue<List<Vorgang>>("processList"));
-            ProcessesCV = CollectionViewSource.GetDefaultView(Processes);
+
+            PlanMachine = parameters.GetValue<PlanMachine>("PlanMachine");
+            ProcessesCV = CollectionViewSource.GetDefaultView(PlanMachine.Processes);
             
         }
         public void Drop(IDropInfo dropInfo)
@@ -85,7 +83,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 for (var i = 0; i < p.Count; i++)
                 {
                     p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
-                    var vv = Processes?.First(x => x.VorgangId == p[i].VorgangId);
+                    var vv = PlanMachine.Processes?.First(x => x.VorgangId == p[i].VorgangId);
                     vv.Spos = i;
                 }
                 t.Refresh();

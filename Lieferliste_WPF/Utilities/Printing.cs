@@ -90,10 +90,10 @@ namespace Lieferliste_WPF.Utilities
             }
             else if (parameter is MachineViewVM mvvm)
             {
-                Name= mvvm.Name ?? string.Empty;
-                Second = mvvm.InventNo ?? string.Empty;
-                proces = mvvm.Processes?.ToList() ?? [];
-                Description= mvvm.Description ?? string.Empty;
+                Name= mvvm.PlanMachine.Name ?? string.Empty;
+                Second = mvvm.PlanMachine.InventNo ?? string.Empty;
+                proces = mvvm.PlanMachine.Processes?.ToList() ?? [];
+                Description= mvvm.PlanMachine.Description ?? string.Empty;
             }
             else throw new InvalidDataException();
 

@@ -20,7 +20,7 @@
 
 
     <UserControl.Resources>
-        <conv:DateLostToColorConverter x:Key="DateLost"/>
+        <conv:LowerThanDate x:Key="LowerThanDate"/>
         <conv:RessourceToKwConverter x:Key="RtKw"/>
         <conv:MultiObjectConverter x:Key="MultiObject"/>
         <conv:PermissionConverter x:Key="Permission"/>
@@ -63,7 +63,7 @@
             <EventSetter Event="UIElement.MouseLeave" Handler="TextBlock_MouseLeave"/>
 
         </Style>
-        <Style x:Key="AlertStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
+        <Style x:Key="AlertPrioStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
             <Style.Triggers >
                 <DataTrigger Binding="{Binding Path=PrioText, ElementName=luc, Converter={StaticResource stringEmpty}}" Value="False">
                     <Setter Property="Background" Value="red"/>
@@ -71,7 +71,15 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
+        <Style x:Key="AlertDateStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
+            <Style.Triggers >
+                <DataTrigger Binding="{Binding Path=EndDate, ElementName=luc, Converter={StaticResource LowerThanDate}}" Value="True">
+                    <Setter Property="Background" Value="red"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="MinWidth" Value="20"/>
@@ -127,7 +135,7 @@
 
             <Controls:SelectableTextBlock  x:Name="txtWorkArea" 
                      Text="{Binding WorkArea, ElementName=luc}" Grid.Row="1" Grid.Column="2"  />
-            <Controls:SelectableTextBlock Grid.Column="5" x:Name="txtOrder" Style="{StaticResource AlertStyle}" FontSize="16" FontWeight="DemiBold"
+            <Controls:SelectableTextBlock Grid.Column="5" x:Name="txtOrder" Style="{StaticResource AlertPrioStyle}" FontSize="16" FontWeight="DemiBold"
                            Text="{Binding Aid, ElementName=luc}" ToolTip="Auftragsnummer" Grid.ColumnSpan="2" />
             <Controls:SelectableTextBlock Grid.Column="3" Grid.Row="1" x:Name="txtVnr"  ToolTip="Vorgangsnummer" 
                      Text="{Binding Vnr, ElementName=luc, StringFormat=\{0:D4\}}" />
@@ -142,7 +150,7 @@
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
                     <Controls:SelectableTextBlock Canvas.Left="120"  x:Name="txtRework"  ToolTip="Nacharbeitsmenge" 
                      Text="{Binding QuantityRework, ElementName=luc}" HorizontalAlignment="Right"  />
-                    <TextBox Text="{Binding Marker, ElementName=luc}" Canvas.Left="170" Margin="5" ToolTip="Reihung"/>
+                    <TextBox Text="{Binding MarkCode, ElementName=luc}" Canvas.Left="170" Margin="5" ToolTip="Reihung"/>
                 </Canvas>
             <Controls:SelectableTextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" x:Name="txtVrgText" ToolTip="Vorgang Kurztext"  
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />
@@ -216,7 +224,7 @@
                 <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" FontSize="16" FontWeight="Bold"
                          ToolTip="Endtermin" Grid.Row="1" 
                          Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
-                         Background="{Binding EndDate, Converter={StaticResource DateLost}, ElementName=luc}"/>
+                                              Style="{StaticResource AlertDateStyle}"/>
                 <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"  
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"

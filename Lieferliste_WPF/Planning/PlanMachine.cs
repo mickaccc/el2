@@ -99,8 +99,24 @@ namespace Lieferliste_WPF.Planning
         public string Title => _title;
         public bool HasChange => _dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged);
         public int Rid => _rId;
-        public string? Name { get; set; }
-        public string? Description { get; set; }
+        private string? _name;
+        public string? Name { get { return _name; }
+            set { if(_name != value)
+                {
+                    _name = value;
+                    NotifyPropertyChanged(() => Name);
+                }
+            }
+        }
+        private string? _description;
+        public string? Description { get { return _description; }
+            set { if(_description != value)
+                {
+                    _description = value;
+                    NotifyPropertyChanged(() => Description);
+                }
+            }
+        }
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
@@ -302,12 +318,8 @@ namespace Lieferliste_WPF.Planning
             try
             {
                 var par = new DialogParameters();
-                par.Add("processList", this.Processes.ToList());
-                par.Add("InvNo", this.InventNo);
-                par.Add("Name", this.Name);
-                par.Add("Description", this.Description);
-                par.Add("CostUnits", this.CostUnits);
-                par.Add("WorkAreaId", this.WorkArea?.WorkAreaId);
+                par.Add("PlanMachine", this);
+
                 _dialogService.Show("MachineView", par, MachineViewCallBack);
             }
             catch (Exception e)

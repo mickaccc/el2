@@ -52,5 +52,7 @@
         public const string TLTermin = "TERMTL";
         public const string ProjAttach = "PROJ05";
         public const string MachSort = "MACHSORT";
+        public const string MachRename = "MA01";
+        public const string MachRenameInvers = "!MA01";
     }
 }

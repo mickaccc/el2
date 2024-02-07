@@ -176,15 +176,15 @@ namespace ModuleDeliverList.UserControls
         }
 
 
-        public string Marker
+        public string MarkCode
         {
-            get { return (string)GetValue(MarkerProperty); }
-            set { SetValue(MarkerProperty, value); }
+            get { return (string)GetValue(MarkCodeProperty); }
+            set { SetValue(MarkCodeProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Marker.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty MarkerProperty =
-            DependencyProperty.Register("Marker", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+        public static readonly DependencyProperty MarkCodeProperty =
+            DependencyProperty.Register("MarkCode", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
 
 
         public string Project

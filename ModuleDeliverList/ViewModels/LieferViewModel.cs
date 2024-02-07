@@ -362,7 +362,7 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
-            if (accepted && _markerCode != string.Empty) accepted = ord.Marker?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
+            if (accepted && _markerCode != string.Empty) accepted = ord.MarkCode?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
 
             return accepted;
         }
@@ -385,7 +385,14 @@ namespace ModuleDeliverList.ViewModels
 
         private void OnAutoSave(object? sender, ElapsedEventArgs e)
         {
-            if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
+            try
+            {
+                if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "AutoSave", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #region Commands
@@ -415,7 +422,14 @@ namespace ModuleDeliverList.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            DBctx.SaveChangesAsync();
+            try
+            {
+                DBctx.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(string.Format("{0}\nInnerEx\n{1}",e.Message,e.InnerException), "OnSave Liefer", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         private bool OnSaveCanExecute(object arg)
         {
@@ -425,7 +439,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (InvalidOperationException e)
             {
-                MessageBox.Show(e.Message, "CanSave", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "CanSave Liefer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;
         }
@@ -488,6 +502,7 @@ namespace ModuleDeliverList.ViewModels
             var a = await DBctx.OrderRbs
                .Include(v => v.Vorgangs)
                .ThenInclude(r => r.RidNavigation)
+               .Include(v => v.Vorgangs).ThenInclude(v => v.ArbPlSapNavigation)
                .Include(m => m.MaterialNavigation)
                .Include(d => d.DummyMatNavigation)
                .Include(p => p.Pro)

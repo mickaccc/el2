@@ -6,19 +6,16 @@ using System.Windows.Media;
 
 namespace El2Core.Converters
 {
-    [ValueConversion(typeof(DateTime), typeof(SolidColorBrush))]
-    public sealed class DateLostToColorConverter : IValueConverter
+    [ValueConversion(typeof(DateTime), typeof(bool))]
+    public sealed class LowerThanDate : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is DateTime d)
             {
-                if (d < DateTime.Now)
-                {
-                    return Brushes.Red;
-                }
+                return d < DateTime.Now;
             }
-            return Brushes.White;
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

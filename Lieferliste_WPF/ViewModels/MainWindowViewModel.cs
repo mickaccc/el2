@@ -259,7 +259,6 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
             }
-
         }
 
         private bool OnCloseCanExecute(object arg)

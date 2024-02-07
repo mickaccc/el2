@@ -86,6 +86,8 @@ namespace Lieferliste_WPF.ViewModels
         private string? _searchFilterText;
         private readonly object _lock = new();
         private List<Vorgang> _processesAll;
+       
+
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
 
@@ -148,20 +150,25 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            _DbCtx.SaveChanges();
-            foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+            try
+            {
+                _DbCtx.SaveChanges();
+                foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "OnSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadWorkAreas()
         {
 
-            var work = _DbCtx.WorkAreas
-                .Include(x => x.UserWorkAreas)
-                .Where(x => x.UserWorkAreas.Any(x => x.UserId.Equals(UserInfo.User.UserIdent)))
-                .ToList();
-
-            WorkAreas.AddRange(work.OrderByDescending(x => x.UserWorkAreas.FirstOrDefault(x => x.FullAccess)));
-
+            var w = UserInfo.User.UserWorkAreas.OrderByDescending(x => x.FullAccess);
+            foreach (var workArea in w)
+            {
+                WorkAreas.Add(workArea.WorkArea);
+            }
         }
         private async Task<List<Vorgang>> GetVorgangsAsync(string? aid)
         {
@@ -198,8 +205,16 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnAutoSave(object? sender, ElapsedEventArgs e)
         {
-            if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
-            foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+            try
+            {
+                if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
+                foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "AutoSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private async Task<ICollectionView> LoadMachinesAsync()
@@ -260,7 +275,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void SelectionChange(object commandParameter)
         {
-            //TODO: Permission Foreign Workareas
+
             try
             {
                 if (commandParameter is SelectionChangedEventArgs sel)
@@ -393,23 +408,30 @@ namespace Lieferliste_WPF.ViewModels
         }
         public void Closing()
         {
-            foreach (var m in _machines)
+            try
             {
-                IViewModel vm = (IViewModel)m;
-                vm.Closing();
-            }
-            if (_DbCtx.ChangeTracker.HasChanges())
-            {
-                if (_settingsService.IsSaveMessage)
+                foreach (var m in _machines)
                 {
-                    var result = MessageBox.Show("Sollen die Änderungen in Teamleiter-Zuteilungen gespeichert werden?",
-                        Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        _DbCtx.SaveChanges();
-                    }
+                    IViewModel vm = (IViewModel)m;
+                    vm.Closing();
                 }
-                else _DbCtx.SaveChanges();
+                if (_DbCtx.ChangeTracker.HasChanges())
+                {
+                    if (_settingsService.IsSaveMessage)
+                    {
+                        var result = MessageBox.Show("Sollen die Änderungen in Teamleiter-Zuteilungen gespeichert werden?",
+                            Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            _DbCtx.SaveChanges();
+                        }
+                    }
+                    else _DbCtx.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Closing", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

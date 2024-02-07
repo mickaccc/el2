@@ -7,7 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/AnimColors.xaml"/>
-                <!--<ResourceDictionary Source="/Styles/UIColors.xaml"/>-->
+                <ResourceDictionary Source="/Styles/UIColors.xaml"/>
                 <!--<ResourceDictionary Source="/Styles/DataTemplateItems.xaml"/>-->
                 <ResourceDictionary Source="/Styles/BulletContextMenu.xaml"/>
                 <!--<materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Teal"  SecondaryColor="Lime"/>
@@ -15,8 +15,8 @@
                 <!--<materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Teal"  SecondaryColor="Lime" />-->
 
                 <materialDesign:MahAppsBundledTheme BaseTheme="Inherit"
-                                            PrimaryColor="DeepPurple"
-                                            SecondaryColor="Purple" />
+                                            PrimaryColor="Teal"
+                                            SecondaryColor="Lime" />
 
                 <!-- MahApps -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />

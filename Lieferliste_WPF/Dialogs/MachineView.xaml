@@ -50,21 +50,13 @@
             <Setter Property="IsHitTestVisible" Value="true"/>
 
         </Style>
-        <!--<Style TargetType="{x:Type DataGridRow}">
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Foreground" Value="Black"/>
-                    <Setter Property="Background" Value="Transparent" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>-->
 
     </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height=" 80"/>
-            <RowDefinition/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ContextMenu>
             <ContextMenu>
@@ -78,8 +70,20 @@
         </Grid.ContextMenu>
         <DockPanel Background="RosyBrown">
 
-            <ListBox x:Name="cost" DockPanel.Dock="Right" VerticalAlignment="Top" ItemsSource="{Binding CostUnits}"
-                     AutomationProperties.LabeledBy="{Binding ElementName=costLabel, Mode=OneWay}" />
+            <ListBox x:Name="cost" DockPanel.Dock="Right" VerticalAlignment="Top" ItemsSource="{Binding PlanMachine.CostUnits}"
+                     AutomationProperties.LabeledBy="{Binding ElementName=costLabel, Mode=OneWay}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="2"/>
+                        <Setter Property="Focusable" Value="False"/>
+                    </Style> 
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
             <Label x:Name="costLabel" Content="Kostenstellen" DockPanel.Dock="Right" VerticalAlignment="Stretch" RenderTransformOrigin="0.5,0.5" >
                 <Label.RenderTransform>
                     <TransformGroup>
@@ -90,16 +94,31 @@
                     </TransformGroup>
                 </Label.RenderTransform>
             </Label>
+            <Grid DockPanel.Dock="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40*" MaxWidth="60"/>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="80*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40*"/>
+                    <RowDefinition Height="30*"/>
+                </Grid.RowDefinitions>
             <Button
-                ToolTip="Drucken"
+                ToolTip="Drucken" Grid.RowSpan="2"
                 Command="{Binding ApplicationCommands.MachinePrintCommand}"
                 CommandParameter="{Binding}"
                 Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="PrinterFavorite" Width="30" Height="30"/>
             </Button>
-            <TextBox Text="{Binding Name}" DockPanel.Dock="Top" FontSize="30" FontWeight="Bold" Background="Transparent"/>
-            <TextBox Text="{Binding Description}" DockPanel.Dock="Bottom" FontSize="20" Background="Transparent"/>
-            
+
+                <TextBox Text="{Binding PlanMachine.Name}" Grid.Column="1" FontSize="30" FontWeight="Bold" Background="Transparent"
+                         IsReadOnly="{Binding Converter={StaticResource permiss},ConverterParameter={x:Static const:Permissions.MachRenameInvers}}"/>
+
+                <TextBlock Text="{Binding PlanMachine.InventNo}" Grid.Column="2" FontSize="32" FontWeight="Bold"/>
+            <TextBox Text="{Binding PlanMachine.Description}" Grid.Row="1" Grid.Column="1" FontSize="20" Background="Transparent"
+                      IsReadOnly="{Binding Converter={StaticResource permiss},ConverterParameter={x:Static const:Permissions.MachRenameInvers}}"/>
+            </Grid>
         </DockPanel>
         <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding ProcessesCV}" AutoGenerateColumns="False"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"

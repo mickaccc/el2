@@ -208,7 +208,7 @@
                             Comment_Ma="{Binding BemMa, Mode=TwoWay,NotifyOnTargetUpdated=True}"
                             PrioText="{Binding AidNavigation.Prio, Mode=TwoWay}"
                             SysStatus="{Binding AidNavigation.SysStatus}"
-                            Marker="{Binding Marker, Mode=TwoWay}"
+                            MarkCode="{Binding MarkCode, Mode=TwoWay}"
                             Visibility="{Binding Visability, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}" >

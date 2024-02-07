@@ -28,6 +28,7 @@ namespace Lieferliste_WPF
         protected override void OnInitialized()
         {
             base.OnInitialized();
+
         }
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
@@ -36,7 +37,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
 

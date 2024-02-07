@@ -10,13 +10,12 @@ namespace El2Core.Converters
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-
             if (values.Length >= 2)
             {
                 var v1 = values[0] as string;
-                if (int.TryParse(values[1].ToString(), out int v2))
+                if (int.TryParse(values[1]?.ToString(), out int v2))
                     if (v1 != null)
-                        return PermissionsProvider.GetInstance().GetRelativeUserPermission(v1, v2);
+                        return PermissionsProvider.GetInstance().GetRelativeUserPermission(v1, v2);               
             }
 
             return false;
