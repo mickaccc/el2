@@ -1,9 +1,10 @@
-﻿using El2Core.Services;
+﻿using ControlzEx.Theming;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using MaterialDesignColors;
-using MaterialDesignThemes.Wpf;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -40,6 +41,13 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private Theme selectedTheme;
+        public Theme SelectedTheme 
+        {
+            get { return selectedTheme; }
+            set { selectedTheme = value; }
+        }
+
         public UserSettingsViewModel(IUserSettingsService settingsService)
         {
 
@@ -50,8 +58,10 @@ namespace Lieferliste_WPF.ViewModels
             ReloadCommand = new ActionCommand(OnReloadExecuted, OnReloadCanExecute);
             ChangeThemeCommand = new ActionCommand(OnChangeThemeExecuted, OnChangeThemeCanExecute);
             ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
-
+            SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
         }
+
+ 
 
         private bool OnChangeThemeCanExecute(object arg)
         {
@@ -90,6 +100,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
+            if(_settingsService.Theme != SelectedTheme.Name) _settingsService.Theme = SelectedTheme.Name;
             _settingsService.Save();
         }
 

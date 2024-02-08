@@ -1,4 +1,5 @@
 ﻿using CompositeCommands.Core;
+using ControlzEx.Theming;
 using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
@@ -23,6 +24,9 @@ namespace Lieferliste_WPF
     {
         protected override DependencyObject CreateShell()
         {
+            var settingsService = Container.Resolve<UserSettingsService>();
+            ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
+        
             return Container.Resolve<MainWindow>();
         }
         protected override void OnInitialized()
@@ -37,7 +41,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
 
@@ -68,6 +72,7 @@ namespace Lieferliste_WPF
             UserInfo u = new();
             u.Initialize(gl.PC, gl.User);
             containerRegistry.RegisterInstance(u);
+
         }
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {

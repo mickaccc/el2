@@ -29,6 +29,17 @@ namespace Lieferliste_WPF.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(OnMessageReceived);
+            CopyClipBoardCommand = new ActionCommand(OnCopyClipBoardExecuted, OnCopyClipBoardCanExecute);
+        }
+
+        private bool OnCopyClipBoardCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnCopyClipBoardExecuted(object obj)
+        {
+            throw new NotImplementedException();
         }
 
         private void OnMessageReceived(List<string> vorgangIdList)
@@ -62,7 +73,7 @@ namespace Lieferliste_WPF.ViewModels
                 MessageBox.Show(ex.Message, "MsgReceivedOrderView", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        public ICommand CopyClipBoardCommand { get; }
         private IContainerProvider _container;
         private readonly IEventAggregator _ea;
         private bool OnSaveCanExecute(object arg)

@@ -6,6 +6,7 @@
         string ExplorerRoot { get; set; }
         bool IsAutoSave { get; set; }
         bool IsSaveMessage { get; set; }
+        string Theme { get; set; }
         void Save();
         void Reset();
         void Reload();
@@ -32,6 +33,13 @@
             get { return Properties.Settings.Default.IsSaveMessage; }
             set { Properties.Settings.Default[nameof(IsSaveMessage)] = value; }
         }
+
+        public string Theme
+        {
+            get { return Properties.Settings.Default.Theme; }
+            set { Properties.Settings.Default[nameof(Theme)] = value; }
+        }
+
         public void Save()
         {
             Properties.Settings.Default.Save();

@@ -32,7 +32,7 @@
 			<RowDefinition Height="60"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
-		<Border Background="{DynamicResource MahApps.Brushes.SystemControlBackgroundAccent}"
+		<Border Background="{DynamicResource MahApps.Brushes.Button.Flat.Background}"
 				ClipToBounds="True"
 				CornerRadius="5">
 			<Grid>

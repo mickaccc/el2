@@ -9,7 +9,7 @@ namespace Lieferliste_WPF.Views
     /// <summary>
     /// Interaction logic for Settings.xaml
     /// </summary>
-    public partial class UserSettings : Grid
+    public partial class UserSettings : UserControl
     {
         public UserSettings()
         {

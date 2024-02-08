@@ -37,20 +37,26 @@ namespace Lieferliste_WPF
         )
     );
             // Create runtime themes
-            ThemeManager.Current.AddTheme(new Theme("CustomDarkRed", "CustomDarkRed", "Dark", "Red", Colors.DarkRed, Brushes.DarkRed, true, false));
-            ThemeManager.Current.AddTheme(new Theme("CustomLightRed", "CustomLightRed", "Light", "Red", Colors.DarkRed, Brushes.DarkRed, true, false));
-            ThemeManager.Current.AddTheme(new Theme("CustomLightPurple", "CustomLightPurble", "Light", "Green", Colors.Purple, Brushes.MediumPurple, true, true));
-            ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Dark", Colors.Red));
-            ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Light", Colors.Red));
 
-            ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Dark", Colors.GreenYellow));
-            ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Light", Colors.GreenYellow));
 
-            ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Dark", Colors.Indigo));
-            ThemeManager.Current.ChangeTheme(this, ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Light", Colors.Indigo)));
+            //ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Dark", Colors.Red));
+            //ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Light", Colors.Red));
 
-            ThemeManager.Current.ChangeTheme(this, "Light.Olive");
+            //ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Dark", Colors.GreenYellow));
+            //ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Light", Colors.GreenYellow));
 
+            //ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Dark", Colors.Indigo));
+            //ThemeManager.Current.ChangeTheme(this, ThemeManager.Current.AddTheme(RuntimeThemeGenerator.Current.GenerateRuntimeTheme("Light", Colors.Indigo)));
+
+            //ThemeManager.Current.AddTheme(new Theme("LightOlive", "LightOlive", "Light", "Olive", Colors.Olive, Brushes.Olive, true, false));
+            //ThemeManager.Current.AddTheme(new Theme("LightBlue", "LightBlue", "Light", "Blue", Colors.Blue, Brushes.Blue, true, false));
+            //ThemeManager.Current.AddTheme(new Theme("LightOrange", "LightOrange", "Light", "Orange", Colors.Orange, Brushes.Orange, true, false));
+            //ThemeManager.Current.AddTheme(new Theme("LightSeaGreen", "LightSeaGreen", "Light", "SeaGreen", Colors.SeaGreen, Brushes.SeaGreen, true, false));
+
+            //ThemeManager.Current.AddTheme(new Theme("DarkOlive", "DarkOlive", "Dark", "Olive", Colors.Olive, Brushes.Olive, true, false));
+            //ThemeManager.Current.AddTheme(new Theme("DarkBlue", "DarkBlue", "Dark", "Blue", Colors.Blue, Brushes.Blue, true, false));
+            //ThemeManager.Current.AddTheme(new Theme("DarkOrange", "DarkOrange", "Dark", "Orange", Colors.Orange, Brushes.Orange, true, false));
+            //ThemeManager.Current.AddTheme(new Theme("DarkSeaGreen", "DarkSeaGreen", "Dark", "SeaGreen", Colors.SeaGreen, Brushes.SeaGreen, true, false));
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();
         }

@@ -499,14 +499,13 @@ namespace ModuleDeliverList.ViewModels
             //_projects.Add(new Project() { ProjectPsp = "leer"});
 
             if (!_sections.Keys.Contains(0)) _sections.Add(0, string.Empty);
-            var a = await DBctx.OrderRbs
-               .Include(v => v.Vorgangs)
-               .ThenInclude(r => r.RidNavigation)
-               .Include(v => v.Vorgangs).ThenInclude(v => v.ArbPlSapNavigation)
-               .Include(m => m.MaterialNavigation)
-               .Include(d => d.DummyMatNavigation)
-               .Include(p => p.Pro)
-               .Where(x => x.Abgeschlossen == false)
+            var a = await DBctx.Vorgangs
+               .Include(v => v.AidNavigation)
+               .ThenInclude(x => x.MaterialNavigation)
+               .Include(r => r.RidNavigation)
+               .Include(m => m.AidNavigation.DummyMatNavigation)
+               .Include(d => d.AidNavigation.Pro)
+               .Where(x => x.AidNavigation.Abgeschlossen == false)
                .ToListAsync();
             var ress = await DBctx.Ressources.AsNoTracking()
                 .Include(x => x.WorkArea)
@@ -523,11 +522,10 @@ namespace ModuleDeliverList.ViewModels
                     SortedDictionary<string, ProjectTypes.ProjectType> proj = new();
                     HashSet<Vorgang> ol = new();
 
-                    foreach (var v in a)
-                    {
+
                         ol.Clear();
                         bool relev = false;
-                        foreach (var x in v.Vorgangs)
+                        foreach (var x in a)
                         {
                             ol.Add(x);
                             if (filt.Any(y => y.OrderNumber == x.Aid)) relev = true;
@@ -565,7 +563,7 @@ namespace ModuleDeliverList.ViewModels
                                 }
                             }
                         }
-                    }
+                    
 
                     //_projects = proj;
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));

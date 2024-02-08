@@ -54,7 +54,7 @@
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="MinWidth" Value="20"/>
-            <Setter Property="Background" Value="{DynamicResource ValueBackground}"/>
+            <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent4}"/>
             <Setter Property="Margin" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -71,13 +71,9 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="AlertDateStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
-            <Style.Triggers >
-                <DataTrigger Binding="{Binding Path=EndDate, ElementName=luc, Converter={StaticResource LowerThanDate}}" Value="True">
-                    <Setter Property="Background" Value="red"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </DataTrigger>
-            </Style.Triggers>
+        <Style x:Key="AlertStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
+            <Setter Property="Background" Value="red"/>
+            <Setter Property="Foreground" Value="White"/>
         </Style>
 
         <Style TargetType="{x:Type TextBox}">
@@ -215,16 +211,21 @@
             </GroupBox>
                 </Grid>
                 <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Orientation="Horizontal">
-                    <Label Content="TABG" Background="Pink" Visibility="{Binding Path=SysStatus, ElementName=luc,
+                    <Label Content="TABG" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Visibility="{Binding Path=SysStatus, ElementName=luc,
                         Converter={StaticResource sysVisible}, ConverterParameter=TABG}"/>
-                    <Label Content="EROF" Background="Pink" Visibility="{Binding Path=SysStatus, ElementName=luc,
+                    <Label Content="EROF" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Visibility="{Binding Path=SysStatus, ElementName=luc,
                         Converter={StaticResource sysVisible}, ConverterParameter=EROF}"/>
                 </VirtualizingStackPanel>
-                
+
                 <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" FontSize="16" FontWeight="Bold"
                          ToolTip="Endtermin" Grid.Row="1" 
-                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
-                                              Style="{StaticResource AlertDateStyle}"/>
+                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}">
+                    <Controls:SelectableTextBlock.Triggers>
+                        <DataTrigger Binding="{Binding Path=EndDate, ElementName=luc, Converter={StaticResource LowerThanDate}}" Value="True">
+                            <Setter Property="Style" Value="{StaticResource AlertStyle}"/>
+                            </DataTrigger>
+                    </Controls:SelectableTextBlock.Triggers>
+                </Controls:SelectableTextBlock>
                 <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"  
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"
@@ -248,7 +249,7 @@
                               IsReadOnly="{Binding Converter={StaticResource Permission},
                         ConverterParameter={x:Static const:Permissions.VorgangPrioInvers}}"/>
             </Canvas>
-                <Label Grid.Column="10" Background="MistyRose" Margin="6" Padding="2" HorizontalAlignment="Center"
+                <Label Grid.Column="10" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Margin="6" Padding="2" HorizontalAlignment="Center"
                        Visibility="{Binding InVisible, ElementName=luc, Converter={StaticResource BooleanToVisibilityConverter}}">ausgeblendet</Label>
             <Button Grid.Column="10" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
                         Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
@@ -265,7 +266,7 @@
                         Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding Aid, ElementName=luc}" />
-            <DockPanel Grid.Column="8" Grid.Row="2" Background="YellowGreen" >
+            <DockPanel Grid.Column="8" Grid.Row="2" Background="{DynamicResource MahApps.Brushes.Button.Flat.Background}" >
                 <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" 
                       IsChecked="{Binding Doku, ElementName=luc}"
                            IsEnabled="{Binding Converter={StaticResource Permission},
