@@ -30,7 +30,8 @@
         <conv:NullStringToBoolConverter x:Key="stringEmpty"/>
         <conv:SysStatusToVisibilityConverter x:Key="sysVisible"/>
         <conv:TTNR_Converter x:Key="ttnr"/>
-
+        <conv:ProjectLowerThanConverter x:Key="projectLow"/>
+        
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <System:DateTime x:Key="datetime"/>
@@ -66,16 +67,27 @@
         <Style x:Key="AlertPrioStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
             <Style.Triggers >
                 <DataTrigger Binding="{Binding Path=PrioText, ElementName=luc, Converter={StaticResource stringEmpty}}" Value="False">
-                    <Setter Property="Background" Value="red"/>
+                    <Setter Property="Background" Value="Red"/>
                     <Setter Property="Foreground" Value="White"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="AlertStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
-            <Setter Property="Background" Value="red"/>
-            <Setter Property="Foreground" Value="White"/>
+        <Style x:Key="AlertDateStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
+            <Style.Triggers>
+               <DataTrigger Binding="{Binding Path=EndDate, ElementName=luc, Converter={StaticResource LowerThanDate}}" Value="True">
+                    <Setter Property="Background" Value="Red"/>
+                    <Setter Property="Foreground" Value="White"/>
+               </DataTrigger>
+            </Style.Triggers>
         </Style>
-
+        <Style x:Key="AlertProjectStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
+            <Style.Triggers >
+                <DataTrigger Binding="{Binding ElementName=luc, Converter={StaticResource stringEmpty}}" Value="True">
+                    <Setter Property="Background" Value="Red"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="MinWidth" Value="20"/>
@@ -116,7 +128,8 @@
                      ToolTip="Plantermin lt. SAP"
                      Text="{Binding EckEnd, Converter={StaticResource KwConv}, ElementName=luc}"  />
             <TextBox x:Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1"/>
-                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" Text="{Binding Project, ElementName=luc}"/>
+                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" Text="{Binding Project, ElementName=luc}"
+                                              Style="{StaticResource AlertProjectStyle}"/>
                 <TextBox Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" TextWrapping="Wrap"
                      IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
                                           Text="{Binding ProjectInfo, ElementName=luc}" />
@@ -219,13 +232,8 @@
 
                 <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" FontSize="16" FontWeight="Bold"
                          ToolTip="Endtermin" Grid.Row="1" 
-                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}">
-                    <Controls:SelectableTextBlock.Triggers>
-                        <DataTrigger Binding="{Binding Path=EndDate, ElementName=luc, Converter={StaticResource LowerThanDate}}" Value="True">
-                            <Setter Property="Style" Value="{StaticResource AlertStyle}"/>
-                            </DataTrigger>
-                    </Controls:SelectableTextBlock.Triggers>
-                </Controls:SelectableTextBlock>
+                         Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
+                                              Style="{StaticResource AlertDateStyle}"/>
                 <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"  
                             HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"

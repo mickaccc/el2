@@ -152,6 +152,8 @@ namespace ModuleDeliverList.ViewModels
             DEVELOP,
             [Description("Verkaufsmuster")]
             SALES,
+            [Description("Projekte mit Verzug")]
+            PROJECTS_LOST,
             [Description("EXTERN")]
             EXERTN
         }
@@ -363,8 +365,17 @@ namespace ModuleDeliverList.ViewModels
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
             if (accepted && _markerCode != string.Empty) accepted = ord.MarkCode?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
-
+            if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_LOST) accepted = ProjectsLost(ord.AidNavigation.Pro) == !FilterInvers;
             return accepted;
+        }
+
+        private bool ProjectsLost(Project? pro)
+        {
+            if (pro != null)
+            {
+                return pro.OrderRbs.Any(x => x.Eckende < DateTime.Now);
+            }
+            return false;
         }
 
         private void OnTextSearch(object commandParameter)
