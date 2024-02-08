@@ -1,4 +1,6 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using ControlzEx.Theming;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
@@ -15,19 +17,15 @@ namespace Lieferliste_WPF.Views
 
         }
 
-        private static void ModifyTheme(bool isDarkTheme)
-        {
-            var paletteHelper = new PaletteHelper();
-            var theme = paletteHelper.GetTheme();
 
-            theme.SetBaseTheme(isDarkTheme ? Theme.Dark : Theme.Light);
-            paletteHelper.SetTheme(theme);
-        }
-
-        private void ToggleButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void AccentSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var toggle = (ToggleButton)sender;
-            ModifyTheme(toggle.IsChecked ?? false);
+            var selectedTheme = e.AddedItems.OfType<Theme>().FirstOrDefault();
+            if (selectedTheme != null)
+            {
+                ThemeManager.Current.ChangeTheme(Application.Current, selectedTheme);
+                Application.Current?.MainWindow?.Activate();
+            }
         }
     }
 }

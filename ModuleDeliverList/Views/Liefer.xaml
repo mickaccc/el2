@@ -24,7 +24,7 @@
         <conv:BooleanInverter x:Key="boolInvert"/>
         <conv:ProjectTypeConverter x:Key="proType"/>
         
-        <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}">
+        <Style TargetType="ComboBox" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
             <Setter Property="Width" Value="200"/>
             <Setter Property="Padding" Value="8"/>
         </Style>
@@ -37,7 +37,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding ProjectPsp}"  Grid.Column="0" TextAlignment="Left"/>
                 <TextBlock Text="{Binding ProjectType, Converter={StaticResource proType}}"
-                           Margin="5,0,5,0" Grid.Column="1" TextAlignment="Left" Background="Moccasin"/>
+                           Margin="5,0,5,0" Grid.Column="1" TextAlignment="Left" Background="{DynamicResource MahApps.Brushes.SystemControlBackgroundChromeMedium}"/>
 
             </Grid>
         </DataTemplate>

@@ -37,7 +37,7 @@
         <DockPanel HorizontalAlignment="Stretch">
             <Button Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Right" />
             <ComboBox x:Name="workArea" ItemsSource="{Binding WorkAreas}" DockPanel.Dock="Left" MinWidth="100"
-                      Style="{StaticResource MaterialDesignFilledComboBox}"
+                      Style="{DynamicResource MahApps.Styles.ComboBox}"
                       DisplayMemberPath="Bereich"
                       SelectedValuePath="WorkAreaId"
                       SelectedIndex="0">
@@ -52,7 +52,7 @@
             <TextBox x:Name="searchTextBox" VerticalContentAlignment="Center" DockPanel.Dock="Right" Margin="10,0,10,0"
                      materialdesign:HintAssist.Hint="suchen in Auftragsnummer, TTNR und Materialbezeichnung"
                      materialdesign:TextFieldAssist.HasClearButton="false" 
-                     Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                     Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="TextChanged">
                         <i:InvokeCommandAction Command="{Binding TextSearchCommand}" CommandParameter="{Binding Path=Text, ElementName=searchTextBox}" />

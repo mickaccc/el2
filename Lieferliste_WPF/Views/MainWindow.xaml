@@ -2,6 +2,7 @@
     xml:lang="de-AT"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:markup="clr-namespace:MahApps.Metro.Markup;assembly=MahApps.Metro"
     xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:av="http://schemas.microsoft.com/expression/blend/2008"
@@ -120,8 +121,8 @@
 
         <materialdesign:Card Grid.Row="1">
             <TabControl  prism:RegionManager.RegionName="{x:Static const:RegionNames.MainContentRegion}"
-                         materialdesign:ColorZoneAssist.Mode="SecondaryMid" Padding="5"
-                         Style="{StaticResource MaterialDesignFilledTabControl}" >
+                         Padding="5"  
+                         Style="{DynamicResource MahApps.Styles.TabControl.Animated}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -148,16 +149,16 @@
         </materialdesign:Card>
 
         <StatusBar x:Name="sbar" Grid.Row="2"
-           VerticalAlignment="Bottom" Background="{DynamicResource MaterialDesignLightBackground}" >
+           VerticalAlignment="Bottom" Background="{DynamicResource MahApps.Brushes.SystemControlBackgroundListMedium}" >
 
-            <StatusBarItem Foreground="{DynamicResource ActiveProcess}">
+            <StatusBarItem Foreground="{DynamicResource MahApps.Brushes.SystemControlHighlightAltBaseHigh}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock x:FieldModifier="private" x:Name="myDateTime" />
                     <TextBlock x:FieldModifier="private" x:Name="aktKW"/>
                 </StackPanel>
             </StatusBarItem>
             <Separator/>
-            <StatusBarItem Foreground="{DynamicResource ActiveProcess}">
+            <StatusBarItem Foreground="{DynamicResource MahApps.Brushes.SystemControlForegroundBaseHigh}">
                 <StackPanel>
                 <TextBlock><Run Text="Online"/></TextBlock>
                 <TextBlock Text="{Binding OnlineTask.Result}" />

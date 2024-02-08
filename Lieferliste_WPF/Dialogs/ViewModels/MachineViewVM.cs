@@ -3,20 +3,17 @@ using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Planning;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Data;
-using Lieferliste_WPF.Planning;
+using System.Windows.Input;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
@@ -24,13 +21,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
     {
         public string Title => "Maschinen Details";
         public PlanMachine PlanMachine { get; private set; }
-        public string InventNo { get; private set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public int WorkAreaId { get; private set; }
-        public List<int>? CostUnits { get; private set; }
+
         public ObservableCollection<Vorgang>? Processes { get; set; } = new();
-        private List<Vorgang> ChangedVrgs { get; set; } = new();
         public ICollectionView? ProcessesCV { get; private set; }
         public event Action<IDialogResult> RequestClose;
         private IApplicationCommands _applicationCommands;
@@ -45,6 +37,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 }
             }
         }
+        public ICommand? SetMarkerCommand { get; private set; }
+        public ICommand? HistoryCommand { get; private set; }
 
         public MachineViewVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public bool CanCloseDialog()
@@ -61,7 +55,9 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         {
 
             PlanMachine = parameters.GetValue<PlanMachine>("PlanMachine");
-            ProcessesCV = CollectionViewSource.GetDefaultView(PlanMachine.Processes);
+            ProcessesCV = PlanMachine.ProcessesCV;
+            SetMarkerCommand = PlanMachine.SetMarkerCommand;
+            HistoryCommand = PlanMachine.HistoryCommand;
             
         }
         public void Drop(IDropInfo dropInfo)
@@ -97,12 +93,16 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachDrop, WorkAreaId))
+            var wid = PlanMachine.WorkArea?.WorkAreaId;
+            if (wid != null)
             {
-                if (dropInfo.Data is Vorgang)
+                if (PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachDrop, (int)wid))
                 {
-                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                    dropInfo.Effects = DragDropEffects.Move;
+                    if (dropInfo.Data is Vorgang)
+                    {
+                        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                        dropInfo.Effects = DragDropEffects.Move;
+                    }
                 }
             }
         }
