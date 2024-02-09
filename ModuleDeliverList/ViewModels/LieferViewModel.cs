@@ -18,7 +18,6 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace ModuleDeliverList.ViewModels
@@ -373,7 +372,7 @@ namespace ModuleDeliverList.ViewModels
         {
             if (pro != null)
             {
-                return pro.OrderRbs.Any(x => x.Eckende < DateTime.Now);
+                return pro.OrderRbs.Any(x => x.Eckende < DateTime.Now && x.Abgeschlossen == false);
             }
             return false;
         }
@@ -523,7 +522,7 @@ namespace ModuleDeliverList.ViewModels
                 .ToArrayAsync();
             var filt = await DBctx.ProductionOrderFilters.AsNoTracking().ToArrayAsync();
             _ressources.AddRange(ress);
-            SortedSet<ProjectStruct> pl = [new(string.Empty, ProjectTypes.ProjectType.None)];
+            SortedSet<ProjectStruct> pl = [new(string.Empty, ProjectTypes.ProjectType.None, string.Empty)];
             await Task.Factory.StartNew(() =>
             {
                 HashSet<Vorgang> result = new();
@@ -531,52 +530,59 @@ namespace ModuleDeliverList.ViewModels
                 lock (_lock)
                 {
                     SortedDictionary<string, ProjectTypes.ProjectType> proj = new();
-                    HashSet<Vorgang> ol = new();
-
-
-                        ol.Clear();
+ 
                         bool relev = false;
-                        foreach (var x in a)
+                    foreach (var group in a.GroupBy(x => x.Aid))
+                    {
+                        if (filt.Any(y => y.OrderNumber == group.Key))
                         {
-                            ol.Add(x);
-                            if (filt.Any(y => y.OrderNumber == x.Aid)) relev = true;
-                            if (x.ArbPlSap?.Length >= 3 && !relev)
-                            {
-                                if (int.TryParse(x.ArbPlSap[..3], out int c))
-                                    if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
-                                    {
-                                        relev = true;
-                                    }
-                            }
+                            relev = true;
                         }
-                        if (relev)
+                        else
                         {
 
-                            foreach (var x in ol.Where(x => x.AidNavigation.ProId != null))
+                            foreach (var vorg in group)
                             {
-                                var p = x.AidNavigation.Pro;
-                                if (p != null)
-                                    //if(proj.ContainsKey(p.ProjectPsp) == false)
-                                    //    proj.Add(p.ProjectPsp, (ProjectTypes.ProjectType)p.ProjectType);
 
-                                    pl.Add(new(p.ProjectPsp, (ProjectTypes.ProjectType)p.ProjectType));
-                            }
-
-                            foreach (var r in ol.Where(x => x.Aktuell))
-                            {
-                                result.Add(r);
-                                var inv = (r.ArbPlSap != null) ? r.ArbPlSap[3..] : string.Empty;
-                                var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
-                                if (z != null)
+                                if (vorg.ArbPlSap?.Length >= 3 && !relev)
                                 {
-                                    if (!_sections.Keys.Contains(z.Sort))
-                                        _sections.Add(z.Sort, z.Bereich);
+                                    if (int.TryParse(vorg.ArbPlSap[..3], out int c))
+                                        if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
+                                        {
+                                            relev = true;
+                                            break;
+                                        }
+                                }
+
+                            }
+                            if (relev)
+                            {
+                                foreach (var vorg in group)
+                                {
+                                    if (vorg.AidNavigation.ProId != null)
+                                    {
+                                        var p = vorg.AidNavigation.Pro;
+                                        if (p != null)
+                                            pl.Add(new(p.ProjectPsp, (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
+                                    }
+
+                                    if (vorg.Aktuell)
+                                    {
+                                        result.Add(vorg);
+                                        var inv = (vorg.ArbPlSap != null) ? vorg.ArbPlSap[3..] : string.Empty;
+                                        var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
+                                        if (z != null)
+                                        {
+                                            if (!_sections.Keys.Contains(z.Sort))
+                                                _sections.Add(z.Sort, z.Bereich);
+                                        }
+                                    }
                                 }
                             }
                         }
-                    
-
-                    //_projects = proj;
+                        relev = false;
+                                               
+                    }
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
                 }
             });
@@ -638,12 +644,14 @@ namespace ModuleDeliverList.ViewModels
     {
         public string ProjectPsp { get; }
         public ProjectTypes.ProjectType ProjectType { get; }
+        public string? ProjectInfo { get; }
 
         public ProjectStruct() { }
-        public ProjectStruct(string ProjectPsp, ProjectTypes.ProjectType ProjectType)
+        public ProjectStruct(string ProjectPsp, ProjectTypes.ProjectType ProjectType, string? projectInfo)
         {
             this.ProjectPsp = ProjectPsp;
             this.ProjectType = ProjectType;
+            this.ProjectInfo = projectInfo;
         }
         public int CompareTo(object? obj)
         {

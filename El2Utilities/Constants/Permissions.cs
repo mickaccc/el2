@@ -54,5 +54,7 @@
         public const string MachSort = "MACHSORT";
         public const string MachRename = "MA01";
         public const string MachRenameInvers = "!MA01";
+        public const string LieferTerm = "LIETERM";
+        public const string LieferTermInvers = "!LIETERM";
     }
 }

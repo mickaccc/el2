@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -38,8 +39,8 @@ namespace ModuleDeliverList.UserControls
 
         private static object OnTrim(DependencyObject d, object baseValue)
         {
-            if (baseValue is string bsv) return bsv.Trim();
-            return baseValue;
+            var bsv = baseValue as string;
+            return (string.IsNullOrEmpty(bsv)) ? "DUMMY" : bsv.Trim();           
         }
 
         public string TTNR
@@ -51,12 +52,34 @@ namespace ModuleDeliverList.UserControls
             = DependencyProperty.Register("MatText"
                 , typeof(string)
                 , typeof(LieferlisteControl),
-                new PropertyMetadata("", OnPropertyChanged));
+                new PropertyMetadata("", OnPropertyChanged, WhenDummy));
+
+        private static object WhenDummy(DependencyObject d, object baseValue)
+        {
+            var bsv = baseValue as string;
+            var lc = (LieferlisteControl)d;
+            return (string.IsNullOrEmpty(bsv)) ? lc.GetValue(DummyTextProperty) : bsv;
+        }
+
         public string MatText
         {
             get { return (string)GetValue(MatTextProperty); }
             set { SetValue(MatTextProperty, value); }
         }
+
+
+
+        public string DummyText
+        {
+            get { return (string)GetValue(DummyTextProperty); }
+            set { SetValue(DummyTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for DummyText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DummyTextProperty =
+            DependencyProperty.Register("DummyText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+
+
         public static readonly DependencyProperty EndDateProperty
             = DependencyProperty.Register("EndDate"
                 , typeof(DateTime)
@@ -68,8 +91,6 @@ namespace ModuleDeliverList.UserControls
             set { SetValue(EndDateProperty, value); }
         }
 
-
-
         public DateTime EckEnd
         {
             get { return (DateTime)GetValue(EckEndProperty); }
@@ -79,6 +100,19 @@ namespace ModuleDeliverList.UserControls
         // Using a DependencyProperty as the backing store for EckEnd.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty EckEndProperty =
             DependencyProperty.Register("EckEnd", typeof(DateTime), typeof(LieferlisteControl));
+
+
+
+        public string LieferTermin
+        {
+            get { return (string)GetValue(LieferTerminProperty); }
+            set { SetValue(LieferTerminProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for LieferTermin.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty LieferTerminProperty =
+            DependencyProperty.Register("LieferTermin", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+
 
 
         public DateTime? Termin

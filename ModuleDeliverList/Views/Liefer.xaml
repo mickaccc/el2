@@ -34,11 +34,12 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding ProjectPsp}"  Grid.Column="0" TextAlignment="Left"/>
                 <TextBlock Text="{Binding ProjectType, Converter={StaticResource proType}}"
                            Margin="5,0,5,0" Grid.Column="1" TextAlignment="Left" Background="{DynamicResource MahApps.Brushes.SystemControlBackgroundChromeMedium}"/>
-
+                <TextBlock Text="{Binding ProjectInfo}" Grid.Column="2"/>
             </Grid>
         </DataTemplate>
 
@@ -186,13 +187,15 @@
                     <userControls:LieferlisteControl x:Name="ucLiefer" GotFocus="ucLiefer_GotFocus" 
                             Aid="{Binding Aid}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
+                            DummyText="{Binding AidNavigation.DummyMatNavigation.Mattext}"
                             TTNR="{Binding AidNavigation.Material}"
                             EndDate="{Binding SpaetEnd}"
                             EckEnd="{Binding AidNavigation.Eckende}"
+                            LieferTermin="{Binding AidNavigation.LieferTermin, Mode=TwoWay}"
                             Termin="{Binding Termin, Mode=TwoWay,NotifyOnTargetUpdated=True}"
                             Vnr="{Binding Vnr}" 
                             Project="{Binding AidNavigation.ProId}"
-                            ProjectInfo="{Binding AidNavigation.Pro.ProjectInfo}"
+                            ProjectInfo="{Binding AidNavigation.Pro.ProjectInfo, Mode=TwoWay}"
                             Quantity="{Binding AidNavigation.Quantity}" 
                             QuantityYield="{Binding QuantityYield,NotifyOnTargetUpdated=True}" 
                             QuantityScrap="{Binding QuantityScrap,NotifyOnTargetUpdated=True}" 
@@ -208,7 +211,7 @@
                             Comment_Ma="{Binding BemMa, Mode=TwoWay,NotifyOnTargetUpdated=True}"
                             PrioText="{Binding AidNavigation.Prio, Mode=TwoWay}"
                             SysStatus="{Binding AidNavigation.SysStatus}"
-                            MarkCode="{Binding MarkCode, Mode=TwoWay}"
+                            MarkCode="{Binding AidNavigation.MarkCode, Mode=TwoWay}"
                             Visibility="{Binding Visability, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}" >

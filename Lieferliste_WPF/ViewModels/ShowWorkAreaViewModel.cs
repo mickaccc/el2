@@ -146,10 +146,13 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (obj is WorkArea w)
             {
-                if (_workAreasList.CanRemove)
-                    _workAreasList.Remove(w);
-                _dbctx.WorkAreas.Remove(w);
-
+                ListCollectionView? vw = WorkAreas as ListCollectionView;
+                if (vw != null)
+                {
+                    if (vw.CanRemove)
+                        vw.Remove(w);
+                    _dbctx.WorkAreas.Remove(w);
+                }
             }
         }
 
@@ -175,7 +178,6 @@ namespace Lieferliste_WPF.ViewModels
             WorkAreas = CollectionViewSource.GetDefaultView(_workAreas);
             WorkAreas.SortDescriptions.Add(new SortDescription("Sort", ListSortDirection.Ascending));
 
-            _workAreasList = (ListCollectionView)WorkAreas;
             return WorkAreas;
         }
 

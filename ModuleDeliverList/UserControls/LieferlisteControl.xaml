@@ -127,9 +127,9 @@
             <Controls:SelectableTextBlock Grid.Row="0"  Grid.Column="0" x:Name="txtPlanT" 
                      ToolTip="Plantermin lt. SAP"
                      Text="{Binding EckEnd, Converter={StaticResource KwConv}, ElementName=luc}"  />
-            <TextBox x:Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1"/>
-                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" Text="{Binding Project, ElementName=luc}"
-                                              Style="{StaticResource AlertProjectStyle}"/>
+            <TextBox x:Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1" Text="{Binding LieferTermin, Mode=TwoWay, ElementName=luc}"
+                     IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.LieferTermInvers}}"/>
+                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" Text="{Binding Project, ElementName=luc}"/>
                 <TextBox Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" TextWrapping="Wrap"
                      IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
                                           Text="{Binding ProjectInfo, ElementName=luc}" />

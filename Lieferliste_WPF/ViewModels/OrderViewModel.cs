@@ -151,6 +151,21 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private DateTime? _eckEnde;
+
+        public DateTime? EckEnde
+        {
+            get { return _eckEnde; }
+            set
+            {
+                if (_eckEnde != value)
+                {
+                    _eckEnde = value;
+                    NotifyPropertyChanged(() => EckEnde);
+                }
+            }
+        }
+
         private string? _material;
         public string? Material
         {
@@ -298,13 +313,14 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 var v = p.First();
                 Aid = v.Aid;
-                Material = v.AidNavigation.Material;
-                Bezeichnung = v.AidNavigation.MaterialNavigation?.Bezeichng;
+                Material = v.AidNavigation.Material ?? "DUMMY";
+                Bezeichnung = (string.IsNullOrEmpty(v.AidNavigation.Material)) ? v.AidNavigation.DummyMatNavigation?.Mattext : v.AidNavigation.MaterialNavigation?.Bezeichng;
                 Quantity = v.AidNavigation.Quantity;
                 Pro = v.AidNavigation.ProId;
                 ProInfo = v.AidNavigation.Pro?.ProjectInfo;
                 SysStatus = v.AidNavigation.SysStatus;
                 Ready = v.AidNavigation.Fertig;
+                EckEnde = v.AidNavigation.Eckende;
 
                 VorgangCV.Refresh(); 
             }
