@@ -44,6 +44,7 @@ namespace Lieferliste_WPF.Utilities
                 }
             }
         }
+        public readonly int Ident;
         private object content;
 
         public object Content
@@ -68,6 +69,7 @@ namespace Lieferliste_WPF.Utilities
             Pdf,
             Mail
         }
+        public Attachment(int id) { Ident = id; }
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -122,7 +122,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("AID");
             entity.Property(e => e.Abgeschlossen).HasColumnName("abgeschlossen");
-            entity.Property(e => e.AuftragArt).HasMaxLength(255);
             entity.Property(e => e.AuftragFarbe).HasMaxLength(10);
             entity.Property(e => e.Ausgebl).HasColumnName("ausgebl");
             entity.Property(e => e.Bemerkung).HasMaxLength(255);
@@ -135,6 +134,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Istende).HasColumnType("datetime");
             entity.Property(e => e.Iststart).HasColumnType("datetime");
             entity.Property(e => e.LieferTermin).HasMaxLength(255);
+            entity.Property(e => e.MarkCode).HasMaxLength(255);
             entity.Property(e => e.Material).HasMaxLength(255);
             entity.Property(e => e.Mrpcontroller)
                 .HasMaxLength(10)
@@ -235,11 +235,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(50)
                 .IsFixedLength();
             entity.Property(e => e.ProjectColor).HasMaxLength(10);
-
-            entity.HasOne(d => d.ProjectAttachmentNavigation).WithMany(p => p.Projects)
-                .HasForeignKey(d => d.ProjectAttachment)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Project_ProjectAttachment");
         });
 
         modelBuilder.Entity<ProjectAttachment>(entity =>
@@ -248,11 +243,18 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.ToTable("ProjectAttachment");
 
-            entity.Property(e => e.AttachId).ValueGeneratedNever();
-            entity.Property(e => e.AttachmentLink).HasMaxLength(100);
+            entity.Property(e => e.AttachmentLink).HasMaxLength(255);
+            entity.Property(e => e.Psp)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("psp");
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnName("timestamp");
+
+            entity.HasOne(d => d.PspNavigation).WithMany(p => p.ProjectAttachments)
+                .HasForeignKey(d => d.Psp)
+                .HasConstraintName("FK_ProjectAttachment_Project");
         });
 
         modelBuilder.Entity<Ressource>(entity =>

@@ -42,7 +42,7 @@ public partial class OrderRb : ModelBase
 
     public string? SysStatus { get; set; }
 
-    public string? AuftragArt { get; set; }
+    public string? MarkCode { get; set; }
 
     public bool Ausgebl { get; set; }
 

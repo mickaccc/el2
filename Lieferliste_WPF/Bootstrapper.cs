@@ -32,7 +32,6 @@ namespace Lieferliste_WPF
         protected override void OnInitialized()
         {
             base.OnInitialized();
-
         }
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {

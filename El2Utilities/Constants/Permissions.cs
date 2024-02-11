@@ -54,5 +54,9 @@
         public const string MachSort = "MACHSORT";
         public const string MachRename = "MA01";
         public const string MachRenameInvers = "!MA01";
+        public const string AddProjAttachment = "ADDPROJATT";
+        public const string DelProjAttachment = "DELPROJATT";
+        public const string PrintProj = "PRINTPROJ";
+        public const string OpenFileProj = "OPENFILEPROJ";
     }
 }

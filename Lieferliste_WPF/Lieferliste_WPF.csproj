@@ -121,6 +121,7 @@
     <None Remove="Images\sort-by-attributes.png" />
     <None Remove="Images\spacing.png" />
     <None Remove="Images\SplashPic.png" />
+    <None Remove="Images\unknown-file.png" />
     <None Remove="Images\user-edit.png" />
     <None Remove="Images\user-profiles %281%29.png" />
     <None Remove="Images\user-profiles.png" />
@@ -136,11 +137,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FileAssociation2" Version="22.12.21.18" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="MahApps.Metro" Version="2.4.10" />
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="MiniFileAssociation" Version="1.0.1" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
   </ItemGroup>
 
@@ -228,6 +232,7 @@
     <Resource Include="Images\sort-by-attributes-interface-button-option.png" />
     <Resource Include="Images\sort-by-attributes.png" />
     <Resource Include="Images\spacing.png" />
+    <Resource Include="Images\unknown-file.png" />
     <Resource Include="Images\user-edit.png" />
     <Resource Include="Images\user-profiles (1).png" />
     <Resource Include="Images\user-profiles.png" />
