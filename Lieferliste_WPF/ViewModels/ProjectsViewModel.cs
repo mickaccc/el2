@@ -156,19 +156,21 @@ namespace Lieferliste_WPF.ViewModels
             Attachment attachment = new(id);
             FileInfo fi = new FileInfo(file);
             var fileass = new FileAssociationInfo(fi.Extension);
-            var prog = new ProgramAssociationInfo(fileass.ProgID);
-            var v = MiniFileAssociation.Association.GetAssociatedExePath(".HTML");
-            ImageSource icon;
- 
-            if(prog.Exists)
+            if (fileass.Exists)
             {
-                icon = GetIcon(prog.DefaultIcon);
-            }
-            else icon = new BitmapImage(new Uri("\\Images\\unknown-file.png", UriKind.Relative));
+                var prog = new ProgramAssociationInfo(fileass.ProgID);
+                ImageSource icon;
 
-            attachment.Content = icon;
-            attachment.Name = fi.Name;
-            Attachments.Add(attachment);
+                if (prog.Exists)
+                {
+                    icon = GetIcon(prog.DefaultIcon);
+                }
+                else icon = new BitmapImage(new Uri("\\Images\\unknown-file.png", UriKind.Relative));
+
+                attachment.Content = icon;
+                attachment.Name = fi.Name;
+                Attachments.Add(attachment);
+            }
         }
         public static ImageSource GetIcon(ProgramIcon programIcon)
         {
