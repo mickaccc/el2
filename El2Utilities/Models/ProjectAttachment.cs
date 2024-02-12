@@ -13,5 +13,5 @@ public partial class ProjectAttachment
 
     public DateTime? Timestamp { get; set; }
 
-    public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
+    public virtual Project PspNavigation { get; set; } = null!;
 }

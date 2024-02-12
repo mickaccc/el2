@@ -1,6 +1,7 @@
 ﻿using El2Core.Models;
 using Lieferliste_WPF.Dialogs.ViewModels;
 using Lieferliste_WPF.Planning;
+using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
 using System;
 using System.Collections.Generic;
@@ -94,6 +95,13 @@ namespace Lieferliste_WPF.Utilities
                 Second = mvvm.PlanMachine.InventNo ?? string.Empty;
                 proces = mvvm.PlanMachine.Processes?.ToList() ?? [];
                 Description= mvvm.PlanMachine.Description ?? string.Empty;
+            }
+            else if (parameter is ProjectsViewModel pvm)
+            {
+                Name = pvm.Title ?? string.Empty;
+                Second = string.Empty;
+                Description = string.Empty;
+                proces = new();
             }
             else throw new InvalidDataException();
 

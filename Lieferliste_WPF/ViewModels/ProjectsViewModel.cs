@@ -1,22 +1,32 @@
-﻿using CompositeCommands.Core;
+﻿using MiniFileAssociation;
+using CompositeCommands.Core;
 using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using BrendanGrant.Helpers.FileAssociation;
+using El2Core.Constants;
+using System.Windows.Controls;
+using System.Printing;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -28,9 +38,12 @@ namespace Lieferliste_WPF.ViewModels
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private IUserSettingsService _userSettingsService;
         private IContainerProvider _container;
-        private ICommand? _addFileCommand;
-        public ICommand AddFileCommand => _addFileCommand ??= new ActionCommand(OnAddFileExecuted, OnAddFileCanExecute);
-
+        private ICommand? _openFileCommand;
+        public ICommand OpenFileCommand => _openFileCommand ??= new ActionCommand(OnOpenFileExecuted, OnOpenFileCanExecute);
+        private ICommand? _removeFileCommand;
+        public ICommand RemoveFileCommand => _removeFileCommand ??= new ActionCommand(OnRemoveFileExecuted, OnRemoveFileCanExecute);
+        private ICommand? _printProjectCommand;
+        public ICommand PrintProjectCommand => _printProjectCommand ??= new ActionCommand(OnPrintExecuted, OnPrintCanExecute);
 
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
@@ -51,6 +64,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private Project Project { get; set; }
         private string _wbsElement;
         public string WbsElement
         {
@@ -78,8 +92,8 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private List<OrderRb> _orderRbs;
-        private List<Attachment> _attachments;
-        public List<Attachment> Attachments
+        private ObservableList<Attachment> _attachments = new();
+        public ObservableList<Attachment> Attachments
         {
             get { return _attachments; }
             set
@@ -100,9 +114,6 @@ namespace Lieferliste_WPF.ViewModels
             _userSettingsService = userSettingsService;
             _applicationCommands = applicationCommands;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-
- 
- 
         }
 
         private async Task<ICollectionView> LoadAsync(string projectNo)
@@ -110,17 +121,73 @@ namespace Lieferliste_WPF.ViewModels
             var pro = await _dbctx.Projects
                 .Include(x => x.OrderRbs)
                 .ThenInclude(x => x.MaterialNavigation)
+                .Include(x => x.ProjectAttachments)
                 .FirstAsync(x => x.ProjectPsp == projectNo);
 
             this.WbsElement = pro.ProjectPsp.Trim() ?? "NULL";
             this.WbsInfo = pro.ProjectInfo?.Trim() ?? string.Empty;
+            this.Project = pro;
 
+            foreach(var o in pro.ProjectAttachments)
+            {
+                AddAttachment(o.AttachId, o.AttachmentLink);
+
+            }
             _orderRbs = new List<OrderRb>(pro.OrderRbs.ToList());
             OrdersView = CollectionViewSource.GetDefaultView(_orderRbs);
             return OrdersView;
         }
 
+        public string GetMimeTypeForFileExtension(string filePath)
+        {
+            const string DefaultContentType = "application/octet-stream";
 
+            var provider = new FileExtensionContentTypeProvider();
+
+            if (!provider.TryGetContentType(filePath, out string contentType))
+            {
+                contentType = DefaultContentType;
+            }
+
+            return contentType;
+        }
+        private void AddAttachment(int id, string file)
+        {
+            Attachment attachment = new(id);
+            FileInfo fi = new FileInfo(file);
+            var fileass = new FileAssociationInfo(fi.Extension);
+            var prog = new ProgramAssociationInfo(fileass.ProgID);
+            var v = MiniFileAssociation.Association.GetAssociatedExePath(".HTML");
+            ImageSource icon;
+ 
+            if(prog.Exists)
+            {
+                icon = GetIcon(prog.DefaultIcon);
+            }
+            else icon = new BitmapImage(new Uri("\\Images\\unknown-file.png", UriKind.Relative));
+
+            attachment.Content = icon;
+            attachment.Name = fi.Name;
+            Attachments.Add(attachment);
+        }
+        public static ImageSource GetIcon(ProgramIcon programIcon)
+        {
+            try
+            { 
+       
+                Icon icon = Icon.ExtractIcon(programIcon.Path, programIcon.Index, 32);
+
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                            icon.Handle,
+                            new Int32Rect(0, 0, icon.Width, icon.Height),
+                            BitmapSizeOptions.FromEmptyOptions());
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "GetIcon", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return null;
+        }
 
         public bool CanCloseDialog()
         {
@@ -140,25 +207,112 @@ namespace Lieferliste_WPF.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
-            dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-            dropInfo.Effects = DragDropEffects.Move;
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddProjAttachment))
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.All;
+            }
         }
 
         public void Drop(IDropInfo dropInfo)
         {
-            if(dropInfo.Data is object ob)
+            if(dropInfo.Data is IDataObject f)
             {
+                var o = (string[])f.GetData(DataFormats.FileDrop);
+                if (o.Length > 0)
+                {
+                    FileInfo fi = new FileInfo(o[0]);
+                    if(fi.Exists)
+                    {
+                        ProjectAttachment Patt = new();
+                        if (fi.Length < 0x500000)    //Filesize of 5 MiB
+                        {
 
+                            MemoryStream ms = new MemoryStream();
+                            using (FileStream file = new FileStream(o[0], FileMode.Open, FileAccess.Read))
+                                file.CopyTo(ms);
+                            Patt.AttachmentLink = fi.Name;
+                            Patt.AttachmentBin = ms.ToArray();
+                        }
+                        else if (MessageBox.Show("Die Datei ist größer als 5 MiB, soll es als Link gespeichert werden?", "",
+                            MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            Patt.AttachmentLink = fi.FullName;
+                        }
+                        else return;
+                    Project.ProjectAttachments.Add(Patt);  
+                    _dbctx.SaveChanges();
+                        AddAttachment(Patt.AttachId, Patt.AttachmentLink);
+
+                    }
+                }
             }
         }
-        private bool OnAddFileCanExecute(object arg)
+        private bool OnOpenFileCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenFileProj);
         }
 
-        private void OnAddFileExecuted(object obj)
+        private void OnOpenFileExecuted(object obj)
         {
-            
+            try
+            {
+                Attachment att = (Attachment)obj;
+                var pa = Project.ProjectAttachments.First(x => x.AttachId == att.Ident);
+                using MemoryStream memoryStream = new MemoryStream((byte[])pa.AttachmentBin);
+                FileInfo fi = new FileInfo(att.Name);
+                var filepath = Path.Combine(Path.GetTempPath(), fi.Name);
+                using FileStream fs = new(filepath, FileMode.Create);
+                memoryStream.CopyTo(fs);
+                fs.Flush();
+                fs.Close();
+                var fileass = new FileAssociationInfo(fi.Extension);
+                var prog = new ProgramAssociationInfo(fileass.ProgID);
+                var asso = MiniFileAssociation.Association.GetAssociatedExePath(fi.Extension);
+                ProcessStartInfo pi = new ProcessStartInfo();
+                pi.FileName = prog.Verbs[0].Command;
+                pi.Arguments = fi.Name;
+                pi.WorkingDirectory = fi.DirectoryName;
+
+                pi.UseShellExecute = true;
+                pi.Verb = "OPEN";
+                if (asso != null) new Process() { StartInfo = new ProcessStartInfo(filepath) { UseShellExecute = true } }.Start();
+            }
+
+            catch (Exception e)
+            {
+
+
+                MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "OpenStream", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private bool OnRemoveFileCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.DelProjAttachment);
+        }
+
+        private void OnRemoveFileExecuted(object obj)
+        {
+            var att = (Attachment)obj;
+            Attachments.Remove(att);
+            var dbAtt = _dbctx.ProjectAttachments.FirstOrDefault(x => x.AttachId == att.Ident);
+            if (dbAtt != null)
+            {
+                _dbctx.ProjectAttachments.Remove(dbAtt);
+                _dbctx.SaveChanges();
+            }
+        }
+        private bool OnPrintCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.PrintProj);
+        }
+
+        private void OnPrintExecuted(object obj)
+        {
+            PrintDialog printDialog = new PrintDialog();
+            PrintTicket ticket = new PrintTicket();
+
+            Printing.DoPrintPreview(this, printDialog);
         }
     }
 }

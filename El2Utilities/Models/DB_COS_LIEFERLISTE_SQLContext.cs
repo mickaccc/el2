@@ -252,7 +252,10 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.ToTable("ProjectAttachment");
 
             entity.Property(e => e.AttachId).ValueGeneratedNever();
-            entity.Property(e => e.Timestamp).HasColumnName("timestamp");
+            entity.Property(e => e.AttachmentLink).HasMaxLength(100);
+            entity.Property(e => e.Timestamp)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnName("timestamp");
         });
 
         modelBuilder.Entity<Ressource>(entity =>
