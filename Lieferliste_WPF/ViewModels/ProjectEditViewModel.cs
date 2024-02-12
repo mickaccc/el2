@@ -122,11 +122,18 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnProjectTypeExecuted(object obj)
         {
-            if (obj is TreeNode<string> node)
+            try
             {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                db.Projects.Single(x => x.ProjectPsp == node.Value).ProjectType = (int)node.ProjectType;
-                db.SaveChangesAsync();
+                if (obj is TreeNode<string> node)
+                {
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    db.Projects.Single(x => x.ProjectPsp == node.Value).ProjectType = (int)node.ProjectType;
+                    db.SaveChangesAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "ProjectTypeCommand", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

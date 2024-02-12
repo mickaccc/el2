@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace Lieferliste_WPF.Utilities
 {
@@ -27,9 +21,9 @@ namespace Lieferliste_WPF.Utilities
                 }
             }
         }
-        private string description;
+        private string? description;
 
-        public string Description
+        public string? Description
         {
             get
             {
@@ -45,9 +39,10 @@ namespace Lieferliste_WPF.Utilities
             }
         }
         public readonly int Ident;
-        private object content;
+        public readonly bool IsLink;
+        private object? content;
 
-        public object Content
+        public object? Content
         {
             get
             {
@@ -62,6 +57,7 @@ namespace Lieferliste_WPF.Utilities
                 }
             }
         }
+
         public enum KnownTypes
         {
             Unknow,
@@ -69,7 +65,7 @@ namespace Lieferliste_WPF.Utilities
             Pdf,
             Mail
         }
-        public Attachment(int id) { Ident = id; }
+        public Attachment(int id, bool isLink) { Ident = id; IsLink = isLink; }
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

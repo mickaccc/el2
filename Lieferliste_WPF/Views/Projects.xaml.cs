@@ -11,5 +11,6 @@ namespace Lieferliste_WPF.Views
         {
             InitializeComponent();
         }
+
     }
 }

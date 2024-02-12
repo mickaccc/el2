@@ -27,11 +27,26 @@ using BrendanGrant.Helpers.FileAssociation;
 using El2Core.Constants;
 using System.Windows.Controls;
 using System.Printing;
+using Windows.Storage.Pickers.Provider;
+using Windows.Storage.Pickers;
+using Windows.Storage;
+using System.Runtime.InteropServices;
+using WinRT;
+
 
 namespace Lieferliste_WPF.ViewModels
 {
+    [ComImport, System.Runtime.InteropServices.Guid("3E68D4BD-7135-4D10-8018-9FB6D9F33FA1"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface IInitializeWithWindow
+    {
+        void Initialize([In] IntPtr hwnd);
+    }
+
+ 
     internal class ProjectsViewModel : ViewModelBase, IDialogAware, IDropTarget
     {
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto, PreserveSig = true, SetLastError = false)]
+        public static extern IntPtr GetActiveWindow();
         private string _title = "Projektübersicht";
         public string Title => _title;
 
@@ -44,6 +59,11 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand RemoveFileCommand => _removeFileCommand ??= new ActionCommand(OnRemoveFileExecuted, OnRemoveFileCanExecute);
         private ICommand? _printProjectCommand;
         public ICommand PrintProjectCommand => _printProjectCommand ??= new ActionCommand(OnPrintExecuted, OnPrintCanExecute);
+        private ICommand? _addFileCommand;
+        public ICommand AddFileCommand => _addFileCommand ??= new ActionCommand(OnAddFileExecutedAsync, OnAddFileCanExecute);
+
+        private ICommand? _addFileAsLinkCommand;
+        public ICommand AddFileAsLinkCommand => _addFileAsLinkCommand ??= new ActionCommand(OnAddFileAsLinkExecutedAsync, OnAddFileAsLinkCanExecute);
 
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
@@ -130,8 +150,7 @@ namespace Lieferliste_WPF.ViewModels
 
             foreach(var o in pro.ProjectAttachments)
             {
-                AddAttachment(o.AttachId, o.AttachmentLink);
-
+                AddAttachment(o.AttachId, o.AttachmentLink, o.IsLink);
             }
             _orderRbs = new List<OrderRb>(pro.OrderRbs.ToList());
             OrdersView = CollectionViewSource.GetDefaultView(_orderRbs);
@@ -151,9 +170,9 @@ namespace Lieferliste_WPF.ViewModels
 
             return contentType;
         }
-        private void AddAttachment(int id, string file)
+        private void AddAttachment(int id, string file, bool isLink)
         {
-            Attachment attachment = new(id);
+            Attachment attachment = new(id, isLink);
             FileInfo fi = new FileInfo(file);
             var fileass = new FileAssociationInfo(fi.Extension);
             if (fileass.Exists)
@@ -168,15 +187,14 @@ namespace Lieferliste_WPF.ViewModels
                 else icon = new BitmapImage(new Uri("\\Images\\unknown-file.png", UriKind.Relative));
 
                 attachment.Content = icon;
-                attachment.Name = fi.Name;
+                attachment.Name = (isLink) ? fi.FullName : fi.Name;
                 Attachments.Add(attachment);
             }
         }
         public static ImageSource GetIcon(ProgramIcon programIcon)
         {
             try
-            { 
-       
+            {      
                 Icon icon = Icon.ExtractIcon(programIcon.Path, programIcon.Index, 32);
 
                 return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
@@ -223,32 +241,37 @@ namespace Lieferliste_WPF.ViewModels
                 var o = (string[])f.GetData(DataFormats.FileDrop);
                 if (o.Length > 0)
                 {
-                    FileInfo fi = new FileInfo(o[0]);
-                    if(fi.Exists)
-                    {
-                        ProjectAttachment Patt = new();
-                        if (fi.Length < 0x500000)    //Filesize of 5 MiB
-                        {
-
-                            MemoryStream ms = new MemoryStream();
-                            using (FileStream file = new FileStream(o[0], FileMode.Open, FileAccess.Read))
-                                file.CopyTo(ms);
-                            Patt.AttachmentLink = fi.Name;
-                            Patt.AttachmentBin = ms.ToArray();
-                        }
-                        else if (MessageBox.Show("Die Datei ist größer als 5 MiB, soll es als Link gespeichert werden?", "",
-                            MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                        {
-                            Patt.AttachmentLink = fi.FullName;
-                        }
-                        else return;
-                    Project.ProjectAttachments.Add(Patt);  
-                    _dbctx.SaveChanges();
-                        AddAttachment(Patt.AttachId, Patt.AttachmentLink);
-
-                    }
+                    AddFile(o[0]);
                 }
             }
+        }
+        private void AddFile(string fileString)
+        {
+            FileInfo fi = new FileInfo(fileString);
+            if (fi.Exists)
+            {
+                ProjectAttachment Patt = new();
+                if (fi.Length < 0x500000)    //Filesize of 5 MiB
+                {
+
+                    MemoryStream ms = new MemoryStream();
+                    using (FileStream file = new FileStream(fileString, FileMode.Open, FileAccess.Read))
+                        file.CopyTo(ms);
+                    Patt.AttachmentLink = fi.Name;
+                    Patt.AttachmentBin = ms.ToArray();
+                }
+                else if (MessageBox.Show("Die Datei ist größer als 5 MiB, soll es als Link gespeichert werden?", "",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    Patt.AttachmentLink = fi.FullName;
+                    Patt.IsLink = true;
+                }
+                else return;
+                Project.ProjectAttachments.Add(Patt);
+                _dbctx.SaveChanges();
+                AddAttachment(Patt.AttachId, Patt.AttachmentLink, Patt.IsLink);
+            }
+            else MessageBox.Show("Datei wurde nicht gefunden", "Datei anfügen", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         private bool OnOpenFileCanExecute(object arg)
         {
@@ -260,31 +283,30 @@ namespace Lieferliste_WPF.ViewModels
             try
             {
                 Attachment att = (Attachment)obj;
-                var pa = Project.ProjectAttachments.First(x => x.AttachId == att.Ident);
-                using MemoryStream memoryStream = new MemoryStream((byte[])pa.AttachmentBin);
                 FileInfo fi = new FileInfo(att.Name);
-                var filepath = Path.Combine(Path.GetTempPath(), fi.Name);
-                using FileStream fs = new(filepath, FileMode.Create);
-                memoryStream.CopyTo(fs);
-                fs.Flush();
-                fs.Close();
-                var fileass = new FileAssociationInfo(fi.Extension);
-                var prog = new ProgramAssociationInfo(fileass.ProgID);
-                var asso = MiniFileAssociation.Association.GetAssociatedExePath(fi.Extension);
-                ProcessStartInfo pi = new ProcessStartInfo();
-                pi.FileName = prog.Verbs[0].Command;
-                pi.Arguments = fi.Name;
-                pi.WorkingDirectory = fi.DirectoryName;
+                string filepath;
+                if (att.IsLink)
+                {
+                    filepath = att.Name;                   
+                }
+                else
+                {
+                    var pa = Project.ProjectAttachments.First(x => x.AttachId == att.Ident);
+                    using MemoryStream memoryStream = new MemoryStream((byte[])pa.AttachmentBin);
 
-                pi.UseShellExecute = true;
-                pi.Verb = "OPEN";
+                    filepath = Path.Combine(Path.GetTempPath(), fi.Name);
+                    using FileStream fs = new(filepath, FileMode.Create);
+                    memoryStream.CopyTo(fs);
+                    fs.Flush();
+                    fs.Close();
+                }
+                var asso = MiniFileAssociation.Association.GetAssociatedExePath(fi.Extension);
+
                 if (asso != null) new Process() { StartInfo = new ProcessStartInfo(filepath) { UseShellExecute = true } }.Start();
             }
 
             catch (Exception e)
             {
-
-
                 MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "OpenStream", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -315,6 +337,48 @@ namespace Lieferliste_WPF.ViewModels
             PrintTicket ticket = new PrintTicket();
 
             Printing.DoPrintPreview(this, printDialog);
+        }
+        private bool OnAddFileCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddProjAttachment);
+        }
+
+        private async void OnAddFileExecutedAsync(object obj)
+        {
+            FileOpenPicker openPicker = new FileOpenPicker();
+            var initializeWithWindowWrapper = openPicker.As<IInitializeWithWindow>();
+            initializeWithWindowWrapper.Initialize(GetActiveWindow());
+            openPicker.ViewMode = PickerViewMode.List;
+            openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            openPicker.FileTypeFilter.Add("*");
+            StorageFile op = await openPicker.PickSingleFileAsync();
+            if (op != null) { AddFile(op.Path); }
+        }
+        private bool OnAddFileAsLinkCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddProjAttachment);
+        }
+
+        private async void OnAddFileAsLinkExecutedAsync(object obj)
+        {
+            FileOpenPicker openPicker = new();
+            var initializeWithWindowWrapper = openPicker.As<IInitializeWithWindow>();
+            initializeWithWindowWrapper.Initialize(GetActiveWindow());
+            openPicker.ViewMode = PickerViewMode.List;
+            openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            openPicker.FileTypeFilter.Add("*");
+            StorageFile op = await openPicker.PickSingleFileAsync();
+            if (op != null)
+            {
+                ProjectAttachment patt = new();
+                patt.AttachmentLink = op.Path;
+                patt.IsLink = true;
+
+                Project.ProjectAttachments.Add(patt);
+                _dbctx.SaveChanges();
+
+                AddAttachment(patt.AttachId, patt.AttachmentLink, patt.IsLink);
+            }
         }
     }
 }
