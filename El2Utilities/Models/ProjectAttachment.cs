@@ -9,9 +9,15 @@ public partial class ProjectAttachment
 {
     public int AttachId { get; set; }
 
-    public string? Attachment { get; set; }
+    public string ProjectPsp { get; set; } = null!;
 
-    public DateTime? Timestamp { get; set; }
+    public string? AttachmentLink { get; set; }
 
-    public virtual Project PspNavigation { get; set; } = null!;
+    public byte[]? AttachmentBin { get; set; }
+
+    public bool IsLink { get; set; }
+
+    public DateTime Timestamp { get; set; }
+
+    public virtual Project ProjectPspNavigation { get; set; } = null!;
 }

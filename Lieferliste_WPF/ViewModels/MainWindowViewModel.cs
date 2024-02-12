@@ -145,7 +145,10 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenProjectOverViewCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
+            if (arg is string s)
+                if(s.StartsWith("DS"))
+                    return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
+            return false;
         }
         private void OnOpenProjectOverViewExecuted(object obj)
         {
@@ -282,6 +285,9 @@ namespace Lieferliste_WPF.ViewModels
         }
         private static bool OnOpenOrderCanExecute(object arg)
         {
+            if (arg is string s)
+                if (s.StartsWith("DS"))
+                    return false;
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Order);
         }
         private void OnOpenOrderExecuted(object parameter)

@@ -238,11 +238,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.ProjectColor)
                 .HasMaxLength(10)
                 .IsFixedLength();
-
-            entity.HasOne(d => d.ProjectAttachmentNavigation).WithMany(p => p.Projects)
-                .HasForeignKey(d => d.ProjectAttachment)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Project_ProjectAttachment");
         });
 
         modelBuilder.Entity<ProjectAttachment>(entity =>
@@ -251,11 +246,12 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.ToTable("ProjectAttachment");
 
-            entity.Property(e => e.AttachId).ValueGeneratedNever();
-            entity.Property(e => e.AttachmentLink).HasMaxLength(100);
-            entity.Property(e => e.Timestamp)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnName("timestamp");
+            entity.Property(e => e.ProjectPsp).HasMaxLength(50);
+
+            entity.HasOne(d => d.ProjectPspNavigation).WithMany(p => p.ProjectAttachments)
+                .HasForeignKey(d => d.ProjectPsp)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProjectAttachment_Project");
         });
 
         modelBuilder.Entity<Ressource>(entity =>

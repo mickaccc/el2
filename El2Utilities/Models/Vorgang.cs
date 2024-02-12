@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace El2Core.Models;
 
-public partial class Vorgang :ModelBase
+public partial class Vorgang : ModelBase
 {
     public string VorgangId { get; set; } = null!;
 

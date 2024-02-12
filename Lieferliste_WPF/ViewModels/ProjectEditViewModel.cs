@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using Windows.ApplicationModel.Appointments.AppointmentsProvider;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -37,6 +38,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand ConcatCommand { get; private set; }
         public ICommand DescriptLostFocusCommand { get; private set; }
         public ICommand ProjectTypeCommand { get; private set; }
+        public ICommand DeleteCommand { get; private set; }
         private ObservableCollection<OrderRb> _ordersList = [];
         public ICollectionView OrdersCollectionView { get; private set; }
         private Tree<string> tree;
@@ -76,8 +78,41 @@ namespace Lieferliste_WPF.ViewModels
             ConcatCommand = new ActionCommand(OnConcatExecuted, OnConcatCanExecute);
             DescriptLostFocusCommand = new ActionCommand(OnDescriptLostFocusExecuted, OnDescriptLostFocusCanExecute);
             ProjectTypeCommand = new ActionCommand(OnProjectTypeExecuted, OnProjectTypeCanExecute);
+            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             OrdTask = new NotifyTaskCompletion<ICollectionView>(LoadOrderDataAsync());
             PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync());
+        }
+
+        private bool OnDeleteCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDel);
+        }
+
+        private void OnDeleteExecuted(object obj)
+        {
+            TreeNode<string> t = (TreeNode<string>)obj;
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            if (t.NodeType == "PSP-Type")
+            {
+                var psp = db.Projects.FirstOrDefault(x => x.ProjectPsp == t.Value);
+                if (psp != null)
+                {
+                    db.Projects.Remove(psp);
+                    tree.Nodes.Remove(t);
+                    PSP_NodeCollectionView.Refresh();
+                }
+            }
+            else
+            {
+                var ord = db.OrderRbs.FirstOrDefault(x => x.Aid == t.Value);
+                if (ord != null)
+                {
+                    ord.ProId = null;
+                    tree.Nodes.Remove(t);
+                    PSP_NodeCollectionView.Refresh();
+                }
+            }
+            db.SaveChanges();
         }
 
         private bool OnProjectTypeCanExecute(object arg)

@@ -60,5 +60,6 @@
         public const string OpenFileProj = "OPENFILEPROJ";
         public const string LieferTerm = "LIETERM";
         public const string LieferTermInvers = "!LIETERM";
+        public const string ProjectDel = "PROJ05";
     }
 }

@@ -15,8 +15,6 @@ public partial class Project
 
     public string? ProjectColor { get; set; }
 
-    public int? ProjectAttachment { get; set; }
-
     public virtual ICollection<OrderRb> OrderRbs { get; set; } = new List<OrderRb>();
 
     public virtual ICollection<ProjectAttachment> ProjectAttachments { get; set; } = new List<ProjectAttachment>();
