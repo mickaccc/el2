@@ -81,7 +81,7 @@
                 <TextBlock Text="{Binding EckEnde,StringFormat=\{0:D\}}" Margin="3"/>
             </StackPanel>
             <wpf:SelectableTextBlock Grid.Column="1" Grid.Row="1" Height="23" HorizontalAlignment="Right" Margin="5"  x:Name="txtTTNR" VerticalAlignment="Top"
-                       Text="{Binding Material, Converter={StaticResource TTNR_Converter1}, Mode=OneWay}"
+                       Text="{Binding Material, Mode=OneWay}"
                        MinWidth="120" ToolTip="Typ Teile Nummer"
                        AutomationProperties.LabeledBy="{Binding ElementName=lblMat, Mode=OneWay}">
  

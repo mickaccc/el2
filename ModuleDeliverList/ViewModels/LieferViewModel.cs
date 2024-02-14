@@ -363,7 +363,7 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
                     .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                     .WorkArea?.Bereich == _selectedSectionFilter;
-            if (accepted && _markerCode != string.Empty) accepted = ord.MarkCode?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
+            if (accepted && _markerCode != string.Empty) accepted = ord.AidNavigation.MarkCode?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
             if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_LOST) accepted = ProjectsLost(ord.AidNavigation.Pro) == !FilterInvers;
             return accepted;
         }

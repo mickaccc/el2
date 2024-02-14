@@ -145,10 +145,16 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenProjectOverViewCanExecute(object arg)
         {
-            if (arg is string s)
-                if(s.StartsWith("DS"))
-                    return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
-            return false;
+            bool accept = false;
+            if (arg is Vorgang)
+            {
+                accept = true;
+            }
+            else if (arg is string s)
+            {
+                if (s.StartsWith("DS")) accept = true;
+            }
+            return accept && PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
         }
         private void OnOpenProjectOverViewExecuted(object obj)
         {
@@ -484,7 +490,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetTimer()
         {
             // Create a timer with a 30 seconds interval.
-            _timer = new System.Timers.Timer(40000);
+            _timer = new System.Timers.Timer(100000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -511,7 +517,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetMsgTimer()
         {
             // Create a timer with a 2 seconds interval.
-            _timer = new System.Timers.Timer(30000);
+            _timer = new System.Timers.Timer(60000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnMsgTimedEvent;
             _timer.AutoReset = true;

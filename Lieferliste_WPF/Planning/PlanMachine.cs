@@ -269,11 +269,11 @@ namespace Lieferliste_WPF.Planning
                 string[] bemt = [];
                 var vid = result.Parameters.GetValue<string>("VID");
                 var bem = result.Parameters.GetValue<string>("Comment");
-                if(bem != null) bemt = bem.Split(';');
+                if(bem != null) bemt = bem.Split((char)29);
                 if (bemt.Length > 1)
                 {
-                    Processes.First(x => x.VorgangId == vid).BemT = String.Format("[{0}-{1}];{2}",
-                        UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), bemt[1]);
+                    Processes.First(x => x.VorgangId == vid).BemT = String.Format("[{0}-{1}]{2}{3}",
+                        UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
                 }
             }
         }
@@ -336,7 +336,6 @@ namespace Lieferliste_WPF.Planning
                 string[] bemt = [];
                 var vid = result.Parameters.GetValue<string>("VID");
                 var bem = result.Parameters.GetValue<string>("Comment");
-
             }
         }
 
