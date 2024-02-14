@@ -6,6 +6,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:control="clr-namespace:Lieferliste_WPF.Planning"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -32,7 +33,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="20" x:Name="ParkColumn"/>
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch">
             <Button Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Right" />
@@ -89,18 +90,18 @@
             </ListBox.ItemTemplate>
 
         </ListBox>
-        <Border Grid.Column="1" Grid.Row="0" BorderBrush="IndianRed" BorderThickness="2" Grid.RowSpan="2">
+        <Border  BorderBrush="IndianRed" BorderThickness="2" Grid.Column="1" Grid.RowSpan="2" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" >
             <ListBox ItemsSource="{Binding ParkingCV}" x:Name="parking"
-                     dd:DragDrop.IsDragSource="True"
-                     dd:DragDrop.IsDropTarget="True"
-                     dd:DragDrop.DropHandler="{Binding}" >
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding}" >
                 <ListBox.Background>
                     <ImageBrush ImageSource="/Images/parking.png" />
                 </ListBox.Background>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseDoubleClick">
                         <i:InvokeCommandAction Command="{Binding ApplicationCommands.OpenOrderCommand}"
-                                               CommandParameter="{Binding ElementName=parking, Path=SelectedItem}"/>
+                                            CommandParameter="{Binding ElementName=parking, Path=SelectedItem}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
                 <ListBox.ItemTemplate>
@@ -114,6 +115,7 @@
             </ListBox>
 
         </Border>
+
         <Slider x:Name="slider" Width="200" Minimum="30" Maximum="240" Margin="10"
                     Value="240" HorizontalAlignment="Right" />
         <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"

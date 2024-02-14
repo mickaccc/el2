@@ -272,8 +272,12 @@ namespace Lieferliste_WPF.Planning
                 if(bem != null) bemt = bem.Split((char)29);
                 if (bemt.Length > 1)
                 {
-                    Processes.First(x => x.VorgangId == vid).BemT = String.Format("[{0}-{1}]{2}{3}",
+                    var pr = Processes.First(x => x.VorgangId == vid);
+                    {
+                        pr.BemT = String.Format("[{0}-{1}]{2}{3}",
                         UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
+                        pr.RunPropertyChanged();
+                    }
                 }
             }
         }

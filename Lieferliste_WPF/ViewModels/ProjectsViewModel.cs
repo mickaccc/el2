@@ -304,7 +304,6 @@ namespace Lieferliste_WPF.ViewModels
 
                 if (asso != null) new Process() { StartInfo = new ProcessStartInfo(filepath) { UseShellExecute = true } }.Start();
             }
-
             catch (Exception e)
             {
                 MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "OpenStream", MessageBoxButton.OK, MessageBoxImage.Error);

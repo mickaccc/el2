@@ -21,7 +21,6 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
     {
         public string Title => "Maschinen Details";
         public PlanMachine PlanMachine { get; private set; }
-
         public ObservableCollection<Vorgang>? Processes { get; set; } = new();
         public ICollectionView? ProcessesCV { get; private set; }
         public event Action<IDialogResult> RequestClose;
@@ -53,16 +52,13 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-
             PlanMachine = parameters.GetValue<PlanMachine>("PlanMachine");
             ProcessesCV = PlanMachine.ProcessesCV;
             SetMarkerCommand = PlanMachine.SetMarkerCommand;
-            HistoryCommand = PlanMachine.HistoryCommand;
-            
+            HistoryCommand = PlanMachine.HistoryCommand;   
         }
         public void Drop(IDropInfo dropInfo)
         {
-
             try
             {
                 var vrg = (Vorgang)dropInfo.Data;

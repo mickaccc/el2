@@ -77,7 +77,19 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-
+        private string _msg;
+        public string Msg
+        {
+            get { return _msg; }
+            private set
+            {
+                if (value != _msg)
+                {
+                    _msg = value;
+                    NotifyPropertyChanged(() => Msg);
+                }
+            }
+        }
         private static int _onlines;
         private static System.Timers.Timer? _timer;
         private IRegionManager _regionmanager;
@@ -544,7 +556,7 @@ namespace Lieferliste_WPF.ViewModels
                         await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId>={0} AND MsgId<={1}", IdMin, IdMax);
                     }
                 }
-
+                Msg = string.Format("{0}-{1}", DateTime.Now.TimeOfDay, msgListO.Count + msgListV.Count);
 
                 if (msgListV.Count > 0)
                     _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);

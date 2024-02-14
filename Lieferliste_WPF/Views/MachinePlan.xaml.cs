@@ -16,5 +16,17 @@ namespace Lieferliste_WPF.Views
             InitializeComponent();
 
         }
+
+        private void Border_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            ColumnDefinition? col = (ColumnDefinition?)FindName("ParkColumn");
+            if (col != null) col.Width = new GridLength(120);
+        }
+
+        private void Border_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            ColumnDefinition? col = (ColumnDefinition?)FindName("ParkColumn");
+            if (col != null) col.Width = new GridLength(20);
+        }
     }
 }

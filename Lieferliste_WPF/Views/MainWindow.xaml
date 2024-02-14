@@ -160,13 +160,16 @@
             <Separator/>
             <StatusBarItem Foreground="{DynamicResource MahApps.Brushes.SystemControlForegroundBaseHigh}">
                 <StackPanel Orientation="Horizontal">
-                <TextBlock><Run Text="Online:"/></TextBlock>
-                <TextBlock Text="{Binding OnlineTask.Result, Mode=OneWay}" Margin="10,0,0,0" />
+                    <TextBlock><Run Text="Online:"/></TextBlock>
+                    <TextBlock Text="{Binding OnlineTask.Result, Mode=OneWay}" Margin="10,0,0,0" />
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock Grid.Column="1"  Width="150" Text="{Binding UsrName, Source={x:Static util:UserInfo.User}}"
-                      Background="PaleGoldenrod" Foreground="Black" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Msg}"/>
+                    <TextBlock Grid.Column="1"  Width="150" Text="{Binding UsrName, Source={x:Static util:UserInfo.User}}"
+                          Background="PaleGoldenrod" Foreground="Black" />
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
     </Grid>

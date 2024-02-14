@@ -59,12 +59,14 @@
             <Setter Property="Margin" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
-
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
             <EventSetter Event="UIElement.MouseEnter" Handler="TextBlock_MouseEnter"/>
             <EventSetter Event="UIElement.MouseLeave" Handler="TextBlock_MouseLeave"/>
 
         </Style>
         <Style x:Key="AlertPrioStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
+            <Setter Property="UseLayoutRounding" Value="True"/>
+            
             <Style.Triggers >
                 <DataTrigger Binding="{Binding Path=PrioText, ElementName=luc, Converter={StaticResource stringEmpty}}" Value="False">
                     <Setter Property="Background" Value="Red"/>
@@ -142,7 +144,7 @@
                 </Controls:SelectableTextBlock.Text>
             </Controls:SelectableTextBlock>
 
-            <Controls:SelectableTextBlock  x:Name="txtWorkArea" 
+            <Controls:SelectableTextBlock  x:Name="txtWorkArea"  
                      Text="{Binding WorkArea, ElementName=luc}" Grid.Row="1" Grid.Column="2"  />
             <Controls:SelectableTextBlock Grid.Column="5" x:Name="txtOrder" Style="{StaticResource AlertPrioStyle}" FontSize="16" FontWeight="DemiBold"
                            Text="{Binding Aid, ElementName=luc}" ToolTip="Auftragsnummer" Grid.ColumnSpan="2" />

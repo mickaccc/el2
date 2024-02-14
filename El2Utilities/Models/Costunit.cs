@@ -13,8 +13,6 @@ public partial class Costunit
 
     public bool PlanRelevance { get; set; }
 
-    public bool StopArchivate { get; set; }
-
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
     public virtual ICollection<UserCost> UserCosts { get; set; } = new List<UserCost>();
