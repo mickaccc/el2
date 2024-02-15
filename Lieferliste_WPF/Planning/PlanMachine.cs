@@ -22,6 +22,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace Lieferliste_WPF.Planning
 {
@@ -302,6 +303,8 @@ namespace Lieferliste_WPF.Planning
                 //Clipboard.Flush();
                 //Clipboard.SetData(DataFormats.Text, v.AidNavigation.Material);
                 //Clipboard.Flush();
+                DataPackageView dataPackageView = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
+
             }
         }
         private static bool OnSetMarkerCanExecute(object arg)
