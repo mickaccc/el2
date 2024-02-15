@@ -161,7 +161,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Vrg" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Bezeichnung" Binding="{Binding AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
@@ -216,9 +216,10 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Menge" Binding="{Binding AidNavigation.Quantity}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Gemeldet" Binding="{Binding QuantityYield}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="offen" Binding="{Binding QuantityMiss}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Ausschuss" Binding="{Binding QuantityScrap}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Auss" Binding="{Binding QuantityScrap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="NA" Binding="{Binding QuantityRework}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Dauer" IsReadOnly="True">
                     <DataGridTextColumn.Binding>

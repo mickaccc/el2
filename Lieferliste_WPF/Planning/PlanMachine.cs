@@ -93,6 +93,7 @@ namespace Lieferliste_WPF.Planning
         public ICommand? OpenMachineCommand { get; private set; }
         public ICommand? MachinePrintCommand { get; private set; }
         public ICommand? HistoryCommand { get; private set; }
+        public ICommand? FastCopyCommand { get; private set; }
 
         private readonly int _rId;
         private string _title;
@@ -194,6 +195,7 @@ namespace Lieferliste_WPF.Planning
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
             HistoryCommand = new ActionCommand(OnHistoryExecuted, OnHistoryCanExecute);
+            FastCopyCommand = new ActionCommand(OnFastCopyExecuted, OnFastCopyCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
             ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
@@ -281,7 +283,27 @@ namespace Lieferliste_WPF.Planning
                 }
             }
         }
+        private bool OnFastCopyCanExecute(object arg)
+        {
+            return arg is Vorgang && PermissionsProvider.GetInstance().GetUserPermission(Permissions.FastCopy);
+        }
 
+        private void OnFastCopyExecuted(object obj)
+        {
+            if(obj is Vorgang v)
+            {
+                Clipboard.SetText(v.AidNavigation.Quantity.ToString());
+                Clipboard.Flush();
+                Clipboard.SetText(v.AidNavigation.Material);
+                Clipboard.Flush();
+                Clipboard.SetText(v.Aid);
+                Clipboard.Flush();
+                //Clipboard.SetData(DataFormats.Text, v.AidNavigation.Quantity.ToString());
+                //Clipboard.Flush();
+                //Clipboard.SetData(DataFormats.Text, v.AidNavigation.Material);
+                //Clipboard.Flush();
+            }
+        }
         private static bool OnSetMarkerCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);

@@ -502,7 +502,7 @@ namespace Lieferliste_WPF.ViewModels
         private void SetTimer()
         {
             // Create a timer with a 30 seconds interval.
-            _timer = new System.Timers.Timer(100000);
+            _timer = new System.Timers.Timer(30000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -522,13 +522,15 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            OnlineTask = new NotifyTaskCompletion<int>(Dbctx.InMemoryOnlines.CountAsync());
-            if (OnlineTask.IsCompleted) { Dbctx.Dispose(); }
+            Application.Current.Dispatcher.InvokeAsync(new Action(() =>
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                Onlines = db.InMemoryOnlines.Count();
+            }), System.Windows.Threading.DispatcherPriority.Background);
         }
         private void SetMsgTimer()
         {
-            // Create a timer with a 2 seconds interval.
+            // Create a timer with a 60 seconds interval.
             _timer = new System.Timers.Timer(60000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnMsgTimedEvent;

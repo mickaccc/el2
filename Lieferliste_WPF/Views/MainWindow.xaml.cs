@@ -9,6 +9,7 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+    using System.Windows.Threading;
 
 
     /// <summary>
@@ -113,9 +114,8 @@
                 await this.Dispatcher.InvokeAsync(new Action(() =>
                     {
                         myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
-                    }));
+                    }), DispatcherPriority.Background);
             }
-
         }
 
         private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

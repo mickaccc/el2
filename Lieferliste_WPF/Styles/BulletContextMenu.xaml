@@ -25,6 +25,9 @@
         <MenuItem Command="{Binding HistoryCommand}"
                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
                   Header="Material History" Name="HystoryMenu"/>
+        <MenuItem Command="{Binding FastCopyCommand}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+                  Header="Schnell kopieren"/>
         <Separator>
 			<Separator.Template>
 				<ControlTemplate>

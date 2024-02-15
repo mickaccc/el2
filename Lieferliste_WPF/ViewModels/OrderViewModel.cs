@@ -34,12 +34,16 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnCopyClipBoardCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CopyClipboard);
         }
 
         private void OnCopyClipBoardExecuted(object obj)
         {
-            throw new NotImplementedException();
+            if(obj is OrderViewModel o)
+            {
+                Clipboard.SetText(string.Format("Auftragsnummer: {0}\nMaterial: {1} {2}\nMenge: {3}\nTermin: {4:D}",
+                    o.Aid, o.Material, o.Bezeichnung, o.Quantity, o.EckEnde));
+            }           
         }
 
         private void OnMessageReceived(List<string> vorgangIdList)
