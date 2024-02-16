@@ -37,8 +37,10 @@ namespace Lieferliste_WPF.ViewModels
         public bool HasChange => Changed();
         private RelayCommand? _selectionChangeCommand;
         private RelayCommand? _textSearchCommand;
+        private RelayCommand? _textSearchArbPlCommand;
         public ICommand SelectionChangeCommand => _selectionChangeCommand ??= new RelayCommand(SelectionChange);
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
+        public ICommand TextSearchArbPlCommand => _textSearchArbPlCommand ??= new RelayCommand(OnTextSearchArbPl);
         public ICommand SaveCommand { get; private set; }
         public List<WorkArea> WorkAreas { get; } = [];
         private ConcurrentObservableCollection<PlanMachine> _machines { get; } = new();
@@ -86,7 +88,7 @@ namespace Lieferliste_WPF.ViewModels
         private string? _searchFilterText;
         private readonly object _lock = new();
         private List<Vorgang> _processesAll;
-       
+        private string _searchFilterTextArbPl;
 
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
@@ -304,6 +306,14 @@ namespace Lieferliste_WPF.ViewModels
                 ProcessCV.Refresh();
             }
         }
+        private void OnTextSearchArbPl(object obj)
+        {
+            if (obj is string change)
+            {
+                _searchFilterTextArbPl = change;
+                ProcessCV.Refresh();
+            }
+        }
         private void ProcessCV_Filter(object sender, FilterEventArgs e)
         {
             Vorgang v = (Vorgang)e.Item;
@@ -318,6 +328,8 @@ namespace Lieferliste_WPF.ViewModels
                         if (!(e.Accepted = v.AidNavigation?.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
                             e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
                 }
+                else if (string.IsNullOrWhiteSpace(_searchFilterTextArbPl) == false)
+                    e.Accepted = v.ArbPlSap?.Contains(_searchFilterTextArbPl, StringComparison.CurrentCultureIgnoreCase) ?? false;
             }
         }
         public void DragOver(IDropInfo dropInfo)

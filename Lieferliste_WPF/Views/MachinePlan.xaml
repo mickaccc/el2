@@ -60,7 +60,16 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </TextBox>
-            
+            <TextBox x:Name="searchTextBoxArbPl" VerticalContentAlignment="Center" DockPanel.Dock="Right" Margin="10,0,10,0"
+         materialdesign:HintAssist.Hint="suchen in Arbeitsplatz SAP"
+         materialdesign:TextFieldAssist.HasClearButton="false" 
+         Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <i:InvokeCommandAction Command="{Binding TextSearchArbPlCommand}" CommandParameter="{Binding Path=Text, ElementName=searchTextBoxArbPl}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
         </DockPanel>
         <ProgressBar Grid.Row="1" IsIndeterminate="True" Style="{DynamicResource MaterialDesignCircularProgressBar}"
                      Visibility="{Binding MachineTask.IsNotCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>

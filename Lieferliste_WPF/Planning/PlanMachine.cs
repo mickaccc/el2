@@ -18,11 +18,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using Windows.ApplicationModel.DataTransfer;
+
+
 
 namespace Lieferliste_WPF.Planning
 {
@@ -55,6 +58,9 @@ namespace Lieferliste_WPF.Planning
             this.EventAggregator = eventAggregator;
             this.SettingsService = settingsService;
             this.DialogService = dialogService;
+
+            DataObject dt = new();
+            
         }
         public PlanMachine CreatePlanMachine(int Rid)
         {
@@ -289,24 +295,26 @@ namespace Lieferliste_WPF.Planning
             return arg is Vorgang && PermissionsProvider.GetInstance().GetUserPermission(Permissions.FastCopy);
         }
 
-        private void OnFastCopyExecuted(object obj)
+        private async void OnFastCopyExecuted(object obj)
         {
             if(obj is Vorgang v)
             {
-                Clipboard.SetText(v.AidNavigation.Quantity.ToString());
-                Clipboard.Flush();
-                Clipboard.SetText(v.AidNavigation.Material);
-                Clipboard.Flush();
-                Clipboard.SetText(v.Aid);
-                Clipboard.Flush();
-                //Clipboard.SetData(DataFormats.Text, v.AidNavigation.Quantity.ToString());
-                //Clipboard.Flush();
-                //Clipboard.SetData(DataFormats.Text, v.AidNavigation.Material);
-                //Clipboard.Flush();
-                DataPackageView dataPackageView = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
+                var opt = new ClipboardContentOptions();
+                opt.IsAllowedInHistory = true;
+                DataPackage dataPackage = new DataPackage();
+                dataPackage.RequestedOperation = DataPackageOperation.Copy;
+                dataPackage.SetText(v.AidNavigation.Quantity.ToString());
 
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContentWithOptions(dataPackage, opt);
+                await Task.Delay(500);
+                dataPackage.SetText(v.Aid);
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContentWithOptions(dataPackage, opt);
+                await Task.Delay(500);
+                dataPackage.SetText(v.AidNavigation.Material);
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContentWithOptions(dataPackage, opt);
             }
         }
+
         private static bool OnSetMarkerCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);
