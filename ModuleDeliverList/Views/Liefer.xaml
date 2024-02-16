@@ -24,27 +24,8 @@
         <conv:BooleanInverter x:Key="boolInvert"/>
         <conv:ProjectTypeConverter x:Key="proType"/>
         
-        <Style TargetType="ComboBox" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
-            <Setter Property="Width" Value="200"/>
-            <Setter Property="Padding" Value="8"/>
-        </Style>
-
-        <DataTemplate x:Key="advancedComboxItemDataTemplate">
-            <Grid Width="Auto">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding ProjectPsp}"  Grid.Column="0" TextAlignment="Left"/>
-                <TextBlock Text="{Binding ProjectType, Converter={StaticResource proType}}"
-                           Margin="5,0,5,0" Grid.Column="1" TextAlignment="Left" Background="{DynamicResource MahApps.Brushes.SystemControlBackgroundChromeMedium}"/>
-                <TextBlock Text="{Binding ProjectInfo}" Grid.Column="2"/>
-            </Grid>
-        </DataTemplate>
-
         <ItemsPanelTemplate x:Key="advancedComboxItemsPanelTemplate">
-            <VirtualizingStackPanel Grid.IsSharedSizeScope="True" IsItemsHost="True"/>
+            <VirtualizingStackPanel Grid.IsSharedSizeScope="True" IsItemsHost="True" />
         </ItemsPanelTemplate>
 
         <Style x:Key="_ListBoxItemStyle" TargetType="ListBoxItem">
@@ -64,17 +45,6 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-        </Style>
-
-        <Style x:Key="MyFocusVisual" TargetType="TextBox">
-            <Style.Triggers>
-                <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="Background" Value="Gold"/>
-                    <Setter Property="Foreground" Value="Black"/>
-                </Trigger>
-            </Style.Triggers>
-            <Setter Property="Background" Value="DimGray"/>
-            <Setter Property="Foreground" Value="White"/>
         </Style>
     </UserControl.Resources>
 
@@ -111,21 +81,48 @@
             FontWeight="Bold"
             Margin="5,1,5,1"
             Mode="Standard"
-            materialDesign:HintAssist.FloatingOffset="1,-10">
+            materialDesign:HintAssist.FloatingOffset="1,-15" materialDesign:HintAssist.IsFloating="True">
                 <StackPanel Orientation="Horizontal" >
+                    <StackPanel.Resources>
+                        <Style x:Key="MyFocusVisual" TargetType="TextBox">
+                            <Style.Triggers>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="Background" Value="Gold"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                </Trigger>
+                            </Style.Triggers>
+                            <Setter Property="Background" Value="DimGray"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}">
+                            <Setter Property="Width" Value="200"/>
+                            <Setter Property="Padding" Value="8"/>
+                        </Style>
+                        <DataTemplate x:Key="advancedComboxItemDataTemplate">
+                            <Grid Width="Auto">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding ProjectPsp}"  Grid.Column="0" TextAlignment="Left"/>
+                                <TextBlock Text="{Binding ProjectType, Converter={StaticResource proType}}"
+                   Margin="5,0,5,0" Grid.Column="1" TextAlignment="Left" Background="{DynamicResource MahApps.Brushes.SystemControlBackgroundChromeMedium}"/>
+                                <TextBlock Text="{Binding ProjectInfo}" Grid.Column="2"/>
+                            </Grid>
+                        </DataTemplate>
+                        
+                    </StackPanel.Resources>
                     <TextBox x:Name="MarkerCode" Width="40" Style="{DynamicResource MyFocusVisual}" 
                              Text="{Binding MarkerCode, Mode=TwoWay}"/>
-                     <ComboBox x:Name="ProjComboBox" Width="250"
-                     materialDesign:HintAssist.Hint="Projekte" materialDesign:HintAssist.IsFloating="True" materialDesign:HintAssist.FloatingOffset="5,-15"
-                     
+                     <ComboBox x:Name="ProjComboBox" Width="250" materialDesign:HintAssist.Hint="Projekte" 
                           ItemsSource="{Binding Projects}"                        
                           SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="ProjectPsp"
                           ItemTemplate="{StaticResource advancedComboxItemDataTemplate}"
                           ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
 
-                    <ComboBox x:Name="SectionComboBox" 
-                      materialDesign:HintAssist.Hint="Bereiche"
+                    <ComboBox x:Name="SectionComboBox" materialDesign:HintAssist.Hint="Bereiche"
                           ItemsSource="{Binding Sections}"
                           DisplayMemberPath="Value" 
                           SelectedValue="{Binding SelectedSectionFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -133,10 +130,9 @@
                           ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
 
 
-                    <ComboBox x:Name="FilterComboBox" 
-                          Background="{Binding FilterInvers, Converter={StaticResource boolalert}}"
-                    materialDesign:HintAssist.Hint="Filters" materialDesign:HintAssist.IsFloating="True" materialDesign:HintAssist.FloatingOffset="5,-15"                   
-                    ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
+                    <ComboBox x:Name="FilterComboBox" materialDesign:HintAssist.Hint="Filters"
+                         Background="{Binding FilterInvers, Converter={StaticResource boolalert}}"                                       
+                         ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
                          SelectedValue="{Binding Path=SelectedDefaultFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          DisplayMemberPath="Description"
                          SelectedValuePath="Value"

@@ -28,5 +28,6 @@ namespace Lieferliste_WPF.Views
             ColumnDefinition? col = (ColumnDefinition?)FindName("ParkColumn");
             if (col != null) col.Width = new GridLength(20);
         }
+
     }
 }

@@ -391,38 +391,52 @@ namespace Lieferliste_WPF.Planning
                 }
             }
         }
+        private void InsertItems(Vorgang Item, ListCollectionView? Source, ListCollectionView? Target, int Index)
+        {
+            if (Source == null || Target == null) return;
+            Item.Rid = _rId;
+            if (Source.CanRemove) Source.Remove(Item);
+            if (Index > Target?.Count)
+            {
+                ((IList)Target.SourceCollection).Add(Item);
+            }
+            else
+            {
+                Debug.Assert(Target != null, nameof(Target) + " != null");
+                ((IList)Target.SourceCollection).Insert(Index, Item);
+            }
+            var p = Target.SourceCollection as Collection<Vorgang>;
 
+            for (var i = 0; i < p.Count; i++)
+            {
+                p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
+                var vv = _dbCtx.Vorgangs.First(x => x.VorgangId == p[i].VorgangId);
+                vv.Spos = i;
+                vv.Rid = _rId;
+            }
+        }
         public void Drop(IDropInfo dropInfo)
         {
 
             try
             {
-                var vrg = (Vorgang)dropInfo.Data;
                 var s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
                 var t = dropInfo.TargetCollection as ListCollectionView;
-                if (s.CanRemove) s.Remove(vrg);
+                
                 var v = dropInfo.InsertIndex;
-                vrg.Rid = _rId;
-
-                if (v > t?.Count)
+                if (dropInfo.Data is List<dynamic> vrgList)
                 {
-                    ((IList)t.SourceCollection).Add(vrg);
+                    foreach(var vrg in vrgList)
+                    {
+                        InsertItems(vrg, s, t, v);
+                    }
                 }
-                else
+                else if (dropInfo.Data is Vorgang vrg)
                 {
-                    Debug.Assert(t != null, nameof(t) + " != null");
-                    ((IList)t.SourceCollection).Insert(v, vrg);
+                    InsertItems(vrg, s, t, v);
                 }
-                var p = t.SourceCollection as Collection<Vorgang>;
-
-                for (var i = 0; i < p.Count; i++)
-                {
-                    p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
-                    var vv = _dbCtx.Vorgangs.First(x => x.VorgangId == p[i].VorgangId);
-                    vv.Spos = i;
-                    vv.Rid = _rId;
-                }
-                t.Refresh();
+                              
+                t?.Refresh();
             }
             catch (Exception e)
             {
@@ -435,11 +449,11 @@ namespace Lieferliste_WPF.Planning
         {
             if (PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachDrop, WorkArea?.WorkAreaId ?? 0))
             {
-                if (dropInfo.Data is Vorgang)
+                if (dropInfo.Data is Vorgang || dropInfo.Data is List<dynamic>)
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
-                }
+                }               
             }
         }
 

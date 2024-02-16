@@ -25,6 +25,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Unity;
 
 
@@ -121,7 +122,7 @@ namespace Lieferliste_WPF.ViewModels
                         {
                             await GetVorgangsAsync(item);
                         });
-                        Application.Current.Dispatcher.Invoke(AddProcesses, item);
+                        Application.Current.Dispatcher.BeginInvoke(AddProcesses, DispatcherPriority.Background, item);
                     }
                 }
             }

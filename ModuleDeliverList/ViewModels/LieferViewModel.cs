@@ -564,7 +564,7 @@ namespace ModuleDeliverList.ViewModels
                                     {
                                         var p = vorg.AidNavigation.Pro;
                                         if (p != null)
-                                            pl.Add(new(p.ProjectPsp, (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
+                                            pl.Add(new(p.ProjectPsp.Trim(), (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
                                     }
 
                                     if (vorg.Aktuell)

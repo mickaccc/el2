@@ -35,6 +35,15 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="20" x:Name="ParkColumn"/>
         </Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <Style TargetType="{x:Type DataGridRow}" x:Key="RowCustomStyle">
+                <Style.Triggers>
+                    <Trigger Property="DataGridRow.IsSelected" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.DataGrid.Selection.BorderBrush.Focus}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
         <DockPanel HorizontalAlignment="Stretch">
             <Button Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Right" />
             <ComboBox x:Name="workArea" ItemsSource="{Binding WorkAreas}" DockPanel.Dock="Left" MinWidth="100"
@@ -50,7 +59,7 @@
 
             </ComboBox>
             
-            <TextBox x:Name="searchTextBox" VerticalContentAlignment="Center" DockPanel.Dock="Right" Margin="10,0,10,0"
+            <TextBox x:Name="searchTextBox" VerticalContentAlignment="Center" DockPanel.Dock="Left" Margin="10,0,10,0"
                      materialdesign:HintAssist.Hint="suchen in Auftragsnummer, TTNR und Materialbezeichnung"
                      materialdesign:TextFieldAssist.HasClearButton="false" 
                      Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
@@ -60,10 +69,10 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </TextBox>
-            <TextBox x:Name="searchTextBoxArbPl" VerticalContentAlignment="Center" DockPanel.Dock="Right" Margin="10,0,10,0"
+            <TextBox x:Name="searchTextBoxArbPl" VerticalContentAlignment="Center" DockPanel.Dock="Left" Margin="10,0,10,0"
          materialdesign:HintAssist.Hint="suchen in Arbeitsplatz SAP"
          materialdesign:TextFieldAssist.HasClearButton="false" 
-         Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
+         Style="{DynamicResource MaterialDesignFloatingHintTextBox}" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="TextChanged">
                         <i:InvokeCommandAction Command="{Binding TextSearchArbPlCommand}" CommandParameter="{Binding Path=Text, ElementName=searchTextBoxArbPl}" />
@@ -130,12 +139,13 @@
         <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
                   CanUserAddRows="False" CanUserDeleteRows="False" HorizontalContentAlignment="Center" ColumnWidth="Auto"
-                  IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" >
+                  IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" SelectionMode="Extended" RowStyle="{StaticResource RowCustomStyle}" >
             <DataGrid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick"
                               Command="{Binding ApplicationCommands.OpenOrderCommand}"
                               CommandParameter="{Binding ElementName=UnPlaned, Path=SelectedItem}"/>
             </DataGrid.InputBindings>
+   
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Auftrag" Binding="{Binding Path=Aid}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True" />

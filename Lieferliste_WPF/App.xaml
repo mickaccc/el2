@@ -8,6 +8,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/AnimColors.xaml"/>
                 <ResourceDictionary Source="/Styles/UIColors.xaml"/>
+
                 <!--<ResourceDictionary Source="/Styles/DataTemplateItems.xaml"/>-->
                 <ResourceDictionary Source="/Styles/BulletContextMenu.xaml"/>
                 <!--<materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Teal"  SecondaryColor="Lime"/>
