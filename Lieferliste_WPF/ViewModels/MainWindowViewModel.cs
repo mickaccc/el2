@@ -140,6 +140,7 @@ namespace Lieferliste_WPF.ViewModels
             OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
             OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
 
+            
             //DbOperations();
         }
 

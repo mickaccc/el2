@@ -295,26 +295,38 @@ namespace Lieferliste_WPF.Planning
             return arg is Vorgang && PermissionsProvider.GetInstance().GetUserPermission(Permissions.FastCopy);
         }
 
-        private async void OnFastCopyExecuted(object obj)
+        private void OnFastCopyExecuted(object obj)
         {
             if(obj is Vorgang v)
             {
-                var opt = new ClipboardContentOptions();
-                opt.IsAllowedInHistory = true;
-                DataPackage dataPackage = new DataPackage();
-                dataPackage.RequestedOperation = DataPackageOperation.Copy;
-                dataPackage.SetText(v.AidNavigation.Quantity.ToString());
+                
+                var m = v.AidNavigation.Quantity.ToString();
+                var a = v.Aid;
+                var mat = v.AidNavigation.Material;
+                var bez = v.AidNavigation.MaterialNavigation?.Bezeichng;
 
-                Windows.ApplicationModel.DataTransfer.Clipboard.SetContentWithOptions(dataPackage, opt);
-                await Task.Delay(500);
-                dataPackage.SetText(v.Aid);
-                Windows.ApplicationModel.DataTransfer.Clipboard.SetContentWithOptions(dataPackage, opt);
-                await Task.Delay(500);
-                dataPackage.SetText(v.AidNavigation.Material);
-                Windows.ApplicationModel.DataTransfer.Clipboard.SetContentWithOptions(dataPackage, opt);
+                OnFastCopyExecuted(m);               
+                OnFastCopyExecuted(bez ?? a);
+                OnFastCopyExecuted(mat ?? "DUMMY");
+                OnFastCopyExecuted(a);                
             }
+            if(obj is string s)
+            { setTextToClipboard(s); }
         }
 
+        private void setTextToClipboard(string text)
+        {
+            var opt = new ClipboardContentOptions();
+            opt.IsAllowedInHistory = true;
+            DataPackage dataPackage = new DataPackage();
+            dataPackage.RequestedOperation = DataPackageOperation.Copy;
+            dataPackage.SetText(text);
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContentWithOptions(dataPackage, opt);
+        }
+        private bool IsSetted(DataPackage dataPackage)
+        {
+            return Windows.ApplicationModel.DataTransfer.Clipboard.GetContent() == dataPackage.GetView();
+        }
         private static bool OnSetMarkerCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);

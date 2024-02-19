@@ -1,4 +1,6 @@
-﻿namespace El2Core.Services
+﻿using System.Configuration;
+
+namespace El2Core.Services
 {
     public interface IUserSettingsService
     {
@@ -10,8 +12,9 @@
         void Save();
         void Reset();
         void Reload();
+        void UpgradeIfRequired();
     }
-    public class UserSettingsService : IUserSettingsService
+    public class UserSettingsService : ApplicationSettingsBase, IUserSettingsService
     {
         public string ExplorerPath
         {
@@ -52,6 +55,11 @@
         public void Reload()
         {
             Properties.Settings.Default.Reload();
+        }
+
+        public void UpgradeIfRequired()
+        {
+           
         }
     }
 }

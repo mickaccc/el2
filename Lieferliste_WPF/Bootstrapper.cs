@@ -14,6 +14,7 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
 using Prism.Unity;
+using System.Configuration;
 using System.IO;
 using System.Windows;
 using Unity;
@@ -24,9 +25,10 @@ namespace Lieferliste_WPF
     {
         protected override DependencyObject CreateShell()
         {
+            
             var settingsService = Container.Resolve<UserSettingsService>();
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
-        
+            
             return Container.Resolve<MainWindow>();
         }
         protected override void OnInitialized()
@@ -40,10 +42,11 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
 
+            
             containerRegistry.RegisterInstance(builderopt.Options);
             containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
             containerRegistry.RegisterScoped<IRegionManager, RegionManager>();
