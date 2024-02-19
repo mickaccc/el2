@@ -1,5 +1,4 @@
-﻿using Lieferliste_WPF.ViewModels;
-using System.Runtime.Versioning;
+﻿using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Controls;
 

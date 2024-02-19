@@ -27,6 +27,7 @@ namespace Lieferliste_WPF
         {
             
             var settingsService = Container.Resolve<UserSettingsService>();
+            settingsService.Upgrade();
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
             
             return Container.Resolve<MainWindow>();
@@ -42,7 +43,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
 

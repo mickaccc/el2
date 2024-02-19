@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Windows;
 
 namespace El2Core.Services
 {
@@ -12,9 +13,9 @@ namespace El2Core.Services
         void Save();
         void Reset();
         void Reload();
-        void UpgradeIfRequired();
+        void Upgrade();
     }
-    public class UserSettingsService : ApplicationSettingsBase, IUserSettingsService
+    public class UserSettingsService : IUserSettingsService
     {
         public string ExplorerPath
         {
@@ -42,13 +43,18 @@ namespace El2Core.Services
             get { return Properties.Settings.Default.Theme; }
             set { Properties.Settings.Default[nameof(Theme)] = value; }
         }
+        public bool UpgradeFlag
+        {
+            get { return Properties.Settings.Default.UpgradeFlag; }
+            set { Properties.Settings.Default[nameof(UpgradeFlag)] = value; }
+        }
 
         public void Save()
         {
-            Properties.Settings.Default.Save();
+             Properties.Settings.Default.Save();
         }
         public void Reset()
-        {
+        {           
             Properties.Settings.Default.Reset();
         }
 
@@ -57,9 +63,40 @@ namespace El2Core.Services
             Properties.Settings.Default.Reload();
         }
 
-        public void UpgradeIfRequired()
+        public void Upgrade()
         {
-           
+            if(Properties.Settings.Default.UpgradeFlag == false)
+            {
+                try
+                {
+                    var s = new SettingsContext();
+                    var c = this.MemberwiseClone();
+                    
+                    Properties.Settings.Default.Upgrade();
+
+                    var autosave = Properties.Settings.Default.GetPreviousVersion("IsAutoSave");
+                    if (autosave != null) { IsAutoSave = (bool)autosave; }
+                    var savemsg = Properties.Settings.Default.GetPreviousVersion("IsSaveMessage");
+                    if (savemsg != null) { IsSaveMessage = (bool)savemsg; }
+                    var theme = Properties.Settings.Default.GetPreviousVersion("Theme");
+                    if (theme != null) { Theme = (string)theme; }
+                    UpgradeFlag = false;
+                    Save();
+                }
+                catch (System.Exception e)
+                {
+
+                    MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "Upgrade", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+            }
+            //var a = conf.AppSettings;
+            //var s = conf.Sections;
+            //var sg = conf.SectionGroups;
+            //var ug = conf.GetSectionGroup("userSettings");
+
+            //UpgradeFlag = false;
+            //Properties.Settings.Default.Save();  
         }
     }
 }
