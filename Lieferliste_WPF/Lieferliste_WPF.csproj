@@ -149,9 +149,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="AssemblyInfo.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
     <Compile Update="UserControls\CommentUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
