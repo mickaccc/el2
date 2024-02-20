@@ -65,21 +65,14 @@ namespace El2Core.Services
 
         public void Upgrade()
         {
-            if(Properties.Settings.Default.UpgradeFlag == false)
+            if(Properties.Settings.Default.UpgradeFlag == true)
             {
                 try
                 {
-                    var s = new SettingsContext();
-                    var c = this.MemberwiseClone();
-                    
-                    Properties.Settings.Default.Upgrade();
 
-                    var autosave = Properties.Settings.Default.GetPreviousVersion("IsAutoSave");
-                    if (autosave != null) { IsAutoSave = (bool)autosave; }
-                    var savemsg = Properties.Settings.Default.GetPreviousVersion("IsSaveMessage");
-                    if (savemsg != null) { IsSaveMessage = (bool)savemsg; }
-                    var theme = Properties.Settings.Default.GetPreviousVersion("Theme");
-                    if (theme != null) { Theme = (string)theme; }
+                    Properties.Settings.Default.Upgrade();
+                    Properties.Settings.Default.Reload();
+   
                     UpgradeFlag = false;
                     Save();
                 }
@@ -90,13 +83,6 @@ namespace El2Core.Services
                 }
 
             }
-            //var a = conf.AppSettings;
-            //var s = conf.Sections;
-            //var sg = conf.SectionGroups;
-            //var ug = conf.GetSectionGroup("userSettings");
-
-            //UpgradeFlag = false;
-            //Properties.Settings.Default.Save();  
         }
     }
 }
