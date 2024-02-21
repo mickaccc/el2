@@ -74,6 +74,7 @@ namespace WpfCustomControlLibrary
                 _ellipse = Template.FindName("PART_Circle", this) as Ellipse;
                 _rectangle = Template.FindName("PART_Square", this) as Rectangle;
             }
+            
         }
 
     }

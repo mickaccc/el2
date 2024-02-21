@@ -6,7 +6,6 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
@@ -157,19 +156,6 @@ namespace Lieferliste_WPF.ViewModels
             return OrdersView;
         }
 
-        public string GetMimeTypeForFileExtension(string filePath)
-        {
-            const string DefaultContentType = "application/octet-stream";
-
-            var provider = new FileExtensionContentTypeProvider();
-
-            if (!provider.TryGetContentType(filePath, out string contentType))
-            {
-                contentType = DefaultContentType;
-            }
-
-            return contentType;
-        }
         private void AddAttachment(int id, string file, bool isLink)
         {
             Attachment attachment = new(id, isLink);
