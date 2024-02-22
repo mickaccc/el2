@@ -1,5 +1,4 @@
-﻿using BionicCode.Utilities.Net.Standard.Extensions;
-using CompositeCommands.Core;
+﻿using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Services;
@@ -23,7 +22,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Windows.ApplicationModel.DataTransfer;
 
 

@@ -1,5 +1,4 @@
-﻿using NetLah.Diagnostics;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -31,11 +30,9 @@ namespace Lieferliste_WPF.Views
             : this()
         {
             this.Owner = parent;
-            asm = ApplicationInfo.Initialize(null);
-            var a = asm.Product;
 
         }
-        IApplicationInfo asm;
+
         /// <summary>
         /// Handles click navigation on the hyperlink in the About dialog.
         /// </summary>
