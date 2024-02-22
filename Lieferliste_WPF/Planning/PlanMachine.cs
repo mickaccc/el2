@@ -23,6 +23,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Windows.ApplicationModel.DataTransfer;
 
 
@@ -235,6 +236,7 @@ namespace Lieferliste_WPF.Planning
                         {
                             Processes?.Remove(pr);
                             _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != pr.VorgangId).State = EntityState.Unchanged;
+                            ProcessesCV.Refresh();
                         }
                     }
                 }
@@ -305,7 +307,7 @@ namespace Lieferliste_WPF.Planning
                 var mat = v.AidNavigation.Material;
                 var bez = v.AidNavigation.MaterialNavigation?.Bezeichng;
 
-                OnFastCopyExecuted(m);               
+                OnFastCopyExecuted(m);
                 OnFastCopyExecuted(bez ?? a);
                 OnFastCopyExecuted(mat ?? "DUMMY");
                 OnFastCopyExecuted(a);                
@@ -316,12 +318,8 @@ namespace Lieferliste_WPF.Planning
 
         private void setTextToClipboard(string text)
         {
-            var opt = new ClipboardContentOptions();
-            opt.IsAllowedInHistory = true;
-            DataPackage dataPackage = new DataPackage();
-            dataPackage.RequestedOperation = DataPackageOperation.Copy;
-            dataPackage.SetText(text);
-            Windows.ApplicationModel.DataTransfer.Clipboard.SetContentWithOptions(dataPackage, opt);
+            System.Windows.Clipboard.SetText(text);
+            Task.Delay(250).Wait();          
         }
         private bool IsSetted(DataPackage dataPackage)
         {

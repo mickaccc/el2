@@ -1,12 +1,12 @@
-﻿using MiniFileAssociation;
+﻿using BrendanGrant.Helpers.FileAssociation;
 using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
@@ -17,20 +17,17 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Printing;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BrendanGrant.Helpers.FileAssociation;
-using El2Core.Constants;
-using System.Windows.Controls;
-using System.Printing;
-using Windows.Storage.Pickers.Provider;
-using Windows.Storage.Pickers;
 using Windows.Storage;
-using System.Runtime.InteropServices;
+using Windows.Storage.Pickers;
 using WinRT;
 
 
@@ -157,19 +154,6 @@ namespace Lieferliste_WPF.ViewModels
             return OrdersView;
         }
 
-        public string GetMimeTypeForFileExtension(string filePath)
-        {
-            const string DefaultContentType = "application/octet-stream";
-
-            var provider = new FileExtensionContentTypeProvider();
-
-            if (!provider.TryGetContentType(filePath, out string contentType))
-            {
-                contentType = DefaultContentType;
-            }
-
-            return contentType;
-        }
         private void AddAttachment(int id, string file, bool isLink)
         {
             Attachment attachment = new(id, isLink);

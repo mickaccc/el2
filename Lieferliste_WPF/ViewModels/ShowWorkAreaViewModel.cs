@@ -5,8 +5,10 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -41,16 +43,17 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        public bool Changed { get; set; }
         private IContainerProvider _container;
         private IDialogService _dialogService;
         public ICommand EditCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
         public ICommand AddCommand { get; set; }
         public ICommand SaveCommand { get; set; }
-        private RelayCommand? _endEditCommand;
-        public ICommand EndEditCommand => _endEditCommand ??= new RelayCommand(OnEndEdit);
+        private RelayCommand? _changedCommand;
+        public ICommand ChangedCommand => _changedCommand ??= new RelayCommand(OnChanged);
 
-        private List<WorkArea> _workAreas = new();
+        private ObservableCollection<WorkArea> _workAreas = new();
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         public ICollectionView WorkAreas;
         private ListCollectionView _workAreasList;
@@ -82,7 +85,13 @@ namespace Lieferliste_WPF.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             WaTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync());
         }
-
+        private void OnChanged(object obj)
+        {
+            if(obj is WorkArea w)
+            {
+                _dbctx.ChangeTracker.Entries().First(x => x.Entity.Equals(w)).State = EntityState.Modified;
+            }
+        }
         private bool OnSaveCanExecute(object arg)
         {
             _dbctx.ChangeTracker.DetectChanges();
@@ -163,12 +172,8 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnEditExecuted(object obj)
         {
-
             EditMode = !EditMode;
-        }
-        private void OnEndEdit(object obj)
-        {
-            EditMode = false;
+                       
         }
 
         private async Task<ICollectionView> LoadAsync()

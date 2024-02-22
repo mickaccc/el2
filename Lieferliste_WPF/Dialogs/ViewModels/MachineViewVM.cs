@@ -38,6 +38,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         }
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? HistoryCommand { get; private set; }
+        public ICommand? FastCopyCommand { get; private set; }
 
         public MachineViewVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public bool CanCloseDialog()
@@ -55,7 +56,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             PlanMachine = parameters.GetValue<PlanMachine>("PlanMachine");
             ProcessesCV = PlanMachine.ProcessesCV;
             SetMarkerCommand = PlanMachine.SetMarkerCommand;
-            HistoryCommand = PlanMachine.HistoryCommand;   
+            HistoryCommand = PlanMachine.HistoryCommand;  
+            FastCopyCommand = PlanMachine.FastCopyCommand;
         }
         public void Drop(IDropInfo dropInfo)
         {
