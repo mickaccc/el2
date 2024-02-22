@@ -1,6 +1,8 @@
-﻿using System;
+﻿using NetLah.Diagnostics;
+using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Xml;
@@ -29,8 +31,11 @@ namespace Lieferliste_WPF.Views
             : this()
         {
             this.Owner = parent;
-        }
+            asm = ApplicationInfo.Initialize(null);
+            var a = asm.Product;
 
+        }
+        IApplicationInfo asm;
         /// <summary>
         /// Handles click navigation on the hyperlink in the About dialog.
         /// </summary>
@@ -76,6 +81,7 @@ namespace Lieferliste_WPF.Views
             get
             {
                 string result = CalculatePropertyValue<AssemblyTitleAttribute>(propertyNameTitle, xPathTitle);
+
                 if (string.IsNullOrEmpty(result))
                 {
                     // otherwise, just get the name of the assembly itself.
@@ -95,7 +101,7 @@ namespace Lieferliste_WPF.Views
             {
                 string result = string.Empty;
                 // first, try to get the version string from the assembly.
-
+                
                 Version? version = Assembly.GetExecutingAssembly().GetName().Version;
                 if (version != null)
                 {
@@ -136,6 +142,7 @@ namespace Lieferliste_WPF.Views
         {
             get
             {
+    
                 return CalculatePropertyValue<AssemblyDescriptionAttribute>(propertyNameDescription, xPathDescription)
                     ?? String.Empty;
             }
@@ -148,6 +155,7 @@ namespace Lieferliste_WPF.Views
         {
             get
             {
+
                 return CalculatePropertyValue<AssemblyProductAttribute>(propertyNameProduct, xPathProduct)
                     ?? String.Empty;
             }
