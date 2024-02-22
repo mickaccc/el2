@@ -77,8 +77,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private string _msg;
-        public string Msg
+        private string? _msg;
+        public string? Msg
         {
             get { return _msg; }
             private set

@@ -21,6 +21,7 @@ using Unity;
 
 namespace Lieferliste_WPF
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class Bootstrapper : PrismBootstrapper
     {
         protected override DependencyObject CreateShell()
@@ -43,7 +44,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
 

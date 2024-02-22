@@ -18,6 +18,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class OrderViewModel : ViewModelBase, IDialogAware
     {
         public OrderViewModel(IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator ea)

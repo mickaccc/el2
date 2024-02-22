@@ -17,10 +17,11 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     class MachineViewVM : IDialogAware, IDropTarget
     {
         public string Title => "Maschinen Details";
-        public PlanMachine PlanMachine { get; private set; }
+        public PlanMachine? PlanMachine { get; private set; }
         public ObservableCollection<Vorgang>? Processes { get; set; } = new();
         public ICollectionView? ProcessesCV { get; private set; }
         public event Action<IDialogResult> RequestClose;

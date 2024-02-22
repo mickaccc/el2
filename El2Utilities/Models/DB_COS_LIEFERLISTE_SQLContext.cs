@@ -376,7 +376,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.HasOne(d => d.UsrIdentNavigation).WithMany(p => p.UserCosts)
                 .HasForeignKey(d => d.UsrIdent)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_User_UserCost");
         });
 
