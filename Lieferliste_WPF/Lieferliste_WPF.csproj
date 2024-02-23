@@ -10,6 +10,8 @@
     <ApplicationIcon>el4-application.ico</ApplicationIcon>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>AnyCPU;x64;x86</Platforms>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>Lieferliste_WPF_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -251,6 +253,11 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
+
+	<PropertyGroup>
+		<Authors>Michael Schatzl (SCM2HL)</Authors>
+		<AssemblyName>EL2</AssemblyName>
+	</PropertyGroup>
 
 
 </Project>
