@@ -574,11 +574,14 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private void RegisterMe()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("AsyncUsage", "AsyncFixer03:Fire-and-forget async-void methods or delegates",
+            Justification = "<Pending>")]
+        private async void RegisterMe()
         {
-            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            try
             {
-                db.Database.BeginTransactionAsync();
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                await using var transaction = await db.Database.BeginTransactionAsync();
                 var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserIdent && x.PcId == UserInfo.PC);
                 if (onl != null)
                 {
@@ -589,7 +592,11 @@ namespace Lieferliste_WPF.ViewModels
                     UserInfo.User.UserIdent,
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                db.Database.CommitTransactionAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "RegisterMe", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void DbOperations()
