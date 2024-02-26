@@ -9,7 +9,7 @@ namespace Lieferliste_WPF.Views
     public partial class MachineEdit : Grid
     {
         public bool IsLoading { get; set; }
-        public string Ident { get; set; }
+        public string? Ident { get; set; }
         public MachineEdit()
         {
             InitializeComponent();

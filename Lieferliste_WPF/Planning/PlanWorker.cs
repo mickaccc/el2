@@ -32,6 +32,7 @@ namespace Lieferliste_WPF.Planning
         IEventAggregator EventAggregator { get; }
         IUserSettingsService SettingsService { get; }
     }
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class PlanWorkerFactory : IPlanWorkerFactory
     {
         public IContainerProvider Container { get; }
@@ -58,6 +59,7 @@ namespace Lieferliste_WPF.Planning
     {
         public string UserId { get; }
     }
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class PlanWorker : DependencyObject, IPlanWorker, IDropTarget, IViewModel
     {
 
@@ -91,7 +93,7 @@ namespace Lieferliste_WPF.Planning
         public int? PersNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        private DB_COS_LIEFERLISTE_SQLContext _dbctx;
+        private DB_COS_LIEFERLISTE_SQLContext? _dbctx;
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
@@ -268,7 +270,7 @@ namespace Lieferliste_WPF.Planning
 
                 }
 
-                _dbctx.UserVorgangs.AddAsync(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
+                _dbctx?.UserVorgangs.AddAsync(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
 
                 t.Refresh();
 

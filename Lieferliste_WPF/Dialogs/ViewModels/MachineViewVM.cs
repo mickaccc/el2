@@ -24,7 +24,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public PlanMachine? PlanMachine { get; private set; }
         public ObservableCollection<Vorgang>? Processes { get; set; } = new();
         public ICollectionView? ProcessesCV { get; private set; }
-        public event Action<IDialogResult> RequestClose;
+        public event Action<IDialogResult>? RequestClose;
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -78,7 +78,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 for (var i = 0; i < p.Count; i++)
                 {
                     p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
-                    var vv = PlanMachine.Processes?.First(x => x.VorgangId == p[i].VorgangId);
+                    var vv = PlanMachine?.Processes?.First(x => x.VorgangId == p[i].VorgangId);
                     vv.Spos = i;
                 }
                 t.Refresh();
@@ -92,7 +92,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
-            var wid = PlanMachine.WorkArea?.WorkAreaId;
+            var wid = PlanMachine?.WorkArea?.WorkAreaId;
             if (wid != null)
             {
                 if (PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachDrop, (int)wid))

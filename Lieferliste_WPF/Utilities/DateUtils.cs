@@ -46,7 +46,7 @@ namespace Lieferliste_WPF.Utilities
 #pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
             {
                 if (obj == null) return 1;
-                CalendarWeek other = obj as CalendarWeek;
+                CalendarWeek? other = obj as CalendarWeek;
                 if (other == null)
                 {
                     throw new ArgumentException("Object is not a CalendarWeek!");

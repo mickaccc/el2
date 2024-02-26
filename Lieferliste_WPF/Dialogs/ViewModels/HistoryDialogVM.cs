@@ -12,13 +12,14 @@ using System.Windows.Data;
 
 namespace Lieferliste_WPF.Dialogs
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     class HistoryDialogVM : IDialogAware
     {
         public HistoryDialogVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public string Title => "Historische Aufträge";
         public string? Material => _material;
 
-        private string _vid;
+        private string? _vid;
         private string? _material;
         public string? MatDescription => _matDescription;
         private string? _matDescription;
@@ -37,10 +38,10 @@ namespace Lieferliste_WPF.Dialogs
         }
         private IApplicationCommands? _applicationCommands;
         private List<Vorgang>? _orderList;
-        public ICollectionView OrderList { get; private set; }
+        public ICollectionView? OrderList { get; private set; }
         
-        public event Action<IDialogResult> RequestClose;
-        private DelegateCommand<Vorgang?> _closeDialogCommand;
+        public event Action<IDialogResult>? RequestClose;
+        private DelegateCommand<Vorgang?>? _closeDialogCommand;
         public DelegateCommand<Vorgang?> CloseDialogCommand =>
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand<Vorgang?>(CloseDialog));
 

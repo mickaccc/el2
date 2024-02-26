@@ -2,9 +2,9 @@
 
 namespace Lieferliste_WPF.Utilities
 {
-    internal class Attachment : INotifyPropertyChanged
+    internal class Attachment(int id, bool isLink) : INotifyPropertyChanged
     {
-        private string _name;
+        private string _name = string.Empty;
 
         public string Name
         {
@@ -38,8 +38,8 @@ namespace Lieferliste_WPF.Utilities
                 }
             }
         }
-        public readonly int Ident;
-        public readonly bool IsLink;
+        public readonly int Ident = id;
+        public readonly bool IsLink = isLink;
         private object? content;
 
         public object? Content
@@ -65,7 +65,7 @@ namespace Lieferliste_WPF.Utilities
             Pdf,
             Mail
         }
-        public Attachment(int id, bool isLink) { Ident = id; IsLink = isLink; }
+
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

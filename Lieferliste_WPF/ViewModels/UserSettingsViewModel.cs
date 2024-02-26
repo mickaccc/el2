@@ -16,7 +16,6 @@ namespace Lieferliste_WPF.ViewModels
 {
     internal class UserSettingsViewModel : ViewModelBase
     {
-        private string _ExplorerPathPattern;
         private ObservableCollection<string> _ExplorerFilter = new();
         public ICollectionView ExplorerFilter { get; }
         private IUserSettingsService _settingsService;
@@ -24,8 +23,6 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand ResetCommand { get; }
         public ICommand ReloadCommand { get; }
         public ICommand ChangeThemeCommand { get; }
-        public Brush OutOfDate { get; set; }
-        public Brush InOfDate { get; set; }
         public string Title { get; } = "Einstellungen";
         private bool _isDarkTheme;
         public bool IsDarkTheme
@@ -41,8 +38,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private Theme selectedTheme;
-        public Theme SelectedTheme 
+        private Theme? selectedTheme;
+        public Theme? SelectedTheme 
         {
             get { return selectedTheme; }
             set { selectedTheme = value; }
@@ -100,7 +97,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            if(_settingsService.Theme != SelectedTheme.Name) _settingsService.Theme = SelectedTheme.Name;
+            if(_settingsService.Theme != SelectedTheme?.Name) _settingsService.Theme = SelectedTheme?.Name ?? string.Empty;
             _settingsService.Save();
         }
 

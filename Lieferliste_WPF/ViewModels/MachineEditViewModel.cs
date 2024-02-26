@@ -20,6 +20,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public class MachineEditViewModel : ViewModelBase, IViewModel
     {
 
@@ -29,7 +30,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
         public ICollectionView RessourcesCV { get; }
-        private RelayCommand textSearchCommand;
+        private RelayCommand? textSearchCommand;
         private string _searchFilterText = String.Empty;
         private readonly IContainerExtension _container;
         private readonly IUserSettingsService _settingsService;

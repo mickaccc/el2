@@ -19,6 +19,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class ShowWorkAreaViewModel : ViewModelBase, IDropTarget
     {
         private string _title = "Bereich Editor";
@@ -55,11 +56,10 @@ namespace Lieferliste_WPF.ViewModels
 
         private ObservableCollection<WorkArea> _workAreas = new();
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
-        public ICollectionView WorkAreas;
-        private ListCollectionView _workAreasList;
+        public ICollectionView? WorkAreas;
         private CollectionViewSource _workAreaCVS = new();
-        private NotifyTaskCompletion<ICollectionView> _waTask;
-        public NotifyTaskCompletion<ICollectionView> WaTask
+        private NotifyTaskCompletion<ICollectionView>? _waTask;
+        public NotifyTaskCompletion<ICollectionView>? WaTask
         {
             get { return _waTask; }
             set
@@ -136,7 +136,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _workAreas.Add(result.Parameters.GetValue<WorkArea>("new"));
                 _dbctx.WorkAreas.Add(result.Parameters.GetValue<WorkArea>("new"));
-                WorkAreas.Refresh();
+                WorkAreas?.Refresh();
             }
             
         }
@@ -229,7 +229,7 @@ namespace Lieferliste_WPF.ViewModels
                         i++;
                     }
                 }
-                WorkAreas.Refresh();
+                WorkAreas?.Refresh();
 
             }
         }

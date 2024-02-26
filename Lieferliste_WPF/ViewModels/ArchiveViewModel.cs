@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class ArchiveViewModel : ViewModelBase
     {
         private IContainerExtension _container;
@@ -30,12 +30,12 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private NotifyTaskCompletion<ICollectionView> _contentTask;
+        private NotifyTaskCompletion<ICollectionView>? _contentTask;
         public string Title { get; } = "Archiv";
-        private string _searchValue;
+        private string? _searchValue;
         private readonly ConcurrentObservableCollection<OrderRb> result = [];
-        public ICollectionView CollectionView { get; set; }
-        public NotifyTaskCompletion<ICollectionView> ContentTask
+        public ICollectionView? CollectionView { get; private set; }
+        public NotifyTaskCompletion<ICollectionView>? ContentTask
         {
             get
             {
@@ -57,7 +57,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnTextSearch(object obj)
         {
             _searchValue = (string)obj;
-            CollectionView.Refresh();
+            CollectionView?.Refresh();
         }
 
         public ArchiveViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
@@ -82,7 +82,7 @@ namespace Lieferliste_WPF.ViewModels
                 db.Update(o);
                 db.SaveChangesAsync();
                 result.Remove(o);
-                CollectionView.Refresh();
+                CollectionView?.Refresh();
             }
         }
 

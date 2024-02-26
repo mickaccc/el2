@@ -8,20 +8,21 @@ using System.Linq;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class AddNewWorkAreaVM : BindableBase, IDialogAware
     {
 
-        private DelegateCommand<string> _closeDialogCommand;
+        private DelegateCommand<string>? _closeDialogCommand;
         public DelegateCommand<string> CloseDialogCommand =>
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand<string>(CloseDialog));
 
-        private string _section;
+        private string _section = string.Empty;
         public string Section
         {
             get { return _section; }
             set { SetProperty(ref _section, value); }
         }
-        private string _info;
+        private string _info = string.Empty;
         public string Info
         {
             get { return _info; }
@@ -33,8 +34,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             get { return _title; }
             set { SetProperty(ref _title, value); }
         }
-        private IList<WorkArea> workA;
-        public event Action<IDialogResult> RequestClose;
+        private IList<WorkArea>? workA;
+        public event Action<IDialogResult>? RequestClose;
 
         protected virtual void CloseDialog(string parameter)
         {
@@ -43,7 +44,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             if (parameter?.ToLower() == "true")
             {
 
-                var by = workA.Max(x => x.Sort) + 1;
+                var by = workA?.Max(x => x.Sort) + 1;
                 var wa = new WorkArea() { Bereich = Section, Info = Info, Sort = (Convert.ToByte(by)) };
                 
                 parameters.Add("new", wa);

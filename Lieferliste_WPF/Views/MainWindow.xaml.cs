@@ -17,7 +17,7 @@
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private System.Timers.Timer _timer;
+        private System.Timers.Timer? _timer;
         [SupportedOSPlatform("windows10.0")]
         public MainWindow()
         {
@@ -114,19 +114,27 @@
 
         private async void UpdateTimeAsync()
         {
-            if (this != null)
+            try
             {
-                
-                await this.Dispatcher.InvokeAsync(new Action(() =>
-                    {
-                        myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
-                    }), DispatcherPriority.Background);
+                if (this != null)
+                {
+
+                    await this.Dispatcher.InvokeAsync(new Action(() =>
+                        {
+                            myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
+                        }), DispatcherPriority.Background);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 
         private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _timer.Dispose();
+            _timer?.Dispose();
         }
     }
 }

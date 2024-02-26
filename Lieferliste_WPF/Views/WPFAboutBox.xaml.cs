@@ -122,7 +122,7 @@ namespace Lieferliste_WPF.Views
                 if (isNetworkDeployed)
                 {
                     Version ver = currentVersion;
-                    return string.Format("Product Name: {4}, Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                    return string.Format("Product Name: {4}, Publish Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
                 }
                 else
                 {

@@ -271,8 +271,8 @@ namespace Lieferliste_WPF.ViewModels
                         if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
                     }
 
-                    var del = Dbctx.InMemoryOnlines.Where(x => x.Userid.Equals(UserInfo.User.UserIdent)
-                     && x.PcId.Equals(UserInfo.PC));
+                    var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.User.UserIdent.Equals(x.Userid)
+                     && UserInfo.PC == x.PcId);
                     Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().OnlId)).ExecuteDelete();
                     del.ExecuteDelete();
                 }

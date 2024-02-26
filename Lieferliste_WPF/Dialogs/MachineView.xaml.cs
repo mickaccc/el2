@@ -44,19 +44,12 @@ namespace Lieferliste_WPF.Dialogs
             else if (e.PropertyName == "Arbid") e.Column.Header = "Arbeitsplatz";
             else if (e.PropertyType == typeof(DateTime?) || e.PropertyType == typeof(DateTime))
             {
-                DataGridTextColumn dgtc = e.Column as DataGridTextColumn;
+                DataGridTextColumn? dgtc = e.Column as DataGridTextColumn;
                 DateConverter con = new();
                 (dgtc.Binding as Binding).Converter = con;
             }
         }
 
-        private void BemTText_LostFocus(object sender, RoutedEventArgs e)
-        {
-            var vrg = FindName("MachProcesses") as DataGrid;
-            if (vrg != null) { }
-            TextBlock tx = FindName("BemTInfo") as TextBlock;
-            
-        }
 
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -64,5 +57,6 @@ namespace Lieferliste_WPF.Dialogs
             var vrg = dp?.DataContext as Vorgang;
             if (vrg != null) { vrg.Termin = dp?.SelectedDate; }
         }
+
     }
 }

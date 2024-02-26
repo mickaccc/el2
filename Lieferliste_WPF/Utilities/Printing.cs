@@ -20,6 +20,7 @@ using System.Windows.Xps.Serialization;
 
 namespace Lieferliste_WPF.Utilities
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal static class Printing
     {
         public static void DoThePrint(FlowDocument document)

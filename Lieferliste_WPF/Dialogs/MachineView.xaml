@@ -203,7 +203,7 @@
                                 <TextBox x:Name="BemTText" Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
 
-                                                  TextWrapping="Wrap" AcceptsReturn="True" SourceUpdated="BemTText_LostFocus">
+                                                  TextWrapping="Wrap" AcceptsReturn="True" >
                                     <TextBox.IsEnabled>
                                         <MultiBinding Converter="{StaticResource Relpermiss}">
                                             <Binding Source="{x:Static const:Permissions.CommentTe}"/>

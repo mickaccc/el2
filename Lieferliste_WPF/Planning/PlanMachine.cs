@@ -70,6 +70,7 @@ namespace Lieferliste_WPF.Planning
     {
         public int Rid { get; }
     }
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class PlanMachine : ViewModelBase, IPlanMachine, IDropTarget, IViewModel
     {
 
@@ -171,7 +172,7 @@ namespace Lieferliste_WPF.Planning
                 .First(x => x.RessourceId == Rid);
 
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
-            Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK") == false).OrderBy(x => x.Spos));
+            Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.Spos));
             WorkArea = res.WorkArea;
             Name = res.RessName;
             _title = res.Inventarnummer ?? string.Empty;
@@ -281,7 +282,7 @@ namespace Lieferliste_WPF.Planning
                 if(bem != null) bemt = bem.Split((char)29);
                 if (bemt.Length > 1)
                 {
-                    var pr = Processes.First(x => x.VorgangId == vid);
+                    var pr = Processes?.First(x => x.VorgangId == vid);
                     {
                         pr.BemT = String.Format("[{0}-{1}]{2}{3}",
                         UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);

@@ -51,15 +51,15 @@ namespace Lieferliste_WPF.ViewModels
         private IContainerExtension _container;
         private IEventAggregator _ea;
         private IUserSettingsService _settingsService;
-        public ICollectionView RessCV { get; private set; }
+        public ICollectionView? RessCV { get; private set; }
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         private IApplicationCommands _applicationCommands;
         private static System.Timers.Timer? _timer;
         private static System.Timers.Timer? _autoSaveTimer;
-        private NotifyTaskCompletion<ICollectionView> _machineTask;
+        private NotifyTaskCompletion<ICollectionView>? _machineTask;
 
-        public NotifyTaskCompletion<ICollectionView> MachineTask
+        public NotifyTaskCompletion<ICollectionView>? MachineTask
         {
             get { return _machineTask; }
             set
@@ -88,8 +88,8 @@ namespace Lieferliste_WPF.ViewModels
         private int _currentWorkArea;
         private string? _searchFilterText;
         private readonly object _lock = new();
-        private List<Vorgang> _processesAll;
-        private string _searchFilterTextArbPl;
+        private List<Vorgang>? _processesAll;
+        private string? _searchFilterTextArbPl;
 
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
@@ -116,7 +116,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 foreach (var item in list)
                 {
-                    if (_processesAll.All(x => x.Aid != item))
+                    if (_processesAll?.All(x => x.Aid != item) ?? false)
                     {
                         Task.Factory.StartNew(async () =>
                         {
@@ -133,7 +133,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void AddProcesses(string aid)
         {
-            Priv_processes.AddRange(_processesAll.Where(x => x.Aid == aid));
+            Priv_processes.AddRange(_processesAll?.Where(x => x.Aid == aid));
         }
         private bool OnSaveCanExecute(object arg)
         {
@@ -143,6 +143,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (InvalidOperationException e)
             {
+                MessageBox.Show(e.Message, "SaveCanExecute", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception e)
             {
@@ -220,7 +221,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private async Task<ICollectionView> LoadMachinesAsync()
+        private async Task<ICollectionView?> LoadMachinesAsync()
         {
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
             var re = await _DbCtx.Ressources
@@ -263,14 +264,15 @@ namespace Lieferliste_WPF.ViewModels
 
                 RessCV = CollectionViewSource.GetDefaultView(_machines);
                 RessCV.MoveCurrentTo(_machines.First(x => x.WorkArea?.WorkAreaId == WorkAreas[0].WorkAreaId));
-                _currentWorkArea = ((PlanMachine)RessCV.CurrentItem).WorkArea.WorkAreaId;
+                _currentWorkArea = ((PlanMachine)RessCV.CurrentItem).WorkArea?.WorkAreaId ?? 0;
 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
 
             NotifyPropertyChanged(() => ProcessCV);
             NotifyPropertyChanged(() => ParkingCV);
-            RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == _currentWorkArea &&
-                (f as PlanMachine).Vis;
+            if(RessCV != null)
+                    RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == _currentWorkArea &&
+                        (f as PlanMachine).Vis;
             ParkingCV.Filter = f => (f as Vorgang)?.Rid == _currentWorkArea * -1;
             ProcessViewSource.Filter += ProcessCV_Filter;
 

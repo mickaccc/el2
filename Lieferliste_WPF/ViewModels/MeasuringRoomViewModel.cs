@@ -20,8 +20,9 @@ using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
-{
-    internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
+{ 
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
+internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
     {
         public string Title { get; } = "Messraum Zuteilung";
         public bool HasChange => _dbctx.ChangeTracker.HasChanges();

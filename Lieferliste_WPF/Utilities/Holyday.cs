@@ -64,10 +64,10 @@ namespace Lieferliste_WPF.Utilities
     }
     public class HolydayLogic
     {
-        private static HolydayLogic Instance;
+        private static HolydayLogic? Instance;
         private List<Holyday> holydays;
         private int year;
-        private String locale;
+        private String? locale;
 
         /// <summary>
         /// Beschreibung: 
@@ -77,7 +77,7 @@ namespace Lieferliste_WPF.Utilities
             get { return year; }
             set { year = value; }
         }
-        public String Locale
+        public String? Locale
         {
             get { return locale; }
             set { locale = value; }
@@ -110,7 +110,7 @@ namespace Lieferliste_WPF.Utilities
             return (holydays.Find(f => f.Datum.Date == value.Date) != null);
         }
 
-        public Holyday GetHolydayName(DateTime value)
+        public Holyday? GetHolydayName(DateTime value)
         {
             return (holydays.Find(delegate (Holyday f) { return f.Datum.Date == value.Date; }));
         }
