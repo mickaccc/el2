@@ -6,8 +6,8 @@
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <SignAssembly>False</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Lieferliste_WPF\Lieferliste_WPF_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\Users\scm2hl\Documents\Certificates\Lieferliste_WPF_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

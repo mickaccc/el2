@@ -372,7 +372,10 @@ namespace ModuleDeliverList.ViewModels
         {
             if (pro != null)
             {
-                return pro.OrderRbs.Any(x => x.Eckende < DateTime.Now && x.Abgeschlossen == false);
+                foreach(var item in pro.OrderRbs.Where(x => x.Abgeschlossen == false))
+                {
+                    if(item.Vorgangs.Any(x => x.SpaetEnd < DateTime.Now && x.QuantityMiss > 0)) return true;
+                }
             }
             return false;
         }

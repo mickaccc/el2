@@ -9,6 +9,7 @@ namespace Lieferliste_WPF
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
+    [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public partial class App : Application
     {
 
@@ -23,19 +24,20 @@ namespace Lieferliste_WPF
             //ThemeManager.Current.AddLibraryTheme(new LibraryTheme(
             //    new Uri("pack://application:,,,/MahAppsMetroThemesSample;component/CustomAccents/Light.Accent2.xaml"),
             //    MahAppsLibraryThemeProvider.DefaultInstance));
-            //ThemeManager.Current.AddLibraryTheme(new LibraryTheme(
-            //    new Uri("pack://application:,,,/MahAppsMetroThemesSample;component/CustomAccents/Dark.Accent2.xaml"),
-            //    MahAppsLibraryThemeProvider.DefaultInstance));
+ 
             base.OnStartup(e);
 
             ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncAll;
             ThemeManager.Current.SyncTheme();
-            var theme = ThemeManager.Current.AddLibraryTheme(
-    new LibraryTheme(
-        new Uri("pack://application:,,,/Lieferliste_WPF;component/Themes/Light.Accent2.xaml"),
-        MahAppsLibraryThemeProvider.DefaultInstance
-        )
-    );
+            //var theme = ThemeManager.Current.AddLibraryTheme(new LibraryTheme(
+            //    new Uri("pack://application:,,,/MahAppsMetroThemesSample;component/CustomAccents/Dark.Accent2.xaml"),
+            //    MahAppsLibraryThemeProvider.DefaultInstance));
+            //var theme = ThemeManager.Current.AddLibraryTheme(
+            //new LibraryTheme(
+            //    new Uri("pack://application:,,,/Lieferliste_WPF;component/Themes/Light.Accent2.xaml"),
+            //    MahAppsLibraryThemeProvider.DefaultInstance
+            //    )
+            //);
             // Create runtime themes
 
 

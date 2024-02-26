@@ -10,8 +10,8 @@
     <ApplicationIcon>el4-application.ico</ApplicationIcon>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <SignAssembly>False</SignAssembly>
-    <AssemblyOriginatorKeyFile>Lieferliste_WPF_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\Users\scm2hl\Documents\Certificates\Lieferliste_WPF_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -243,6 +243,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Themes\Light.Accent2.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Page>
     <Page Update="UserControls\Home.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
@@ -257,6 +260,8 @@
 	<PropertyGroup>
 		<Authors>Michael Schatzl (SCM2HL)</Authors>
 		<AssemblyName>EL2</AssemblyName>
+		<AssemblyVersion>1.0.1.0</AssemblyVersion>
+		<FileVersion>1.0.1.0</FileVersion>
 	</PropertyGroup>
 
 

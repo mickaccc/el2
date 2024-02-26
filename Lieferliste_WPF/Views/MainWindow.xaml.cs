@@ -22,10 +22,15 @@
         public MainWindow()
         {
             InitializeComponent();
+            Dispatcher.CurrentDispatcher.ShutdownStarted += OnShutdown;
         }
 
         #region Events
-
+        private void OnShutdown(object? sender, EventArgs e)
+        {
+            if (Dispatcher.CurrentDispatcher.Thread.ThreadState == System.Threading.ThreadState.Running) ;
+                
+        }
         private void About_Click(object sender, RoutedEventArgs e)
         {
             WPFAboutBox about = new WPFAboutBox(this);
@@ -111,6 +116,7 @@
         {
             if (this != null)
             {
+                
                 await this.Dispatcher.InvokeAsync(new Action(() =>
                     {
                         myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
