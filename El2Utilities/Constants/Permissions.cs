@@ -63,5 +63,6 @@
         public const string ProjectDel = "PROJ05";
         public const string FastCopy = "FASTCOPY";
         public const string CopyClipboard = "COPYCLIP";
+        public const string AdminFunc = "ADMINFUNC";
     }
 }

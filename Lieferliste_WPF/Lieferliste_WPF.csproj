@@ -10,7 +10,7 @@
     <ApplicationIcon>el4-application.ico</ApplicationIcon>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <SignAssembly>False</SignAssembly>
+    <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>C:\Users\scm2hl\Documents\Certificates\Lieferliste_WPF_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
@@ -265,11 +265,12 @@
 
 	<PropertyGroup>
 		<Authors>Michael Schatzl (SCM2HL)</Authors>
-		<AssemblyName>Lieferliste - WPF</AssemblyName>
-		<AssemblyVersion>1.0.1.0</AssemblyVersion>
-		<FileVersion>1.0.1.0</FileVersion>
+		<AssemblyName>Lieferliste-WPF</AssemblyName>
+		<AssemblyVersion>1.0.*</AssemblyVersion>
+		<FileVersion>1.0.1.*</FileVersion>
+		<Deterministic>false</Deterministic>
 		<Description>Feinplanung, Auftragsübersicht, Produkte</Description>
-		<Title>Lieferliste - WPF</Title>
+		<Title>Lieferliste-WPF</Title>
 	</PropertyGroup>
 
 

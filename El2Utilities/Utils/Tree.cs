@@ -1,6 +1,8 @@
 ﻿using El2Core.Models;
+using El2Core.ViewModelBase;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using static El2Core.Constants.ProjectTypes;
 
@@ -43,19 +45,34 @@ namespace El2Core.Utils
         }
     }
 
-    public class TreeNode<T>
+    public class TreeNode<T> : ViewModelBase.ViewModelBase
     {
         private string _description = string.Empty;
         public string Description
         {
             get { return _description; }
-            set { _description = value; }
+            set
+            {
+                if(_description != value)
+                {
+                    _description = value;
+                    NotifyPropertyChanged(() => Description);
+                }
+            }
         }
         private ProjectType _projectType = 0;
+
         public ProjectType ProjectType
         {
             get { return _projectType; }
-            set { _projectType = value; }
+            set
+            {
+                if(value != _projectType)
+                {
+                    _projectType = value;
+                    NotifyPropertyChanged(() => ProjectType);
+                }
+            }
         }
         public bool HasOrder { get { return Children.Any(x => x.NodeType == "Order-Type"); } }
         public string NodeType { get; }
@@ -178,7 +195,6 @@ namespace El2Core.Utils
         public string NodeType { get; }
         public BranchNode Parent { get; }
         public List<BranchNode> Children { get; }
-        public BranchNode() { Value = "test"; }
         public BranchNode(Project project, string? order)
         {
             Value = project.ProjectPsp;

@@ -88,7 +88,6 @@ namespace Lieferliste_WPF.Planning
             _dialogService = dialogService;
             Initialize();
             LoadData();
-            _eventAggregator = eventAggregator;
             ProcessesCV.Refresh();
         }
 
@@ -125,6 +124,19 @@ namespace Lieferliste_WPF.Planning
                 }
             }
         }
+        private bool _isAdmin;
+        public bool IsAdmin
+        {
+            get { return _isAdmin; }
+            set
+            {
+                if(_isAdmin != value)
+                {
+                    _isAdmin = value;
+                    NotifyPropertyChanged(() => IsAdmin);
+                }
+            }
+        }
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
@@ -133,7 +145,7 @@ namespace Lieferliste_WPF.Planning
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
-
+        public ObservableCollection<string> LastChanges { get; } = new();
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         private DB_COS_LIEFERLISTE_SQLContext _dbCtx;
         private IContainerProvider _container;
@@ -216,19 +228,20 @@ namespace Lieferliste_WPF.Planning
             //    live.IsLiveFiltering = true;
             //}
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
-
+            IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
+            LastChanges.Add("LASTCHANGES");
         }
 
         private void MessageReceived(List<string?> vorgangIdList)
         {
             try
             {
-                foreach (string? id in vorgangIdList.Where(x => x != null))
+                foreach (string id in vorgangIdList.Where(x => x != null))
                 {
                     var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
                     if (pr != null)
                     {
-
+                        string op = "PROP";
                         _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
                         pr.RunPropertyChanged();
                         if (pr.SysStatus?.Contains("RÜCK") ?? false)
@@ -236,7 +249,12 @@ namespace Lieferliste_WPF.Planning
                             Processes?.Remove(pr);
                             _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != pr.VorgangId).State = EntityState.Unchanged;
                             ProcessesCV.Refresh();
+                            op = "RÜCK";
                         }
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            LastChanges.Add(string.Format("{0} - {1} Operation: {2}", id, DateTime.Now, op));
+                        }, System.Windows.Threading.DispatcherPriority.Normal);
                     }
                 }
             }
@@ -303,12 +321,14 @@ namespace Lieferliste_WPF.Planning
                 
                 var m = v.AidNavigation.Quantity.ToString();
                 var a = v.Aid;
+                var vnr = v.Vnr;
                 var mat = v.AidNavigation.Material;
                 var bez = v.AidNavigation.MaterialNavigation?.Bezeichng;
 
                 OnFastCopyExecuted(m);
                 OnFastCopyExecuted(bez ?? a);
                 OnFastCopyExecuted(mat ?? "DUMMY");
+                OnFastCopyExecuted(vnr);
                 OnFastCopyExecuted(a);                
             }
             if(obj is string s)

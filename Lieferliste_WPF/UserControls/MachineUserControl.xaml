@@ -80,6 +80,9 @@
                                   Style="{DynamicResource MaterialDesignExpanderToggleButton}"
                                   IsEnabled="{Binding Converter={StaticResource permiss},
 									ConverterParameter={x:Static const:Permissions.Employee}}"/>
+                    <ToggleButton Canvas.Left="100" Canvas.Top="30" x:Name="LastChanged"
+                                  Style="{DynamicResource MahApps.Styles.ToggleButton.ExpanderHeader.Down}"
+                                  Visibility="{Binding Path=IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </Canvas>
                 <Popup IsOpen="{Binding Path=IsChecked, ElementName=emploees}" Placement="Mouse" >
                     <Border>
@@ -92,6 +95,11 @@
                             </DataGrid.Columns>
                             </DataGrid>
   
+                    </Border>
+                </Popup>
+                <Popup IsOpen="{Binding Path=IsChecked, ElementName=LastChanged}" Placement="Mouse">
+                    <Border>
+                        <ListBox ItemsSource="{Binding LastChanges}" Background="Azure"/>
                     </Border>
                 </Popup>
 				<TextBlock Grid.Column="1"

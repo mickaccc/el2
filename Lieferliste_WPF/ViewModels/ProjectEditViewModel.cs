@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using Windows.ApplicationModel.Appointments.AppointmentsProvider;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -25,6 +24,7 @@ namespace Lieferliste_WPF.ViewModels
         public string Title { get; } = "Projekt Editor";
 
         private IContainerProvider _container;
+        private DB_COS_LIEFERLISTE_SQLContext _context { get; set; }
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -40,10 +40,10 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand ProjectTypeCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
         private ObservableCollection<OrderRb> _ordersList = [];
-        public ICollectionView OrdersCollectionView { get; private set; }
-        private Tree<string> tree;
-        private PspTree PspTree;
-        public ICollectionView PSP_NodeCollectionView { get; private set; }
+        public ICollectionView? OrdersCollectionView { get; private set; }
+        private Tree<string>? tree;
+        private PspTree? PspTree;
+        public ICollectionView? PSP_NodeCollectionView { get; private set; }
         private List<Tree<string>> treeList = new();
         private string _orderSearchText = string.Empty;
         private string _projectSearchText = string.Empty;
@@ -74,13 +74,14 @@ namespace Lieferliste_WPF.ViewModels
         public ProjectEditViewModel(IContainerProvider container, IApplicationCommands applicationCommands)
         {
             _container = container;
+            _context = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _applicationCommands = applicationCommands;
             ConcatCommand = new ActionCommand(OnConcatExecuted, OnConcatCanExecute);
             DescriptLostFocusCommand = new ActionCommand(OnDescriptLostFocusExecuted, OnDescriptLostFocusCanExecute);
             ProjectTypeCommand = new ActionCommand(OnProjectTypeExecuted, OnProjectTypeCanExecute);
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             OrdTask = new NotifyTaskCompletion<ICollectionView>(LoadOrderDataAsync());
-            PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync());
+            PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync(GetProjects())); 
         }
 
         private bool OnDeleteCanExecute(object arg)
@@ -98,8 +99,8 @@ namespace Lieferliste_WPF.ViewModels
                 if (psp != null)
                 {
                     db.Projects.Remove(psp);
-                    tree.Nodes.Remove(t);
-                    PSP_NodeCollectionView.Refresh();
+                    tree?.Nodes.Remove(t);
+                    PSP_NodeCollectionView?.Refresh();
                 }
             }
             else
@@ -108,8 +109,8 @@ namespace Lieferliste_WPF.ViewModels
                 if (ord != null)
                 {
                     ord.ProId = null;
-                    tree.Nodes.Remove(t);
-                    PSP_NodeCollectionView.Refresh();
+                    tree?.Nodes.Remove(t);
+                    PSP_NodeCollectionView?.Refresh();
                 }
             }
             db.SaveChanges();
@@ -133,7 +134,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "ProjectTypeCommand", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(e.Message, "ProjectTypeCommand", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -163,7 +164,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 ProjectSearchText = ConvertPsp((string)obj);
                 if (_projectSearchText.Length >= 5 || _projectSearchText.Length == 0)
-                    PSP_NodeCollectionView.Refresh();
+                    PSP_NodeCollectionView?.Refresh();
             }
         }
         private void OnOrderSearch(object obj)
@@ -171,7 +172,7 @@ namespace Lieferliste_WPF.ViewModels
             if (obj != null)
             {
                 _orderSearchText = (string)obj;
-                OrdersCollectionView.Refresh();
+                OrdersCollectionView?.Refresh();
             }
         }
 
@@ -204,10 +205,10 @@ namespace Lieferliste_WPF.ViewModels
             }
 
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var root = tree.Nodes.FirstOrDefault(x => psp[..9] == x.Value);
+            var root = tree?.Nodes.FirstOrDefault(x => psp[..9] == x.Value);
             if (root == null)
             {
-                var t = tree.Begin(psp[..9]);
+                var t = tree?.Begin(psp[..9]);
                 root = t.Nodes.Last();
             }
             for (int i = 12; i <= psp.Length; i += 3)
@@ -228,13 +229,13 @@ namespace Lieferliste_WPF.ViewModels
                     root.Add(aid);
                 }
             }
-            while (tree.level > 0) { tree.End(); }
+            while (tree?.level > 0) { tree.End(); }
 
             if (db.Projects.All(x => x.ProjectPsp != psp)) db.Database.ExecuteSqlRaw("INSERT INTO DBO.Project(ProjectPsp) VALUES({0})", psp);
 
             db.OrderRbs.First(x => x.Aid == aid).ProId = psp;
             db.SaveChanges();
-            PSP_NodeCollectionView.Refresh();
+            PSP_NodeCollectionView?.Refresh();
         }
         private async Task<ICollectionView> LoadOrderDataAsync()
         {
@@ -247,11 +248,15 @@ namespace Lieferliste_WPF.ViewModels
             OrdersCollectionView.Filter += FilterPredicateOrder;
             return OrdersCollectionView;
         }
-        private async Task<ICollectionView> LoadPspDataAsync()
+
+        private IQueryable<Project> GetProjects()
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var proj = await db.Projects
-                .Include(x => x.OrderRbs)
+            return _context.Projects;
+        }
+
+        private async Task<ICollectionView> LoadPspDataAsync(IQueryable<Project> projects)
+        {
+            var proj = await projects.Include(x => x.OrderRbs)
                 .ToListAsync();
 
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
@@ -380,7 +385,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Closing()
         {
-
+            _context.SaveChanges();
         }
     }
 
