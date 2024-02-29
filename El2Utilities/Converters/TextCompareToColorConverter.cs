@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using El2Core.Models;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -13,9 +14,11 @@ namespace El2Core.Converters
         {
 
             if (values == null || values.Length != 2) return false;
-            string v1 = (string)values[0];
+            Vorgang v1 = (Vorgang)values[0];
             string v2 = (string)values[1];
-            if (!v2.IsNullOrEmpty() && v1.Contains(v2, StringComparison.CurrentCultureIgnoreCase))
+            if (!v2.IsNullOrEmpty() && (v1.Aid.Contains(v2, StringComparison.CurrentCultureIgnoreCase)
+                || (v1.AidNavigation?.Material?.Contains(v2, StringComparison.CurrentCultureIgnoreCase) ?? false)
+                || (v1.AidNavigation?.MaterialNavigation?.Bezeichng?.Contains(v2, StringComparison.CurrentCultureIgnoreCase) ?? false)))
             {
                 return Brushes.Khaki;
             }

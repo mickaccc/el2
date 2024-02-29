@@ -14,7 +14,16 @@ namespace Lieferliste_WPF.Planning
 
         public MachineUserControl()
         {
-            InitializeComponent();            
+            InitializeComponent();
+
+        }
+
+        private void Pl_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "ScrollItem")
+            {
+                Planed.ScrollIntoView((sender as PlanMachine)?.ScrollItem);
+            }
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
@@ -42,5 +51,10 @@ namespace Lieferliste_WPF.Planning
             e.Handled = true;
         }
 
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            var pl = this.DataContext as PlanMachine;
+            pl.PropertyChanged += Pl_PropertyChanged;
+        }
     }
 }

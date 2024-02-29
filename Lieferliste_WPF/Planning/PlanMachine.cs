@@ -153,6 +153,24 @@ namespace Lieferliste_WPF.Planning
         private IApplicationCommands? _applicationCommands;
         private IUserSettingsService _settingsService;
         private readonly IDialogService _dialogService;
+        private Vorgang _scrollItem;
+
+        public Vorgang ScrollItem
+        {
+            get
+            {
+                return _scrollItem;
+            }
+            set
+            {
+                if (value != _scrollItem)
+                {
+                    _scrollItem = value;
+                    NotifyPropertyChanged(() => ScrollItem);
+                }
+            }
+        }
+
         public IApplicationCommands? ApplicationCommands
         {
             get { return _applicationCommands; }
@@ -228,8 +246,17 @@ namespace Lieferliste_WPF.Planning
             //    live.IsLiveFiltering = true;
             //}
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
+            _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
             LastChanges.Add("LASTCHANGES");
+        }
+
+        private void MessageSearchFilterReceived(string obj)
+        {
+            var ind = Processes?.LastOrDefault(x => x.Aid.Equals(obj));
+            if (ind == null) ind = Processes?.LastOrDefault(x => x.AidNavigation?.Material?.Equals(obj) ?? false);
+            if (ind == null) ind = Processes?.LastOrDefault(x => x.AidNavigation?.MaterialNavigation?.Bezeichng?.Equals(obj) ?? false);
+            if (ind != null) ScrollItem = ind;
         }
 
         private void MessageReceived(List<string?> vorgangIdList)

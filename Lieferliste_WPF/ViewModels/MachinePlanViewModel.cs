@@ -307,6 +307,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _searchFilterText = change;
                 ProcessCV.Refresh();
+                _ea.GetEvent<SearchTextFilter>().Publish(_searchFilterText);
             }
         }
         private void OnTextSearchArbPl(object obj)
