@@ -81,7 +81,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                     var vv = PlanMachine?.Processes?.First(x => x.VorgangId == p[i].VorgangId);
                     vv.Spos = i;
                 }
-                t.Refresh();
+                //t.Refresh();
             }
             catch (Exception e)
             {

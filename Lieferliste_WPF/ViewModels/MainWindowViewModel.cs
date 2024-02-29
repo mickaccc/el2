@@ -4,6 +4,7 @@ using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -480,7 +481,12 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnMachinePrintCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MachPrint);
+            if (arg is PlanMachine plan)
+            {
+                int wo = plan.WorkArea?.WorkAreaId ?? 0;
+                return PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachPrint, wo);
+            }
+            return false;
         }
 
         private void OnMachinePrintExecuted(object obj)

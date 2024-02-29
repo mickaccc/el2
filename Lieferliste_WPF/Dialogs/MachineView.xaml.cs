@@ -4,7 +4,6 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using Unity.Injection;
 
 namespace Lieferliste_WPF.Dialogs
 {

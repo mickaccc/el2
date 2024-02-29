@@ -22,6 +22,7 @@
 		<conv:TextCompareToColorConverter x:Key="txtColor"/>
 		<conv:BullettShapeConverter x:Key="BulletShape"/>
         <conv:PermissionConverter x:Key="permiss"/>
+        <conv:ScrollIntoViewConverter x:Key="scrollInto"/>
     </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"
@@ -127,33 +128,33 @@
 				  Grid.Row="1"
 				  IsSynchronizedWithCurrentItem="True"
 				  ItemsSource="{Binding ProcessesCV}"
-				  x:Name="Planed"
+				  x:Name="Planed" VirtualizingPanel.IsVirtualizing="False"
 				  RowDetailsVisibilityMode="VisibleWhenSelected"
                   ContextMenu="{StaticResource BulletContextMenu}">
-			<DataGrid.InputBindings>
-				<MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
+            <DataGrid.InputBindings>
+                <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
 							  CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"
 							  MouseAction="LeftDoubleClick"/>
-			</DataGrid.InputBindings>
+            </DataGrid.InputBindings>
 
-
-			<DataGrid.RowDetailsTemplate>
-				<DataTemplate>
-					<Grid Background="LightBlue">
-						<StackPanel>
-							<StackPanel Orientation="Horizontal">
-								<TextBlock Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
-								<TextBlock Margin="10,0,5,0"
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid Background="LightBlue">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
+                                <TextBlock Margin="10,0,5,0"
 										   Text="{Binding Path=AidNavigation.MaterialNavigation.Bezeichng}"/>
-							</StackPanel>
-							<TextBlock Text="{Binding Path=Text}"
+                            </StackPanel>
+                            <TextBlock Text="{Binding Path=Text}"
 									   TextWrapping="Wrap"/>
-						</StackPanel>
-					</Grid>
-				</DataTemplate>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
 
-			</DataGrid.RowDetailsTemplate>
-			<DataGrid.Columns>
+            </DataGrid.RowDetailsTemplate>
+            <DataGrid.Columns>
+                
 				<DataGridTemplateColumn x:Name="dataGridTemplateColumn">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
@@ -167,23 +168,25 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
-				<DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}"
+				<DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" x:Name="txtAid"
 									Header="Auftrag"
 									IsReadOnly="True"
 									Width="Auto">
 					<DataGridTextColumn.ElementStyle>
 						<Style TargetType="TextBlock">
-							<Setter Property="Background">
-								<Setter.Value>
-									<MultiBinding Converter="{StaticResource txtColor}">
-										<Binding Path="Aid"/>
-										<Binding ElementName="searchTextBox"
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource txtColor}">
+                                        <Binding Path="Aid"/>
+                                        <Binding ElementName="searchTextBox"
 												 Path="Text"/>
-									</MultiBinding>
-								</Setter.Value>
-							</Setter>
-						</Style>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+  
+                        </Style>
 					</DataGridTextColumn.ElementStyle>
+                    
 				</DataGridTextColumn>
 
 				<DataGridTextColumn Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}"

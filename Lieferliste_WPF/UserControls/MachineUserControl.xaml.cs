@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using MahApps.Metro.Controls;
+using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,15 +14,15 @@ namespace Lieferliste_WPF.Planning
 
         public MachineUserControl()
         {
-            InitializeComponent();
-            //Planed.SelectedIndex = -1;
+            InitializeComponent();            
         }
-
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             //PlanMachine? pl = DataContext as PlanMachine;
             //pl?.Exit();
+ 
+
         }
 
 
@@ -39,5 +41,6 @@ namespace Lieferliste_WPF.Planning
             Planed.SelectedIndex = -1;
             e.Handled = true;
         }
+
     }
 }
