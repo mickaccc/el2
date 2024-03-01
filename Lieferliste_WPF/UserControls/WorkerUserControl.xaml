@@ -138,7 +138,7 @@
 							<Setter Property="Background">
 								<Setter.Value>
 									<MultiBinding Converter="{StaticResource txtColor}">
-										<Binding Path="Aid"/>
+										<Binding />
 										<Binding ElementName="searchTextBox"
 												 Path="Text"/>
 									</MultiBinding>

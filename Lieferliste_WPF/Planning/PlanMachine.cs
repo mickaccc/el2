@@ -22,7 +22,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using Windows.ApplicationModel.DataTransfer;
 
 
 
@@ -262,25 +261,28 @@ namespace Lieferliste_WPF.Planning
         private void MessageReceived(List<string?> vorgangIdList)
         {
             try
-            {
-                foreach (string id in vorgangIdList.Where(x => x != null))
+            {               
+                foreach (string? id in vorgangIdList.Where(x => x != null))
                 {
+                    
                     var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
                     if (pr != null)
                     {
                         string op = "PROP";
                         _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
                         pr.RunPropertyChanged();
-                        if (pr.SysStatus?.Contains("RÜCK") ?? false)
+                        var vo = _dbCtx.Vorgangs.First(x => x.VorgangId == id);
+                        if (vo.SysStatus?.Contains("RÜCK") ?? false)
                         {
                             Processes?.Remove(pr);
-                            _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != pr.VorgangId).State = EntityState.Unchanged;
+                            _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != vo.VorgangId).State = EntityState.Unchanged;
                             ProcessesCV.Refresh();
                             op = "RÜCK";
                         }
+                        string str = string.Format("{0} - {1:T} Operation: {2}", id, DateTime.Now, op);
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            LastChanges.Add(string.Format("{0} - {1} Operation: {2}", id, DateTime.Now, op));
+                            LastChanges.Add(str);
                         }, System.Windows.Threading.DispatcherPriority.Normal);
                     }
                 }
@@ -344,13 +346,12 @@ namespace Lieferliste_WPF.Planning
         private void OnFastCopyExecuted(object obj)
         {
             if(obj is Vorgang v)
-            {
-                
+            {               
                 var m = v.AidNavigation.Quantity.ToString();
-                var a = v.Aid;
-                var vnr = v.Vnr;
-                var mat = v.AidNavigation.Material;
-                var bez = v.AidNavigation.MaterialNavigation?.Bezeichng;
+                var a = v.Aid.Trim();
+                var vnr = v.Vnr.ToString();
+                var mat = v.AidNavigation.Material?.Trim();
+                var bez = v.AidNavigation.MaterialNavigation?.Bezeichng?.Trim();
 
                 OnFastCopyExecuted(m);
                 OnFastCopyExecuted(bez ?? a);
@@ -367,10 +368,7 @@ namespace Lieferliste_WPF.Planning
             System.Windows.Clipboard.SetText(text);
             Task.Delay(250).Wait();          
         }
-        private bool IsSetted(DataPackage dataPackage)
-        {
-            return Windows.ApplicationModel.DataTransfer.Clipboard.GetContent() == dataPackage.GetView();
-        }
+
         private static bool OnSetMarkerCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.SETMARK);

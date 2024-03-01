@@ -136,19 +136,36 @@
                  dd:DragDrop.DropHandler="{Binding}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
             <ListBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="Green"/>
-                    <GradientStop Color="LightGreen" Offset="1"/>
+                    <GradientStop Color="Blue"/>
+                    <GradientStop Color="LightBlue" Offset="1"/>
                 </LinearGradientBrush>
             </ListBox.Background>
+ 
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter Margin="3"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding Path=FullAccess}"/>
-                        <TextBlock Text="{Binding Path=WorkArea.Bereich}"/>
-                    </StackPanel>
+            <DataTemplate>
+                    <Grid Background="Beige">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5*"/>
+                            <ColumnDefinition Width="40*"/>
+                            <ColumnDefinition Width="5*"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" IsChecked="{Binding Path=Standard}" ToolTip="Standard Bereich"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Path=WorkArea.Bereich}"/>
+                        <CheckBox Grid.Column="2" IsChecked="{Binding Path=FullAccess}" ToolTip="alle Funktionen"/>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
-
         </ListBox>
         <ScrollViewer Grid.Row="4" Grid.Column="1">
             <ListBox x:Name="ListWORKAREA" ItemsSource="{Binding WorkView}"  
@@ -158,8 +175,8 @@
                  dd:DragDrop.DropHandler="{Binding}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <ListBox.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="LightGreen"/>
-                        <GradientStop Color="Green" Offset="1"/>
+                        <GradientStop Color="LightBlue"/>
+                        <GradientStop Color="LightSkyBlue" Offset="1"/>
                     </LinearGradientBrush>
                 </ListBox.Background>
 

@@ -561,11 +561,13 @@ namespace Lieferliste_WPF.ViewModels
                         msgListV.AddRange(m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList());
                         msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
                         int IdMin = m.Min(x => x.MsgId), IdMax = m.Max(x => x.MsgId);
-
-                        await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId>={0} AND MsgId<={1}", IdMin, IdMax);
+                        foreach (var msg in m)
+                        {
+                            await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
+                        }
                     }
                 }
-                Msg = string.Format("{0}-{1}", DateTime.Now.TimeOfDay, msgListO.Count + msgListV.Count);
+                Msg = string.Format("{0}-{1} ", DateTime.Now.ToString("HH:mm:ss"), msgListO.Count + msgListV.Count);
 
                 if (msgListV.Count > 0)
                     _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);

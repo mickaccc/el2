@@ -13,6 +13,8 @@ public partial class UserWorkArea
 
     public bool FullAccess { get; set; }
 
+    public bool Standard { get; set; }
+
     public virtual User User { get; set; } = null!;
 
     public virtual WorkArea WorkArea { get; set; } = null!;

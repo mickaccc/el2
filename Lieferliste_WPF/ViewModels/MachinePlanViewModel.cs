@@ -168,7 +168,7 @@ namespace Lieferliste_WPF.ViewModels
         private void LoadWorkAreas()
         {
 
-            var w = UserInfo.User.UserWorkAreas.OrderByDescending(x => x.FullAccess);
+            var w = UserInfo.User.UserWorkAreas.OrderByDescending(x => x.Standard);
             foreach (var workArea in w)
             {
                 WorkAreas.Add(workArea.WorkArea);

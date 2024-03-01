@@ -76,7 +76,6 @@
         }
         #endregion
 
-
         private static TabItem GetTargetTabItem(object originalSource)
         {
             var current = originalSource as DependencyObject;
@@ -118,10 +117,9 @@
             {
                 if (this != null)
                 {
-
                     await this.Dispatcher.InvokeAsync(new Action(() =>
                         {
-                            myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
+                            myDateTime.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
                         }), DispatcherPriority.Background);
                 }
             }

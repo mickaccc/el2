@@ -10,22 +10,22 @@
 
     <Grid Background="{DynamicResource MahApps.Brushes.Control.Background}">
         <StackPanel>
-        <Menu Style="{DynamicResource MaterialDesignMenu}" Background="{DynamicResource MahApps.Brushes.Button.Flat.Background}">
-            <MenuItem Header="Speichern" Command="{Binding SaveCommand}" />
-                <MenuItem Header="Reset" Command="{Binding ResetCommand}" />
-            </Menu>
+            <StackPanel Orientation="Horizontal" Margin="3">
+            <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="3" />
+            <Button Content="Reset" Command="{Binding ResetCommand}" Margin="3" />
+        </StackPanel>
         <Grid>
-                <Grid.Resources>
-                    <ResourceDictionary>
-                        <CollectionViewSource x:Key="Themes"
-                                  Source="{Binding Source={x:Static controlzex:ThemeManager.Current}, Path=Themes}">
-                            <CollectionViewSource.SortDescriptions>
-                                <componentModel:SortDescription PropertyName="Name" />
-                            </CollectionViewSource.SortDescriptions>
+            <Grid.Resources>
+                <ResourceDictionary>
+                    <CollectionViewSource x:Key="Themes"
+                                Source="{Binding Source={x:Static controlzex:ThemeManager.Current}, Path=Themes}">
+                        <CollectionViewSource.SortDescriptions>
+                            <componentModel:SortDescription PropertyName="Name" />
+                        </CollectionViewSource.SortDescriptions>
                             
-                        </CollectionViewSource>
-                    </ResourceDictionary>
-                </Grid.Resources>
+                    </CollectionViewSource>
+                </ResourceDictionary>
+            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="10*"/>
