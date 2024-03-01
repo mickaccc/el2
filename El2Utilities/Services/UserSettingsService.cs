@@ -10,6 +10,8 @@ namespace El2Core.Services
         bool IsAutoSave { get; set; }
         bool IsSaveMessage { get; set; }
         string Theme { get; set; }
+        bool IsDefaults();
+        bool IsChanged { get; }
         void Save();
         void Reset();
         void Reload();
@@ -20,34 +22,36 @@ namespace El2Core.Services
         public string ExplorerPath
         {
             get { return Properties.Settings.Default.ExplorerPath; }
-            set { Properties.Settings.Default[nameof(ExplorerPath)] = value; }
+            set { Properties.Settings.Default[nameof(ExplorerPath)] = value; _isChanged = true; }
         }
         public string ExplorerRoot
         {
             get { return Properties.Settings.Default.ExplorerRoot; }
-            set { Properties.Settings.Default[nameof(ExplorerRoot)] = value; }
+            set { Properties.Settings.Default[nameof(ExplorerRoot)] = value; _isChanged = true; }
         }
         public bool IsAutoSave
         {
             get { return Properties.Settings.Default.IsAutoSave; }
-            set { Properties.Settings.Default[nameof(IsAutoSave)] = value; }
+            set { Properties.Settings.Default[nameof(IsAutoSave)] = value; _isChanged = true; }
         }
         public bool IsSaveMessage
         {
             get { return Properties.Settings.Default.IsSaveMessage; }
-            set { Properties.Settings.Default[nameof(IsSaveMessage)] = value; }
+            set { Properties.Settings.Default[nameof(IsSaveMessage)] = value; _isChanged = true; }
         }
 
         public string Theme
         {
             get { return Properties.Settings.Default.Theme; }
-            set { Properties.Settings.Default[nameof(Theme)] = value; }
+            set { Properties.Settings.Default[nameof(Theme)] = value; _isChanged = true; }
         }
         public bool UpgradeFlag
         {
             get { return Properties.Settings.Default.UpgradeFlag; }
             set { Properties.Settings.Default[nameof(UpgradeFlag)] = value; }
         }
+        private bool _isChanged;
+        public bool IsChanged => _isChanged;
 
         public void Save()
         {
@@ -83,6 +87,11 @@ namespace El2Core.Services
                 }
 
             }
+        }
+
+        bool IUserSettingsService.IsDefaults()
+        {
+            return false;
         }
     }
 }
