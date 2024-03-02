@@ -297,7 +297,6 @@ namespace Lieferliste_WPF.ViewModels
 
             catch (Exception e)
             {
-
                 MessageBox.Show(e.Message, "SelectionChange", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -398,8 +397,7 @@ namespace Lieferliste_WPF.ViewModels
 
                         Debug.Assert(t != null, nameof(t) + " != null");
                         ((IList)t.SourceCollection).Insert(v, plm);
-                    }
-
+                }
 
                 for (var i = 0; i < _machines.Count; i++)
                 {
@@ -409,7 +407,6 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception e)
             {
-
                 MessageBox.Show(e.Message, "Method Drop", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

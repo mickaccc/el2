@@ -43,7 +43,13 @@ namespace El2Core.Services
         public string Theme
         {
             get { return Properties.Settings.Default.Theme; }
-            set { Properties.Settings.Default[nameof(Theme)] = value; _isChanged = true; }
+            set
+            {
+                if (Theme != value)
+                {
+                    Properties.Settings.Default[nameof(Theme)] = value; _isChanged = true;
+                }
+            }
         }
         public bool UpgradeFlag
         {
@@ -51,15 +57,17 @@ namespace El2Core.Services
             set { Properties.Settings.Default[nameof(UpgradeFlag)] = value; }
         }
         private bool _isChanged;
-        public bool IsChanged => _isChanged;
+        public bool IsChanged { get { return _isChanged; } }
 
         public void Save()
         {
              Properties.Settings.Default.Save();
+            _isChanged = false;
         }
         public void Reset()
         {           
             Properties.Settings.Default.Reset();
+            _isChanged = false;
         }
 
         public void Reload()

@@ -42,7 +42,14 @@ namespace Lieferliste_WPF.ViewModels
         public Theme? SelectedTheme 
         {
             get { return selectedTheme; }
-            set { selectedTheme = value; }
+            set
+            {
+                if (selectedTheme != value)
+                {
+                    selectedTheme = value;
+                    if (value != null) _settingsService.Theme = value.Name;
+                }
+            }
         }
 
         public UserSettingsViewModel(IUserSettingsService settingsService)
@@ -87,17 +94,16 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnResetExecuted(object obj)
         {
-            _settingsService?.Reset();
+            _settingsService.Reset();
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-            return true;
+            return _settingsService.IsChanged;
         }
 
         private void OnSaveExecuted(object obj)
-        {
-            if(_settingsService.Theme != SelectedTheme?.Name) _settingsService.Theme = SelectedTheme?.Name ?? string.Empty;
+        { 
             _settingsService.Save();
         }
 

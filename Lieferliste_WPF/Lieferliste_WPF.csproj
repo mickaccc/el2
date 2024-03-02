@@ -10,7 +10,7 @@
     <ApplicationIcon>el4-application.ico</ApplicationIcon>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>C:\Users\scm2hl\Documents\Certificates\Lieferliste_WPF_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
@@ -271,6 +271,7 @@
 		<Deterministic>false</Deterministic>
 		<Description>Feinplanung, Auftragsübersicht, Produkte</Description>
 		<Title>Lieferliste-WPF</Title>
+		<Company>Bosch-HlP/TEF2</Company>
 	</PropertyGroup>
 
 
