@@ -84,7 +84,8 @@ namespace Lieferliste_WPF.Planning
 
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? WorkerPrintCommand { get; private set; }
-
+        public ICommand? KlimaPrintCommand { get; private set; }
+        public ICommand? DocumentAddCommand { get; private set; }
         private readonly string _userId;
 
         public string UserId => _userId;
@@ -161,11 +162,33 @@ namespace Lieferliste_WPF.Planning
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             WorkerPrintCommand = new ActionCommand(OnWorkerPrintExecuted, OnWorkerPrintCanExecute);
+            KlimaPrintCommand = new ActionCommand(OnKlimaPrintExecuted, OnKlimaPrintCanExecute);
+            DocumentAddCommand = new ActionCommand(OnDocumentAddExecuted, OnDocumentAddCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
 
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
 
+        }
+
+        private bool OnDocumentAddCanExecute(object arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnDocumentAddExecuted(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool OnKlimaPrintCanExecute(object arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnKlimaPrintExecuted(object obj)
+        {
+            throw new NotImplementedException();
         }
 
         private void MessageReceived(List<string?> vorgangIdList)

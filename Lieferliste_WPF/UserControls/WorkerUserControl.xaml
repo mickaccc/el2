@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="Lieferliste_WPF.Planning.WorkerUserControl"
 			 xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
 			 DataContextChanged="UserControl_DataContextChanged"
 			 xmlns:dd="urn:gong-wpf-dragdrop"
 			 d:DesignHeight="450"
@@ -20,7 +21,16 @@
 		<conv:TTNR_Converter x:Key="TTNR"/>
 		<conv:TextCompareToColorConverter x:Key="txtColor"/>
 		<conv:BullettShapeConverter x:Key="BulletShape"/>
-	</UserControl.Resources>
+        <x:Array Type="{x:Type sys:Object}" x:Key="extensions">
+            <MenuItem Command="{Binding KlimaPrintCommand}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"
+                  Header="Klima Ausdruck" Name="KlimaPrintMenu"/>
+            <MenuItem Command="{Binding DocumentAddCommand}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"
+                  Header="Dokument anhängen" Name="DocumentAddMenu"/>
+        </x:Array>
+        
+    </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"
 		  MinWidth="50"
@@ -91,8 +101,17 @@
 				  IsSynchronizedWithCurrentItem="True"
 				  ItemsSource="{Binding ProcessesCV}"
 				  x:Name="Planed"
-				  RowDetailsVisibilityMode="VisibleWhenSelected"
-                  ContextMenu="{StaticResource BulletContextMenu}">
+				  RowDetailsVisibilityMode="VisibleWhenSelected">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <ContextMenu.ItemsSource>
+                        <CompositeCollection>
+                            <CollectionContainer Collection="{StaticResource extensions}"/>
+                            <CollectionContainer Collection="{StaticResource BulletContextMenu}"/>
+                        </CompositeCollection>
+                    </ContextMenu.ItemsSource>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
 			<DataGrid.InputBindings>
 				<MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
 							  CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"

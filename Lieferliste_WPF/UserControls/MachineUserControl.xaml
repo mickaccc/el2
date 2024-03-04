@@ -9,6 +9,7 @@
 			 mc:Ignorable="d"
 			 xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
 			 MinWidth="0"
 			 Unloaded="UserControl_Unloaded"
 			 xmlns:wpfcontrol="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
@@ -23,6 +24,15 @@
 		<conv:BullettShapeConverter x:Key="BulletShape"/>
         <conv:PermissionConverter x:Key="permiss"/>
         <conv:ScrollIntoViewConverter x:Key="scrollInto"/>
+
+        <x:Array Type="{x:Type sys:Object}" x:Key="extensions">
+            <MenuItem Command="{Binding HistoryCommand}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+                  Header="Material History" Name="HystoryMenu"/>
+            <MenuItem Command="{Binding FastCopyCommand}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
+                  Header="Schnell kopieren" Name="FastCopyMenu"/>
+        </x:Array>
     </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"
@@ -117,7 +127,7 @@
 
 			</Grid>
 		</Border>
-		<DataGrid AutoGenerateColumns="False"
+		<DataGrid AutoGenerateColumns="False" 
 				  CanUserAddRows="False"
 				  CanUserDeleteRows="False"
 				  CanUserSortColumns="False"
@@ -129,8 +139,17 @@
 				  IsSynchronizedWithCurrentItem="True"
 				  ItemsSource="{Binding ProcessesCV}"
 				  x:Name="Planed" VirtualizingPanel.IsVirtualizing="False"
-				  RowDetailsVisibilityMode="VisibleWhenSelected"
-                  ContextMenu="{StaticResource BulletContextMenu}">
+				  RowDetailsVisibilityMode="VisibleWhenSelected">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <ContextMenu.ItemsSource>
+                        <CompositeCollection>
+                            <CollectionContainer Collection="{StaticResource extensions}"/>
+                            <CollectionContainer Collection="{StaticResource BulletContextMenu}"/>
+                        </CompositeCollection>
+                    </ContextMenu.ItemsSource>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.InputBindings>
                 <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
 							  CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"
