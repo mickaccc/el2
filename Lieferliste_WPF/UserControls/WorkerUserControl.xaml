@@ -21,12 +21,7 @@
 		<conv:TTNR_Converter x:Key="TTNR"/>
 		<conv:TextCompareToColorConverter x:Key="txtColor"/>
 		<conv:BullettShapeConverter x:Key="BulletShape"/>
-        <x:Array x:Key="extension" Type="{x:Type MenuItem}"  >
-            <MenuItem Command="{Binding KlimaPrintCommand}"
-                 Header="Klima Ausdruck" Name="KlimaPrintMenu"/>
-            <MenuItem Command="{Binding DocumentAddCommand}"
-                 Header="Dokument anhängen" Name="DocumentAddMenu"/>
-        </x:Array>
+
     </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"
@@ -105,15 +100,15 @@
                         <Style TargetType="{x:Type MenuItem}" >
                             <Setter Property="CommandParameter" Value="{Binding Path=PlacementTarget.SelectedItem,
                                    RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
-                            <Setter Property="Height" Value="30"/>
+                            <Setter Property="Height" Value="50"/>
                         </Style>
                         
                     </ContextMenu.Resources>
-                    
-                    <ContextMenu.ItemsSource>
+
+                    <ContextMenu.ItemsSource >
                         <CompositeCollection>
-                            <CollectionContainer Collection="{StaticResource extension}"/>
-                            <CollectionContainer Collection="{StaticResource AppCommands}"/>
+                            <CollectionContainer Collection="{StaticResource MeasureCm}"/>
+                            <CollectionContainer Collection="{StaticResource AppCommandsCm}"/>
                         </CompositeCollection>
                         
                     </ContextMenu.ItemsSource>
@@ -151,6 +146,7 @@
 													   BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
 													   HorizontalAlignment="Left"
 													   VerticalAlignment="Top"
+                                                       Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                        ContextMenu="{StaticResource BulletContextMenu}"/>
 
                         </DataTemplate>

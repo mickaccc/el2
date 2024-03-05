@@ -25,14 +25,6 @@
         <conv:PermissionConverter x:Key="permiss"/>
         <conv:ScrollIntoViewConverter x:Key="scrollInto"/>
 
-        <x:Array Type="{x:Type sys:Object}" x:Key="extensions">
-            <MenuItem Command="{Binding HistoryCommand}"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
-                  Header="Material History" Name="HystoryMenu"/>
-            <MenuItem Command="{Binding FastCopyCommand}"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
-                  Header="Schnell kopieren" Name="FastCopyMenu"/>
-        </x:Array>
     </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"
@@ -142,9 +134,17 @@
 				  RowDetailsVisibilityMode="VisibleWhenSelected">
             <DataGrid.ContextMenu>
                 <ContextMenu>
+                    <ContextMenu.Resources>
+                    <Style TargetType="{x:Type MenuItem}" >
+                        <Setter Property="CommandParameter" Value="{Binding Path=PlacementTarget.SelectedItem,
+                                  RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+                        <Setter Property="Height" Value="30"/>
+                    </Style>
+                    </ContextMenu.Resources>
                     <ContextMenu.ItemsSource>
                         <CompositeCollection>
-                            <CollectionContainer Collection="{StaticResource extensions}"/>
+                            <CollectionContainer Collection="{StaticResource MachineCm}"/>
+                            <CollectionContainer Collection="{StaticResource AppCommandsCm}"/>
                         </CompositeCollection>
                     </ContextMenu.ItemsSource>
                 </ContextMenu>
@@ -180,7 +180,9 @@
 							<wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
 													   BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
 													   HorizontalAlignment="Left"
-													   VerticalAlignment="Top"/>
+													   VerticalAlignment="Top"
+                                                       Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                       ContextMenu="{StaticResource BulletContextMenu}"/>
 
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>

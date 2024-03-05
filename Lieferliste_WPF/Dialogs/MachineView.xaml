@@ -122,7 +122,7 @@
         </DockPanel>
         <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding ProcessesCV}" AutoGenerateColumns="False"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"
-                  dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" ContextMenu="{StaticResource BulletContextMenu}"
+                  dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"
                   dd:DragDrop.DropHandler="{Binding}">
@@ -131,6 +131,24 @@
                               Command="{Binding ApplicationCommands.OpenOrderCommand}"
                               CommandParameter="{Binding ElementName=MachProcesses, Path=SelectedValue}"/>
             </DataGrid.InputBindings>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <ContextMenu.Resources>
+                        <Style TargetType="{x:Type MenuItem}" >
+                            <Setter Property="CommandParameter" Value="{Binding Path=PlacementTarget.SelectedItem,
+                                  RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+                            <Setter Property="Height" Value="30"/>
+                        </Style>
+                    </ContextMenu.Resources>
+                    <ContextMenu.ItemsSource>
+                        <CompositeCollection>
+                            <CollectionContainer Collection="{StaticResource MachineCm}"/>
+                            <CollectionContainer Collection="{StaticResource AppCommandsCm}"/>
+                        </CompositeCollection>
+
+                    </ContextMenu.ItemsSource>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
@@ -155,7 +173,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate >
                             <wpfControl:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
-                                                       BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"/>
+                                                       BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
+                                                       ContextMenu="{StaticResource BulletContextMenu}"/>
 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

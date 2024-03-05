@@ -42,7 +42,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
           
@@ -68,6 +68,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterDialog<Projects>();
             containerRegistry.RegisterDialog<AddNewWorkArea, AddNewWorkAreaVM>();
             containerRegistry.RegisterDialog<HistoryDialog, HistoryDialogVM>();
+            containerRegistry.RegisterDialog<DocumentDialog, DocumentDialogVM>();
 
             Globals gl = new(Container);
             UserInfo u = new();

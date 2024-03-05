@@ -363,14 +363,23 @@ namespace Lieferliste_WPF.Utilities
 
             Paragraph p = new Paragraph();
             p.FontSize = 12;
+            p.FontFamily = SystemFonts.CaptionFontFamily;
 
             p.Inlines.Add(new Run("Auftrag: "));
             p.Inlines.Add(new Bold(new Underline(new Run(vorgang.Aid))));
-            p.Inlines.Add(new Run("Spät. Enddatum: "));
-            p.Inlines.Add(new Underline(new Run(vorgang.SpaetEnd?.ToString("dd/MM/yyyy"))));
+            
+
+            Paragraph p1 = new Paragraph();
+            p1.Inlines.Add(new Run("Spät. Enddatum: "));
+            p1.Inlines.Add(new Underline(new Run(vorgang.SpaetEnd?.ToString("dd/MM/yyyy"))));
+            p1.TextAlignment = TextAlignment.Center;
+            Section section1 = new Section();
+            section1.Blocks.Add(p1);
+            section1.TextAlignment = TextAlignment.Right;
 
             Paragraph p2 = new Paragraph();
             p2.FontSize = 12;
+            p2.FontFamily = SystemFonts.CaptionFontFamily;
 
             p2.Inlines.Add(new Run("Vorgang: "));
             p2.Inlines.Add(new Underline(new Run(vorgang.Vnr.ToString("D4"))));
@@ -378,12 +387,18 @@ namespace Lieferliste_WPF.Utilities
             
             Paragraph p3 = new Paragraph(new Run(string.Format("Start messen frühestens {0}", DateTime.Now.AddHours(3).ToString("dd/MM/yy HH:mm:ss"))));
             p3.FontSize = 16;
+            p3.FontFamily = SystemFonts.MessageFontFamily;
+
             p3.TextDecorations = TextDecorations.Underline;
             p3.BorderBrush = Brushes.Black;
             p3.BorderThickness = new Thickness(2);
+
+            Section section = new Section();
+            section.Blocks.Add(p3);
+
             document.Blocks.Add(p);
             document.Blocks.Add(p2);
-            document.Blocks.Add(p3);
+            document.Blocks.Add(section);
 
             return document;
         }

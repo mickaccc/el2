@@ -10,6 +10,7 @@ using Lieferliste_WPF.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Prism.Events;
 using Prism.Ioc;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,17 +43,20 @@ namespace Lieferliste_WPF.Planning
         public IEventAggregator EventAggregator { get; }
 
         public IUserSettingsService SettingsService { get; }
+        public IDialogService DialogService { get; }
 
-        public PlanWorkerFactory(IContainerProvider container, IApplicationCommands applicationCommands, IEventAggregator eventAggregator, IUserSettingsService settingsService)
+        public PlanWorkerFactory(IContainerProvider container, IApplicationCommands applicationCommands,
+            IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
         {
             this.Container = container;
             this.ApplicationCommands = applicationCommands;
             this.EventAggregator = eventAggregator;
             this.SettingsService = settingsService;
+            this.DialogService = dialogService;
         }
         public PlanWorker CreatePlanWorker(string UserId)
         {
-            return new PlanWorker(UserId, Container, ApplicationCommands, EventAggregator, SettingsService);
+            return new PlanWorker(UserId, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
         }
     }
     public interface IPlanWorker
@@ -68,13 +72,15 @@ namespace Lieferliste_WPF.Planning
         public PlanWorker(string UserId, IContainerProvider container,
             IApplicationCommands applicationCommands,
             IEventAggregator eventAggregator,
-            IUserSettingsService settingsService)
+            IUserSettingsService settingsService,
+            IDialogService dialogService)
         {
             _container = container;
             _userId = UserId;
             _applicationCommands = applicationCommands;
             _eventAggregator = eventAggregator;
             _settingsService = settingsService;
+            _dialogService = dialogService;
             Initialize();
             LoadData();
 
@@ -103,6 +109,7 @@ namespace Lieferliste_WPF.Planning
         private IContainerProvider _container;
         private IEventAggregator _eventAggregator;
         private IUserSettingsService _settingsService;
+        private IDialogService _dialogService;
         private IApplicationCommands? _applicationCommands;
 
         public IApplicationCommands? ApplicationCommands
@@ -180,8 +187,13 @@ namespace Lieferliste_WPF.Planning
         {
             if(obj is Vorgang vrg)
             {
-
+                _dialogService.Show("DocumentDialog", DocumentCallBack);
             }
+        }
+
+        private void DocumentCallBack(IDialogResult result)
+        {
+            
         }
 
         private bool OnKlimaPrintCanExecute(object arg)

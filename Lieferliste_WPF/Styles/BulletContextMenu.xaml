@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
 					xmlns:wpfcontrol="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 					xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
@@ -10,80 +11,48 @@
 				 Width="Auto">
         <ContextMenu.Resources>
             <conv:MultiObjectConverter x:Key="multi"/>
-        </ContextMenu.Resources>
-        <MenuItem Command="{Binding SetMarkerCommand}"
-				  Header="Markierung  löschen"
-				  x:Name="DelBullet">
-			<MenuItem.CommandParameter>
-				<MultiBinding Converter="{StaticResource multi}">
-					<Binding Path="Name"
+            <Style TargetType="{x:Type MenuItem}">
+                <Setter Property="Command" Value="{Binding Path=PlacementTarget.Tag.SetMarkerCommand,
+                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                <Setter Property="CommandParameter">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource multi}">
+                            <Binding Path="Name"
 							 RelativeSource="{RelativeSource Self}"/>
-					<Binding Path="PlacementTarget.SelectedItem"
+                            <Binding Path="PlacementTarget.DataContext"
 							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
-				</MultiBinding>
-			</MenuItem.CommandParameter>
-			<MenuItem.Icon>
-
-				<wpfcontrol:BullettControl BullettColor="White"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ContextMenu.Resources>
+        <MenuItem Header="Markierung  löschen"
+				  x:Name="DelBullet">
+            <MenuItem.Icon>
+                <wpfcontrol:BullettControl BullettColor="White"/>
 			</MenuItem.Icon>
 		</MenuItem>
-		<MenuItem Command="{Binding SetMarkerCommand}"
-				  Header="roter Punkt"
+        <MenuItem Header="roter Punkt"
 				  x:Name="Bullet1">
-			<MenuItem.CommandParameter>
-				<MultiBinding Converter="{StaticResource multi}">
-					<Binding Path="Name"
-							 RelativeSource="{RelativeSource Self}"/>
-					<Binding Path="PlacementTarget.SelectedItem"
-							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
-				</MultiBinding>
-			</MenuItem.CommandParameter>
-			<MenuItem.Icon>
+            <MenuItem.Icon>
 				<wpfcontrol:BullettControl BullettColor="Red"/>
 			</MenuItem.Icon>
 		</MenuItem>
 
-		<MenuItem Command="{Binding SetMarkerCommand}"
-				  Header="grüner Punkt"
+        <MenuItem Header="grüner Punkt"
 				  x:Name="Bullet2">
-			<MenuItem.CommandParameter>
-				<MultiBinding Converter="{StaticResource multi}">
-					<Binding Path="Name"
-							 RelativeSource="{RelativeSource Self}"/>
-					<Binding Path="PlacementTarget.SelectedItem"
-							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
-				</MultiBinding>
-			</MenuItem.CommandParameter>
-			<MenuItem.Icon>
+            <MenuItem.Icon>
 				<wpfcontrol:BullettControl BullettColor="Green"/>
 			</MenuItem.Icon>
 		</MenuItem>
-		<MenuItem Command="{Binding SetMarkerCommand}"
-				  Header="gelber Punkt"
+		<MenuItem Header="gelber Punkt"
 				  x:Name="Bullet3">
-			<MenuItem.CommandParameter>
-				<MultiBinding Converter="{StaticResource multi}">
-					<Binding Path="Name"
-							 RelativeSource="{RelativeSource Self}"/>
-					<Binding Path="PlacementTarget.SelectedItem"
-							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
-				</MultiBinding>
-			</MenuItem.CommandParameter>
 			<MenuItem.Icon>
 				<wpfcontrol:BullettControl BullettColor="Yellow"/>
 			</MenuItem.Icon>
 		</MenuItem>
-		<MenuItem Command="{Binding SetMarkerCommand}"
-				  Header="blauer Punkt"
+		<MenuItem Header="blauer Punkt"
 				  x:Name="Bullet4">
-			<MenuItem.CommandParameter>
-				<MultiBinding Converter="{StaticResource multi}">
-					<Binding Path="Name"
-							 RelativeSource="{RelativeSource Self}"/>
-					<Binding Path="PlacementTarget.SelectedItem"
-							 RelativeSource="{RelativeSource AncestorType={x:Type ContextMenu}}"/>
-				</MultiBinding>
-			</MenuItem.CommandParameter>
 			<MenuItem.Icon>
 				<wpfcontrol:BullettControl BullettColor="Blue"/>
 			</MenuItem.Icon>
@@ -103,19 +72,49 @@
 			</Separator.Template>
 		</Separator>
     </Style>-->
-    <x:Array x:Key="AppCommands" Type="{x:Type MenuItem}">
+    <x:Array x:Key="AppCommandsCm" Type="{x:Type MenuItem}">
 
         <MenuItem Command="{Binding ApplicationCommands.OpenOrderCommand}"
 			  Header="Auftrag öffnen">
             <MenuItem.Icon>
-                <Image Source="/Images/planning.png"/>
+                <Image Source="/Images/planning.png" Height="30"/>
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem Command="{Binding ApplicationCommands.ExplorerCommand}"
 			  Header="Explorer öffnen">
             <MenuItem.Icon>
-                <Image Source="/Images/files-and-folders.png"/>
+                <Image Source="/Images/files-and-folders.png" Height="30"/>
             </MenuItem.Icon>
         </MenuItem>
     </x:Array>
+    <x:Array Type="{x:Type MenuItem}" x:Key="MachineCm" >
+        <MenuItem Command="{Binding HistoryCommand}"
+                  Header="Material History">
+            <MenuItem.Icon>
+                <materialDesign:PackIcon Kind="History"/>
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <MenuItem Command="{Binding FastCopyCommand}"
+                  Header="Schnell kopieren">
+            <MenuItem.Icon>
+                <materialDesign:PackIcon Kind="Helicopter"/>
+            </MenuItem.Icon>
+        </MenuItem>
+    </x:Array>
+    <x:Array x:Key="MeasureCm" Type="{x:Type MenuItem}">
+        <MenuItem Command="{Binding KlimaPrintCommand}"
+                 Header="Klima Ausdruck" >
+            <MenuItem.Icon>
+                <materialDesign:PackIcon Kind="ColdAlert"/>
+            </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Command="{Binding DocumentAddCommand}"
+                 Header="Dokument anhängen">
+            <MenuItem.Icon>
+                <materialDesign:PackIcon Kind="FileDocument"/>
+            </MenuItem.Icon>
+        </MenuItem>
+    </x:Array>
+
 </ResourceDictionary>
