@@ -145,7 +145,6 @@
                     <ContextMenu.ItemsSource>
                         <CompositeCollection>
                             <CollectionContainer Collection="{StaticResource extensions}"/>
-                            <CollectionContainer Collection="{StaticResource BulletContextMenu}"/>
                         </CompositeCollection>
                     </ContextMenu.ItemsSource>
                 </ContextMenu>

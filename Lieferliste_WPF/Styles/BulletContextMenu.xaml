@@ -4,37 +4,14 @@
 					xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <conv:MultiObjectConverter x:Key="multi"/>
 
-    <x:Array x:Key="BulletContextMenu" Type="{x:Type sys:Object}">
 
-		<MenuItem Command="{Binding ApplicationCommands.OpenOrderCommand}"
-				  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
-				  Header="Auftrag öffnen">
-			<MenuItem.Icon>
-				<Image Source="/Images/planning.png"/>
-			</MenuItem.Icon>
-		</MenuItem>
-		<MenuItem Command="{Binding ApplicationCommands.ExplorerCommand}"
-				  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.SelectedItem}"
-				  Header="Explorer öffnen">
-			<MenuItem.Icon>
-				<Image Source="/Images/files-and-folders.png"/>
-			</MenuItem.Icon>
-		</MenuItem>
-
-        <Separator>
-			<Separator.Template>
-				<ControlTemplate>
-					<Line Stretch="Fill"
-						  Stroke="Black"
-						  StrokeThickness="1"
-						  X1="0"
-						  X2="1"/>
-				</ControlTemplate>
-			</Separator.Template>
-		</Separator>
-		<MenuItem Command="{Binding SetMarkerCommand}"
+    <ContextMenu x:Key="BulletContextMenu"
+				 Width="Auto">
+        <ContextMenu.Resources>
+            <conv:MultiObjectConverter x:Key="multi"/>
+        </ContextMenu.Resources>
+        <MenuItem Command="{Binding SetMarkerCommand}"
 				  Header="Markierung  löschen"
 				  x:Name="DelBullet">
 			<MenuItem.CommandParameter>
@@ -111,6 +88,34 @@
 				<wpfcontrol:BullettControl BullettColor="Blue"/>
 			</MenuItem.Icon>
 		</MenuItem>
-	</x:Array>
+	</ContextMenu>
+ 
+    <!--<Style>
+        <Separator>
+			<Separator.Template>
+				<ControlTemplate>
+					<Line Stretch="Fill"
+						  Stroke="Black"
+						  StrokeThickness="1"
+						  X1="0"
+						  X2="1"/>
+				</ControlTemplate>
+			</Separator.Template>
+		</Separator>
+    </Style>-->
+    <x:Array x:Key="AppCommands" Type="{x:Type MenuItem}">
 
+        <MenuItem Command="{Binding ApplicationCommands.OpenOrderCommand}"
+			  Header="Auftrag öffnen">
+            <MenuItem.Icon>
+                <Image Source="/Images/planning.png"/>
+            </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Command="{Binding ApplicationCommands.ExplorerCommand}"
+			  Header="Explorer öffnen">
+            <MenuItem.Icon>
+                <Image Source="/Images/files-and-folders.png"/>
+            </MenuItem.Icon>
+        </MenuItem>
+    </x:Array>
 </ResourceDictionary>

@@ -21,15 +21,12 @@
 		<conv:TTNR_Converter x:Key="TTNR"/>
 		<conv:TextCompareToColorConverter x:Key="txtColor"/>
 		<conv:BullettShapeConverter x:Key="BulletShape"/>
-        <x:Array Type="{x:Type sys:Object}" x:Key="extensions">
+        <x:Array x:Key="extension" Type="{x:Type MenuItem}"  >
             <MenuItem Command="{Binding KlimaPrintCommand}"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"
-                  Header="Klima Ausdruck" Name="KlimaPrintMenu"/>
+                 Header="Klima Ausdruck" Name="KlimaPrintMenu"/>
             <MenuItem Command="{Binding DocumentAddCommand}"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"
-                  Header="Dokument anhängen" Name="DocumentAddMenu"/>
+                 Header="Dokument anhängen" Name="DocumentAddMenu"/>
         </x:Array>
-        
     </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"
@@ -101,15 +98,26 @@
 				  IsSynchronizedWithCurrentItem="True"
 				  ItemsSource="{Binding ProcessesCV}"
 				  x:Name="Planed"
-				  RowDetailsVisibilityMode="VisibleWhenSelected">
+				  RowDetailsVisibilityMode="VisibleWhenSelected" >
             <DataGrid.ContextMenu>
-                <ContextMenu>
+                <ContextMenu Width="Auto">
+                    <ContextMenu.Resources>
+                        <Style TargetType="{x:Type MenuItem}" >
+                            <Setter Property="CommandParameter" Value="{Binding Path=PlacementTarget.SelectedItem,
+                                   RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+                            <Setter Property="Height" Value="30"/>
+                        </Style>
+                        
+                    </ContextMenu.Resources>
+                    
                     <ContextMenu.ItemsSource>
                         <CompositeCollection>
-                            <CollectionContainer Collection="{StaticResource extensions}"/>
-                            <CollectionContainer Collection="{StaticResource BulletContextMenu}"/>
+                            <CollectionContainer Collection="{StaticResource extension}"/>
+                            <CollectionContainer Collection="{StaticResource AppCommands}"/>
                         </CompositeCollection>
+                        
                     </ContextMenu.ItemsSource>
+
                 </ContextMenu>
             </DataGrid.ContextMenu>
 			<DataGrid.InputBindings>
@@ -139,12 +147,13 @@
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 
-							<wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
+                            <wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
 													   BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
 													   HorizontalAlignment="Left"
-													   VerticalAlignment="Top"/>
+													   VerticalAlignment="Top"
+                                                       ContextMenu="{StaticResource BulletContextMenu}"/>
 
-						</DataTemplate>
+                        </DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 

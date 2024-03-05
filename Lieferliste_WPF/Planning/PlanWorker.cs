@@ -173,22 +173,29 @@ namespace Lieferliste_WPF.Planning
 
         private bool OnDocumentAddCanExecute(object arg)
         {
-            throw new NotImplementedException();
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddMeasureDocu);
         }
 
         private void OnDocumentAddExecuted(object obj)
         {
-            throw new NotImplementedException();
+            if(obj is Vorgang vrg)
+            {
+
+            }
         }
 
         private bool OnKlimaPrintCanExecute(object arg)
         {
-            throw new NotImplementedException();
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.KlimaPrint);
         }
 
         private void OnKlimaPrintExecuted(object obj)
         {
-            throw new NotImplementedException();
+            if (obj is Vorgang vrg)
+            {
+                var fd = Printing.CreateKlimaDocument(vrg);
+                Printing.DoThePrint(fd);
+            }
         }
 
         private void MessageReceived(List<string?> vorgangIdList)

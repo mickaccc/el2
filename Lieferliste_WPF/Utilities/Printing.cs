@@ -353,6 +353,40 @@ namespace Lieferliste_WPF.Utilities
             }
             return fixedDocument;
         }
+        public static FlowDocument CreateKlimaDocument(Vorgang vorgang)
+        {
+            FlowDocument document = new FlowDocument();      
+
+            document.PageWidth = 768;
+            document.PageHeight = 554;
+            document.PagePadding = new Thickness(96 / 3);
+
+            Paragraph p = new Paragraph();
+            p.FontSize = 12;
+
+            p.Inlines.Add(new Run("Auftrag: "));
+            p.Inlines.Add(new Bold(new Underline(new Run(vorgang.Aid))));
+            p.Inlines.Add(new Run("Spät. Enddatum: "));
+            p.Inlines.Add(new Underline(new Run(vorgang.SpaetEnd?.ToString("dd/MM/yyyy"))));
+
+            Paragraph p2 = new Paragraph();
+            p2.FontSize = 12;
+
+            p2.Inlines.Add(new Run("Vorgang: "));
+            p2.Inlines.Add(new Underline(new Run(vorgang.Vnr.ToString("D4"))));
+
+            
+            Paragraph p3 = new Paragraph(new Run(string.Format("Start messen frühestens {0}", DateTime.Now.AddHours(3).ToString("dd/MM/yy HH:mm:ss"))));
+            p3.FontSize = 16;
+            p3.TextDecorations = TextDecorations.Underline;
+            p3.BorderBrush = Brushes.Black;
+            p3.BorderThickness = new Thickness(2);
+            document.Blocks.Add(p);
+            document.Blocks.Add(p2);
+            document.Blocks.Add(p3);
+
+            return document;
+        }
         public static void SaveAsXps(string path, FlowDocument document)
         {
             using (Package package = Package.Open(path, FileMode.Create))
