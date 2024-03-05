@@ -65,8 +65,6 @@ namespace Lieferliste_WPF.ViewModels
             SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
         }
 
- 
-
         private bool OnChangeThemeCanExecute(object arg)
         {
             throw new NotImplementedException();
