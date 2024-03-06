@@ -1,13 +1,7 @@
-﻿using El2Core.Models;
-using El2Core.Services;
+﻿using El2Core.Services;
 using GongSolutions.Wpf.DragDrop;
 using Prism.Services.Dialogs;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
