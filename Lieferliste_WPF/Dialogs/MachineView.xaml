@@ -120,8 +120,8 @@
                       IsReadOnly="{Binding Converter={StaticResource permiss},ConverterParameter={x:Static const:Permissions.MachRenameInvers}}"/>
             </Grid>
         </DockPanel>
-        <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding ProcessesCV}" AutoGenerateColumns="False"
-                  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"
+        <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding PlanMachine.ProcessesCV}" AutoGenerateColumns="False"
+                  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" 
                   dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"

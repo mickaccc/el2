@@ -42,7 +42,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
           
@@ -74,7 +74,9 @@ namespace Lieferliste_WPF
             UserInfo u = new();
             u.Initialize(gl.PC, gl.User);
             containerRegistry.RegisterInstance(u);
-
+            RuleInfo rule = new RuleInfo();
+            rule.Initialize(gl.Rules);
+            containerRegistry.RegisterInstance(rule);
         }
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {

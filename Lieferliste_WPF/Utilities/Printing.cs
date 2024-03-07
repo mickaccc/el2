@@ -1,4 +1,5 @@
 ﻿using El2Core.Models;
+using El2Core.Utils;
 using Lieferliste_WPF.Dialogs.ViewModels;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.ViewModels;
@@ -361,43 +362,57 @@ namespace Lieferliste_WPF.Utilities
             document.PageHeight = 554;
             document.PagePadding = new Thickness(96 / 3);
 
-            Paragraph p = new Paragraph();
-            p.FontSize = 12;
-            p.FontFamily = SystemFonts.CaptionFontFamily;
-
-            p.Inlines.Add(new Run("Auftrag: "));
-            p.Inlines.Add(new Bold(new Underline(new Run(vorgang.Aid))));
-            
-
             Paragraph p1 = new Paragraph();
-            p1.Inlines.Add(new Run("Spät. Enddatum: "));
-            p1.Inlines.Add(new Underline(new Run(vorgang.SpaetEnd?.ToString("dd/MM/yyyy"))));
-            p1.TextAlignment = TextAlignment.Center;
-            Section section1 = new Section();
-            section1.Blocks.Add(p1);
-            section1.TextAlignment = TextAlignment.Right;
+            p1.FontSize = 12;
+            p1.FontFamily = SystemFonts.CaptionFontFamily;
 
+            p1.Inlines.Add(new Run("Auftrag: "));
+            p1.Inlines.Add(new Bold(new Underline(new Run(vorgang.Aid))));
+            
             Paragraph p2 = new Paragraph();
             p2.FontSize = 12;
             p2.FontFamily = SystemFonts.CaptionFontFamily;
 
-            p2.Inlines.Add(new Run("Vorgang: "));
-            p2.Inlines.Add(new Underline(new Run(vorgang.Vnr.ToString("D4"))));
+            p2.Inlines.Add(new Run(string.Format("Vorgang: {0:D4} -- {1}", vorgang.Vnr, vorgang.Text)));
 
-            
-            Paragraph p3 = new Paragraph(new Run(string.Format("Start messen frühestens {0}", DateTime.Now.AddHours(3).ToString("dd/MM/yy HH:mm:ss"))));
-            p3.FontSize = 16;
-            p3.FontFamily = SystemFonts.MessageFontFamily;
+            Paragraph p3 = new Paragraph();
+            p3.FontSize = 12;
+            p3.FontFamily = SystemFonts.CaptionFontFamily;
 
-            p3.TextDecorations = TextDecorations.Underline;
-            p3.BorderBrush = Brushes.Black;
-            p3.BorderThickness = new Thickness(2);
+            p3.Inlines.Add(new Run("Material: "));
+
+            p3.Inlines.Add(new Bold(new Run(string.Format("{0} {1}", vorgang.AidNavigation.Material,
+                vorgang.AidNavigation.MaterialNavigation?.Bezeichng))));
+            Paragraph p4 = new Paragraph();
+            Run r = new Run(string.Format("Spät. Enddatum: {0}", vorgang.SpaetEnd?.ToString("dd/MM/yyyy")));
+            p4.Inlines.Add(r);
+
+            Paragraph p5 = new Paragraph();
+            p5.FontSize = 12;
+            p5.FontFamily = SystemFonts.CaptionFontFamily;
+            p5.Inlines.Add(new Run("Bemerkung: "));
+            p5.Inlines.Add(new Run(vorgang.BemT));
+
+            var h = int.Parse(RuleInfo.Rules.First(x => x.RuleName == "ClimaticWaitTime").RuleValue);
+            var hh = (vorgang.KlimaPrint.HasValue) ? vorgang.KlimaPrint.Value.AddHours(h).ToString("dd/MM/yy HH:mm:ss") : DateTime.Now.AddHours(h).ToString("dd/MM/yy HH:mm:ss");
+
+            Paragraph p6 = new Paragraph(new Run(string.Format("Start messen frühestens {0}", hh)));
+            p6.FontSize = 20;
+            p6.FontFamily = SystemFonts.MessageFontFamily;
+            p6.FontWeight = FontWeights.ExtraBold;
+
+            p6.TextDecorations = TextDecorations.Underline;
+            p6.BorderBrush = Brushes.Black;
+            p6.BorderThickness = new Thickness(2);
 
             Section section = new Section();
-            section.Blocks.Add(p3);
+            section.Blocks.Add(p6);
 
-            document.Blocks.Add(p);
+            document.Blocks.Add(p1);
             document.Blocks.Add(p2);
+            document.Blocks.Add(p3);
+            document.Blocks.Add(p4);
+            document.Blocks.Add(p5);
             document.Blocks.Add(section);
 
             return document;

@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using System;
+using System.Collections.Generic;
+using System.Formats.Asn1;
 using System.Linq;
 
 namespace El2Core.Utils
@@ -11,6 +13,7 @@ namespace El2Core.Utils
     {
         public User User { get; private set; }
         public string PC { get; private set; }
+        public List<Rule> Rules { get; private set; }
         private IContainerProvider _container;
         public Globals(IContainerProvider container)
         {
@@ -39,8 +42,14 @@ namespace El2Core.Utils
                 .Single(x => x.UserIdent == us);
 
                 User = u;
-            }
 
+                Rules ??= new();
+                foreach (var rule in db.Rules)
+                { 
+                    var r = new Rule() { RuleId = rule.RuleId, RuleName = rule.RuleName.Trim(), RuleValue = rule.RuleValue };
+                    Rules.Add(r);
+                }
+            }
         }
 
         public void Dispose()

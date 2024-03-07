@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace El2Core.Models;
 
 public partial class OrderRb : ModelBase
-{ 
+{
     public string Aid { get; set; } = null!;
 
     public DateTime? Eckstart { get; set; }

@@ -80,6 +80,8 @@ public partial class Vorgang : ModelBase
 
     public string? MarkCode { get; set; }
 
+    public DateTime? KlimaPrint { get; set; }
+
     public virtual OrderRb AidNavigation { get; set; } = null!;
 
     public virtual WorkSap? ArbPlSapNavigation { get; set; }

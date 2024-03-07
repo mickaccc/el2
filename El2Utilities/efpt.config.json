@@ -68,6 +68,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Rules]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[tblDummy]",
          "ObjectType": 0
       },

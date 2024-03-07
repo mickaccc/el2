@@ -4,6 +4,7 @@ using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Lieferliste_WPF.Dialogs.ViewModels;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -481,11 +482,16 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnMachinePrintCanExecute(object arg)
         {
-            if (arg is PlanMachine plan)
+            int wo = 0;
+            if (arg is PlanMachine plan) 
             {
-                int wo = plan.WorkArea?.WorkAreaId ?? 0;
-                return PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachPrint, wo);
+                wo = plan.WorkArea?.WorkAreaId ?? 0;               
             }
+            else if(arg is MachineViewVM mvm)
+            {
+                wo = mvm.PlanMachine?.WorkArea?.WorkAreaId ?? 0;
+            }
+            if (wo != 0) { return PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachPrint, wo); }
             return false;
         }
 

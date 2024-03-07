@@ -25,13 +25,17 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="nach Auftragsnummer, Materialnummer oder Materialbezeichnung suchen">
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Speichern" Command="{Binding SaveCommand}"/>
+            <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="nach Auftragsnummer, Materialnummer oder Materialbezeichnung suchen">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
                     <i:InvokeCommandAction Command="{Binding TextChangedCommand}" CommandParameter="{Binding Path=Text, ElementName=searchTextBox}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
+ 
+        </StackPanel>
         <ListBox Grid.Row="1" ItemsSource="{Binding MemberTask.Result}" VerticalContentAlignment="Stretch" >
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>

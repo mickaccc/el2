@@ -121,7 +121,6 @@ namespace Lieferliste_WPF.ViewModels
             return _hasChanges;
         }
 
-
         private static bool OnSelectionChangeCanExecute(object arg)
         {
             return true;
@@ -141,7 +140,6 @@ namespace Lieferliste_WPF.ViewModels
                         PermissionKey = p.PermissionKey,
                         RoleKey = p.RoleKey,
                     });
-
                 }
                 PermissionsAvail.Clear();
 

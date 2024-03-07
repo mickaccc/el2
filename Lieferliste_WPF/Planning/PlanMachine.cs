@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -234,8 +235,9 @@ namespace Lieferliste_WPF.Planning
             FastCopyCommand = new ActionCommand(OnFastCopyExecuted, OnFastCopyCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
-            ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
-            ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
+            ProcessesCVSource.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+            ProcessesCVSource.IsLiveSortingRequested = true;
+            //ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
 
             //var live = ProcessesCV as ICollectionViewLiveShaping;
             //if (live != null)
@@ -289,7 +291,7 @@ namespace Lieferliste_WPF.Planning
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format("{0}\n{1}",ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private bool OnHistoryCanExecute(object arg)
@@ -445,20 +447,21 @@ namespace Lieferliste_WPF.Planning
                 }
             }
         }
-        private void InsertItems(Vorgang Item, ListCollectionView? Source, ListCollectionView? Target, int Index)
+        private void InsertItems(Vorgang Item, ListCollectionView Source, ListCollectionView Target, int Index, bool sorting)
         {
-            if (Source == null || Target == null) return;
+ 
             Item.Rid = _rId;
             if (Source.CanRemove) Source.Remove(Item);
-            if (Index > Target?.Count)
+
+            if (Index > Target.Count)
             {
                 ((IList)Target.SourceCollection).Add(Item);
             }
             else
             {
-                Debug.Assert(Target != null, nameof(Target) + " != null");
                 ((IList)Target.SourceCollection).Insert(Index, Item);
             }
+
             var p = Target.SourceCollection as Collection<Vorgang>;
 
             for (var i = 0; i < p.Count; i++)
@@ -468,6 +471,7 @@ namespace Lieferliste_WPF.Planning
                 vv.Spos = i;
                 vv.Rid = _rId;
             }
+            Target.MoveCurrentTo(Item);
         }
         public void Drop(IDropInfo dropInfo)
         {
@@ -478,19 +482,21 @@ namespace Lieferliste_WPF.Planning
                 var t = dropInfo.TargetCollection as ListCollectionView;
                 
                 var v = dropInfo.InsertIndex;
-                if (dropInfo.Data is List<dynamic> vrgList)
+                if (s != null && t != null)
                 {
-                    foreach(var vrg in vrgList)
+                    if (dropInfo.Data is List<dynamic> vrgList)
                     {
-                        InsertItems(vrg, s, t, v);
+                        foreach (var vrg in vrgList)
+                        {
+                            InsertItems(vrg, s, t, v, false);
+                        }
                     }
-                }
-                else if (dropInfo.Data is Vorgang vrg)
-                {
-                    InsertItems(vrg, s, t, v);
-                }
-                              
-                t?.Refresh();
+                    else if (dropInfo.Data is Vorgang vrg)
+                    {
+                        InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
+                    }
+                    ProcessesCV.Refresh();                  
+                }    
             }
             catch (Exception e)
             {

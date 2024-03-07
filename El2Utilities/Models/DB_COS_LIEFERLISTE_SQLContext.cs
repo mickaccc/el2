@@ -39,6 +39,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
+    public virtual DbSet<Rule> Rules { get; set; }
+
     public virtual DbSet<TblDummy> TblDummies { get; set; }
 
     public virtual DbSet<TblMaterial> TblMaterials { get; set; }
@@ -317,6 +319,16 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(30)
                 .IsFixedLength();
             entity.Property(e => e.Rolelevel).HasColumnName("rolelevel");
+        });
+
+        modelBuilder.Entity<Rule>(entity =>
+        {
+            entity.Property(e => e.RuleName)
+                .HasMaxLength(20)
+                .IsFixedLength();
+            entity.Property(e => e.RuleValue)
+                .HasMaxLength(50)
+                .IsFixedLength();
         });
 
         modelBuilder.Entity<TblDummy>(entity =>

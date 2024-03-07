@@ -92,6 +92,7 @@ namespace Lieferliste_WPF.Planning
         public ICommand? WorkerPrintCommand { get; private set; }
         public ICommand? KlimaPrintCommand { get; private set; }
         public ICommand? DocumentAddCommand { get; private set; }
+        public ICommand? SaveCommand { get; private set; }
         private readonly string _userId;
 
         public string UserId => _userId;
@@ -100,7 +101,7 @@ namespace Lieferliste_WPF.Planning
         public int? PersNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        private DB_COS_LIEFERLISTE_SQLContext? _dbctx;
+        private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
@@ -129,6 +130,7 @@ namespace Lieferliste_WPF.Planning
         public string Title => _title;
 
         public bool HasChange => _dbctx.ChangeTracker.HasChanges();
+
 
         private void LoadData()
         {
@@ -171,11 +173,22 @@ namespace Lieferliste_WPF.Planning
             WorkerPrintCommand = new ActionCommand(OnWorkerPrintExecuted, OnWorkerPrintCanExecute);
             KlimaPrintCommand = new ActionCommand(OnKlimaPrintExecuted, OnKlimaPrintCanExecute);
             DocumentAddCommand = new ActionCommand(OnDocumentAddExecuted, OnDocumentAddCanExecute);
+            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
 
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
 
+        }
+
+        private bool OnSaveCanExecute(object arg)
+        {
+            return _dbctx.ChangeTracker.HasChanges();
+        }
+
+        private void OnSaveExecuted(object obj)
+        {
+            _dbctx.SaveChanges();
         }
 
         private bool OnDocumentAddCanExecute(object arg)
@@ -207,6 +220,7 @@ namespace Lieferliste_WPF.Planning
             {
                 var fd = Printing.CreateKlimaDocument(vrg);
                 Printing.DoThePrint(fd);
+                vrg.KlimaPrint = DateTime.Now;
             }
         }
 
