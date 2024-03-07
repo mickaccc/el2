@@ -6,6 +6,7 @@ using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.IO.Packaging;
@@ -24,7 +25,7 @@ namespace Lieferliste_WPF.Utilities
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal static class Printing
     {
-        public static void DoThePrint(FlowDocument document)
+        public static void DoThePrint(FlowDocument document, PrintTicket ticket, string description)
         {
             // Clone the source document's content into a new FlowDocument.
             // This is because the pagination for the printer needs to be
@@ -42,32 +43,34 @@ namespace Lieferliste_WPF.Utilities
 
             // get information about the dimensions of the seleted printer+media.
             System.Printing.PrintDocumentImageableArea ia = null;
-            System.Windows.Xps.XpsDocumentWriter docWriter = System.Printing.PrintQueue.CreateXpsDocumentWriter(ref ia);
+            PrinterSettings printerSettings = new PrinterSettings();
 
-            if (docWriter != null && ia != null)
-            {
+            PrintQueue queue = new PrintServer().GetPrintQueue(new PrinterSettings().PrinterName);
+            queue.UserPrintTicket = ticket;
+            queue.CurrentJobSettings.CurrentPrintTicket = ticket;
+            queue.CurrentJobSettings.Description = description;
+
+            System.Windows.Xps.XpsDocumentWriter docWriter = System.Printing.PrintQueue.CreateXpsDocumentWriter(queue);
+
+
                 DocumentPaginator paginator = ((IDocumentPaginatorSource)copy).DocumentPaginator;
 
                 // Change the PageSize and PagePadding for the document to match the CanvasSize for the printer device.
-                paginator.PageSize = new Size(ia.MediaSizeWidth, ia.MediaSizeHeight);
+                paginator.PageSize = new Size((double)ticket.PageMediaSize.Width, (double)ticket.PageMediaSize.Height);
                 Thickness t = new Thickness(72);  // copy.PagePadding;
-                copy.PagePadding = new Thickness(
-                                 Math.Max(ia.OriginWidth, t.Left),
-                                   Math.Max(ia.OriginHeight, t.Top),
-                                   Math.Max(ia.MediaSizeWidth - (ia.OriginWidth + ia.ExtentWidth), t.Right),
-                                   Math.Max(ia.MediaSizeHeight - (ia.OriginHeight + ia.ExtentHeight), t.Bottom));
-
+                //copy.PagePadding = new Thickness(
+                //                 Math.Max(ia.OriginWidth, t.Left),
+                //                   Math.Max(ia.OriginHeight, t.Top),
+                //                   Math.Max(ia.MediaSizeWidth - (ia.OriginWidth + ia.ExtentWidth), t.Right),
+                //                   Math.Max(ia.MediaSizeHeight - (ia.OriginHeight + ia.ExtentHeight), t.Bottom));
+                
                 copy.ColumnWidth = double.PositiveInfinity;
                 //copy.PageWidth = 528; // allow the page to be the natural with of the output device
 
                 // Send content to the printer.
-                PrintDialog dialog = new();
-                dialog.PrintTicket.PageOrientation = System.Printing.PageOrientation.Landscape;
 
-                docWriter.Write(paginator, dialog.PrintTicket);
-
-
-            }
+                docWriter.Write(paginator);
+            
 
         }
         public static FlowDocument CreateFlowDocument(object parameter, PrintDialog printDlg)
@@ -219,6 +222,7 @@ namespace Lieferliste_WPF.Utilities
         {
             var doc = CreateFlowDocument(obj, print);
             var fix = Get_Fixed_From_FlowDoc(doc, print);
+            
             var windows = new PrintWindow(fix);
             windows.ShowDialog();
 
@@ -310,7 +314,7 @@ namespace Lieferliste_WPF.Utilities
             try
             {
                 var pdlgPrint = printDlg ?? new PrintDialog();
-
+                
                 DocumentPaginator dpPages = (DocumentPaginator)((IDocumentPaginatorSource)flowDoc).DocumentPaginator;
                 dpPages.ComputePageCount();
                 PrintCapabilities capabilities = pdlgPrint.PrintQueue.GetPrintCapabilities(pdlgPrint.PrintTicket);
@@ -361,7 +365,7 @@ namespace Lieferliste_WPF.Utilities
             document.PageWidth = 768;
             document.PageHeight = 554;
             document.PagePadding = new Thickness(96 / 3);
-
+            
             Paragraph p1 = new Paragraph();
             p1.FontSize = 12;
             p1.FontFamily = SystemFonts.CaptionFontFamily;
@@ -383,10 +387,13 @@ namespace Lieferliste_WPF.Utilities
 
             p3.Inlines.Add(new Bold(new Run(string.Format("{0} {1}", vorgang.AidNavigation.Material,
                 vorgang.AidNavigation.MaterialNavigation?.Bezeichng))));
+            Figure figure = new Figure();
+            figure.HorizontalAnchor = FigureHorizontalAnchor.ContentRight;
             Paragraph p4 = new Paragraph();
             Run r = new Run(string.Format("Spät. Enddatum: {0}", vorgang.SpaetEnd?.ToString("dd/MM/yyyy")));
             p4.Inlines.Add(r);
-
+            figure.Blocks.Add(p4);
+            p1.Inlines.Add(figure);
             Paragraph p5 = new Paragraph();
             p5.FontSize = 12;
             p5.FontFamily = SystemFonts.CaptionFontFamily;
@@ -394,7 +401,7 @@ namespace Lieferliste_WPF.Utilities
             p5.Inlines.Add(new Run(vorgang.BemT));
 
             var h = int.Parse(RuleInfo.Rules.First(x => x.RuleName == "ClimaticWaitTime").RuleValue);
-            var hh = (vorgang.KlimaPrint.HasValue) ? vorgang.KlimaPrint.Value.AddHours(h).ToString("dd/MM/yy HH:mm:ss") : DateTime.Now.AddHours(h).ToString("dd/MM/yy HH:mm:ss");
+            var hh = (vorgang.KlimaPrint.HasValue) ? vorgang.KlimaPrint.Value.AddHours(h).ToString("dd/MM/yy HH:mm:ss") :null;
 
             Paragraph p6 = new Paragraph(new Run(string.Format("Start messen frühestens {0}", hh)));
             p6.FontSize = 20;
@@ -411,12 +418,105 @@ namespace Lieferliste_WPF.Utilities
             document.Blocks.Add(p1);
             document.Blocks.Add(p2);
             document.Blocks.Add(p3);
-            document.Blocks.Add(p4);
             document.Blocks.Add(p5);
             document.Blocks.Add(section);
 
             return document;
         }
+        //public static void FlexPrint()
+        //{
+        //    // Dimensions are 1/96th of an inch, socalled Device Independent Pixels (matches 96 DPI, which is normal?)
+        //    var linerMargin = 4.7244094488189;  // 1.25 mm
+        //    var magicOffset = 20;               // 5.29 mm
+
+        //    // The document
+
+        //    var doc = new FixedDocument();
+        //    doc.PrintTicket = new PrintTicket();
+        //    var printTicket = (PrintTicket)doc.PrintTicket;
+        //    printTicket.PageMediaSize = new PageMediaSize(PageMediaSizeName.Unknown, size.Width.Value, size.Height.Value);
+
+        //    // New page
+
+        //    var page = new FixedPage
+        //    {
+        //        Width = labelSize.Width + magicOffset + 2 * linerMargin,
+        //        Height = labelSize.Height,
+        //        Margin = new Thickness(magicOffset + linerMargin, 0, linerMargin, 0)
+        //    };
+
+        //    // Page content
+
+        //    var border = new Border
+        //    {
+        //        Width = labelSize.Width,
+        //        Height = labelSize.Height,
+        //        BorderBrush = Brushes.Black,
+        //        BorderThickness = new Thickness(4)
+        //    };
+
+        //    FixedPage.SetLeft(border, 0);
+        //    FixedPage.SetTop(border, 0);
+        //    page.Children.Add(border);
+
+        //    // Next item on page
+
+        //    var tb = new TextBlock
+        //    {
+        //        Text = "Hello World!",
+        //        FontFamily = new FontFamily("Algerian Regular"),
+        //        FontSize = 30,
+        //        HorizontalAlignment = HorizontalAlignment.Left,
+        //        VerticalAlignment = VerticalAlignment.Top
+        //    };
+
+        //    var content = new Border
+        //    {
+        //        Child = tb,
+        //        BorderBrush = Brushes.Black,
+        //        BorderThickness = new Thickness(1)
+        //    };
+
+        //    FixedPage.SetLeft(content, 10);
+        //    FixedPage.SetTop(content, 10);
+        //    page.Children.Add(content);
+
+        //    // Next item on page
+
+        //    var tb2 = new TextBlock
+        //    {
+        //        Text = "SomethingElse",
+        //        FontFamily = new FontFamily("Segoe UI"),
+        //        FontSize = 20,
+        //        HorizontalAlignment = HorizontalAlignment.Left,
+        //        VerticalAlignment = VerticalAlignment.Top
+        //    };
+
+        //    var content2 = new Border
+        //    {
+        //        Child = tb2,
+        //        BorderBrush = Brushes.Black,
+        //        BorderThickness = new Thickness(1)
+        //    };
+
+        //    FixedPage.SetLeft(content2, 20);
+        //    FixedPage.SetTop(content2, 55);
+        //    page.Children.Add(content2);
+
+        //    //// Add the page to the document
+
+        //    //var pc = new PageContent();     // Old way of doing it (.NET 3.5 and earlier)
+        //    //((IAddChild)pc).AddChild(page); //
+        //    //doc.Pages.Add(pc);              //
+
+        //    var pc = new PageContent();
+        //    pc.Child = page;
+        //    doc.Pages.Add(pc);
+
+        //    // Send it to the printer   
+
+        //    FlexPrinter.Print(printerName, labelSize, doc);
+        //}
         public static void SaveAsXps(string path, FlowDocument document)
         {
             using (Package package = Package.Open(path, FileMode.Create))

@@ -65,7 +65,7 @@
         public const string CopyClipboard = "COPYCLIP";
         public const string AdminFunc = "ADMINFUNC";
         public const string KlimaPrint = "KLIMAPRINT";
-        public const string AddMeasureDocu = "ADDMEADOKU";
+        public const string AddMeasureDocu = "ADDMEADOCU";
         public const string RemoveMeasureDocu = "REMOVEMEADOCU";
     }
 }

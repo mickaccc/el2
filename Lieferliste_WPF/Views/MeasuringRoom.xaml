@@ -26,7 +26,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Speichern" Command="{Binding SaveCommand}"/>
+            <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="0,0,0,10"/>
             <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="nach Auftragsnummer, Materialnummer oder Materialbezeichnung suchen">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">

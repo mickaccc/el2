@@ -31,6 +31,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
         private IUserSettingsService _settingsService;
         private RelayCommand? _textChangedCommand;
         public ICommand TextChangedCommand => _textChangedCommand ??= new RelayCommand(OnTextChanged);
+        public ICommand? SaveCommand { get; private set; }
         public NotifyTaskCompletion<ICollectionView> MemberTask { get; private set; }
         public NotifyTaskCompletion<ICollectionView> VorgangTask { get; private set; }
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
@@ -50,7 +51,18 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             VorgangTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
             MemberTask = new NotifyTaskCompletion<ICollectionView>(LoadMemberAsync());
+            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             if (_settingsService.IsAutoSave) SetAutoSave();
+        }
+
+        private bool OnSaveCanExecute(object arg)
+        {
+            return _dbctx.ChangeTracker.HasChanges();
+        }
+
+        private void OnSaveExecuted(object obj)
+        {
+            _dbctx.SaveChanges();
         }
         private void SetAutoSave()
         {

@@ -92,7 +92,6 @@ namespace Lieferliste_WPF.Planning
         public ICommand? WorkerPrintCommand { get; private set; }
         public ICommand? KlimaPrintCommand { get; private set; }
         public ICommand? DocumentAddCommand { get; private set; }
-        public ICommand? SaveCommand { get; private set; }
         private readonly string _userId;
 
         public string UserId => _userId;
@@ -173,7 +172,6 @@ namespace Lieferliste_WPF.Planning
             WorkerPrintCommand = new ActionCommand(OnWorkerPrintExecuted, OnWorkerPrintCanExecute);
             KlimaPrintCommand = new ActionCommand(OnKlimaPrintExecuted, OnKlimaPrintCanExecute);
             DocumentAddCommand = new ActionCommand(OnDocumentAddExecuted, OnDocumentAddCanExecute);
-            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
 
@@ -181,16 +179,7 @@ namespace Lieferliste_WPF.Planning
 
         }
 
-        private bool OnSaveCanExecute(object arg)
-        {
-            return _dbctx.ChangeTracker.HasChanges();
-        }
-
-        private void OnSaveExecuted(object obj)
-        {
-            _dbctx.SaveChanges();
-        }
-
+ 
         private bool OnDocumentAddCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddMeasureDocu);
@@ -218,9 +207,28 @@ namespace Lieferliste_WPF.Planning
         {
             if (obj is Vorgang vrg)
             {
-                var fd = Printing.CreateKlimaDocument(vrg);
-                Printing.DoThePrint(fd);
-                vrg.KlimaPrint = DateTime.Now;
+                bool print = true;
+                if(!vrg.KlimaPrint.HasValue)
+                {
+                    vrg.KlimaPrint = DateTime.Now;
+                    _dbctx.SaveChangesAsync();
+                }
+                else
+                {
+                    var result = MessageBox.Show(string.Format("Es wurde bereits am {0} ausgedruckt.\nSoll nochmals gedruckt werden?",
+                        vrg.KlimaPrint?.ToString("dd/MM/yy HH:mm")),
+                        "Info Klimaausduck", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if(result == MessageBoxResult.No) { print = false; }
+                }
+                if (print)
+                {
+                    var fd = Printing.CreateKlimaDocument(vrg);
+                    PrintTicket ticket = new PrintTicket();
+                    ticket.PageOrientation = PageOrientation.Landscape;
+                    ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA5);
+                    
+                    Printing.DoThePrint(fd, ticket, vrg.VorgangId + "-" + vrg.KlimaPrint?.ToString("ddMMyyHHmm"));
+                }
             }
         }
 
