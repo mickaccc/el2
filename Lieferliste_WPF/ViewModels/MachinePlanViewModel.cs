@@ -167,7 +167,6 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadWorkAreas()
         {
-
             var w = UserInfo.User.UserWorkAreas.OrderByDescending(x => x.Standard);
             foreach (var workArea in w)
             {
@@ -355,7 +354,6 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-
         public void Drop(IDropInfo dropInfo)
 
         {
@@ -380,7 +378,6 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         vrg.Rid = null;
                         _DbCtx.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Rid = vrg.Rid;
-
                     }
                     var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
                     if (source.IsAddingNew) { source.CommitNew(); }

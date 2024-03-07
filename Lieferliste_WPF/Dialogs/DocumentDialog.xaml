@@ -17,10 +17,11 @@
                  dd:DragDrop.IsDropTarget="True"
                  dd:DragDrop.DropHandler="{Binding}"/>
         <DockPanel Grid.Row="1" Margin="15" >
-            <Button Content="VMPB"/>
-            <Button Content="Mess"/>
-            <Button Content="Fail"/>
+            <Button Content="VMPB" Command="{Binding VmpbCommand}"/>
+            <Button Content="1.Gutteil" Command="{Binding GutCommand}"/>
+            <Button Content="Muster" Command="{Binding MusterCommand}"/>
         </DockPanel>
-        <Button Content="Abbrechen" DockPanel.Dock="Right" Grid.Row="2" HorizontalAlignment="Right"/>
+        <Button Content="Abbrechen" DockPanel.Dock="Right" Grid.Row="2" HorizontalAlignment="Right" 
+                Command="Close"/>
     </Grid>
 </UserControl>

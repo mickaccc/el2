@@ -24,5 +24,6 @@ namespace Lieferliste_WPF.Dialogs
         {
             InitializeComponent();
         }
+
     }
 }

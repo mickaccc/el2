@@ -18,6 +18,9 @@
     <DebugType>full</DebugType>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <WarningLevel>3</WarningLevel>
+    <TransformOnBuild>true</TransformOnBuild>
+    <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
+    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
@@ -30,12 +33,18 @@
     <DebugType>full</DebugType>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <WarningLevel>3</WarningLevel>
+    <TransformOnBuild>true</TransformOnBuild>
+    <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
+    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>full</DebugType>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <WarningLevel>3</WarningLevel>
+    <TransformOnBuild>true</TransformOnBuild>
+    <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
+    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -48,6 +57,9 @@
     <DebugType>full</DebugType>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <WarningLevel>3</WarningLevel>
+    <TransformOnBuild>true</TransformOnBuild>
+    <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
+    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
   </PropertyGroup>
 
   <ItemGroup>
@@ -249,6 +261,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="VersionAutoIncrementer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VersionAutoIncrementer.txt</LastGenOutput>
+    </None>
+    <None Update="VersionAutoIncrementer.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>VersionAutoIncrementer.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="Themes\Light.Accent2.xaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Page>
@@ -263,16 +287,20 @@
     </Page>
   </ItemGroup>
 
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
 	<PropertyGroup>
 		<Authors>Michael Schatzl (SCM2HL)</Authors>
 		<AssemblyName>Lieferliste-WPF</AssemblyName>
-		<AssemblyVersion>1.0.*</AssemblyVersion>
+		<AssemblyVersion>1.0.1.*</AssemblyVersion>
 		<FileVersion>1.0.1.*</FileVersion>
 		<Deterministic>false</Deterministic>
 		<Description>Feinplanung, Auftragsübersicht, Produkte</Description>
 		<Title>Lieferliste-WPF</Title>
 		<Company>Bosch-HlP/TEF2</Company>
 	</PropertyGroup>
-
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\TextTemplating\Microsoft.TextTemplating.targets" />
 
 </Project>

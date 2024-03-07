@@ -1,9 +1,13 @@
 ﻿using El2Core.Services;
+using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
+using Microsoft.Identity.Client.NativeInterop;
 using Prism.Services.Dialogs;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
@@ -16,9 +20,51 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public string Title => "Dokument kopieren";
         private IUserSettingsService settingservice;
         public event Action<IDialogResult> RequestClose;
-
+        private RelayCommand? vmpbCommand;
+        private RelayCommand? gutCommand;
+        private RelayCommand? musterCommand;
+        public RelayCommand VmpbCommand => vmpbCommand ??= new RelayCommand(OnVmpbExecute);
+        public RelayCommand GutCommand => gutCommand ??= new RelayCommand(OnGutExecute);
+        public RelayCommand MusterCommand => musterCommand ??= new RelayCommand(OnMusterExecute);
         public string? Path { get; set; }
 
+        private void OnMusterExecute(object obj)
+        {
+            if(string.IsNullOrEmpty(Path))
+            {
+                OnError();
+            }
+            else 
+            {
+                FileInfo file = new FileInfo(Path);
+                if(file.Exists)
+                {
+                    //file.CopyTo(RuleInfo.Rules[0]);
+                }
+            }
+        }
+
+        private void OnVmpbExecute(object obj)
+        {
+            if (string.IsNullOrEmpty(Path))
+            {
+                OnError();
+            }
+            else { }
+        }
+        private void OnGutExecute(object obj)
+        {
+            if (string.IsNullOrEmpty(Path))
+            {
+                OnError();
+            }
+            else { }
+        }
+        
+        private void OnError()
+        {
+            MessageBox.Show("Pfadangabe ist leer!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
         public bool CanCloseDialog()
         {
             return true;        }
