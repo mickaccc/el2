@@ -27,8 +27,6 @@ namespace Lieferliste_WPF
  
             base.OnStartup(e);
 
-            ThemeManager.Current.ThemeSyncMode = ThemeSyncMode.SyncAll;
-            ThemeManager.Current.SyncTheme();
             //var theme = ThemeManager.Current.AddLibraryTheme(new LibraryTheme(
             //    new Uri("pack://application:,,,/MahAppsMetroThemesSample;component/CustomAccents/Dark.Accent2.xaml"),
             //    MahAppsLibraryThemeProvider.DefaultInstance));
