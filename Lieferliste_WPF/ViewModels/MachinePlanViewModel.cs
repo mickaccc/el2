@@ -157,7 +157,7 @@ namespace Lieferliste_WPF.ViewModels
             try
             {
                 _DbCtx.SaveChanges();
-                foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+               // foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
             }
             catch (Exception e)
             {
@@ -211,7 +211,7 @@ namespace Lieferliste_WPF.ViewModels
             try
             {
                 if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
-                foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+               // foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
             }
             catch (Exception ex)
             {
@@ -239,7 +239,7 @@ namespace Lieferliste_WPF.ViewModels
 
                     foreach (var q in re)
                     {
-                        result.Add(factory.CreatePlanMachine(q.RessourceId));
+                        result.Add(factory.CreatePlanMachine(q.RessourceId, proc.Where(x => x.Rid == q.RessourceId).ToList()));
                     }
                 }
                 _machines.AddRange(result);

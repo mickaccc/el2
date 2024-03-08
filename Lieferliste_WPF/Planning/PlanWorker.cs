@@ -8,7 +8,6 @@ using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using Prism.Events;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
 using System;
@@ -30,7 +29,6 @@ namespace Lieferliste_WPF.Planning
     {
         IContainerProvider Container { get; }
         IApplicationCommands ApplicationCommands { get; }
-        IEventAggregator EventAggregator { get; }
         IUserSettingsService SettingsService { get; }
     }
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
@@ -40,28 +38,26 @@ namespace Lieferliste_WPF.Planning
 
         public IApplicationCommands ApplicationCommands { get; }
 
-        public IEventAggregator EventAggregator { get; }
-
         public IUserSettingsService SettingsService { get; }
         public IDialogService DialogService { get; }
 
         public PlanWorkerFactory(IContainerProvider container, IApplicationCommands applicationCommands,
-            IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
+            IUserSettingsService settingsService, IDialogService dialogService)
         {
             this.Container = container;
             this.ApplicationCommands = applicationCommands;
-            this.EventAggregator = eventAggregator;
             this.SettingsService = settingsService;
             this.DialogService = dialogService;
         }
-        public PlanWorker CreatePlanWorker(string UserId)
+        public PlanWorker CreatePlanWorker(string UserId, List<Vorgang> processesAll)
         {
-            return new PlanWorker(UserId, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
+            return new PlanWorker(UserId, processesAll, Container, ApplicationCommands, SettingsService, DialogService);
         }
     }
     public interface IPlanWorker
     {
         public string UserId { get; }
+        
     }
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class PlanWorker : DependencyObject, IPlanWorker, IDropTarget, IViewModel
@@ -69,19 +65,19 @@ namespace Lieferliste_WPF.Planning
 
         #region Constructors
 
-        public PlanWorker(string UserId, IContainerProvider container,
+        public PlanWorker(string UserId, List<Vorgang> processes, IContainerProvider container,
             IApplicationCommands applicationCommands,
-            IEventAggregator eventAggregator,
             IUserSettingsService settingsService,
             IDialogService dialogService)
         {
             _container = container;
             _userId = UserId;
             _applicationCommands = applicationCommands;
-            _eventAggregator = eventAggregator;
             _settingsService = settingsService;
             _dialogService = dialogService;
+            
             Initialize();
+            Processes.AddRange(processes);
             LoadData();
 
         }
@@ -100,14 +96,13 @@ namespace Lieferliste_WPF.Planning
         public int? PersNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        private DB_COS_LIEFERLISTE_SQLContext _dbctx;
+        private List<Vorgang> _processesAll;
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
 
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         private IContainerProvider _container;
-        private IEventAggregator _eventAggregator;
         private IUserSettingsService _settingsService;
         private IDialogService _dialogService;
         private IApplicationCommands? _applicationCommands;
@@ -128,11 +123,11 @@ namespace Lieferliste_WPF.Planning
         private string _title = "Messtechnik";
         public string Title => _title;
 
-        public bool HasChange => _dbctx.ChangeTracker.HasChanges();
-
+        public bool HasChange => throw new NotImplementedException();
 
         private void LoadData()
         {
+            using var _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var usr = _dbctx.Users.AsNoTracking()
                 .Include(x => x.UserRoles)
                 .ThenInclude(x => x.Role)
@@ -141,15 +136,6 @@ namespace Lieferliste_WPF.Planning
                 .ThenInclude(x => x.RidNavigation)
                 .Single(x => x.UserIdent == UserId);
 
-            var vrg = _dbctx.Vorgangs
-                .Include(x => x.UserVorgangs)
-                .Include(x => x.AidNavigation)
-                .ThenInclude(x => x.MaterialNavigation)
-                .Where(x => x.UserVorgangs.Any(x => x.UserId == UserId) && x.SysStatus.Contains("RÜCK") == false)
-                .ToList();
-
-
-            Processes.AddRange(vrg);
             Name = usr.UsrName;
             Description = usr.UsrInfo;
             PersNo = usr.Personalnumber;
@@ -167,16 +153,12 @@ namespace Lieferliste_WPF.Planning
         }
         private void Initialize()
         {
-            _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             WorkerPrintCommand = new ActionCommand(OnWorkerPrintExecuted, OnWorkerPrintCanExecute);
             KlimaPrintCommand = new ActionCommand(OnKlimaPrintExecuted, OnKlimaPrintCanExecute);
             DocumentAddCommand = new ActionCommand(OnDocumentAddExecuted, OnDocumentAddCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
-
-            _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
-
         }
 
  
@@ -211,7 +193,9 @@ namespace Lieferliste_WPF.Planning
                 if(!vrg.KlimaPrint.HasValue)
                 {
                     vrg.KlimaPrint = DateTime.Now;
-                    _dbctx.SaveChangesAsync();
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    db.Update(vrg);
+                    db.SaveChangesAsync();
                 }
                 else
                 {
@@ -229,29 +213,6 @@ namespace Lieferliste_WPF.Planning
                     
                     Printing.DoThePrint(fd, ticket, vrg.VorgangId + "-" + vrg.KlimaPrint?.ToString("ddMMyyHHmm"));
                 }
-            }
-        }
-
-        private void MessageReceived(List<string?> vorgangIdList)
-        {
-            try
-            {
-                foreach (var v in vorgangIdList.Where(x => x != null))
-                {
-
-                    var pr = Processes?.FirstOrDefault(x => x.VorgangId == v);
-                    if (pr != null)
-                    {
-                        _dbctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
-
-                        pr.RunPropertyChanged();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message, "MsgReceivedPlanWorker", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -333,8 +294,7 @@ namespace Lieferliste_WPF.Planning
                     p[i].Spos = i;
 
                 }
-
-                _dbctx?.UserVorgangs.AddAsync(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
+                vrg.UserVorgangs.Add(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
 
                 t.Refresh();
 
@@ -360,29 +320,6 @@ namespace Lieferliste_WPF.Planning
 
         public void Closing()
         {
-            if (_dbctx.ChangeTracker.HasChanges())
-            {
-                SaveQuestion();
-            }
-        }
-        private bool SaveQuestion()
-        {
-            if (!_settingsService.IsSaveMessage)
-            {
-                _dbctx.SaveChangesAsync();
-                return true;
-            }
-            else
-            {
-                var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", _title),
-                    _title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes)
-                {
-                    _dbctx.SaveChangesAsync();
-                    return true;
-                }
-                else return false;
-            }
         }
     }
 }

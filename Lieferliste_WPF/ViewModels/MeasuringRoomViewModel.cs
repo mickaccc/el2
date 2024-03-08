@@ -36,6 +36,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
         public NotifyTaskCompletion<ICollectionView> VorgangTask { get; private set; }
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private ObservableCollection<Vorgang> _vorgangsList = new();
+        private List<Vorgang> _vorgangListAll = new();
         private List<PlanWorker> _emploeeList = new();
         private string _searchText = string.Empty;
         private static System.Timers.Timer _autoSaveTimer;
@@ -93,7 +94,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
 
 
                 _vorgangsList.AddRange(ord.ExceptBy(_dbctx.UserVorgangs.Select(x => x.Vid), x => x.VorgangId));
-
+                _vorgangListAll.AddRange(ord);
                 VorgangsView = CollectionViewSource.GetDefaultView(_vorgangsList);
                 VorgangsView.Filter += FilterPredicate;
             }
@@ -116,7 +117,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
             var factory = _container.Resolve<PlanWorkerFactory>();
             foreach (var item in mem)
             {
-                _emploeeList.Add(factory.CreatePlanWorker(item.UserIdent));
+                _emploeeList.Add(factory.CreatePlanWorker(item.UserIdent, _vorgangListAll.Where(x => x.UserVorgangs.Any(x => x.UserId == item.UserIdent)).ToList()));
             }
 
             EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);

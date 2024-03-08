@@ -243,12 +243,14 @@ namespace Lieferliste_WPF.ViewModels
                         file.CopyTo(ms);
                     Patt.AttachmentLink = fi.Name;
                     Patt.AttachmentBin = ms.ToArray();
+                    Patt.Timestamp = DateTime.Now;
                 }
                 else if (MessageBox.Show("Die Datei ist größer als 5 MiB, soll es als Link gespeichert werden?", "",
                     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     Patt.AttachmentLink = fi.FullName;
                     Patt.IsLink = true;
+                    Patt.Timestamp = DateTime.Now;
                 }
                 else return;
                 Project.ProjectAttachments.Add(Patt);

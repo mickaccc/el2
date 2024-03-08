@@ -61,9 +61,9 @@ namespace Lieferliste_WPF.Planning
             DataObject dt = new();
             
         }
-        public PlanMachine CreatePlanMachine(int Rid)
+        public PlanMachine CreatePlanMachine(int Rid, List<Vorgang> processes)
         {
-            return new PlanMachine(Rid, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
+            return new PlanMachine(Rid, processes, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
         }
     }
     public interface IPlanMachine
@@ -76,17 +76,17 @@ namespace Lieferliste_WPF.Planning
 
         #region Constructors
 
-        public PlanMachine(int Rid, IContainerProvider container, IApplicationCommands applicationCommands,
+        public PlanMachine(int Rid, List<Vorgang> processes, IContainerProvider container, IApplicationCommands applicationCommands,
             IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
         {
             _container = container;
-            _dbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _rId = Rid;
             _applicationCommands = applicationCommands;
             _eventAggregator = eventAggregator;
             _settingsService = settingsService;
             _dialogService = dialogService;
             Initialize();
+            Processes.AddRange(processes.OrderBy(x => x.Spos));
             LoadData();
             ProcessesCV.Refresh();
         }
@@ -104,7 +104,7 @@ namespace Lieferliste_WPF.Planning
         private readonly int _rId;
         private string _title;
         public string Title => _title;
-        public bool HasChange => _dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged);
+        public bool HasChange => _employees.Any(x => x.IsChanged);
         public int Rid => _rId;
         private string? _name;
         public string? Name { get { return _name; }
@@ -145,9 +145,8 @@ namespace Lieferliste_WPF.Planning
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
-        public ObservableCollection<string> LastChanges { get; } = new();
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
-        private DB_COS_LIEFERLISTE_SQLContext _dbCtx;
+
         private IContainerProvider _container;
         private IEventAggregator _eventAggregator;
         private IApplicationCommands? _applicationCommands;
@@ -184,13 +183,10 @@ namespace Lieferliste_WPF.Planning
         }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
-        public void SaveAll()
-        {
-            _dbCtx.SaveChanges();
-        }
         private void LoadData()
         {
-            var res = _dbCtx.Ressources
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var res = db.Ressources
                 .Include(x => x.WorkArea)
                 .Include(x => x.WorkSaps)
                 .Include(x => x.RessourceCostUnits)
@@ -202,21 +198,20 @@ namespace Lieferliste_WPF.Planning
                 .First(x => x.RessourceId == Rid);
 
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
-            Processes.AddRange(res.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.Spos));
             WorkArea = res.WorkArea;
             Name = res.RessName;
             _title = res.Inventarnummer ?? string.Empty;
             Vis = res.Visability;
             Description = res.Info;
             InventNo = res.Inventarnummer;
-            var empl = _dbCtx.Users
+            var empl = db.Users
                 .Include(x => x.UserCosts)
                 .ToList();
 
 
             for (int i = 0; i < CostUnits?.Count; i++)
             {
-                foreach (var emp in _dbCtx.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
+                foreach (var emp in db.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
                             && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
                 {
 
@@ -246,10 +241,9 @@ namespace Lieferliste_WPF.Planning
             //    live.LiveFilteringProperties.Add("SysStatus");
             //    live.IsLiveFiltering = true;
             //}
-            _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
+            //_eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
-            LastChanges.Add("LASTCHANGES");
         }
 
         private void MessageSearchFilterReceived(string obj)
@@ -260,40 +254,40 @@ namespace Lieferliste_WPF.Planning
             if (ind != null) ScrollItem = ind;
         }
 
-        private void MessageReceived(List<string?> vorgangIdList)
-        {
-            try
-            {               
-                foreach (string? id in vorgangIdList.Where(x => x != null))
-                {
+        //private void MessageReceived(List<string?> vorgangIdList)
+        //{
+        //    try
+        //    {               
+        //        foreach (string? id in vorgangIdList.Where(x => x != null))
+        //        {
                     
-                    var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
-                    if (pr != null)
-                    {
-                        string op = "PROP";
-                        _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
-                        pr.RunPropertyChanged();
-                        var vo = _dbCtx.Vorgangs.First(x => x.VorgangId == id);
-                        if (vo.SysStatus?.Contains("RÜCK") ?? false)
-                        {
-                            Processes?.Remove(pr);
-                            _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != vo.VorgangId).State = EntityState.Unchanged;
-                            ProcessesCV.Refresh();
-                            op = "RÜCK";
-                        }
-                        string str = string.Format("{0} - {1:T} Operation: {2}", id, DateTime.Now, op);
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            LastChanges.Add(str);
-                        }, System.Windows.Threading.DispatcherPriority.Normal);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(string.Format("{0}\n{1}",ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+        //            var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
+        //            if (pr != null)
+        //            {
+        //                string op = "PROP";
+        //                _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
+        //                pr.RunPropertyChanged();
+        //                var vo = _dbCtx.Vorgangs.First(x => x.VorgangId == id);
+        //                if (vo.SysStatus?.Contains("RÜCK") ?? false)
+        //                {
+        //                    Processes?.Remove(pr);
+        //                    _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != vo.VorgangId).State = EntityState.Unchanged;
+        //                    ProcessesCV.Refresh();
+        //                    op = "RÜCK";
+        //                }
+        //                string str = string.Format("{0} - {1:T} Operation: {2}", id, DateTime.Now, op);
+        //                Application.Current.Dispatcher.Invoke(() =>
+        //                {
+        //                    LastChanges.Add(str);
+        //                }, System.Windows.Threading.DispatcherPriority.Normal);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(string.Format("{0}\n{1}",ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
         private bool OnHistoryCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.HistoryDialog);
@@ -303,7 +297,8 @@ namespace Lieferliste_WPF.Planning
         {
             if(obj is Vorgang vrg)
             {
-                var matInfo = _dbCtx.OrderRbs.AsNoTracking()
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var matInfo = db.OrderRbs.AsNoTracking()
                     .Include(x => x.MaterialNavigation)
                     .Include(x => x.DummyMatNavigation)
                     .Include(x => x.Vorgangs)
@@ -432,21 +427,21 @@ namespace Lieferliste_WPF.Planning
             }
         }
 
-        private void MachineClosed(object? sender, EventArgs e)
-        {
-            if (_dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged))
-            {
-                if (!SaveQuestion())
-                {
-                    var canged = _dbCtx.ChangeTracker.Entries()
-                        .Where(x => x.State == EntityState.Modified).ToList();
-                    foreach (var c in canged)
-                    {
-                        c.State = EntityState.Unchanged;
-                    }
-                }
-            }
-        }
+        //private void MachineClosed(object? sender, EventArgs e)
+        //{
+        //    if (_dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged))
+        //    {
+        //        if (!SaveQuestion())
+        //        {
+        //            var canged = _dbCtx.ChangeTracker.Entries()
+        //                .Where(x => x.State == EntityState.Modified).ToList();
+        //            foreach (var c in canged)
+        //            {
+        //                c.State = EntityState.Unchanged;
+        //            }
+        //        }
+        //    }
+        //}
         private void InsertItems(Vorgang Item, ListCollectionView Source, ListCollectionView Target, int Index, bool sorting)
         {
  
@@ -467,9 +462,9 @@ namespace Lieferliste_WPF.Planning
             for (var i = 0; i < p.Count; i++)
             {
                 p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
-                var vv = _dbCtx.Vorgangs.First(x => x.VorgangId == p[i].VorgangId);
-                vv.Spos = i;
-                vv.Rid = _rId;
+                //var vv = _dbCtx.Vorgangs.First(x => x.VorgangId == p[i].VorgangId);
+                //vv.Spos = i;
+                //vv.Rid = _rId;
             }
             Target.MoveCurrentTo(Item);
         }
@@ -519,45 +514,45 @@ namespace Lieferliste_WPF.Planning
 
         void IViewModel.Closing()
         {
-            var emp = _employees.Any(x => x.IsChanged);
-            if (_dbCtx.ChangeTracker.HasChanges() || emp)
-            {
-                SaveQuestion();
-            }
+            //var emp = _employees.Any(x => x.IsChanged);
+            //if (_dbCtx.ChangeTracker.HasChanges() || emp)
+            //{
+            //    SaveQuestion();
+            //}
         }
-        private bool SaveQuestion()
-        {
-            foreach (var item in _employees.Where(x => x.IsChanged))
-            {
-                if (item.IsCheck)
-                {
-                    if (!_dbCtx.RessourceUsers.Any(x => x.UsId == item.User.UserIdent && x.Rid == this.Rid))
-                        _dbCtx.RessourceUsers.Add(new RessourceUser() { Rid = this.Rid, UsId = item.User.UserIdent });
-                }
-                else
-                {
-                    var ru = _dbCtx.RessourceUsers.SingleOrDefault(x => x.UsId == item.User.UserIdent && x.Rid == this.Rid);
-                    if (ru != null)
-                        _dbCtx.RessourceUsers.Remove(ru);
-                }
-            }
-            if (!_settingsService.IsSaveMessage)
-            {
-                _dbCtx.SaveChangesAsync();
-                return true;
-            }
-            else
-            {
-                var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", _title),
-                    _title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes)
-                {
-                    _dbCtx.SaveChangesAsync();
-                    return true;
-                }
-                else return false;
-            }
-        }
+        //private bool SaveQuestion()
+        //{
+        //    foreach (var item in _employees.Where(x => x.IsChanged))
+        //    {
+        //        if (item.IsCheck)
+        //        {
+        //            if (!_dbCtx.RessourceUsers.Any(x => x.UsId == item.User.UserIdent && x.Rid == this.Rid))
+        //                _dbCtx.RessourceUsers.Add(new RessourceUser() { Rid = this.Rid, UsId = item.User.UserIdent });
+        //        }
+        //        else
+        //        {
+        //            var ru = _dbCtx.RessourceUsers.SingleOrDefault(x => x.UsId == item.User.UserIdent && x.Rid == this.Rid);
+        //            if (ru != null)
+        //                _dbCtx.RessourceUsers.Remove(ru);
+        //        }
+        //    }
+        //    if (!_settingsService.IsSaveMessage)
+        //    {
+        //        _dbCtx.SaveChangesAsync();
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", _title),
+        //            _title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+        //        if (result == MessageBoxResult.Yes)
+        //        {
+        //            _dbCtx.SaveChangesAsync();
+        //            return true;
+        //        }
+        //        else return false;
+        //    }
+        //}
         public class UserStruct : ViewModelBase
         {
             public UserStruct(User usr, bool isc)

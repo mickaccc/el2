@@ -125,7 +125,6 @@
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

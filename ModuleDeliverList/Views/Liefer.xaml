@@ -76,15 +76,17 @@
         <Button Command="{Binding FilterSaveCommand}" ToolTip="Customfilter speichern" Margin="5">
             <materialDesign:PackIcon Kind="ContentSaveCog"/>
         </Button>
-        <materialDesign:ColorZone DockPanel.Dock="Right"
+
+            <materialDesign:ColorZone DockPanel.Dock="Right"
             FontSize="14"
             FontWeight="Bold"
             Margin="5,1,5,1"
             Mode="Standard"
             materialDesign:HintAssist.FloatingOffset="1,-15" materialDesign:HintAssist.IsFloating="True">
-                <StackPanel Orientation="Horizontal" >
+
+                <StackPanel Orientation="Horizontal">
                     <StackPanel.Resources>
-                        <Style x:Key="MyFocusVisual" TargetType="TextBox">
+                        <Style x:Key="MyFocusVisual" TargetType="TextBox" >
                             <Style.Triggers>
                                 <Trigger Property="IsFocused" Value="True">
                                     <Setter Property="Background" Value="Gold"/>
@@ -113,9 +115,9 @@
                         </DataTemplate>
                         
                     </StackPanel.Resources>
-                    <TextBox x:Name="MarkerCode" Width="40" Style="{DynamicResource MyFocusVisual}" 
+                    <TextBox x:Name="MarkerCode" MinWidth="40" Style="{DynamicResource MyFocusVisual}" 
                              Text="{Binding MarkerCode, Mode=TwoWay}"/>
-                     <ComboBox x:Name="ProjComboBox" Width="250" materialDesign:HintAssist.Hint="Projekte" 
+                    <ComboBox x:Name="ProjComboBox" Width="250" materialDesign:HintAssist.Hint="Projekte" 
                           ItemsSource="{Binding Projects}"                        
                           SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="ProjectPsp"

@@ -249,6 +249,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.ToTable("ProjectAttachment");
 
             entity.Property(e => e.ProjectPsp).HasMaxLength(50);
+            entity.Property(e => e.Timestamp).HasColumnType("datetime");
 
             entity.HasOne(d => d.ProjectPspNavigation).WithMany(p => p.ProjectAttachments)
                 .HasForeignKey(d => d.ProjectPsp)
