@@ -60,7 +60,7 @@
                     <StackPanel Orientation="Horizontal" >
                         <TextBlock Text="{Binding Vnr, StringFormat=\{0:D4\}}" Margin="5" />
                         <TextBlock Text="{Binding Text}" Margin="5"/>
-                        <TextBox Text="{Binding BemT}" IsReadOnly="True" TextWrapping="Wrap" Margin="5"/>
+                        <TextBlock Text="{Binding BemT}" TextWrapping="Wrap" Margin="5"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
