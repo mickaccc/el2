@@ -19,6 +19,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Xps.Packaging;
 using System.Windows.Xps.Serialization;
+using ValidationResult = System.Printing.ValidationResult;
 
 namespace Lieferliste_WPF.Utilities
 {
@@ -38,40 +39,19 @@ namespace Lieferliste_WPF.Utilities
             TextRange dest = new TextRange(copy.ContentStart, copy.ContentEnd);
             dest.Load(s, DataFormats.Xaml);
 
-            // Create a XpsDocumentWriter object, implicitly opening a Windows common print dialog,
-            // and allowing the user to select a printer.
-
-            // get information about the dimensions of the seleted printer+media.
-            System.Printing.PrintDocumentImageableArea ia = null;
-            PrinterSettings printerSettings = new PrinterSettings();
 
             PrintQueue queue = new PrintServer().GetPrintQueue(new PrinterSettings().PrinterName);
-            queue.UserPrintTicket = ticket;
-            queue.CurrentJobSettings.CurrentPrintTicket = ticket;
             queue.CurrentJobSettings.Description = description;
+            queue.CurrentJobSettings.CurrentPrintTicket = ticket;
 
+            ValidationResult result = queue.MergeAndValidatePrintTicket(queue.UserPrintTicket, ticket);
             System.Windows.Xps.XpsDocumentWriter docWriter = System.Printing.PrintQueue.CreateXpsDocumentWriter(queue);
 
+            DocumentPaginator paginator = ((IDocumentPaginatorSource)document).DocumentPaginator;
 
-                DocumentPaginator paginator = ((IDocumentPaginatorSource)copy).DocumentPaginator;
-
-                // Change the PageSize and PagePadding for the document to match the CanvasSize for the printer device.
-                paginator.PageSize = new Size((double)ticket.PageMediaSize.Width, (double)ticket.PageMediaSize.Height);
-                Thickness t = new Thickness(72);  // copy.PagePadding;
-                //copy.PagePadding = new Thickness(
-                //                 Math.Max(ia.OriginWidth, t.Left),
-                //                   Math.Max(ia.OriginHeight, t.Top),
-                //                   Math.Max(ia.MediaSizeWidth - (ia.OriginWidth + ia.ExtentWidth), t.Right),
-                //                   Math.Max(ia.MediaSizeHeight - (ia.OriginHeight + ia.ExtentHeight), t.Bottom));
-                
-                copy.ColumnWidth = double.PositiveInfinity;
-                //copy.PageWidth = 528; // allow the page to be the natural with of the output device
-
-                // Send content to the printer.
-
-                docWriter.Write(paginator);
+            document.ColumnWidth = double.PositiveInfinity;
+            docWriter.Write(paginator, ticket);
             
-
         }
         public static FlowDocument CreateFlowDocument(object parameter, PrintDialog printDlg)
         {
@@ -360,27 +340,27 @@ namespace Lieferliste_WPF.Utilities
         }
         public static FlowDocument CreateKlimaDocument(Vorgang vorgang)
         {
-            FlowDocument document = new FlowDocument();      
+            FlowDocument document = new FlowDocument();
 
             document.PageWidth = 768;
             document.PageHeight = 554;
             document.PagePadding = new Thickness(96 / 3);
             
             Paragraph p1 = new Paragraph();
-            p1.FontSize = 12;
+            p1.FontSize = 16;
             p1.FontFamily = SystemFonts.CaptionFontFamily;
 
             p1.Inlines.Add(new Run("Auftrag: "));
             p1.Inlines.Add(new Bold(new Underline(new Run(vorgang.Aid))));
             
             Paragraph p2 = new Paragraph();
-            p2.FontSize = 12;
+            p2.FontSize = 16;
             p2.FontFamily = SystemFonts.CaptionFontFamily;
 
             p2.Inlines.Add(new Run(string.Format("Vorgang: {0:D4} -- {1}", vorgang.Vnr, vorgang.Text)));
 
             Paragraph p3 = new Paragraph();
-            p3.FontSize = 12;
+            p3.FontSize = 16;
             p3.FontFamily = SystemFonts.CaptionFontFamily;
 
             p3.Inlines.Add(new Run("Material: "));
@@ -395,7 +375,7 @@ namespace Lieferliste_WPF.Utilities
             figure.Blocks.Add(p4);
             p1.Inlines.Add(figure);
             Paragraph p5 = new Paragraph();
-            p5.FontSize = 12;
+            p5.FontSize = 16;
             p5.FontFamily = SystemFonts.CaptionFontFamily;
             p5.Inlines.Add(new Run("Bemerkung: "));
             p5.Inlines.Add(new Run(vorgang.BemT));
@@ -404,7 +384,7 @@ namespace Lieferliste_WPF.Utilities
             var hh = (vorgang.KlimaPrint.HasValue) ? vorgang.KlimaPrint.Value.AddHours(h).ToString("dd/MM/yy HH:mm:ss") :null;
 
             Paragraph p6 = new Paragraph(new Run(string.Format("Start messen frühestens {0}", hh)));
-            p6.FontSize = 20;
+            p6.FontSize = 28;
             p6.FontFamily = SystemFonts.MessageFontFamily;
             p6.FontWeight = FontWeights.ExtraBold;
 
