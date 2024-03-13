@@ -12,6 +12,7 @@
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     xmlns:Controls="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    xmlns:vhDp="clr-namespace:vhDatePicker;assembly=vhDatePicker"
     
     x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
              prism:ViewModelLocator.AutoWireViewModel="True"
@@ -239,8 +240,9 @@
                          ToolTip="Endtermin" Grid.Row="1" 
                          Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
                                               Style="{StaticResource AlertDateStyle}"/>
-                <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"  
-                            HorizontalAlignment="Center" FirstDayOfWeek="Monday" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
+
+            <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"   
+                            HorizontalAlignment="Center" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}">
                     <DatePicker.IsEnabled>
