@@ -204,8 +204,7 @@
                             VgText="{Binding Text}"
                             WorkArea="{Binding ArbPlSap}"
                             WorkAreaText="{Binding ArbPlSap}"
-                            MachineText="{Binding RidNavigation.RessName,NotifyOnTargetUpdated=True}"
-                                                     User="ddd"
+                            MachineText="{Binding RidNavigation.RessName,NotifyOnTargetUpdated=True}"                                                 
                             Comment_Me="{Binding BemM, Mode=TwoWay,NotifyOnTargetUpdated=False}"
                             Comment_Te="{Binding BemT, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                             Comment_Ma="{Binding BemMa, Mode=TwoWay,NotifyOnTargetUpdated=True}"
@@ -215,6 +214,8 @@
                             Visibility="{Binding Visability, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}" >
+
+
                     </userControls:LieferlisteControl>
             </DataTemplate>
         </ListBox.ItemTemplate>

@@ -47,7 +47,7 @@ namespace Lieferliste_WPF.ViewModels
             }           
         }
 
-        private void OnMessageReceived(List<string> vorgangIdList)
+        private void OnMessageReceived(List<string?> vorgangIdList)
         {
             try
             {

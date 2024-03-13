@@ -38,7 +38,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
         private ObservableCollection<Vorgang> _vorgangsList = new();
         private ObservableCollection<PlanWorker> _emploeeList = new();
         private string _searchText = string.Empty;
-        private static System.Timers.Timer _autoSaveTimer;
+        private static System.Timers.Timer? _autoSaveTimer;
 
         public ICollectionView EmploeeList { get; private set; }
         public ICollectionView VorgangsView { get; private set; }

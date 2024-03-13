@@ -12,25 +12,13 @@ namespace Lieferliste_WPF.Views
         public string Ident { get; set; }
         public RoleEdit()
         {
-
             InitializeComponent();
-
         }
-
-        //private void Window_Loaded(object sender, RoutedEventArgs e)
-        //{
-
-        //    CommandBindings.Add(new CommandBinding(
-        //        ApplicationCommands.Close, HandleCloseExecuted,
-        //        HandleCloseCanExecute));
-
-        //}
 
         private void HandleCloseCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
-
 
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {

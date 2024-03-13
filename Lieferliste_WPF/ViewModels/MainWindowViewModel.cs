@@ -330,7 +330,7 @@ namespace Lieferliste_WPF.ViewModels
                         .Include(x => x.RidNavigation)
                         .Include(x => x.ArbPlSapNavigation)
                         .ThenInclude(x => x.Ressource)
-                        .ThenInclude(X => X.WorkArea)
+                        .ThenInclude(x => x.WorkArea)
                         .Where(x => x.Aid == aid)
                         .ToList();
 

@@ -1,4 +1,5 @@
 ﻿using GongSolutions.Wpf.DragDrop;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing.Printing;
@@ -15,7 +16,7 @@ namespace Lieferliste_WPF.Views
     /// </summary>
     public partial class PrintWindow : Window
     {
-        Collection<string> installedPrinters;
+
         public PrintWindow(FixedDocument document)
         {
 
@@ -30,7 +31,7 @@ namespace Lieferliste_WPF.Views
             PrintTicket ticket = new();
             LocalPrintServer printServer = new();
             PrintQueue queue = printServer.GetPrintQueue((string)cmbPrinterSelection.SelectedValue);
-
+            queue.CurrentJobSettings.Description = string.Format("{0}-{1}", PreviewD.Document.ToString(), DateTime.Now.ToString("ddMMyy-HHmmss"));
             ticket.Duplexing = Duplexing.OneSided;
             int cp;
             if (int.TryParse(copies.Text, out cp)) ticket.CopyCount = cp; else ticket.CopyCount = 1;

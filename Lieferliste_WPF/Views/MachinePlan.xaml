@@ -152,8 +152,10 @@
                 <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True" />
                 <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Bezeichnung" Binding="{Binding Path=AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Spätstart" Binding="{Binding SpaetStart, Converter={StaticResource KW}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Spätend" Binding="{Binding SpaetEnd, Converter={StaticResource KW}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Spätstart" Binding="{Binding SpaetStart, Converter={StaticResource KW},
+                    ConverterParameter=1}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Spätend" Binding="{Binding SpaetEnd, Converter={StaticResource KW},
+                    ConverterParameter=1}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Path=Text,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Dauer" IsReadOnly="True">

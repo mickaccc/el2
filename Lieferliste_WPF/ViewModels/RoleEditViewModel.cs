@@ -67,12 +67,12 @@ namespace Lieferliste_WPF.ViewModels
             get
             {
                 User us = (User)_roleCV.CurrentItem;
-                string result = null;
+                string? result = null;
                 if (columnName == nameof(User.UsrName))
                 {
                     if (us.UsrName.IsNullOrEmpty()) return "Der Eintrag darf nicht leer sein";
                 }
-                return result;
+                return result ??= string.Empty;
             }
         }
         private void OnCloseExecuted(object obj)

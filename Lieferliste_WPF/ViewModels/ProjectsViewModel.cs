@@ -95,8 +95,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private string _wbsInfo;
-        public string WbsInfo
+        private string? _wbsInfo;
+        public string? WbsInfo
         {
             get { return _wbsInfo; }
             private set
@@ -124,7 +124,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         public event Action<IDialogResult> RequestClose;
 
-        public ICollectionView OrdersView { get; private set; }
+        public ICollectionView? OrdersView { get; private set; }
         public ProjectsViewModel(IContainerProvider container, IUserSettingsService userSettingsService, IApplicationCommands applicationCommands)
         {
             _container = container;
@@ -154,15 +154,16 @@ namespace Lieferliste_WPF.ViewModels
             return OrdersView;
         }
 
-        private void AddAttachment(int id, string file, bool isLink)
+        private void AddAttachment(int id, string? file, bool isLink)
         {
+
             Attachment attachment = new(id, isLink);
-            FileInfo fi = new FileInfo(file);
+            FileInfo fi = new FileInfo(file ?? string.Empty);
             var fileass = new FileAssociationInfo(fi.Extension);
             if (fileass.Exists)
             {
                 var prog = new ProgramAssociationInfo(fileass.ProgID);
-                ImageSource icon;
+                ImageSource? icon;
 
                 if (prog.Exists)
                 {
@@ -175,16 +176,18 @@ namespace Lieferliste_WPF.ViewModels
                 Attachments.Add(attachment);
             }
         }
-        public static ImageSource GetIcon(ProgramIcon programIcon)
+        public static ImageSource? GetIcon(ProgramIcon programIcon)
         {
             try
             {      
-                Icon icon = Icon.ExtractIcon(programIcon.Path, programIcon.Index, 32);
-
-                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                            icon.Handle,
-                            new Int32Rect(0, 0, icon.Width, icon.Height),
-                            BitmapSizeOptions.FromEmptyOptions());
+                Icon? icon = Icon.ExtractIcon(programIcon.Path, programIcon.Index, 32);
+                if (icon != null)
+                {
+                    return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                                icon.Handle,
+                                new Int32Rect(0, 0, icon.Width, icon.Height),
+                                BitmapSizeOptions.FromEmptyOptions());
+                }
             }
             catch (Exception e)
             {
@@ -278,7 +281,7 @@ namespace Lieferliste_WPF.ViewModels
                 else
                 {
                     var pa = Project.ProjectAttachments.First(x => x.AttachId == att.Ident);
-                    using MemoryStream memoryStream = new MemoryStream((byte[])pa.AttachmentBin);
+                    using MemoryStream memoryStream = new(pa.AttachmentBin);
 
                     filepath = Path.Combine(Path.GetTempPath(), fi.Name);
                     using FileStream fs = new(filepath, FileMode.Create);

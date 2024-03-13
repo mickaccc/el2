@@ -50,7 +50,7 @@ namespace Lieferliste_WPF.Views
 
         #region AboutData Provider
         #region Member data
-        private XmlDocument xmlDoc;
+        private XmlDocument? xmlDoc;
 
         private const string propertyNameTitle = "Title";
         private const string propertyNameDescription = "Description";
@@ -118,16 +118,16 @@ namespace Lieferliste_WPF.Views
             get
             {
                 bool.TryParse(Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed"), out bool isNetworkDeployed);
-                Version.TryParse(Environment.GetEnvironmentVariable("ClickOnce_CurrentVersion"), out Version currentVersion);
+                Version.TryParse(Environment.GetEnvironmentVariable("ClickOnce_CurrentVersion"), out Version? currentVersion);
                 if (isNetworkDeployed)
                 {
-                    Version ver = currentVersion;
-                    return string.Format("Product Name: {4}, Publish Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                    Version ver = currentVersion ??= new();
+                    return string.Format("Product Name: {4}, Publish Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly()?.GetName().Name);
                 }
                 else
                 {
                     var ver = Assembly.GetExecutingAssembly().GetName().Version;
-                    return string.Format("Product Name: {4}, Version: {0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                    return string.Format("Product Name: {4}, Version: {0}.{1}.{2}.{3}", ver?.Major, ver?.Minor, ver?.Build, ver?.Revision, Assembly.GetEntryAssembly()?.GetName().Name);
                 }
             }
         }

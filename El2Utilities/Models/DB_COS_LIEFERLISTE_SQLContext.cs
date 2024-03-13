@@ -253,7 +253,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.HasOne(d => d.ProjectPspNavigation).WithMany(p => p.ProjectAttachments)
                 .HasForeignKey(d => d.ProjectPsp)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProjectAttachment_Project");
         });
 

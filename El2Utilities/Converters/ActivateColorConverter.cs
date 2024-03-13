@@ -8,13 +8,13 @@ namespace El2Core.Converters
     [ValueConversion(typeof(bool), typeof(SolidColorBrush))]
     public sealed class ActivateColorConverter : IValueConverter
     {
-        public SolidColorBrush ActiveColor { get; set; }
+        public SolidColorBrush? ActiveColor { get; set; }
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
 
             if ((bool)value)
             {
-                return ActiveColor;
+                return ActiveColor ??= Brushes.Red;
             }
             else
             {

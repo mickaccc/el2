@@ -25,12 +25,12 @@ namespace Lieferliste_WPF.Views
 
         public void Close()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void Show()
         {
-            throw new NotImplementedException();
+            
         }
 
         public bool? ShowDialog()

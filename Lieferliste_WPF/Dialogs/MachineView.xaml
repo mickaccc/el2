@@ -123,7 +123,7 @@
         </DockPanel>
         <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding PlanMachine.ProcessesCV}" AutoGenerateColumns="False"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" 
-                  dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray"
+                  dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" 
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"
                   dd:DragDrop.DropHandler="{Binding}">
@@ -181,7 +181,8 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate >
-                            <wpfControl:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
+                            <wpfControl:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}" 
+                                                       Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                        BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
                                                        ContextMenu="{StaticResource BulletContextMenu}"/>
 
@@ -192,8 +193,10 @@
                 <DataGridTextColumn Header="Vrg" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Bezeichnung" Binding="{Binding AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="SpätStart" Binding="{Binding SpaetStart, Converter={StaticResource KW}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, Converter={StaticResource KW}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="SpätStart" Binding="{Binding SpaetStart, Converter={StaticResource KW},
+                    ConverterParameter=2}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, Converter={StaticResource KW},
+                    ConverterParameter=2}" IsReadOnly="True"/>
                 <DataGridTemplateColumn Header="TL-Termin">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

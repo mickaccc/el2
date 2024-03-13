@@ -25,8 +25,9 @@ namespace Lieferliste_WPF.Views
 
         private void searchPsp_TextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBox psp = sender as TextBox;
-            psp.SelectionStart = psp.Text.Length;
+            TextBox? psp = sender as TextBox;
+            if (psp != null)
+                psp.SelectionStart = psp.Text.Length;
         }
 
         private void pspTree_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

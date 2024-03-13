@@ -134,7 +134,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception e)
             {
-                //MessageBox.Show(e.Message, "ProjectTypeCommand", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "ProjectTypeCommand", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -205,13 +205,14 @@ namespace Lieferliste_WPF.ViewModels
             }
 
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var root = tree?.Nodes.FirstOrDefault(x => psp[..9] == x.Value);
+            int rootLength = psp.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
+            var root = tree?.Nodes.FirstOrDefault(x => psp[..rootLength] == x.Value);
             if (root == null)
             {
-                var t = tree?.Begin(psp[..9]);
+                var t = tree?.Begin(psp[..rootLength]);
                 root = t.Nodes.Last();
             }
-            for (int i = 12; i <= psp.Length; i += 3)
+            for (int i = rootLength+3; i <= psp.Length; i += 3)
             {
                 var pre = root.Children.FirstOrDefault(x => psp[..i] == x.Value);
                 if (pre == null)
@@ -271,7 +272,7 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
                     var p = item.ProjectPsp.Trim();
-                    typeLength = p.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 12;
+                    typeLength = p.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
                     var root = taskTree.Nodes.FirstOrDefault(y => p[..typeLength] == y.Value);
                     if (root == null)
                     {
@@ -367,7 +368,8 @@ namespace Lieferliste_WPF.ViewModels
         {
             psp = ClearPsp(psp.ToUpper().Trim());
 
-            Regex regex = new Regex("(DS)(SC-PR-)([0-9]{6})([0-9]{2})*");
+            Regex regex = psp.StartsWith("ds", StringComparison.InvariantCultureIgnoreCase) ?
+                new Regex("(DS)([0-9]{6})([0-9]{2})*") : new Regex("(SC-PR)([0-9]{9})([0-9]{2})*");
             var match = regex.Match(psp);
             if (match.Success)
             {

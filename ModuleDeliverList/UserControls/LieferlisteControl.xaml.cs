@@ -257,6 +257,18 @@ namespace ModuleDeliverList.UserControls
 
 
 
+        public int ProjectAttachmentCount
+        {
+            get { return (int)GetValue(ProjectAttachmentCountProperty); }
+            set { SetValue(ProjectAttachmentCountProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ProjectAttachmentCount.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ProjectAttachmentCountProperty =
+            DependencyProperty.Register("ProjectAttachmentCount", typeof(int), typeof(LieferlisteControl), new PropertyMetadata(0));
+
+
+
         public string WorkArea
         {
             get { return (string)GetValue(WorkAreaProperty); }

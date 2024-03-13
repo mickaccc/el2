@@ -31,8 +31,8 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand CloseCommand { get; private set; }
         public ICommand LostFocusCommand => _LostFocusCommand ??= new RelayCommand(OnLostFocus);
 
-        private RelayCommand _LostFocusCommand;
-        private static ICollectionView _usrCV;
+        private RelayCommand? _LostFocusCommand;
+        private static ICollectionView? _usrCV;
 
         public ICollectionView RoleView { get { return roleSource.View; } }
         public ICollectionView WorkView { get { return workSource.View; } }
@@ -130,27 +130,27 @@ namespace Lieferliste_WPF.ViewModels
         private void CostFilterPredicate(object sender, FilterEventArgs e)
         {
             var cost = e.Item as Costunit;
-            if (_usrCV.CurrentItem is User us)
+            if (_usrCV?.CurrentItem is User us)
             {
-                e.Accepted = !us.UserCosts.Any(x => x.CostId == cost.CostunitId);
+                e.Accepted = !us.UserCosts.Any(x => x.CostId == cost?.CostunitId);
             }
         }
 
         private void WorkAreaFilterPredicate(object sender, FilterEventArgs e)
         {
             var work = e.Item as WorkArea;
-            if (_usrCV.CurrentItem is User us)
+            if (_usrCV?.CurrentItem is User us)
             {
-                e.Accepted = !us.UserWorkAreas.Any(x => x.WorkAreaId == work.WorkAreaId);
+                e.Accepted = !us.UserWorkAreas.Any(x => x.WorkAreaId == work?.WorkAreaId);
             }
         }
 
         private void RoleFilterPredicate(object sender, FilterEventArgs e)
         {
             var role = e.Item as Role;
-            if (_usrCV.CurrentItem is User us)
+            if (_usrCV?.CurrentItem is User us)
             {
-                e.Accepted = !us.UserRoles.Any(x => x.RoleId == role.Id);
+                e.Accepted = !us.UserRoles.Any(x => x.RoleId == role?.Id);
             }
         }
 
@@ -181,7 +181,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnDeleteExecuted(object obj)
         {
-            var u = _usrCV.CurrentItem;
+            var u = _usrCV?.CurrentItem;
 
             if (u is User usr)
             {
@@ -202,7 +202,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             var u = Users?.AddNew();
 
-            _usrCV.MoveCurrentTo(u);
+            _usrCV?.MoveCurrentTo(u);
             RoleView.Refresh();
             WorkView.Refresh();
             CostView.Refresh();
@@ -216,7 +216,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_isNew)
                 {
 
-                    var user = Users.Except(_dbctx.Users).FirstOrDefault();
+                    var user = Users?.Except(_dbctx.Users).FirstOrDefault();
                     if (user != null)
                     {
                         if (user.UsrName.IsNullOrEmpty()) ValidName = 1;
@@ -330,49 +330,52 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            User us = (User)_usrCV.CurrentItem;
-            Object? data = null;
-
-            if (dropInfo.Data is Role r)
+            if (_usrCV != null)
             {
-                data = new UserRole() { RoleId = r.Id, UserIdent = us.UserIdent, Role = r };
-                us.UserRoles.Add((UserRole)data);
-                RoleView.Refresh();
+                User us = (User)_usrCV.CurrentItem;
+                Object? data = null;
 
-            }
-            if (dropInfo.Data is WorkArea w)
-            {
-                data = new UserWorkArea() { WorkAreaId = w.WorkAreaId, UserId = us.UserIdent, WorkArea = w };
-                us.UserWorkAreas.Add((UserWorkArea)data);
-                WorkView.Refresh();
-
-            }
-            if (dropInfo.Data is Costunit c)
-            {
-                data = new UserCost() { CostId = c.CostunitId, UsrIdent = us.UserIdent, Cost = c };
-                us.UserCosts.Add((UserCost)data);
-                CostView.Refresh();
-
-            }
-            if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName && data == null)
-            {
-                if (UiName.Contains("ROLE"))
+                if (dropInfo.Data is Role r)
                 {
-                    us.UserRoles.Remove((UserRole)dropInfo.Data);
+                    data = new UserRole() { RoleId = r.Id, UserIdent = us.UserIdent, Role = r };
+                    us.UserRoles.Add((UserRole)data);
                     RoleView.Refresh();
+
                 }
-                if (UiName.Contains("WORKAREA"))
+                if (dropInfo.Data is WorkArea w)
                 {
-                    us.UserWorkAreas.Remove((UserWorkArea)dropInfo.Data);
+                    data = new UserWorkArea() { WorkAreaId = w.WorkAreaId, UserId = us.UserIdent, WorkArea = w };
+                    us.UserWorkAreas.Add((UserWorkArea)data);
                     WorkView.Refresh();
+
                 }
-                if (UiName.Contains("COSTUNIT"))
+                if (dropInfo.Data is Costunit c)
                 {
-                    us.UserCosts.Remove((UserCost)dropInfo.Data);
+                    data = new UserCost() { CostId = c.CostunitId, UsrIdent = us.UserIdent, Cost = c };
+                    us.UserCosts.Add((UserCost)data);
                     CostView.Refresh();
+
                 }
+                if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName && data == null)
+                {
+                    if (UiName.Contains("ROLE"))
+                    {
+                        us.UserRoles.Remove((UserRole)dropInfo.Data);
+                        RoleView.Refresh();
+                    }
+                    if (UiName.Contains("WORKAREA"))
+                    {
+                        us.UserWorkAreas.Remove((UserWorkArea)dropInfo.Data);
+                        WorkView.Refresh();
+                    }
+                    if (UiName.Contains("COSTUNIT"))
+                    {
+                        us.UserCosts.Remove((UserCost)dropInfo.Data);
+                        CostView.Refresh();
+                    }
+                }
+                _usrCV.Refresh();
             }
-            _usrCV.Refresh();
         }
 
         public void Closing()

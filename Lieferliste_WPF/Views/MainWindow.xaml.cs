@@ -21,16 +21,11 @@
         [SupportedOSPlatform("windows10.0")]
         public MainWindow()
         {
-            InitializeComponent();
-            Dispatcher.CurrentDispatcher.ShutdownStarted += OnShutdown;
+            InitializeComponent();           
         }
 
         #region Events
-        private void OnShutdown(object? sender, EventArgs e)
-        {
-            if (Dispatcher.CurrentDispatcher.Thread.ThreadState == System.Threading.ThreadState.Running) ;
-                
-        }
+ 
         private void About_Click(object sender, RoutedEventArgs e)
         {
             WPFAboutBox about = new WPFAboutBox(this);
@@ -76,7 +71,7 @@
         }
         #endregion
 
-        private static TabItem GetTargetTabItem(object originalSource)
+        private static TabItem? GetTargetTabItem(object originalSource)
         {
             var current = originalSource as DependencyObject;
 
@@ -96,6 +91,7 @@
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            if(_timer != null) _timer.Dispose();
             _timer = new System.Timers.Timer(1000);
             _timer.Elapsed += UpdateTime;
             _timer.AutoReset = true;
@@ -123,15 +119,26 @@
                         }), DispatcherPriority.Background);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                MessageBox.Show(e.Message);
             }
         }
 
         private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _timer?.Dispose();
+            Dispose(true);
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && _timer != null)
+                _timer.Dispose();
         }
     }
 }
