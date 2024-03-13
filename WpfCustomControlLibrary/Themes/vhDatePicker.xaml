@@ -1,0 +1,221 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:WpfCustomControlLibrary.vhDatePicker"
+                    xmlns:my="clr-namespace:WpfCustomControlLibrary.vhCalendar">
+    
+    <Style TargetType="{x:Type local:vhDatePicker}">
+        <Style.Resources>
+            <!-- =========== -->
+            <!-- = Brushes = -->
+            <!-- =========== -->
+            <Brush x:Key="NormalBrush">Transparent</Brush>
+            <Brush x:Key="NormalBorderBrush">Black</Brush>
+            <Brush x:Key="DefaultedBorderBrush">DarkBlue</Brush>
+            <Brush x:Key="HoverBrush">Transparent</Brush>
+            <Brush x:Key="HoverBackgroundBrush">Transparent</Brush>
+            <Brush x:Key="HoverForegroundBrush">RoyalBlue</Brush>
+            <Brush x:Key="ForegroundBrush">Black</Brush>
+            <Brush x:Key="PressedBrush">Transparent</Brush>
+            <Brush x:Key="PressedBorderBrush">#D7EFFC</Brush>
+            <Brush x:Key="TextBoxHoverBorderBrush">LightBlue</Brush>
+
+            
+            <!-- ======================== -->
+            <!-- = Styles and Templates = -->
+            <!-- ======================== -->
+            
+            <!-- button image style -->
+            <Style x:Key="ButtonImageStyle" TargetType="Button">
+                <Setter Property="SnapsToDevicePixels" Value="true"/>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" CornerRadius="0" BorderThickness="2" Background="{TemplateBinding Background}" BorderBrush="Transparent">
+                                <ContentPresenter Margin="1,1,1,1"  HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocused" Value="true">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource DefaultedBorderBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsDefaulted" Value="true">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource DefaultedBorderBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource HoverBackgroundBrush}" />
+                                    <Setter  Property="Foreground" Value="{StaticResource HoverForegroundBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="false">
+                                    <Setter  Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource PressedBrush}" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PressedBorderBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="false">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="Transparent" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- button brush style -->
+            <Style x:Key="ButtonBrushStyle" TargetType="Button">
+                <Style.Resources>
+                    <Brush x:Key="ArrowNormalBrush">#999999</Brush>
+                    <Brush x:Key="ArrowHoverBrush">#6691B8</Brush>
+                    <Brush x:Key="ArrowPressedBrush">#4F7EAA</Brush>
+                    <LinearGradientBrush x:Key="BackgroundNormalBrush" StartPoint="0,0" EndPoint="0,1">
+                        <GradientBrush.GradientStops>
+                            <GradientStopCollection>
+                                <GradientStop Color="#FAFAFD" Offset="0.0"/>
+                                <GradientStop Color="#E9ECFA" Offset="0.5"/>
+                                <GradientStop Color="#E2E6F4" Offset="0.6"/>
+                                <GradientStop Color="#C4CBDB" Offset="1.0"/>
+                            </GradientStopCollection>
+                        </GradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="BackgroundHoverBrush" StartPoint="0,0" EndPoint="0,1">
+                        <GradientBrush.GradientStops>
+                            <GradientStopCollection>
+                                <GradientStop Color="#EAF6FD" Offset="0.0"/>
+                                <GradientStop Color="#D7EFFC" Offset="0.5"/>
+                                <GradientStop Color="#BDE6FD" Offset="0.6"/>
+                                <GradientStop Color="#A6D9F4" Offset="1.0"/>
+                            </GradientStopCollection>
+                        </GradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="BackgroundPressedBrush" StartPoint="0,0" EndPoint="0,1">
+                        <GradientBrush.GradientStops>
+                            <GradientStopCollection>
+                                <GradientStop Color="#C2E4F6" Offset="0.0"/>
+                                <GradientStop Color="#C0E3F5" Offset="0.4"/>
+                                <GradientStop Color="#A9D9F2" Offset="0.5"/>
+                                <GradientStop Color="#90CBEB" Offset="1.0"/>
+                            </GradientStopCollection>
+                        </GradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Style.Resources>
+                <Setter Property="SnapsToDevicePixels" Value="true"/>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border" 
+                                    Width="20" Height="auto" Margin="1"
+                                    CornerRadius="3" 
+                                    BorderThickness=".5" BorderBrush="{StaticResource NormalBorderBrush}"
+                                    Background="{StaticResource BackgroundNormalBrush}">
+                                
+                                <Path x:Name="Part_ArrowPath" 
+                                      Margin="2" 
+                                      Height="6" Width="8" 
+                                      VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                      Stretch="Fill" 
+                                      Data="F1 M 139.333,138.667L 143.952,130.667L 134.715,130.667L 139.333,138.667 Z"
+                                      Fill="{StaticResource ArrowNormalBrush}">
+                                </Path>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocused" Value="true">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource DefaultedBorderBrush}" />
+                                    <Setter TargetName="Part_ArrowPath" Property="Fill" Value="{StaticResource ArrowHoverBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundHoverBrush}" />
+                                    <Setter TargetName="Part_ArrowPath" Property="Fill" Value="{StaticResource ArrowHoverBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="true">
+                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundPressedBrush}" />
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource NormalBorderBrush}" />
+                                    <Setter TargetName="Part_ArrowPath" Property="Fill" Value="{StaticResource ArrowPressedBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <!--contents textbox-->
+            <ControlTemplate x:Key="TextBoxTemplate">
+                <Border Name="Border" 
+                    BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}" 
+                    CornerRadius="1">
+                    <ScrollViewer x:Name="PART_ContentHost" 
+                              CanContentScroll="False" 
+                              VerticalAlignment="Center" VerticalContentAlignment="Top" 
+                              Padding="0"/>
+                </Border>
+                
+                <!--optional border arount textbox-->
+                <!--ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TextBoxHoverBorderBrush}"/>
+                    </Trigger>
+                </ControlTemplate.Triggers-->
+            </ControlTemplate>
+        </Style.Resources>
+
+        
+        <!-- ==================== -->
+        <!-- = Control Template = -->
+        <!-- ==================== -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:vhDatePicker}">
+                    <Border Background="{TemplateBinding Background}" 
+                            SnapsToDevicePixels="True"
+                            BorderBrush="{StaticResource NormalBorderBrush}"
+                            BorderThickness="0.5" 
+                            Width="auto" Height="auto">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Name="Part_DateCheckBox" Grid.Column="0" Visibility="Visible" 
+                                      HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                      Margin="4,2,2,2"/>
+                            <TextBox Name="Part_DateTextBox" 
+                                     Template="{StaticResource TextBoxTemplate}"   
+                                     BorderBrush="Transparent"                                      
+                                     Grid.Column="1" 
+                                     VerticalContentAlignment="Center" HorizontalAlignment="Stretch" 
+                                     Margin="2" 
+                                     Width="Auto"
+                                     AcceptsReturn="False" 
+                                     MaxLines="1" 
+                                     FlowDirection="LeftToRight" 
+                                     IsReadOnly="True">
+                            </TextBox>
+                            <Button Name="Part_CalendarButton"
+                                    Grid.Column="2" 
+                                    Style="{StaticResource ButtonImageStyle}" 
+                                    Margin="1"
+                                    Height="Auto"
+                                    HorizontalAlignment="Right" VerticalAlignment="Stretch">
+                                <Image Name="Part_ButtonImage" 
+                                       Margin="1" 
+                                       Stretch="Uniform"/>
+                            </Button>
+                            <Popup Name="Part_CalendarPopup" 
+                                   Margin="0,22,-22,-12"
+                                   HorizontalAlignment="Right" 
+                                   PlacementTarget="{Binding ElementName=Part_CalendarButton}" StaysOpen="False">
+                                <Grid Name="Part_CalendarGrid" Background="White">
+                                    <my:Calendar 
+                                        Height="160" Width="160" 
+                                        FooterVisibility="Collapsed" WeekColumnVisibility="Collapsed" 
+                                        FontSize="9"/>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

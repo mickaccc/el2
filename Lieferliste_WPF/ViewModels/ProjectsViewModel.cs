@@ -133,25 +133,33 @@ namespace Lieferliste_WPF.ViewModels
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
         }
 
-        private async Task<ICollectionView> LoadAsync(string projectNo)
+        private async Task<ICollectionView?> LoadAsync(string projectNo)
         {
-            var pro = await _dbctx.Projects
-                .Include(x => x.OrderRbs)
-                .ThenInclude(x => x.MaterialNavigation)
-                .Include(x => x.ProjectAttachments)
-                .FirstAsync(x => x.ProjectPsp == projectNo);
-
-            this.WbsElement = pro.ProjectPsp.Trim() ?? "NULL";
-            this.WbsInfo = pro.ProjectInfo?.Trim() ?? string.Empty;
-            this.Project = pro;
-
-            foreach(var o in pro.ProjectAttachments)
+            try
             {
-                AddAttachment(o.AttachId, o.AttachmentLink, o.IsLink);
+                var pro = await _dbctx.Projects
+             .Include(x => x.OrderRbs)
+             .ThenInclude(x => x.MaterialNavigation)
+             .Include(x => x.ProjectAttachments)
+             .FirstAsync(x => x.ProjectPsp == projectNo);
+
+                this.WbsElement = pro.ProjectPsp.Trim() ?? "NULL";
+                this.WbsInfo = pro.ProjectInfo?.Trim() ?? string.Empty;
+                this.Project = pro;
+
+                foreach (var o in pro.ProjectAttachments)
+                {
+                    AddAttachment(o.AttachId, o.AttachmentLink, o.IsLink);
+                }
+                _orderRbs = new List<OrderRb>(pro.OrderRbs.ToList());
+                OrdersView = CollectionViewSource.GetDefaultView(_orderRbs);
+                return OrdersView;
             }
-            _orderRbs = new List<OrderRb>(pro.OrderRbs.ToList());
-            OrdersView = CollectionViewSource.GetDefaultView(_orderRbs);
-            return OrdersView;
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Load Projects", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return null;
         }
 
         private void AddAttachment(int id, string? file, bool isLink)

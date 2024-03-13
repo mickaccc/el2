@@ -136,11 +136,14 @@
             <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" 
                                             Style="{StaticResource AlertProjectStyle}"
                                             Text="{Binding Path=Project, ElementName=luc}" TextWrapping="WrapWithOverflow"/>
-
-            <TextBox Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" TextWrapping="Wrap"
+                <materialdesign:Badged Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                       VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Badge="{Binding ProjectAttachmentCount, ElementName=luc}"  >
+                <TextBox x:Name="txtProjInfo" TextWrapping="Wrap"
                     IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
                                         Text="{Binding ProjectInfo, ElementName=luc}" />
-            <Controls:SelectableTextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="txtMatTTNR" >
+                </materialdesign:Badged>
+
+                <Controls:SelectableTextBlock Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="txtMatTTNR" >
                 <Controls:SelectableTextBlock.Text>
                     <MultiBinding StringFormat=" {0} - {1}" >
                         <Binding Path="TTNR" ElementName="luc" Converter="{StaticResource ttnr}"/>
