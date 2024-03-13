@@ -85,7 +85,7 @@
         </Style>
         <Style x:Key="AlertProjectStyle" TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource {x:Type Controls:SelectableTextBlock}}">
             <Style.Triggers >
-                <DataTrigger Binding="{Binding ElementName=luc, Converter={StaticResource stringEmpty}}" Value="True">
+                <DataTrigger Binding="{Binding Path=ProjectPrio, ElementName=luc, Converter={StaticResource stringEmpty}}" Value="True">
                     <Setter Property="Background" Value="Red"/>
                     <Setter Property="Foreground" Value="White"/>
                 </DataTrigger>
@@ -131,8 +131,10 @@
                      ToolTip="Plantermin lt. SAP"
                      Text="{Binding EckEnd, Converter={StaticResource KwConv}, ElementName=luc}"  />
             <TextBox x:Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1" Text="{Binding LieferTermin, Mode=TwoWay, ElementName=luc}"
-                     IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.LieferTermInvers}}"/>
-                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" Text="{Binding Project, ElementName=luc}"/>
+                     IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.LieferTermInvers}}"
+                     TextWrapping="Wrap"/>
+                <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" Text="{Binding Project, ElementName=luc}"
+                                              Style="{StaticResource AlertProjectStyle}"/>
                 <TextBox Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" x:Name="txtProjInfo" TextWrapping="Wrap"
                      IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
                                           Text="{Binding ProjectInfo, ElementName=luc}" />

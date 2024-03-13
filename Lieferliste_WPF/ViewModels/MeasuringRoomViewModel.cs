@@ -36,8 +36,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
         public NotifyTaskCompletion<ICollectionView> VorgangTask { get; private set; }
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private ObservableCollection<Vorgang> _vorgangsList = new();
-        private List<Vorgang> _vorgangListAll = new();
-        private List<PlanWorker> _emploeeList = new();
+        private ObservableCollection<PlanWorker> _emploeeList = new();
         private string _searchText = string.Empty;
         private static System.Timers.Timer _autoSaveTimer;
 
@@ -50,9 +49,11 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
             _applicationCommands = applicationCommands;
             _settingsService = settingsService;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            VorgangTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
+
             MemberTask = new NotifyTaskCompletion<ICollectionView>(LoadMemberAsync());
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+            VorgangsView = CollectionViewSource.GetDefaultView(_vorgangsList);
+            VorgangsView.Filter += FilterPredicate;
             if (_settingsService.IsAutoSave) SetAutoSave();
         }
 
@@ -77,6 +78,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
         {
             if (_dbctx.ChangeTracker.HasChanges()) _dbctx.SaveChangesAsync();
         }
+
         private async Task<ICollectionView> LoadDataAsync()
         {
             try
@@ -86,15 +88,14 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
             .ThenInclude(x => x.MaterialNavigation)
             .Include(x => x.AidNavigation.DummyMatNavigation)
             .Include(x => x.ArbPlSapNavigation)
+            .Include(x => x.UserVorgangs)
             .Where(x => (x.ArbPlSapNavigation.Ressource != null)
                 && x.ArbPlSapNavigation.Ressource.WorkAreaId == 5
                 && x.AidNavigation.Abgeschlossen == false
                 && ((x.SysStatus != null) && x.SysStatus.Contains("RÜCK") == false))
             .ToListAsync();
 
-
                 _vorgangsList.AddRange(ord.ExceptBy(_dbctx.UserVorgangs.Select(x => x.Vid), x => x.VorgangId));
-                _vorgangListAll.AddRange(ord);
                 VorgangsView = CollectionViewSource.GetDefaultView(_vorgangsList);
                 VorgangsView.Filter += FilterPredicate;
             }
@@ -113,15 +114,29 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
             var mem = await db.Users
                 .Where(x => x.RessourceUsers.Any(x => x.RidNavigation.WorkAreaId == 5))
                 .ToListAsync();
-
+            var ord = await _dbctx.Vorgangs
+                .Include(x => x.AidNavigation)
+                .ThenInclude(x => x.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.ArbPlSapNavigation)
+                .Include(x => x.UserVorgangs)
+                .Where(x => (x.ArbPlSapNavigation.Ressource != null)
+                && x.ArbPlSapNavigation.Ressource.WorkAreaId == 5
+                && x.AidNavigation.Abgeschlossen == false
+                && ((x.SysStatus != null) && x.SysStatus.Contains("RÜCK") == false))
+                .ToListAsync();
             var factory = _container.Resolve<PlanWorkerFactory>();
-            foreach (var item in mem)
-            {
-                _emploeeList.Add(factory.CreatePlanWorker(item.UserIdent, _vorgangListAll.Where(x => x.UserVorgangs.Any(x => x.UserId == item.UserIdent)).ToList()));
-            }
+                foreach (var item in mem)
+                {
+                    _emploeeList.Add(factory.CreatePlanWorker(item.UserIdent, ord.Where(x => x.UserVorgangs.Any(x => x.UserId == item.UserIdent)).ToList()));
+                }
 
-            EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);
+                EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);
+
+            _vorgangsList.AddRange(ord.ExceptBy(_dbctx.UserVorgangs.Select(x => x.Vid), x => x.VorgangId));
+ 
             return EmploeeList;
+
         }
         private void OnTextChanged(object obj)
         {

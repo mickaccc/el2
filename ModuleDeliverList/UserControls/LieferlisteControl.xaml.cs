@@ -245,6 +245,18 @@ namespace ModuleDeliverList.UserControls
 
 
 
+        public bool ProjectPrio
+        {
+            get { return (bool)GetValue(ProjectPrioProperty); }
+            set { SetValue(ProjectPrioProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ProjectPrio.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ProjectPrioProperty =
+            DependencyProperty.Register("ProjectPrio", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
+
+
+
         public string WorkArea
         {
             get { return (string)GetValue(WorkAreaProperty); }

@@ -94,6 +94,7 @@ namespace Lieferliste_WPF.ViewModels
                 var ord = await db.OrderRbs.AsNoTracking()
                     .Include(x => x.MaterialNavigation)
                     .Include(x => x.DummyMatNavigation)
+                    .Include(x => x.Pro)
                     .Where(x => x.Abgeschlossen)
                     .ToListAsync();
                 result.AddRange(ord);

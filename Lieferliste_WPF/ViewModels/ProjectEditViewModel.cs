@@ -260,6 +260,7 @@ namespace Lieferliste_WPF.ViewModels
                 .ToListAsync();
 
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
+            int typeLength;
 
             Tree<string> taskTree = new();
 
@@ -270,15 +271,15 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
                     var p = item.ProjectPsp.Trim();
-
-                    var root = taskTree.Nodes.FirstOrDefault(y => p[..9] == y.Value);
+                    typeLength = p.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 12;
+                    var root = taskTree.Nodes.FirstOrDefault(y => p[..typeLength] == y.Value);
                     if (root == null)
                     {
-                        var tr = taskTree.Begin(p[..9]);
+                        var tr = taskTree.Begin(p[..typeLength]);
                         root = tr.Nodes.Last();
 
                     }
-                    for (int i = 12; i <= p.Length; i += 3)
+                    for (int i = typeLength+3; i <= p.Length; i += 3)
                     {
                         var pre = root.Children.FirstOrDefault(x => x.Value == p[..i]);
                         if (pre == null)
@@ -366,7 +367,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             psp = ClearPsp(psp.ToUpper().Trim());
 
-            Regex regex = new Regex("(DS)([0-9]{6})([0-9]{2})*");
+            Regex regex = new Regex("(DS)(SC-PR-)([0-9]{6})([0-9]{2})*");
             var match = regex.Match(psp);
             if (match.Success)
             {

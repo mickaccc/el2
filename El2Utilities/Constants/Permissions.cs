@@ -67,5 +67,6 @@
         public const string KlimaPrint = "KLIMAPRINT";
         public const string AddMeasureDocu = "ADDMEADOCU";
         public const string RemoveMeasureDocu = "REMOVEMEADOCU";
+        public const string ProjectPrio = "PROJ06";
     }
 }

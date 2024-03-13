@@ -11,7 +11,7 @@ namespace El2Core.Converters
         {
             DateTime v = (DateTime)value;
             int weekNum = culture.Calendar.GetWeekOfYear(v, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-            return "KW " + weekNum.ToString() + "' " + v.Year.ToString();
+            return string.Format("{0}\nKW {1}", v.ToString("dd.MM.yy"),  weekNum.ToString());
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

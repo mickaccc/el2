@@ -20,6 +20,7 @@
         <conv:TTNR_Converter x:Key="ttnr"/>
         <conv:MultiObjectConverter x:Key="multi"/>
         <conv:PlusConverter x:Key="plus"/>
+        <conv:KW_Converter x:Key="KW"/>
 
     </UserControl.Resources>
  
@@ -151,8 +152,8 @@
                 <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True" />
                 <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Bezeichnung" Binding="{Binding Path=AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Spätstart" Binding="{Binding SpaetStart, StringFormat=\{0:d\}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Spätend" Binding="{Binding SpaetEnd, StringFormat=\{0:d\}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Spätstart" Binding="{Binding SpaetStart, Converter={StaticResource KW}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Spätend" Binding="{Binding SpaetEnd, Converter={StaticResource KW}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Kurztext" Binding="{Binding Path=Text,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="ArbPl" Binding="{Binding ArbPlSap}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Dauer" IsReadOnly="True">

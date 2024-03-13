@@ -387,7 +387,7 @@ namespace Lieferliste_WPF.Utilities
             p6.FontSize = 28;
             p6.FontFamily = SystemFonts.MessageFontFamily;
             p6.FontWeight = FontWeights.ExtraBold;
-
+            p6.TextAlignment = TextAlignment.Center;
             p6.TextDecorations = TextDecorations.Underline;
             p6.BorderBrush = Brushes.Black;
             p6.BorderThickness = new Thickness(2);

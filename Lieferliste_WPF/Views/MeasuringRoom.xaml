@@ -48,7 +48,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>  
         </ListBox>
-        <DataGrid Grid.Row="2" ItemsSource="{Binding VorgangTask.Result}" IsReadOnly="True" AutoGenerateColumns="False"
+        <DataGrid Grid.Row="2" ItemsSource="{Binding VorgangsView}" IsReadOnly="True" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"

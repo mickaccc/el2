@@ -193,9 +193,7 @@ namespace Lieferliste_WPF.Planning
                 if(!vrg.KlimaPrint.HasValue)
                 {
                     vrg.KlimaPrint = DateTime.Now;
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    db.Update(vrg);
-                    db.SaveChangesAsync();
+
                 }
                 else
                 {

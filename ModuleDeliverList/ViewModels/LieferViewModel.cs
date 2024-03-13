@@ -32,6 +32,7 @@ namespace ModuleDeliverList.ViewModels
         public ICommand ToggleFilterCommand => _toggleFilterCommand ??= new RelayCommand(OnToggleFilter);
         public ICommand SortAscCommand => _sortAscCommand ??= new RelayCommand(OnAscSortExecuted);
         public ICommand SortDescCommand => _sortDescCommand ??= new RelayCommand(OnDescSortExecuted);
+        public ICommand ProjectPrioCommand { get; private set; }
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SaveCommand { get; private set; }
@@ -153,6 +154,10 @@ namespace ModuleDeliverList.ViewModels
             SALES,
             [Description("Projekte mit Verzug")]
             PROJECTS_LOST,
+            [Description("rote Aufträge")]
+            ORDERS_RED,
+            [Description("rote Projekte")]
+            PROJECTS_RED,
             [Description("EXTERN")]
             EXERTN
         }
@@ -212,7 +217,7 @@ namespace ModuleDeliverList.ViewModels
             InvisibilityCommand = new ActionCommand(OnInvisibilityExecuted, OnInvisibilityCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             FilterSaveCommand = new ActionCommand(OnFilterSaveExecuted, OnFilterSaveCanExecute);
-
+            ProjectPrioCommand = new ActionCommand(OnSetProjectPrioExecuted, OnSetProjectPrioCanExecute);
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
 
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
@@ -221,6 +226,23 @@ namespace ModuleDeliverList.ViewModels
 
             if (_settingsService.IsAutoSave) SetAutoSave();
 
+        }
+
+        private bool OnSetProjectPrioCanExecute(object arg)
+        {
+            if(arg is Vorgang v)
+                if(v.AidNavigation.Pro != null)
+                    return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectPrio);
+            return false;
+        }
+
+        private void OnSetProjectPrioExecuted(object obj)
+        {
+            if (obj is Vorgang v)
+            {
+                if (v.AidNavigation.Pro != null)
+                    v.AidNavigation.Pro.ProjectPrio = !v.AidNavigation.Pro.ProjectPrio;
+            }
         }
 
         private bool OnInvisibilityCanExecute(object arg)
@@ -365,6 +387,8 @@ namespace ModuleDeliverList.ViewModels
                     .WorkArea?.Bereich == _selectedSectionFilter;
             if (accepted && _markerCode != string.Empty) accepted = ord.AidNavigation.MarkCode?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
             if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_LOST) accepted = ProjectsLost(ord.AidNavigation.Pro) == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.ORDERS_RED) accepted = ord.AidNavigation.Prio?.Length > 0 == !FilterInvers;
+            if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_RED) accepted = ord.AidNavigation.Pro?.ProjectPrio == !FilterInvers;
             return accepted;
         }
 

@@ -177,7 +177,8 @@
                     <MenuItem Header="Projekt öffnen"
                               Command="{Binding ApplicationCommands.OpenProjectOverViewCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-
+                    <MenuItem Header="Projekt priorisieren" Command="{Binding ProjectPrioCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                 </ContextMenu>
             </ListBox.ContextMenu>
             <ListBox.ItemTemplate>
@@ -194,6 +195,7 @@
                             Vnr="{Binding Vnr}" 
                             Project="{Binding AidNavigation.ProId}"
                             ProjectInfo="{Binding AidNavigation.Pro.ProjectInfo, Mode=TwoWay}"
+                            ProjectPrio="{Binding AidNavigation.Pro.ProjectPrio, Mode=TwoWay}"
                             Quantity="{Binding AidNavigation.Quantity}" 
                             QuantityYield="{Binding QuantityYield,NotifyOnTargetUpdated=True}" 
                             QuantityScrap="{Binding QuantityScrap,NotifyOnTargetUpdated=True}" 

@@ -167,8 +167,9 @@ namespace Lieferliste_WPF.ViewModels
             }
             else if (arg is string s)
             {
-                if (s.StartsWith("DS")) accept = true;
+                if (s.StartsWith("DS") || s.StartsWith("SC-PR")) accept = true;
             }
+            
             return accept && PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
         }
         private void OnOpenProjectOverViewExecuted(object obj)
@@ -307,7 +308,7 @@ namespace Lieferliste_WPF.ViewModels
         private static bool OnOpenOrderCanExecute(object arg)
         {
             if (arg is string s)
-                if (s.StartsWith("DS"))
+                if (s.StartsWith("DS") || s.StartsWith("SC-PR"))
                     return false;
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Order);
         }

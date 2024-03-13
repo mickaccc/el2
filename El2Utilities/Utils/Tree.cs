@@ -88,7 +88,8 @@ namespace El2Core.Utils
             Children = new List<TreeNode<T>>();
             if (val is string s)
             {
-                NodeType = s.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? "PSP-Type" : "Order-Type";
+                NodeType = s.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ||
+                    s.StartsWith("sc-pr", StringComparison.OrdinalIgnoreCase) ? "PSP-Type" : "Order-Type";
             }
             else NodeType = "invalid";
 
@@ -205,7 +206,8 @@ namespace El2Core.Utils
 
             if (project.ProjectPsp is string s)
             {
-                NodeType = s.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? "PSP-Type" : "Order-Type";
+                NodeType = s.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ||
+                    s.StartsWith("sc-pr", StringComparison.OrdinalIgnoreCase) ? "PSP-Type" : "Order-Type";
             }
             else NodeType = "invalid";
         }
