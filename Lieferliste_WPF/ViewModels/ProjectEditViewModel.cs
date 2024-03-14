@@ -24,7 +24,6 @@ namespace Lieferliste_WPF.ViewModels
         public string Title { get; } = "Projekt Editor";
 
         private IContainerProvider _container;
-        private DB_COS_LIEFERLISTE_SQLContext _context { get; set; }
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -36,8 +35,6 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OrderSearchCommand => _orderSearchCommand ??= new RelayCommand(OnOrderSearch);
         public ICommand ProjectSearchCommand => _projectSearchCommand ??= new RelayCommand(OnProjectSearch);
         public ICommand ConcatCommand { get; private set; }
-        public ICommand DescriptLostFocusCommand { get; private set; }
-        public ICommand ProjectTypeCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
         private ObservableCollection<OrderRb> _ordersList = [];
         public ICollectionView? OrdersCollectionView { get; private set; }
@@ -74,15 +71,13 @@ namespace Lieferliste_WPF.ViewModels
         public ProjectEditViewModel(IContainerProvider container, IApplicationCommands applicationCommands)
         {
             _container = container;
-            _context = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _applicationCommands = applicationCommands;
-            ConcatCommand = new ActionCommand(OnConcatExecuted, OnConcatCanExecute);
-            DescriptLostFocusCommand = new ActionCommand(OnDescriptLostFocusExecuted, OnDescriptLostFocusCanExecute);
-            ProjectTypeCommand = new ActionCommand(OnProjectTypeExecuted, OnProjectTypeCanExecute);
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             OrdTask = new NotifyTaskCompletion<ICollectionView>(LoadOrderDataAsync());
-            PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync(GetProjects())); 
+            PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync()); 
+            
         }
+
 
         private bool OnDeleteCanExecute(object arg)
         {
@@ -114,48 +109,6 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
             db.SaveChanges();
-        }
-
-        private bool OnProjectTypeCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectTypeChange);
-        }
-
-        private void OnProjectTypeExecuted(object obj)
-        {
-            try
-            {
-                if (obj is TreeNode<string> node)
-                {
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    db.Projects.Single(x => x.ProjectPsp == node.Value).ProjectType = (int)node.ProjectType;
-                    db.SaveChangesAsync();
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "ProjectTypeCommand", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private bool OnDescriptLostFocusCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDesript);
-        }
-
-        private void OnDescriptLostFocusExecuted(object obj)
-        {
-            var tree = (TreeNode<string>)obj;
-            if (!string.IsNullOrEmpty(tree.Description))
-            {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var pinfo = db.Projects.First(x => x.ProjectPsp == tree.Value).ProjectInfo;
-                if (pinfo != tree.Description)
-                {
-                    db.Projects.First(x => x.ProjectPsp == tree.Value).ProjectInfo = tree.Description;
-                    db.SaveChanges();
-                }
-            }
         }
 
         private void OnProjectSearch(object obj)
@@ -250,14 +203,12 @@ namespace Lieferliste_WPF.ViewModels
             return OrdersCollectionView;
         }
 
-        private IQueryable<Project> GetProjects()
+        private async Task<ICollectionView> LoadPspDataAsync()
         {
-            return _context.Projects;
-        }
-
-        private async Task<ICollectionView> LoadPspDataAsync(IQueryable<Project> projects)
-        {
-            var proj = await projects.Include(x => x.OrderRbs)
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var proj = await db.Projects
+                .Include(x => x.OrderRbs)
+                .ThenInclude(x => x.MaterialNavigation)
                 .ToListAsync();
 
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
@@ -297,11 +248,13 @@ namespace Lieferliste_WPF.ViewModels
                             if (root.Children.All(x => x.Value != o.Aid))
                             {
                                 var n = new TreeNode<string>(o.Aid, root);
+                                n.Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng);
                                 root.Children.Add(n);
                             }
                         }
                         root.Description = item.ProjectInfo ?? string.Empty;
                         root.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
+                        root.PropertyChanged += OnPspPropertyChanged;
                     }
                     while (taskTree.level > 0)
                         taskTree.End();
@@ -312,6 +265,23 @@ namespace Lieferliste_WPF.ViewModels
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(tree.Nodes);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;
+        }
+
+        private void OnPspPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            var tn = sender as TreeNode<string>;
+            if (tn != null)
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var pr = db.Projects.Single(x => x.ProjectPsp == tn.Value);
+                if (e.PropertyName == "ProjectType" &&
+                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectTypeChange)) pr.ProjectType = (int)tn.ProjectType;
+                if (e.PropertyName == "Description" &&
+                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDesript)) pr.ProjectInfo = tn.Description;
+
+                db.SaveChanges();
+            }
+            
         }
 
         private bool FilterPredicatePsp(object obj)
@@ -362,7 +332,6 @@ namespace Lieferliste_WPF.ViewModels
                 return true;
             }
             else return false;
-
         }
         private string ConvertPsp(string psp)
         {
@@ -379,17 +348,10 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     retVal += "-" + m.Value;
                 }
-
                 return retVal;
             }
 
             return psp;
         }
-
-        public void Closing()
-        {
-            _context.SaveChanges();
-        }
     }
-
 }

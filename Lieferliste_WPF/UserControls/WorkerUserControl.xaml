@@ -54,8 +54,18 @@
 											 Kind="Hide"
 											 Width="25"/>
 				</Button>
-
-					<Button Canvas.Top="30"
+                <Button Canvas.Top="30"
+					Command="{Binding OpenWorkerCommand, Mode=OneWay}"
+					CommandParameter="{Binding InventNo}"
+					HorizontalAlignment="Left"
+					Padding="2"
+					Style="{StaticResource MaterialDesignFlatButton}"
+					ToolTip="Alternativ: Strg + LMB oder Strg + M">
+                        <materialdesign:PackIcon Height="25"
+										 Kind="Details"
+										 Width="25"/>
+                    </Button>
+                    <Button Canvas.Left="35" Canvas.Top="30"
 							Command="{Binding WorkerPrintCommand}"
 							CommandParameter="{Binding}"
 							Padding="2"

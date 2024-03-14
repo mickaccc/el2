@@ -412,7 +412,6 @@ namespace Lieferliste_WPF.Planning
             }
             catch (Exception e)
             {
-
                 MessageBox.Show(e.Message, "Error OpenMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

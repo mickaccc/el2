@@ -85,6 +85,7 @@ namespace Lieferliste_WPF.Planning
         #endregion
 
         public ICommand? SetMarkerCommand { get; private set; }
+        public ICommand? OpenWorkerCommand { get; private set; }
         public ICommand? WorkerPrintCommand { get; private set; }
         public ICommand? KlimaPrintCommand { get; private set; }
         public ICommand? DocumentAddCommand { get; private set; }
@@ -155,13 +156,38 @@ namespace Lieferliste_WPF.Planning
         {
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             WorkerPrintCommand = new ActionCommand(OnWorkerPrintExecuted, OnWorkerPrintCanExecute);
+            OpenWorkerCommand = new ActionCommand(OnOpenWorkerExecuted, OnOpenWorkerCanExecute);
             KlimaPrintCommand = new ActionCommand(OnKlimaPrintExecuted, OnKlimaPrintCanExecute);
             DocumentAddCommand = new ActionCommand(OnDocumentAddExecuted, OnDocumentAddCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
         }
 
- 
+        private bool OnOpenWorkerCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.MessWorker);
+        }
+
+        private void OnOpenWorkerExecuted(object obj)
+        {
+            try
+            {
+                var par = new DialogParameters();
+                par.Add("PlanWorker", this);
+
+                _dialogService.Show("WorkerView", par, WorkerViewCallBack);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error OpenWorker", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void WorkerViewCallBack(IDialogResult result)
+        {
+            
+        }
+
         private bool OnDocumentAddCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddMeasureDocu);

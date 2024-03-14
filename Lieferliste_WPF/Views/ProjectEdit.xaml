@@ -32,84 +32,77 @@
             <Setter Property="Margin" Value="1"/>
         </Style>
         
-        <HierarchicalDataTemplate x:Key="Branch"
-
-ItemsSource="{Binding Children}">
+        <HierarchicalDataTemplate x:Key="Branch" ItemsSource="{Binding Children}">
             <TreeViewItem >
                 <TreeViewItem.Header>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" 
+                                Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                     <StackPanel.Children >
-                <Image>
-                    <Image.Style>
-                        <Style BasedOn="{StaticResource IconImageStyleSmall}" TargetType="Image">
-                            <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=NodeType}"  Value="PSP-Type">
+                        <Image>
+                            <Image.Style>
+                                <Style BasedOn="{StaticResource IconImageStyleSmall}" TargetType="Image">
                                     <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=NodeType}"  Value="Order-Type">
-                                    <Setter Property="Source" Value="{Binding Source={StaticResource Order-Type}, Mode=OneTime}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Image.Style>
-                </Image>
-                            <TextBlock Text="{Binding Path=Value}" Margin="3,0,30,0" MouseLeftButtonDown="pspTree_MouseLeftButtonDown" >
-                                <TextBlock.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Auftrag öffnen"
-                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenOrderCommand}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Value}"/>
-                                        <MenuItem Header="Project öffnen" Command="{Binding Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenProjectOverViewCommand, 
-                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Value}"/>
-                                        <MenuItem Header="löschen" Command="{Binding Path=PlacementTarget.Parent.Tag.DeleteCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext}"/>
-                                    </ContextMenu>
-                                </TextBlock.ContextMenu>
-                            </TextBlock>
-                            <TextBox Text="{Binding Description}"
-                          IsReadOnly="{Binding Converter={StaticResource permiss},
-                     ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
-                  HorizontalAlignment="Right" Background="Azure" MinWidth="40">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=HasOrder}" Value="False">
-                                    <Setter Property="Visibility" Value="Hidden"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="LostFocus">
-                            <i:InvokeCommandAction Command="{Binding DataContext.DescriptLostFocusCommand, ElementName=pspTree}"
-                                                    CommandParameter="{Binding}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-                            <ComboBox Margin="15,0,0,0"
-                     ItemsSource="{Binding Path=ProjectType, Converter={conv:EnumToCollectionConverter}, Mode=OneTime}"
-                                      SelectedValuePath="Value"
-                                      SelectedValue="{Binding Path=ProjectType}"
-                     DisplayMemberPath="Description">
-                                <ComboBox.Style>
-                                    <Style TargetType="ComboBox">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=NodeType}"  Value="PSP-Type">
+                                            <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Path=NodeType}"  Value="Order-Type">
+                                            <Setter Property="Source" Value="{Binding Source={StaticResource Order-Type}, Mode=OneTime}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <TextBlock Text="{Binding Path=Value}" Margin="3,0,30,0" MouseLeftButtonDown="pspTree_MouseLeftButtonDown" >
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Auftrag öffnen"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenOrderCommand}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Value}"/>
+                                    <MenuItem Header="Project öffnen" Command="{Binding Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenProjectOverViewCommand, 
+                                        RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Value}"/>
+                                    <MenuItem Header="löschen" Command="{Binding Path=PlacementTarget.Parent.Tag.DeleteCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext}"/>
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
+                            <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Path=HasOrder}" Value="False">
                                                 <Setter Property="Visibility" Value="Hidden"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </ComboBox.Style>
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="SelectionChanged">
-                                        <i:InvokeCommandAction Command="{Binding Path=DataContext.ProjectTypeCommand, ElementName=pspTree}"
-                                                               CommandParameter="{Binding}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </ComboBox>
-                    </StackPanel.Children>
+                                </StackPanel.Style>
+                                <TextBox Text="{Binding Description}"
+                            IsReadOnly="{Binding Converter={StaticResource permiss},
+                            ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
+                            HorizontalAlignment="Right" Background="Azure" MinWidth="40"/>
+
+                                <ComboBox Margin="15,0,0,0"
+                            ItemsSource="{Binding Path=ProjectType, Converter={conv:EnumToCollectionConverter}, Mode=TwoWay}"
+                            SelectedValuePath="Value"
+                            SelectedValue="{Binding Path=ProjectType}"
+                            DisplayMemberPath="Description" />
+
+                            </StackPanel>
+                            <Label Content="{Binding Path=Description}">
+                                <Label.Style>
+                                    <Style TargetType="Label">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=NodeType}"  Value="PSP-Type">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Label.Style>
+                            </Label>
+                            </Grid>
+                        </StackPanel.Children>
                 </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
@@ -125,13 +118,12 @@ ItemsSource="{Binding Children}">
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid HorizontalAlignment="Stretch"  Grid.ColumnSpan="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBox x:Name="searchPsp" Grid.Column="0" VerticalAlignment="Stretch"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="searchPsp" Grid.Column="0" VerticalAlignment="Stretch"
                          materialDesign:HintAssist.Hint="PSP-Element"
                          Text="{Binding Path=ProjectSearchText}" TextChanged="searchPsp_TextChanged" >
    
@@ -142,7 +134,7 @@ ItemsSource="{Binding Children}">
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </TextBox>
-                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"  Grid.Column="0" Margin="15,0,15,0" HorizontalAlignment="Right"
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"  Grid.Column="1" Margin="15,0,15,0" HorizontalAlignment="Stretch"
                         Command="{Binding ConcatCommand}" >
                     <Button.CommandParameter>
                         <MultiBinding Converter="{StaticResource multi}">

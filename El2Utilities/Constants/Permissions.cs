@@ -68,5 +68,6 @@
         public const string AddMeasureDocu = "ADDMEADOCU";
         public const string RemoveMeasureDocu = "REMOVEMEADOCU";
         public const string ProjectPrio = "PROJ06";
+        public const string MessWorker = "MEA03";
     }
 }
