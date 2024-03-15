@@ -166,28 +166,28 @@
 				<DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}"
 									Header="Auftrag"
 									IsReadOnly="True"
-									Width="Auto">
-					<DataGridTextColumn.ElementStyle>
-						<Style TargetType="TextBlock">
-							<Setter Property="Background">
-								<Setter.Value>
-									<MultiBinding Converter="{StaticResource txtColor}">
-										<Binding />
-										<Binding ElementName="searchTextBox"
+									Width="Auto" materialdesign:BadgedAssist.Badge="1">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource txtColor}">
+                                        <Binding />
+                                        <Binding ElementName="searchTextBox"
 												 Path="Text"/>
-									</MultiBinding>
-								</Setter.Value>
-							</Setter>
-						</Style>
-					</DataGridTextColumn.ElementStyle>
-				</DataGridTextColumn>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
 
-				<DataGridTextColumn Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}"
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}"
 									Header="Vorgang"
 									IsReadOnly="True"
 									Width="Auto"/>
-
-			</DataGrid.Columns>
+            </DataGrid.Columns>
 		</DataGrid>
 	</Grid>
 

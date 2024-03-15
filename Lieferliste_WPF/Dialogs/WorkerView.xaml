@@ -248,9 +248,7 @@
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Mge" Binding="{Binding AidNavigation.Quantity}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Rck" Binding="{Binding QuantityYield}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="offen" Binding="{Binding QuantityMiss}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Auss" Binding="{Binding QuantityScrap}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="NA" Binding="{Binding QuantityRework}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Klimedruck" Binding="{Binding KlimaPrint}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Dauer" IsReadOnly="True">
                     <DataGridTextColumn.Binding>
                         <MultiBinding Converter="{StaticResource plus}">
