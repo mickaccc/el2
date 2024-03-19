@@ -73,6 +73,7 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             _applicationCommands = applicationCommands;
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
+            ConcatCommand = new ActionCommand(OnConcatExecuted, OnConcatCanExecute);
             OrdTask = new NotifyTaskCompletion<ICollectionView>(LoadOrderDataAsync());
             PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync()); 
             
