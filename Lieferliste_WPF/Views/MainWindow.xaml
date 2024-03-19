@@ -58,11 +58,16 @@
                         <MenuItem Header="Print" Command="ApplicationCommands.Print"/>
                     </MenuItem>
 
-                    <MenuItem Header="Teamleiter Zuteilung"
+                    <MenuItem Header="Teamleiter">
+                        <MenuItem Header="Teamleiter Zuteilung"
                               Command="{Binding OpenMachinePlanCommand}">
                         <MenuItem.Icon>
                             <materialdesign:PackIcon Kind="AlphaMBox"/>
                         </MenuItem.Icon>
+                        </MenuItem >
+                        <MenuItem Header="Timeline" Command="{Binding OpenTimeLineCommand}">
+                            
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Messraum"
                               Command="{Binding OpenMeasuringCommand}">

@@ -47,6 +47,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenWorkAreaCommand { get; private set; }
         public ICommand OpenProjectCombineCommand { get; private set; }
         public ICommand OpenMeasuringCommand { get; private set; }
+        public ICommand OpenTimeLineCommand { get; private set; }
 
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
@@ -141,13 +142,26 @@ namespace Lieferliste_WPF.ViewModels
             OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
             OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
             OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
+            OpenTimeLineCommand = new ActionCommand(OnOpenTimeLineExecuted, OnOpenTimeLineCanExecute);
 
             
-            //DbOperations();
+            
+            DbOperations();
         }
 
 
+
         #region Commands
+
+        private bool OnOpenTimeLineCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnOpenTimeLineExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("TimeLine", UriKind.Relative));
+        }
         private bool OnOpenProjectCombineCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProjectCombine);
@@ -584,7 +598,6 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message, "MsgTimer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -618,20 +631,17 @@ namespace Lieferliste_WPF.ViewModels
         {
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                var ord = db.Vorgangs
-                    .Where(x => x.BemM != null || x.BemMa != null || x.BemT != null)
-                    .ToList();
+                //var h = new HolydayLogic(2024);
+                //var r = new Rule()
+                //{
+                //    RuleName = "Feiertage",
+                //    RuleValue = "Holi",
+                //    RuleData = h.SaveHolidays()
+                //};
+                //db.Rules.Add(r);
+                //db.SaveChanges();
+                var h = db.Rules.FirstOrDefault(x => x.RuleName == "Feiertage");
                 
-                foreach(var o in ord)
-                { char a;
-                    //foreach (var m in o.BemM) { a = Convert.ToChar(m); var b = (char)134; var c = Convert.ToChar(134); }
-                    //foreach (var m in o.BemT) a = (char)m;
-                    //foreach (var m in o.BemMa) a = (char)m;
-                    o.BemM = o.BemM?.Replace(';', (char)29);
-                    o.BemT = o.BemT?.Replace(';', (char)29);
-                    o.BemMa = o.BemMa?.Replace(';', (char)29);
-                }
-                db.SaveChanges();
             }
         }
 

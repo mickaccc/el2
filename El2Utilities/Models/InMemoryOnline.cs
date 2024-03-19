@@ -9,9 +9,9 @@ public partial class InMemoryOnline
 {
     public int OnlId { get; set; }
 
-    public string? Userid { get; set; }
+    public string Userid { get; set; } = null!;
 
-    public string? PcId { get; set; }
+    public string PcId { get; set; } = null!;
 
     public DateTime Login { get; set; }
 

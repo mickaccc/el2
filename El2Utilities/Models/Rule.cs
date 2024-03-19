@@ -12,4 +12,6 @@ public partial class Rule
     public string RuleName { get; set; } = null!;
 
     public string RuleValue { get; set; } = null!;
+
+    public string? RuleData { get; set; }
 }
