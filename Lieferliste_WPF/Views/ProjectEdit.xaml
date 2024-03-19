@@ -120,7 +120,7 @@
             <Grid HorizontalAlignment="Stretch"  Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <TextBox x:Name="searchPsp" Grid.Column="0" VerticalAlignment="Stretch"
@@ -134,7 +134,7 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </TextBox>
-                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"  Grid.Column="1" Margin="15,0,15,0" HorizontalAlignment="Stretch"
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"  Grid.Column="1"  HorizontalAlignment="Stretch"
                         Command="{Binding ConcatCommand}" >
                     <Button.CommandParameter>
                         <MultiBinding Converter="{StaticResource multi}">
@@ -146,7 +146,7 @@
                     
                 </Button>
                     <TextBox x:Name="searchOrder" Grid.Column="2" VerticalAlignment="Stretch"
-                    materialDesign:HintAssist.Hint="Auftragsnummer">
+                    materialDesign:HintAssist.Hint="Auftragsnummer" Margin="15,0,0,0">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="TextChanged">
                                 <i:InvokeCommandAction Command="{Binding OrderSearchCommand}" CommandParameter="{Binding Path=Text, ElementName=searchOrder}"/>

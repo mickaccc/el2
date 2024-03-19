@@ -342,22 +342,29 @@ namespace Lieferliste_WPF.Planning
 
         private void OnFastCopyExecuted(object obj)
         {
-            if(obj is Vorgang v)
-            {               
-                var m = v.AidNavigation.Quantity.ToString();
-                var a = v.Aid.Trim();
-                var vnr = v.Vnr.ToString();
-                var mat = v.AidNavigation.Material?.Trim();
-                var bez = v.AidNavigation.MaterialNavigation?.Bezeichng?.Trim();
+            try
+            {
+                if (obj is Vorgang v)
+                {
+                    var m = v.AidNavigation.Quantity.ToString();
+                    var a = v.Aid.Trim();
+                    var vnr = v.Vnr.ToString();
+                    var mat = v.AidNavigation.Material?.Trim();
+                    var bez = v.AidNavigation.MaterialNavigation?.Bezeichng?.Trim();
 
-                OnFastCopyExecuted(m);
-                OnFastCopyExecuted(bez ?? a);
-                OnFastCopyExecuted(mat ?? "DUMMY");
-                OnFastCopyExecuted(vnr);
-                OnFastCopyExecuted(a);                
+                    OnFastCopyExecuted(m);
+                    OnFastCopyExecuted(bez ?? a);
+                    OnFastCopyExecuted(mat ?? "DUMMY");
+                    OnFastCopyExecuted(vnr);
+                    OnFastCopyExecuted(a);
+                }
+                if (obj is string s)
+                { setTextToClipboard(s); }
             }
-            if(obj is string s)
-            { setTextToClipboard(s); }
+            catch (Exception e)
+            {
+                MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "FastCopy", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void setTextToClipboard(string text)
