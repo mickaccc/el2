@@ -13,13 +13,13 @@
     <Grid>
         <TabControl>
             <TabItem Header="Schließtage">
-                <ListBox ItemsSource="{Binding CloseHolidays}"/>
+                <DataGrid ItemsSource="{Binding CloseHolidays}"/>
             </TabItem>
             <TabItem Header="fixe Feiertage">
-                <ListBox ItemsSource="{Binding FixHolidays}"/>
+                <DataGrid ItemsSource="{Binding FixHolidays}"/>
             </TabItem>
             <TabItem Header="flexible Feiertage">
-                <ListBox ItemsSource="{Binding VarHolidays}"/>
+                <DataGrid ItemsSource="{Binding VarHolidays}"/>
             </TabItem>
         </TabControl>
             

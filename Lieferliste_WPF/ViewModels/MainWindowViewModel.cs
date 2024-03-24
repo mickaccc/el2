@@ -48,6 +48,8 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenProjectCombineCommand { get; private set; }
         public ICommand OpenMeasuringCommand { get; private set; }
         public ICommand OpenTimeLineCommand { get; private set; }
+        public ICommand OpenShiftCommand { get; private set; }
+        public ICommand OpenHolidayCommand { get; private set; }
 
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
@@ -143,16 +145,37 @@ namespace Lieferliste_WPF.ViewModels
             OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
             OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
             OpenTimeLineCommand = new ActionCommand(OnOpenTimeLineExecuted, OnOpenTimeLineCanExecute);
-
+            OpenHolidayCommand = new ActionCommand(OnOpenHolidayExecuted, OnOpenHolidayCanExecute);
+            OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
             
             
-            DbOperations();
+            //DbOperations();
         }
 
 
 
-        #region Commands
 
+
+        #region Commands
+        private bool OnOpenShiftCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnOpenShiftExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ShiftEdit", UriKind.Relative));
+        }
+
+        private bool OnOpenHolidayCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnOpenHolidayExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("HolidayEdit", UriKind.Relative));
+        }
         private bool OnOpenTimeLineCanExecute(object arg)
         {
             return true;
@@ -631,16 +654,22 @@ namespace Lieferliste_WPF.ViewModels
         {
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                //var h = new HolydayLogic(2024);
-                //var r = new Rule()
-                //{
-                //    RuleName = "Feiertage",
-                //    RuleValue = "Holi",
-                //    RuleData = h.SaveHolidays()
-                //};
-                //db.Rules.Add(r);
-                //db.SaveChanges();
-                var h = db.Rules.FirstOrDefault(x => x.RuleName == "Feiertage");
+                var ch = new CloseAndHolidayRule();
+
+
+                var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
+                StringWriter sw = new();
+                //xml.Serialize(sw, CloseAndHolidayRule);
+
+                xml.Serialize(sw, ch);
+                var r = new Rule()
+                {
+                    RuleName = "Feiertage",
+                    RuleValue = "Holi",
+                    RuleData = sw.ToString()
+                };
+                db.Rules.Add(r);
+                db.SaveChanges();
                 
             }
         }

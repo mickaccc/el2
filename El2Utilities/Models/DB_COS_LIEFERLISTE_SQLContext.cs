@@ -37,6 +37,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<RessourceUser> RessourceUsers { get; set; }
 
+    public virtual DbSet<RessourceWorkshift> RessourceWorkshifts { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Rule> Rules { get; set; }
@@ -60,6 +62,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<WorkArea> WorkAreas { get; set; }
 
     public virtual DbSet<WorkSap> WorkSaps { get; set; }
+
+    public virtual DbSet<WorkShift> WorkShifts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -314,6 +318,24 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasConstraintName("FK_RessourceUser_User");
         });
 
+        modelBuilder.Entity<RessourceWorkshift>(entity =>
+        {
+            entity.HasKey(e => new { e.Rid, e.Sid });
+
+            entity.ToTable("RessourceWorkshift");
+
+            entity.Property(e => e.Rid).HasColumnName("rid");
+            entity.Property(e => e.Sid).HasColumnName("sid");
+
+            entity.HasOne(d => d.RidNavigation).WithMany(p => p.RessourceWorkshifts)
+                .HasForeignKey(d => d.Rid)
+                .HasConstraintName("FK_RessourceWorkshift_Ressource");
+
+            entity.HasOne(d => d.SidNavigation).WithMany(p => p.RessourceWorkshifts)
+                .HasForeignKey(d => d.Sid)
+                .HasConstraintName("FK_RessourceWorkshift_WorkShift");
+        });
+
         modelBuilder.Entity<Role>(entity =>
         {
             entity.Property(e => e.Id).HasColumnName("id");
@@ -502,9 +524,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("Bem_T");
             entity.Property(e => e.Bullet).HasMaxLength(9);
             entity.Property(e => e.BulletTwo).HasMaxLength(9);
-            entity.Property(e => e.CommentMach)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.CommentMach).IsUnicode(false);
             entity.Property(e => e.KlimaPrint).HasColumnType("datetime");
             entity.Property(e => e.MarkCode).HasMaxLength(50);
             entity.Property(e => e.ProcessingUom)
@@ -578,6 +598,19 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasForeignKey(d => d.RessourceId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_WorkSap_Ressource");
+        });
+
+        modelBuilder.Entity<WorkShift>(entity =>
+        {
+            entity.HasKey(e => e.Sid);
+
+            entity.ToTable("WorkShift");
+
+            entity.Property(e => e.Sid).HasColumnName("sid");
+            entity.Property(e => e.ShiftDef).HasColumnType("xml");
+            entity.Property(e => e.ShiftName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         OnModelCreatingPartial(modelBuilder);

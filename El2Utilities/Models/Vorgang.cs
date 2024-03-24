@@ -82,6 +82,8 @@ public partial class Vorgang : ModelBase
 
     public DateTime? KlimaPrint { get; set; }
 
+    public float? Correction { get; set; }
+
     public virtual OrderRb AidNavigation { get; set; } = null!;
 
     public virtual WorkSap? ArbPlSapNavigation { get; set; }

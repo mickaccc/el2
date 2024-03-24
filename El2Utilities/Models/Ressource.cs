@@ -31,6 +31,8 @@ public partial class Ressource
 
     public virtual ICollection<RessourceUser> RessourceUsers { get; set; } = new List<RessourceUser>();
 
+    public virtual ICollection<RessourceWorkshift> RessourceWorkshifts { get; set; } = new List<RessourceWorkshift>();
+
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 
     public virtual WorkArea? WorkArea { get; set; }

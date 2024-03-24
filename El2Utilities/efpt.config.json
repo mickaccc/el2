@@ -64,6 +64,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[RessourceWorkshift]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Roles]",
          "ObjectType": 0
       },
@@ -109,6 +113,10 @@
       },
       {
          "Name": "[dbo].[WorkSap]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[WorkShift]",
          "ObjectType": 0
       }
    ],

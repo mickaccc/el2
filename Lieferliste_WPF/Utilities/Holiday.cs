@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Xml.Serialization;
 
@@ -110,22 +113,31 @@ namespace Lieferliste_WPF.Utilities
             this.CurrentYear = year;
             #region fillList
             this.holydays = new();
-            
+            CloseAndHolidayRule holiRule = new CloseAndHolidayRule();
                 var easter = GetEasterSunday();
-                foreach(var d in CloseAndHolidayRule.FixHoliday)
+            if (holiRule.FixHoliday != null)
+            {
+                foreach (var d in holiRule.FixHoliday)
                 {
-                    var holi = new Holiday(new DateTime(CurrentYear, d.month, d.day), d.name, 1, Locale);
+                    var holi = new Holiday(new DateTime(CurrentYear, (int)d.Month, (int)d.Day), d.Name, 1, d.Locale);
                     holydays.Add(DateOnly.FromDateTime(holi.Datum), holi);
-                }
-                foreach(var d in CloseAndHolidayRule.VariousHoliday)
+                } 
+            }
+            if (holiRule.VariousHoliday != null)
+            {
+                foreach (var d in holiRule.VariousHoliday)
                 {
-                    var holi = new Holiday(easter.AddDays(d.dayDistance), d.name, 2, Locale);
+                    var holi = new Holiday(easter.AddDays(Convert.ToDouble(d.DayDistance)), d.Name, 2, d.Locale);
                     holydays.Add(DateOnly.FromDateTime(holi.Datum), holi);
-                }
-                foreach(var d in CloseAndHolidayRule.CloseDay)
+                } 
+            }
+            if (holiRule.CloseDay != null)
+            {
+                foreach (var d in holiRule.CloseDay)
                 {
                     holydays.Add(DateOnly.FromDateTime(d.Datum), d);
                 }
+            }
             //    new Holiday(1,1, "Neujahr", "de-DE"),
             //    new Holiday(6,1, "Heilige Drei Könige", "de-DE"),
             //    new Holiday(1,5, "Tag der Arbeit", "de-DE"),
@@ -167,21 +179,6 @@ namespace Lieferliste_WPF.Utilities
             #endregion
         }
 
-        //public string SaveHolidays()
-        //{
-        //    //var ch = new CloseAndHolidayRule();
-
-
-        //    //var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
-        //    //StringWriter sw = new ();
-        //    ////xml.Serialize(sw, CloseAndHolidayRule);
-        //    //ImmutableArray<List<Holiday>> arrVar = [];
-        //    //arrVar.Add(ch.VariousHoliday);
-        //    //arrVar.Add(ch.FixHoliday);
-        //    //xml.Serialize(sw, ch);
-            
-        //    //return sw.ToString();
-        //}
         private DateTime GetEasterSunday()
         {
             var g = year % 19;
@@ -219,38 +216,74 @@ namespace Lieferliste_WPF.Utilities
             return (cal);
         }
     }
-    [Serializable]
-    public static class CloseAndHolidayRule
+  
+    public class CloseAndHolidayRule
     {
-        public static readonly List<HolidayRule> FixHoliday = new();
-        public static readonly List<HolidayRule> VariousHoliday = new();
-        public static readonly List<Holiday> CloseDay = new();
 
+        public readonly List<HolidayRule>? FixHoliday  = [];
+        public readonly List<HolidayRule>? VariousHoliday  = [];
+        public readonly List<Holiday>? CloseDay;
 
-        //VariousHoliday.Add(new Holiday(1, "Ostermontag", "de-AT"));
-        //VariousHoliday.Add(new Holiday(39, "Christi Himmelfahrt", "de-AT"));
-        //VariousHoliday.Add(new Holiday(49, "Pfingstsonntag", "de-AT"));
-        //VariousHoliday.Add(new Holiday(50, "Pfingstmontag", "de-AT"));
-        //VariousHoliday.Add(new Holiday(60, "Fronleichnam", "de-AT"));
-
-        //FixHoliday.Add(new Holiday(1, 1, "Neujahr", "de-AT"));
-        //FixHoliday.Add(new Holiday(6, 1, "Heilige Drei Könige", "de-AT"));
-        //FixHoliday.Add(new Holiday(1, 5, "Staatsfeiertag", "de-AT"));
-        //FixHoliday.Add(new Holiday(15, 8, "Mariä Himmelfahrt", "de-AT"));
-        //FixHoliday.Add(new Holiday(26, 10, "Nationalfeiertag", "de-AT"));
-        //FixHoliday.Add(new Holiday(25, 12, "Christtag", "de-AT"));
-        //FixHoliday.Add(new Holiday(26, 12, "Stefanitag", "de-AT"));
-
-        public class HolidayRule
+        public CloseAndHolidayRule()
         {
-            public string name = string.Empty;
-            public int day;
-            public int month;
-            public double dayDistance;
+            //VariousHoliday.Add(new HolidayRule() { DayDistance = 1, Name = "Ostermontag", Locale = "de-AT" });
+            //VariousHoliday.Add(new HolidayRule() { DayDistance = 39, Name = "Christi Himmelfahrt", Locale = "de-AT" });
+            //VariousHoliday.Add(new HolidayRule() { DayDistance = 49, Name = "Pfingstsonntag", Locale = "de-AT" });
+            //VariousHoliday.Add(new HolidayRule() { DayDistance = 50, Name = "Pfingstmontag", Locale = "de-AT" });
+            //VariousHoliday.Add(new HolidayRule() { DayDistance = 60, Name = "Fronleichnam", Locale = "de-AT" });
+
+            //FixHoliday.Add(new HolidayRule() { Day = 1, Month = 1, Name = "Neujahr", Locale = "de-AT" });
+            //FixHoliday.Add(new HolidayRule() { Day = 6, Month = 1, Name = "Heilige Drei Könige", Locale = "de-AT" });
+            //FixHoliday.Add(new HolidayRule() { Day = 1, Month = 5, Name = "Staatsfeiertag", Locale = "de-AT" });
+            //FixHoliday.Add(new HolidayRule() { Day = 15, Month = 8, Name = "Mariä Himmelfahrt", Locale = "de-AT" });
+            //FixHoliday.Add(new HolidayRule() { Day = 26, Month = 10, Name = "Nationalfeiertag", Locale = "de-AT" });
+            //FixHoliday.Add(new HolidayRule() { Day = 25, Month = 12, Name = "Christtag", Locale = "de-AT" });
+            //FixHoliday.Add(new HolidayRule(){ Day=26, Month= 12, Name="Stefanitag", Locale="de-AT"});
         }
+        
     }
 
+    public class HolidayRule
+    {
+        public HolidayRule() { }
+        private string name = string.Empty;
 
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+        private string locale = string.Empty;
+
+        public string Locale
+        {
+            get { return locale; }
+            set { locale = value; }
+        }
+        private int? day;
+
+        public int? Day
+        {
+            get { return day; }
+            set { day = value; }
+        }
+        private int? month;
+
+        public int? Month
+        {
+            get { return month; }
+            set { month = value; }
+        }
+
+        private int? dayDistance;
+
+        public int? DayDistance
+        {
+            get { return dayDistance; }
+            set { dayDistance = value; }
+        }
+
+    }
 
     public static class XmlSerializerHelper
     {
@@ -267,5 +300,220 @@ namespace Lieferliste_WPF.Utilities
             });
         }
     }
+
+
+    //// NOTE: Generated code may require at least .NET Framework 4.5 or .NET Core/Standard 2.0.
+    ///// <remarks/>
+    //[System.SerializableAttribute()]
+    //[System.ComponentModel.DesignerCategoryAttribute("code")]
+    //[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    //[System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
+    //public partial class CloseAndHolidayRule
+    //{
+
+    //    private CloseAndHolidayRuleHolidayRule[] fixHolidayField;
+
+    //    private CloseAndHolidayRuleHolidayRule1[] variousHolidayField;
+
+    //    /// <remarks/>
+    //    [System.Xml.Serialization.XmlArrayItemAttribute("HolidayRule", IsNullable = false)]
+    //    public CloseAndHolidayRuleHolidayRule[] FixHoliday
+    //    {
+    //        get
+    //        {
+    //            return this.fixHolidayField;
+    //        }
+    //        set
+    //        {
+    //            this.fixHolidayField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    [System.Xml.Serialization.XmlArrayItemAttribute("HolidayRule", IsNullable = false)]
+    //    public CloseAndHolidayRuleHolidayRule1[] VariousHoliday
+    //    {
+    //        get
+    //        {
+    //            return this.variousHolidayField;
+    //        }
+    //        set
+    //        {
+    //            this.variousHolidayField = value;
+    //        }
+    //    }
+    //}
+
+    ///// <remarks/>
+    //[System.SerializableAttribute()]
+    //[System.ComponentModel.DesignerCategoryAttribute("code")]
+    //[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    //public partial class CloseAndHolidayRuleHolidayRule
+    //{
+
+    //    private string nameField;
+
+    //    private string localeField;
+
+    //    private byte dayField;
+
+    //    private byte monthField;
+
+    //    private object dayDistanceField;
+
+    //    /// <remarks/>
+    //    public string Name
+    //    {
+    //        get
+    //        {
+    //            return this.nameField;
+    //        }
+    //        set
+    //        {
+    //            this.nameField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    public string Locale
+    //    {
+    //        get
+    //        {
+    //            return this.localeField;
+    //        }
+    //        set
+    //        {
+    //            this.localeField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    public byte Day
+    //    {
+    //        get
+    //        {
+    //            return this.dayField;
+    //        }
+    //        set
+    //        {
+    //            this.dayField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    public byte Month
+    //    {
+    //        get
+    //        {
+    //            return this.monthField;
+    //        }
+    //        set
+    //        {
+    //            this.monthField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
+    //    public object DayDistance
+    //    {
+    //        get
+    //        {
+    //            return this.dayDistanceField;
+    //        }
+    //        set
+    //        {
+    //            this.dayDistanceField = value;
+    //        }
+    //    }
+    //}
+
+    ///// <remarks/>
+    //[System.SerializableAttribute()]
+    //[System.ComponentModel.DesignerCategoryAttribute("code")]
+    //[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    //public partial class CloseAndHolidayRuleHolidayRule1
+    //{
+
+    //    private string nameField;
+
+    //    private string localeField;
+
+    //    private object dayField;
+
+    //    private object monthField;
+
+    //    private byte dayDistanceField;
+
+    //    /// <remarks/>
+    //    public string Name
+    //    {
+    //        get
+    //        {
+    //            return this.nameField;
+    //        }
+    //        set
+    //        {
+    //            this.nameField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    public string Locale
+    //    {
+    //        get
+    //        {
+    //            return this.localeField;
+    //        }
+    //        set
+    //        {
+    //            this.localeField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
+    //    public object Day
+    //    {
+    //        get
+    //        {
+    //            return this.dayField;
+    //        }
+    //        set
+    //        {
+    //            this.dayField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
+    //    public object Month
+    //    {
+    //        get
+    //        {
+    //            return this.monthField;
+    //        }
+    //        set
+    //        {
+    //            this.monthField = value;
+    //        }
+    //    }
+
+    //    /// <remarks/>
+    //    public byte DayDistance
+    //    {
+    //        get
+    //        {
+    //            return this.dayDistanceField;
+    //        }
+    //        set
+    //        {
+    //            this.dayDistanceField = value;
+    //        }
+    //    }
+    //}
+
+
+
 }
 

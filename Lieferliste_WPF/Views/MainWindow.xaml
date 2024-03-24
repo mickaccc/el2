@@ -99,6 +99,9 @@
                                 <materialdesign:PackIcon Kind="Category"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Schicht Editor" Command="{Binding OpenShiftCommand}"/>
+                        <MenuItem Header="Feiertag Editor" Command="{Binding OpenHolidayCommand}"/>
+
                         <MenuItem Header="Rollenmanagment" Command="{Binding OpenRoleMgmtCommand}">
                             <MenuItem.Icon>
                                 <materialdesign:PackIcon Kind="UserAlert"/>

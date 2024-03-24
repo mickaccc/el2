@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="Lieferliste_WPF.Views.ShiftEdit"
+             xml:lang="de-AT"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:local="clr-namespace:Lieferliste_WPF.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="neue Schicht" Command="{Binding AddCommand}"/>
+            <Button Content="Speichern" Command="{Binding SaveCommand}"/>
+        </StackPanel>
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Path=ShiftView}" IsSynchronizedWithCurrentItem="True" 
+                  AutoGenerateColumns="False" SelectionUnit="FullRow" CanUserAddRows="False"  x:Name="ShiftHeader" SelectionChanged="ShiftHeader_SelectionChanged">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Schichtname" Binding="{Binding Path=ShiftName, Mode=TwoWay, ValidatesOnDataErrors=True}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:InvokeCommandAction Command="{Binding DataContext.LostFocusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </DataGridTextColumn>
+                    
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Del" Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+  
+            </DataGrid.Columns>
+   
+        </DataGrid>
+
+        <DataGrid Grid.Row="1" Grid.Column="1" x:Name="ShiftDetails" CanUserAddRows="False" Initialized="ShiftDetails_Initialized"
+                  AutoGenerateColumns="False" SelectionUnit="FullRow" IsSynchronizedWithCurrentItem="True" >
+            <DataGrid.Columns>
+                
+                <DataGridTemplateColumn Header="Startzeit">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <materialDesign:TimePicker Text="{Binding Path=StartTimeProxy, Mode=TwoWay, UpdateSourceTrigger=LostFocus, ValidatesOnDataErrors=True}"
+                                                       Is24Hours="True" x:Name="start"
+                                                       materialDesign:ValidationAssist.HasError="True">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="LostFocus">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.LostFocusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=materialDesign:TimePicker}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </materialDesign:TimePicker>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Endzeit">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <materialDesign:TimePicker Text="{Binding Path=EndTimeProxy, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                       Is24Hours="True" x:Name="end">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="LostFocus">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.LostFocusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=materialDesign:TimePicker}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </materialDesign:TimePicker>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn>
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Add" Command="{Binding DataContext.AddCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                CommandParameter="ITEM"/>
+                            <Button Content="Del" Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                CommandParameter="{Binding}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

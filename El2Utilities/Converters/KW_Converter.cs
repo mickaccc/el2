@@ -9,9 +9,11 @@ namespace El2Core.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null) return null;
             DateTime v = (DateTime)value;
+            if (parameter == null) parameter = "0";
             _ = int.TryParse(parameter.ToString(), out int par);
-
+   
             int weekNum = culture.Calendar.GetWeekOfYear(v, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             switch(par)
             {
