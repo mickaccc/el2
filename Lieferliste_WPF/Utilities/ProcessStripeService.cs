@@ -10,25 +10,25 @@ namespace Lieferliste_WPF.Utilities
 {
     internal static class ProcessStripeService
     {
-        public static TimeSpan GetProcessLength(Vorgang vorgang, DateTime start, out DateTime endTime)
+        public static DateTime GetProcessLength(Vorgang vorgang, DateTime start, out TimeSpan ProcessLength)
         {
             var r = vorgang.Rstze ?? 0;
             var c = vorgang.Correction ?? 0;
             var duration = vorgang.Beaze / vorgang.AidNavigation.Quantity * vorgang.QuantityMiss + r + c;
 
             TimeSpan t = TimeSpan.FromMinutes(Convert.ToDouble(duration));
-            endTime = GetCalculatedEndDate(t, start, vorgang.RidNavigation);
-            return TimeSpan.FromTicks(endTime.Ticks - start.Ticks);
+            ProcessLength = GetCalculatedEndDate(t, start, vorgang.RidNavigation, TimeSpan.Zero);
+            return start.AddTicks(ProcessLength.Ticks);
         }
-        private static DateTime GetCalculatedEndDate(TimeSpan timeSpan, DateTime start, Ressource ressource)
+        private static TimeSpan GetCalculatedEndDate(TimeSpan timeSpan, DateTime start, Ressource ressource, TimeSpan length)
         {
             DateTime dateTime = start;
             if(start.DayOfWeek == DayOfWeek.Saturday) dateTime = dateTime.AddDays(2).Date;
             while (HolydayLogic.GetInstance(dateTime.Year).isHolyday(dateTime)) { dateTime = dateTime.AddDays(1).Date; }
             TimeSpan rest = timeSpan;
-            DateTime result = dateTime;
+
             var shifts = ressource.RessourceWorkshifts;
-            if (shifts.Count == 0) { return start; }
+            if (shifts.Count == 0) { return TimeSpan.Zero; }
             var serializer = XmlSerializerHelper.GetSerializer(typeof(List<WorkShiftItem>));
             foreach (var shift in shifts)
             {
@@ -42,23 +42,34 @@ namespace Lieferliste_WPF.Utilities
                     DateTime endDate;
                     var timespst = wsItem.StartTime.Value.ToTimeSpan();
                     var timespen = wsItem.EndTime.Value.ToTimeSpan();
-                    
-                    if (dateTime.TimeOfDay < timespst) { dateTime = dateTime.Date.AddTicks(timespst.Ticks); endDate = dateTime.AddTicks(timespen.Ticks - timespst.Ticks); }
-                    else if (dateTime.TimeOfDay < timespen) endDate = dateTime.Date.AddTicks(timespen.Ticks);
-                    else { continue; }
 
+                    if (dateTime.TimeOfDay < timespst) 
+                    {
+                        length = length.Add(timespst.Subtract(dateTime.TimeOfDay));
+                        dateTime = dateTime.Date.AddTicks(timespst.Ticks);
+                        endDate = dateTime.AddTicks(timespen.Ticks - timespst.Ticks);
+                        
+                    }
+                    else if (dateTime.TimeOfDay < timespen)
+                    {
+                        length = length.Subtract(timespen.Subtract(dateTime.TimeOfDay));
+                        endDate = dateTime.Date.AddTicks(timespen.Ticks);
+                        
+                    }
+                    else { continue; }
+                    
                     rest -= endDate.Subtract(dateTime);
                     if (rest.Ticks > 0) { dateTime = endDate; }
-                    else { result = endDate.AddTicks(rest.Ticks); break; }
+                    else { length = length.Add(rest); break; }
                 }
             }
 
             if (rest.TotalMinutes > 0)
             {
-                result.AddTicks(TimeOnly.MaxValue.ToTimeSpan().Ticks - dateTime.TimeOfDay.Ticks);
-                result = GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource);
+                length = length.Add(TimeOnly.MaxValue.ToTimeSpan().Subtract(dateTime.TimeOfDay));
+                length.Add(GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource, length));
             }
-            return result;
+            return length;
         }
  
     }

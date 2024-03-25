@@ -69,7 +69,7 @@ namespace Lieferliste_WPF.ViewModels
                 .Where(x => x.RidNavigation != null && x.QuantityMiss > 0)
                 .First();
 
-            Stripe = ProcessStripeService.GetProcessLength(vorg, DateTime.Now, out endTime);
+            EndTime = ProcessStripeService.GetProcessLength(vorg, DateTime.Now, out stripe);
         }
     }
 }
