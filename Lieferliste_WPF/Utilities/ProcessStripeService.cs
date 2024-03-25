@@ -45,6 +45,7 @@ namespace Lieferliste_WPF.Utilities
 
                     if (dateTime.TimeOfDay < timespst) 
                     {
+
                         length = length.Add(timespst.Subtract(dateTime.TimeOfDay));
                         dateTime = dateTime.Date.AddTicks(timespst.Ticks);
                         endDate = dateTime.AddTicks(timespen.Ticks - timespst.Ticks);
@@ -66,8 +67,9 @@ namespace Lieferliste_WPF.Utilities
 
             if (rest.TotalMinutes > 0)
             {
-                length = length.Add(TimeOnly.MaxValue.ToTimeSpan().Subtract(dateTime.TimeOfDay));
-                length.Add(GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource, length));
+
+                length = length.Add(GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource, length)
+                    .Add(TimeOnly.MaxValue.ToTimeSpan().Subtract(dateTime.TimeOfDay)));
             }
             return length;
         }

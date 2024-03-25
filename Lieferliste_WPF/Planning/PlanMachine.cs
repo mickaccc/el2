@@ -254,7 +254,7 @@ namespace Lieferliste_WPF.Planning
             {
                 TimeSpan length;
                 var end = ProcessStripeService.GetProcessLength(p, start, out length);
-                p.Extends = string.Format("{0}T. {1}Std.{2}min.\n{3}",length.Days, length.Hours, length.Minutes, end.ToString("dd.MM.yy - HH:mm"));
+                p.Extends = string.Format("{0}h \n{1}",length.Hours, end.ToString("dd.MM.yy - HH:mm"));
                 start = end;
             }
         }
