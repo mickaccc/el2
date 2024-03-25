@@ -9,10 +9,13 @@ namespace El2Core.Converters
     {
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-            Single v = (value[0] == null) ? 0 : (Single)value[0];
-            Single p = (value[1] == null) ? 0 : (Single)value[1];
+            Single d = 0;
+            foreach (var item in value)
+            {
+                d += (item == null) ? 0 : (Single)item;
+            }
 
-            return string.Format("{0:F2}h", (v + p) / 60);
+            return string.Format("{0:F2}h", d / 60);
         }
 
         public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)

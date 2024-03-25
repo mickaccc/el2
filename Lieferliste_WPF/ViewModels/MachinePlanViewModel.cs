@@ -182,6 +182,8 @@ namespace Lieferliste_WPF.ViewModels
               .Include(x => x.AidNavigation.DummyMatNavigation)
               .Include(x => x.ArbPlSapNavigation)
               .Include(x => x.RidNavigation)
+              .ThenInclude(x => x.RessourceWorkshifts)
+              .ThenInclude(x => x.SidNavigation)
               .Where(y => y.AidNavigation.Abgeschlossen == false
                 && y.SysStatus != null
                 && y.Text != null

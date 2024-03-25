@@ -259,9 +259,11 @@
                         <MultiBinding Converter="{StaticResource plus}">
                             <Binding Path="Beaze"/>
                             <Binding Path="Rstze"/>
+                            <Binding Path="Correction"/>
                         </MultiBinding>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
+                <DataGridTextColumn Header="Ende Berechnet" Binding="{Binding Extends}" IsReadOnly="True"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

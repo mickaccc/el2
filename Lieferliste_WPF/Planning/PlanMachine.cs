@@ -5,6 +5,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
+using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Prism.Events;
@@ -88,6 +89,7 @@ namespace Lieferliste_WPF.Planning
             Initialize();
             Processes.AddRange(processes.OrderBy(x => x.Spos));
             LoadData();
+            CalculateEndTime();
             ProcessesCV.Refresh();
         }
 
@@ -244,6 +246,17 @@ namespace Lieferliste_WPF.Planning
             //_eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
+        }
+        private void CalculateEndTime()
+        {
+            DateTime start = DateTime.Now;
+            foreach(var p in Processes)
+            {
+                DateTime end;
+                var length = ProcessStripeService.GetProcessLength(p, start, out end);
+                p.Extends = string.Format("{0} Std {1} min.\n{2}", length.Hours, length.Minutes, end.ToString("dd.MM.yy - HH:mm"));
+                start = end;
+            }
         }
 
         private void MessageSearchFilterReceived(string obj)

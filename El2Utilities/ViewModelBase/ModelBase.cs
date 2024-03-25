@@ -9,6 +9,5 @@ namespace El2Core.ViewModelBase
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(""));
         }
-
     }
 }
