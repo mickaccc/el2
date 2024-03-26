@@ -13,7 +13,9 @@ using Prism.Ioc;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -254,7 +256,8 @@ namespace Lieferliste_WPF.Planning
             {
                 TimeSpan length;
                 var end = ProcessStripeService.GetProcessLength(p, start, out length);
-                p.Extends = string.Format("{0}h \n{1}",length.Hours, end.ToString("dd.MM.yy - HH:mm"));
+                if (length.TotalMinutes == 0) p.Extends = "---";
+                    else p.Extends = string.Format("{0:N2}h \n{1}",length.TotalHours, end.ToString("dd.MM.yy - HH:mm"));
                 start = end;
             }
         }
@@ -477,10 +480,12 @@ namespace Lieferliste_WPF.Planning
             }
 
             var p = Target.SourceCollection as Collection<Vorgang>;
-
-            for (var i = 0; i < p.Count; i++)
+ 
+ 
+            for (int i=0; i < p.Count; ++i)
             {
-                p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
+                p[i].Spos = i;
+   
                 //var vv = _dbCtx.Vorgangs.First(x => x.VorgangId == p[i].VorgangId);
                 //vv.Spos = i;
                 //vv.Rid = _rId;

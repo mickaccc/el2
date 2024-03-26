@@ -2,46 +2,29 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using Lieferliste_WPF.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace El2Core.Models;
+namespace Lieferliste_WPF.Data;
 
-public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
+public partial class SQLContext : DbContext
 {
-    public DB_COS_LIEFERLISTE_SQLContext(DbContextOptions<DB_COS_LIEFERLISTE_SQLContext> options)
+    public SQLContext(DbContextOptions<SQLContext> options)
         : base(options)
     {
     }
 
     public virtual DbSet<Costunit> Costunits { get; set; }
 
-    public virtual DbSet<InMemoryMsg> InMemoryMsgs { get; set; }
-
-    public virtual DbSet<InMemoryOnline> InMemoryOnlines { get; set; }
-
-    public virtual DbSet<OrderRb> OrderRbs { get; set; }
-
-    public virtual DbSet<Permission> Permissions { get; set; }
-
-    public virtual DbSet<PermissionRole> PermissionRoles { get; set; }
-
-    public virtual DbSet<ProductionOrderFilter> ProductionOrderFilters { get; set; }
-
-    public virtual DbSet<Project> Projects { get; set; }
-
-    public virtual DbSet<ProjectAttachment> ProjectAttachments { get; set; }
+    public virtual DbSet<Online> Onlines { get; set; }
 
     public virtual DbSet<Ressource> Ressources { get; set; }
 
     public virtual DbSet<RessourceCostUnit> RessourceCostUnits { get; set; }
 
-    public virtual DbSet<RessourceUser> RessourceUsers { get; set; }
-
-    public virtual DbSet<RessourceWorkshift> RessourceWorkshifts { get; set; }
-
     public virtual DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<Rule> Rules { get; set; }
+    public virtual DbSet<TblAuftrag> TblAuftrags { get; set; }
 
     public virtual DbSet<TblDummy> TblDummies { get; set; }
 
@@ -53,8 +36,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
-    public virtual DbSet<UserVorgang> UserVorgangs { get; set; }
-
     public virtual DbSet<UserWorkArea> UserWorkAreas { get; set; }
 
     public virtual DbSet<Vorgang> Vorgangs { get; set; }
@@ -62,8 +43,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<WorkArea> WorkAreas { get; set; }
 
     public virtual DbSet<WorkSap> WorkSaps { get; set; }
-
-    public virtual DbSet<WorkShift> WorkShifts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -78,186 +57,20 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.PlanRelevance).HasColumnName("plan_relevance");
         });
 
-        modelBuilder.Entity<InMemoryMsg>(entity =>
+        modelBuilder.Entity<Online>(entity =>
         {
-            entity.HasKey(e => e.MsgId)
-                .HasName("PK__InMemory__662358933371FE2A")
-                .IsClustered(false);
+            entity.HasKey(e => e.Oid);
 
-            entity
-                .ToTable("InMemoryMsg")
-                .IsMemoryOptimized();
+            entity.ToTable("Online");
 
-            entity.Property(e => e.MsgId).HasColumnName("MsgID");
-            entity.Property(e => e.Operation).HasMaxLength(50);
-            entity.Property(e => e.TableName).HasMaxLength(50);
-
-            entity.HasOne(d => d.Onl).WithMany(p => p.InMemoryMsgs)
-                .HasForeignKey(d => d.OnlId)
-                .HasConstraintName("FK_InMemoryMsg_InMemoryOnline");
-        });
-
-        modelBuilder.Entity<InMemoryOnline>(entity =>
-        {
-            entity.HasKey(e => e.OnlId)
-                .HasName("PK__InMemory__A34E616341453DE5")
-                .IsClustered(false);
-
-            entity
-                .ToTable("InMemoryOnline")
-                .IsMemoryOptimized();
-
-            entity.Property(e => e.OnlId).HasColumnName("OnlID");
+            entity.Property(e => e.Oid).HasColumnName("oid");
             entity.Property(e => e.Login).HasColumnType("datetime");
             entity.Property(e => e.PcId)
                 .HasMaxLength(50)
                 .IsFixedLength();
-            entity.Property(e => e.Userid)
+            entity.Property(e => e.UserId)
                 .HasMaxLength(50)
                 .IsFixedLength();
-        });
-
-        modelBuilder.Entity<OrderRb>(entity =>
-        {
-            entity.HasKey(e => e.Aid).HasName("PK_Order");
-
-            entity.ToTable("OrderRB", tb =>
-                {
-                    tb.HasTrigger("AuditChangesOrderRB");
-                    tb.HasTrigger("AuditInsertOrderRB");
-                });
-
-            entity.Property(e => e.Aid)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("AID");
-            entity.Property(e => e.Abgeschlossen).HasColumnName("abgeschlossen");
-            entity.Property(e => e.AuftragFarbe).HasMaxLength(10);
-            entity.Property(e => e.Ausgebl).HasColumnName("ausgebl");
-            entity.Property(e => e.Bemerkung).HasMaxLength(255);
-            entity.Property(e => e.DummyMat)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.Eckende).HasColumnType("datetime");
-            entity.Property(e => e.Eckstart).HasColumnType("datetime");
-            entity.Property(e => e.Fertig).HasColumnName("fertig");
-            entity.Property(e => e.Istende).HasColumnType("datetime");
-            entity.Property(e => e.Iststart).HasColumnType("datetime");
-            entity.Property(e => e.LieferTermin).HasMaxLength(255);
-            entity.Property(e => e.MarkCode).HasMaxLength(255);
-            entity.Property(e => e.Material).HasMaxLength(255);
-            entity.Property(e => e.Mrpcontroller)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .HasColumnName("MRPController");
-            entity.Property(e => e.OrderCategory)
-                .HasMaxLength(10)
-                .IsFixedLength();
-            entity.Property(e => e.OrderType)
-                .HasMaxLength(10)
-                .IsFixedLength();
-            entity.Property(e => e.Prio).HasMaxLength(255);
-            entity.Property(e => e.ProId)
-                .HasMaxLength(50)
-                .HasColumnName("ProID");
-            entity.Property(e => e.ProductionSupervisor)
-                .HasMaxLength(10)
-                .IsFixedLength();
-            entity.Property(e => e.SysStatus).HasMaxLength(255);
-            entity.Property(e => e.Timestamp)
-                .HasColumnType("datetime")
-                .HasColumnName("timestamp");
-            entity.Property(e => e.Wbselement)
-                .HasMaxLength(50)
-                .HasColumnName("WBSElement");
-
-            entity.HasOne(d => d.DummyMatNavigation).WithMany(p => p.OrderRbs)
-                .HasForeignKey(d => d.DummyMat)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Order_tblDummy");
-
-            entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.OrderRbs)
-                .HasForeignKey(d => d.Material)
-                .HasConstraintName("FK_Order_tblMaterial");
-
-            entity.HasOne(d => d.Pro).WithMany(p => p.OrderRbs)
-                .HasForeignKey(d => d.ProId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK_Order_project");
-        });
-
-        modelBuilder.Entity<Permission>(entity =>
-        {
-            entity.HasKey(e => e.PKey);
-
-            entity.ToTable("Permission");
-
-            entity.Property(e => e.PKey)
-                .HasMaxLength(15)
-                .IsFixedLength()
-                .HasColumnName("pKey");
-            entity.Property(e => e.Categorie).HasMaxLength(50);
-            entity.Property(e => e.Description).HasColumnType("ntext");
-        });
-
-        modelBuilder.Entity<PermissionRole>(entity =>
-        {
-            entity.HasKey(e => new { e.RoleKey, e.PermissionKey });
-
-            entity.Property(e => e.PermissionKey)
-                .HasMaxLength(15)
-                .IsFixedLength();
-            entity.Property(e => e.Created)
-                .HasColumnType("datetime")
-                .HasColumnName("created");
-
-            entity.HasOne(d => d.PermissionKeyNavigation).WithMany(p => p.PermissionRoles)
-                .HasForeignKey(d => d.PermissionKey)
-                .HasConstraintName("FK_PermissionRoles_Permission");
-
-            entity.HasOne(d => d.RoleKeyNavigation).WithMany(p => p.PermissionRoles)
-                .HasForeignKey(d => d.RoleKey)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PermissionRoles_Roles");
-        });
-
-        modelBuilder.Entity<ProductionOrderFilter>(entity =>
-        {
-            entity.HasKey(e => e.OrderNumber);
-
-            entity.ToTable("ProductionOrderFilter");
-
-            entity.Property(e => e.OrderNumber).HasMaxLength(32);
-            entity.Property(e => e.Kommentar).HasMaxLength(50);
-            entity.Property(e => e.ZeitStempelÄnderung).HasColumnType("smalldatetime");
-        });
-
-        modelBuilder.Entity<Project>(entity =>
-        {
-            entity.HasKey(e => e.ProjectPsp).HasName("PK_ProjectPSP");
-
-            entity.ToTable("Project");
-
-            entity.Property(e => e.ProjectPsp)
-                .HasMaxLength(50)
-                .HasColumnName("ProjectPSP");
-            entity.Property(e => e.ProjectColor)
-                .HasMaxLength(10)
-                .IsFixedLength();
-        });
-
-        modelBuilder.Entity<ProjectAttachment>(entity =>
-        {
-            entity.HasKey(e => e.AttachId);
-
-            entity.ToTable("ProjectAttachment");
-
-            entity.Property(e => e.ProjectPsp).HasMaxLength(50);
-            entity.Property(e => e.Timestamp).HasColumnType("datetime");
-
-            entity.HasOne(d => d.ProjectPspNavigation).WithMany(p => p.ProjectAttachments)
-                .HasForeignKey(d => d.ProjectPsp)
-                .HasConstraintName("FK_ProjectAttachment_Project");
         });
 
         modelBuilder.Entity<Ressource>(entity =>
@@ -293,43 +106,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasConstraintName("FK_RessourceCostUnit_Ressource");
         });
 
-        modelBuilder.Entity<RessourceUser>(entity =>
-        {
-            entity.HasKey(e => new { e.UsId, e.Rid });
-
-            entity.ToTable("RessourceUser");
-
-            entity.Property(e => e.UsId)
-                .HasMaxLength(255)
-                .HasColumnName("UsID");
-
-            entity.HasOne(d => d.RidNavigation).WithMany(p => p.RessourceUsers)
-                .HasForeignKey(d => d.Rid)
-                .HasConstraintName("FK_RessourceUser_Ressource");
-
-            entity.HasOne(d => d.Us).WithMany(p => p.RessourceUsers)
-                .HasForeignKey(d => d.UsId)
-                .HasConstraintName("FK_RessourceUser_User");
-        });
-
-        modelBuilder.Entity<RessourceWorkshift>(entity =>
-        {
-            entity.HasKey(e => new { e.Rid, e.Sid });
-
-            entity.ToTable("RessourceWorkshift");
-
-            entity.Property(e => e.Rid).HasColumnName("rid");
-            entity.Property(e => e.Sid).HasColumnName("sid");
-
-            entity.HasOne(d => d.RidNavigation).WithMany(p => p.RessourceWorkshifts)
-                .HasForeignKey(d => d.Rid)
-                .HasConstraintName("FK_RessourceWorkshift_Ressource");
-
-            entity.HasOne(d => d.SidNavigation).WithMany(p => p.RessourceWorkshifts)
-                .HasForeignKey(d => d.Sid)
-                .HasConstraintName("FK_RessourceWorkshift_WorkShift");
-        });
-
         modelBuilder.Entity<Role>(entity =>
         {
             entity.Property(e => e.Id).HasColumnName("id");
@@ -343,15 +119,59 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Rolelevel).HasColumnName("rolelevel");
         });
 
-        modelBuilder.Entity<Rule>(entity =>
+        modelBuilder.Entity<TblAuftrag>(entity =>
         {
-            entity.Property(e => e.RuleData).HasColumnType("xml");
-            entity.Property(e => e.RuleName)
-                .HasMaxLength(20)
-                .IsFixedLength();
-            entity.Property(e => e.RuleValue)
+            entity.HasKey(e => e.Aid);
+
+            entity.ToTable("tblAuftrag");
+
+            entity.Property(e => e.Aid)
                 .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("AID");
+            entity.Property(e => e.Abgeschlossen).HasColumnName("abgeschlossen");
+            entity.Property(e => e.AuftragArt).HasMaxLength(255);
+            entity.Property(e => e.AuftragFarbe).HasMaxLength(10);
+            entity.Property(e => e.Ausgebl).HasColumnName("ausgebl");
+            entity.Property(e => e.Bemerkung).HasMaxLength(255);
+            entity.Property(e => e.DummyMat)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.Eckende).HasColumnType("datetime");
+            entity.Property(e => e.Eckstart).HasColumnType("datetime");
+            entity.Property(e => e.Fertig).HasColumnName("fertig");
+            entity.Property(e => e.Istende).HasColumnType("datetime");
+            entity.Property(e => e.Iststart).HasColumnType("datetime");
+            entity.Property(e => e.LieferTermin).HasMaxLength(255);
+            entity.Property(e => e.Material).HasMaxLength(255);
+            entity.Property(e => e.Mrpcontroller)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("MRPController");
+            entity.Property(e => e.OrderCategory)
+                .HasMaxLength(10)
                 .IsFixedLength();
+            entity.Property(e => e.OrderType)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.Prio).HasMaxLength(255);
+            entity.Property(e => e.ProId).HasColumnName("ProID");
+            entity.Property(e => e.ProduktionSupervisor)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.SysStatus).HasMaxLength(255);
+            entity.Property(e => e.Timestamp)
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp");
+
+            entity.HasOne(d => d.DummyMatNavigation).WithMany(p => p.TblAuftrags)
+                .HasForeignKey(d => d.DummyMat)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_tblAuftrag_tblDummy1");
+
+            entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.TblAuftrags)
+                .HasForeignKey(d => d.Material)
+                .HasConstraintName("FK_tblAuftrag_tblMaterial");
         });
 
         modelBuilder.Entity<TblDummy>(entity =>
@@ -428,30 +248,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.UserIdentNavigation).WithMany(p => p.UserRoles)
                 .HasForeignKey(d => d.UserIdent)
                 .HasConstraintName("FK_UserRoles_User");
-        });
-
-        modelBuilder.Entity<UserVorgang>(entity =>
-        {
-            entity.HasKey(e => new { e.UserId, e.Vid }).HasName("PK_User_Vorgang");
-
-            entity.ToTable("UserVorgang");
-
-            entity.Property(e => e.UserId).HasMaxLength(255);
-            entity.Property(e => e.Vid)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("VID");
-            entity.Property(e => e.Timestamp)
-                .HasColumnType("datetime")
-                .HasColumnName("timestamp");
-
-            entity.HasOne(d => d.User).WithMany(p => p.UserVorgangs)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK_User_Vorgang_User");
-
-            entity.HasOne(d => d.VidNavigation).WithMany(p => p.UserVorgangs)
-                .HasForeignKey(d => d.Vid)
-                .HasConstraintName("FK_User_Vorgang_Vorgang");
         });
 
         modelBuilder.Entity<UserWorkArea>(entity =>
@@ -542,10 +338,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(5)
                 .HasColumnName("WRTZE_Einheit");
 
-            entity.HasOne(d => d.AidNavigation).WithMany(p => p.Vorgangs)
-                .HasForeignKey(d => d.Aid)
-                .HasConstraintName("FK_Vorgang_OrderRB");
-
             entity.HasOne(d => d.ArbPlSapNavigation).WithMany(p => p.Vorgangs)
                 .HasForeignKey(d => d.ArbPlSap)
                 .HasConstraintName("FK_Vorgang_WorkSap");
@@ -586,19 +378,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasForeignKey(d => d.RessourceId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_WorkSap_Ressource");
-        });
-
-        modelBuilder.Entity<WorkShift>(entity =>
-        {
-            entity.HasKey(e => e.Sid);
-
-            entity.ToTable("WorkShift");
-
-            entity.Property(e => e.Sid).HasColumnName("sid");
-            entity.Property(e => e.ShiftDef).HasColumnType("xml");
-            entity.Property(e => e.ShiftName)
-                .HasMaxLength(50)
-                .IsUnicode(false);
         });
 
         OnModelCreatingPartial(modelBuilder);

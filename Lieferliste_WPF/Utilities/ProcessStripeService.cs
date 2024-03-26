@@ -14,62 +14,73 @@ namespace Lieferliste_WPF.Utilities
         {
             var r = vorgang.Rstze ?? 0;
             var c = vorgang.Correction ?? 0;
-            var duration = vorgang.Beaze / vorgang.AidNavigation.Quantity * vorgang.QuantityMiss + r + c;
-
-            TimeSpan t = TimeSpan.FromMinutes(Convert.ToDouble(duration));
-            ProcessLength = GetCalculatedEndDate(t, start, vorgang.RidNavigation, TimeSpan.Zero);
-            return start.AddTicks(ProcessLength.Ticks);
+            if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0)
+            {         
+                var duration = vorgang.Beaze ?? 0 / vorgang.AidNavigation.Quantity * vorgang.QuantityMissNeo ?? 0 + r + c;
+                duration = 100;
+                if (duration > 0)
+                {
+                    TimeSpan t = TimeSpan.FromMinutes(Convert.ToDouble(duration));
+                    ProcessLength = GetCalculatedEndDate(t, start, vorgang.RidNavigation, TimeSpan.Zero);
+                    return start.AddTicks(ProcessLength.Ticks);
+                }
+            }
+            ProcessLength = TimeSpan.Zero;
+            return start;
         }
         private static TimeSpan GetCalculatedEndDate(TimeSpan timeSpan, DateTime start, Ressource ressource, TimeSpan length)
         {
             DateTime dateTime = start;
-            if(start.DayOfWeek == DayOfWeek.Saturday) dateTime = dateTime.AddDays(2).Date;
-            while (HolydayLogic.GetInstance(dateTime.Year).isHolyday(dateTime)) { dateTime = dateTime.AddDays(1).Date; }
+            if(start.DayOfWeek == DayOfWeek.Saturday) dateTime = dateTime.AddDays(1).Date;
+            
             TimeSpan rest = timeSpan;
 
             var shifts = ressource.RessourceWorkshifts;
             if (shifts.Count == 0) { return TimeSpan.Zero; }
             var serializer = XmlSerializerHelper.GetSerializer(typeof(List<WorkShiftItem>));
+            TimeOnly endPos = TimeOnly.FromDateTime(dateTime);
             foreach (var shift in shifts)
             {
+                while (HolydayLogic.GetInstance(dateTime.Year).isHolyday(dateTime)) { dateTime = dateTime.AddDays(1).Date; }
                 if (rest.TotalMinutes < 0) break;
                 var data = shift.SidNavigation.ShiftDef;
                 TextReader reader = new StringReader(data);
                 var ws = (List<WorkShiftItem>)serializer.Deserialize(reader);
-
+ 
                 foreach (var wsItem in ws)
                 {
                     DateTime endDate;
                     var timespst = wsItem.StartTime.Value.ToTimeSpan();
                     var timespen = wsItem.EndTime.Value.ToTimeSpan();
-
-                    if (dateTime.TimeOfDay < timespst) 
+                    if(length == TimeSpan.Zero)
                     {
-
-                        length = length.Add(timespst.Subtract(dateTime.TimeOfDay));
-                        dateTime = dateTime.Date.AddTicks(timespst.Ticks);
-                        endDate = dateTime.AddTicks(timespen.Ticks - timespst.Ticks);
-                        
+                        if (dateTime.TimeOfDay < timespst)
+                        {
+                            length = length.Add(timespen.Subtract(dateTime.TimeOfDay));
+                            rest -= timespen.Subtract(timespst);
+                        }
+                        else if (dateTime.TimeOfDay < timespen)
+                        {
+                            length = length.Subtract(timespen.Subtract(dateTime.TimeOfDay));
+                            rest -= timespen.Subtract(dateTime.TimeOfDay);
+                        }
+                        else { continue; }
                     }
                     else if (dateTime.TimeOfDay < timespen)
                     {
-                        length = length.Subtract(timespen.Subtract(dateTime.TimeOfDay));
-                        endDate = dateTime.Date.AddTicks(timespen.Ticks);
-                        
+                        length = length.Add(timespen.Subtract(endPos.ToTimeSpan()));
+                        rest -= timespen.Subtract(timespst);
+                        endPos = TimeOnly.FromTimeSpan(timespen);
                     }
-                    else { continue; }
-                    
-                    rest -= endDate.Subtract(dateTime);
-                    if (rest.Ticks > 0) { dateTime = endDate; }
-                    else { length = length.Add(rest); break; }
+                                
                 }
             }
 
             if (rest.TotalMinutes > 0)
             {
 
-                length = length.Add(GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource, length)
-                    .Add(TimeOnly.MaxValue.ToTimeSpan().Subtract(dateTime.TimeOfDay)));
+                length = length.Add(GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource,
+                    length.Add(TimeOnly.MaxValue.ToTimeSpan().Subtract(endPos.ToTimeSpan()))) );
             }
             return length;
         }

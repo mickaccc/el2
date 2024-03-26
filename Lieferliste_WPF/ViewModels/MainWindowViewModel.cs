@@ -159,7 +159,7 @@ namespace Lieferliste_WPF.ViewModels
         #region Commands
         private bool OnOpenShiftCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ShiftEdit);
         }
 
         private void OnOpenShiftExecuted(object obj)
@@ -169,7 +169,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenHolidayCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.HoliEdit);
         }
 
         private void OnOpenHolidayExecuted(object obj)

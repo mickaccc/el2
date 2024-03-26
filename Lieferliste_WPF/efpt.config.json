@@ -1,5 +1,5 @@
 ﻿{
-   "CodeGenerationMode": 3,
+   "CodeGenerationMode": 4,
    "ContextClassName": "SQLContext",
    "ContextNamespace": null,
    "DefaultDacpacSchema": null,
@@ -17,10 +17,6 @@
    "Tables": [
       {
          "Name": "[dbo].[Costunit]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Machine]",
          "ObjectType": 0
       },
       {
@@ -80,12 +76,13 @@
          "ObjectType": 0
       }
    ],
-   "UiHint": null,
+   "UiHint": "hl0vm00069.DB_COS_LIEFERLISTE_SQL.dbo",
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDateOnlyTimeOnly": false,
    "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
    "UseFluentApiOnly": true,
    "UseHandleBars": false,
    "UseHierarchyId": false,
@@ -93,6 +90,7 @@
    "UseLegacyPluralizer": false,
    "UseManyToManyEntity": true,
    "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
    "UseNoObjectFilter": false,
    "UseNodaTime": false,
    "UseNullableReferences": true,

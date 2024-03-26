@@ -69,5 +69,7 @@
         public const string RemoveMeasureDocu = "REMOVEMEADOCU";
         public const string ProjectPrio = "PROJ06";
         public const string MessWorker = "MEA03";
+        public const string ShiftEdit = "SHE00";
+        public const string HoliEdit = "HOL00";
     }
 }
