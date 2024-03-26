@@ -12,12 +12,13 @@ namespace Lieferliste_WPF.Utilities
     {
         public static DateTime GetProcessLength(Vorgang vorgang, DateTime start, out TimeSpan ProcessLength)
         {
-            var r = vorgang.Rstze ?? 0;
-            var c = vorgang.Correction ?? 0;
-            if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0)
-            {         
+            var r = vorgang.Rstze ?? 0; //Setup time
+            var c = vorgang.Correction ?? 0; //correction time
+            if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0) //if have Total quantity
+            {
+                //calculation of the currently required time
                 var duration = vorgang.Beaze ?? 0 / vorgang.AidNavigation.Quantity * vorgang.QuantityMissNeo ?? 0 + r + c;
-                duration = 100;
+
                 if (duration > 0)
                 {
                     TimeSpan t = TimeSpan.FromMinutes(Convert.ToDouble(duration));
@@ -36,7 +37,7 @@ namespace Lieferliste_WPF.Utilities
             TimeSpan rest = timeSpan;
 
             var shifts = ressource.RessourceWorkshifts;
-            if (shifts.Count == 0) { return TimeSpan.Zero; }
+            if (shifts.Count == 0) { return TimeSpan.Zero; } //no shifts
             var serializer = XmlSerializerHelper.GetSerializer(typeof(List<WorkShiftItem>));
             TimeOnly endPos = TimeOnly.FromDateTime(dateTime);
             foreach (var shift in shifts)
@@ -49,34 +50,49 @@ namespace Lieferliste_WPF.Utilities
  
                 foreach (var wsItem in ws)
                 {
-                    DateTime endDate;
+
                     var timespst = wsItem.StartTime.Value.ToTimeSpan();
                     var timespen = wsItem.EndTime.Value.ToTimeSpan();
-                    if(length == TimeSpan.Zero)
+                    if(length == TimeSpan.Zero)  //the first entry
                     {
-                        if (dateTime.TimeOfDay < timespst)
+                        if (dateTime.TimeOfDay < timespst) //we come from ground
                         {
                             length = length.Add(timespen.Subtract(dateTime.TimeOfDay));
                             rest -= timespen.Subtract(timespst);
+                            if (rest.TotalMinutes < 0) //we are override
+                            {
+                                length = length.Add(rest);
+                                break;
+                            }
                         }
-                        else if (dateTime.TimeOfDay < timespen)
+                        else if (dateTime.TimeOfDay < timespen) //we are between
                         {
-                            length = length.Subtract(timespen.Subtract(dateTime.TimeOfDay));
+                            length = length.Add(timespen.Subtract(dateTime.TimeOfDay));
                             rest -= timespen.Subtract(dateTime.TimeOfDay);
+                            if (rest.TotalMinutes < 0) //we are override
+                            {
+                                length = length.Add(rest);
+                                break;
+                            }
                         }
-                        else { continue; }
+                        else { continue; } //get next section
                     }
-                    else if (dateTime.TimeOfDay < timespen)
+                    else if (dateTime.TimeOfDay < timespen) //we are between of further
                     {
                         length = length.Add(timespen.Subtract(endPos.ToTimeSpan()));
                         rest -= timespen.Subtract(timespst);
                         endPos = TimeOnly.FromTimeSpan(timespen);
+                        if(rest.TotalMinutes < 0) //we are override
+                        {
+                            length = length.Add(rest);
+                            break;
+                        }
                     }
                                 
                 }
             }
 
-            if (rest.TotalMinutes > 0)
+            if (rest.TotalMinutes > 0) //we needs a next day?
             {
 
                 length = length.Add(GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource,

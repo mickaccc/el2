@@ -13,7 +13,6 @@ namespace Lieferliste_WPF.Utilities
     public class Holiday : IComparable<Holiday>
     {
         private int type;
-        private DateTime datum;
         private int? timeDistance;
         private int? month;
         private string _locale = "";
@@ -36,11 +35,7 @@ namespace Lieferliste_WPF.Utilities
         /// <summary>
         /// Beschreibung: 
         /// </summary>
-        public DateTime Datum
-        {
-            get => datum;
-            set => datum = value;
-        }
+        public DateTime Datum { get; set; }   
 
 
         /// <summary>
@@ -58,7 +53,7 @@ namespace Lieferliste_WPF.Utilities
 
         public int CompareTo(Holiday other)
         {
-            return this.datum.CompareTo(other.datum);
+            return this.Datum.CompareTo(other.Datum);
         }
 
         #endregion

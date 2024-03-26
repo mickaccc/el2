@@ -71,5 +71,6 @@
         public const string MessWorker = "MEA03";
         public const string ShiftEdit = "SHE00";
         public const string HoliEdit = "HOL00";
+        public const string ShiftAlloc = "SHE01";
     }
 }

@@ -56,5 +56,10 @@ namespace Lieferliste_WPF.Planning
             var pl = this.DataContext as PlanMachine;
             pl.PropertyChanged += Pl_PropertyChanged;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            shiftOpen.IsChecked = false;
+        }
     }
 }

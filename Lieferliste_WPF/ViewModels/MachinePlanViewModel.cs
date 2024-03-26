@@ -157,7 +157,7 @@ namespace Lieferliste_WPF.ViewModels
             try
             {
                 _DbCtx.SaveChanges();
-               // foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+               foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
             }
             catch (Exception e)
             {

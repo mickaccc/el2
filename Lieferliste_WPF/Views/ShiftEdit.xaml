@@ -24,7 +24,7 @@
             <Button Content="neue Schicht" Command="{Binding AddCommand}"/>
             <Button Content="Speichern" Command="{Binding SaveCommand}"/>
         </StackPanel>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Path=ShiftView}" IsSynchronizedWithCurrentItem="True" 
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Path=ShiftView}" IsSynchronizedWithCurrentItem="True" Background="{DynamicResource MahApps.Brushes.Gray8}"
                   AutoGenerateColumns="False" SelectionUnit="FullRow" CanUserAddRows="False"  x:Name="ShiftHeader" SelectionChanged="ShiftHeader_SelectionChanged">
 
             <DataGrid.Columns>

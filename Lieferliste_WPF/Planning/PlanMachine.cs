@@ -108,7 +108,7 @@ namespace Lieferliste_WPF.Planning
         private readonly int _rId;
         private string _title;
         public string Title => _title;
-        public bool HasChange => _employees.Any(x => x.IsChanged);
+        public bool HasChange => _shifts.Any(x => x.IsChanged);
         public int Rid => _rId;
         private string? _name;
         public string? Name { get { return _name; }
@@ -144,8 +144,8 @@ namespace Lieferliste_WPF.Planning
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        private ObservableCollection<UserStruct> _employees = [];
-        public ICollectionView EmployeesView { get; private set; }
+        private ObservableCollection<ShiftStruct> _shifts = [];
+        public ICollectionView ShiftsView { get; private set; }
         protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
@@ -213,17 +213,24 @@ namespace Lieferliste_WPF.Planning
                 .ToList();
 
 
-            for (int i = 0; i < CostUnits?.Count; i++)
-            {
-                foreach (var emp in db.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
-                            && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
-                {
+            //for (int i = 0; i < CostUnits?.Count; i++)
+            //{
+            //    foreach (var emp in db.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
+            //                && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
+            //    {
 
-                    if (_employees.All(x => x.User != emp))
-                        _employees.Add(new UserStruct(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent)));
-                }
+            //        if (_shifts.All(x => x.User != emp))
+            //            _shifts.Add(new UserStruct(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent)));
+            //    }
+            //}
+            var sh = db.WorkShifts
+                .Include(x => x.RessourceWorkshifts)
+                .ToFrozenSet();
+            foreach(var e in sh)
+            {
+                _shifts.Add(new ShiftStruct(e, e.RessourceWorkshifts?.Any(x => x.Rid == Rid) ?? false));
             }
-            EmployeesView = CollectionViewSource.GetDefaultView(_employees);
+            ShiftsView = CollectionViewSource.GetDefaultView(_shifts);
         }
         private void Initialize()
         {
@@ -538,55 +545,35 @@ namespace Lieferliste_WPF.Planning
 
         void IViewModel.Closing()
         {
-            //var emp = _employees.Any(x => x.IsChanged);
-            //if (_dbCtx.ChangeTracker.HasChanges() || emp)
-            //{
-            //    SaveQuestion();
-            //}
+ 
         }
-        //private bool SaveQuestion()
-        //{
-        //    foreach (var item in _employees.Where(x => x.IsChanged))
-        //    {
-        //        if (item.IsCheck)
-        //        {
-        //            if (!_dbCtx.RessourceUsers.Any(x => x.UsId == item.User.UserIdent && x.Rid == this.Rid))
-        //                _dbCtx.RessourceUsers.Add(new RessourceUser() { Rid = this.Rid, UsId = item.User.UserIdent });
-        //        }
-        //        else
-        //        {
-        //            var ru = _dbCtx.RessourceUsers.SingleOrDefault(x => x.UsId == item.User.UserIdent && x.Rid == this.Rid);
-        //            if (ru != null)
-        //                _dbCtx.RessourceUsers.Remove(ru);
-        //        }
-        //    }
-        //    if (!_settingsService.IsSaveMessage)
-        //    {
-        //        _dbCtx.SaveChangesAsync();
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", _title),
-        //            _title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-        //        if (result == MessageBoxResult.Yes)
-        //        {
-        //            _dbCtx.SaveChangesAsync();
-        //            return true;
-        //        }
-        //        else return false;
-        //    }
-        //}
-        public class UserStruct : ViewModelBase
+
+        internal void SaveAll()
         {
-            public UserStruct(User usr, bool isc)
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            foreach (var s in _shifts.Where(x => x.IsChanged))
             {
-                this.User = usr;
+                
+                RessourceWorkshift ws = new RessourceWorkshift() { Rid = Rid, Sid = s.Shift.Sid };
+                if (s.IsCheck)
+                    db.RessourceWorkshifts.Add(ws);
+                else db.RessourceWorkshifts.Remove(ws);
+                s.IsChanged = false;
+            }
+            db.SaveChanges();
+            
+        }
+
+        public class ShiftStruct : ViewModelBase
+        {
+            public ShiftStruct(WorkShift shf, bool isc)
+            {
+                this.Shift = shf;
                 this._isCheck = isc;
             }
             private bool _isCheck;
-            public bool IsChanged { get; private set; }
-            public User User { get; }
+            public bool IsChanged { get; set; }
+            public WorkShift Shift { get; }
             public bool IsCheck
             {
                 get { return _isCheck; }
