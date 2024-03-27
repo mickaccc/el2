@@ -12,12 +12,15 @@ namespace Lieferliste_WPF.Utilities
     {
         public static DateTime GetProcessLength(Vorgang vorgang, DateTime start, out TimeSpan ProcessLength)
         {
-            var r = vorgang.Rstze ?? 0; //Setup time
-            var c = vorgang.Correction ?? 0; //correction time
-            if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0) //if have Total quantity
+            var r = (vorgang.Rstze == null) ? 0.0 : (short)vorgang.Rstze; //Setup time
+            var c = (vorgang.Correction == null) ? 0.0 :(short)vorgang.Correction; //correction time
+            if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0.0) //if have Total quantity
             {
                 //calculation of the currently required time
-                var duration = vorgang.Beaze ?? 0 / vorgang.AidNavigation.Quantity * vorgang.QuantityMissNeo ?? 0 + r + c;
+                var procT = (vorgang.Beaze == null) ? 0.0 : (short)vorgang.Beaze;
+                var quant = (short)vorgang.AidNavigation.Quantity;
+                var miss = (vorgang.QuantityMissNeo == null) ? 0.0 : (short)vorgang.QuantityMissNeo;
+                var duration = procT / quant * miss + r + c;
 
                 if (duration > 0)
                 {
@@ -32,7 +35,11 @@ namespace Lieferliste_WPF.Utilities
         private static TimeSpan GetCalculatedEndDate(TimeSpan timeSpan, DateTime start, Ressource ressource, TimeSpan length)
         {
             DateTime dateTime = start;
-            if(start.DayOfWeek == DayOfWeek.Saturday) dateTime = dateTime.AddDays(1).Date;
+            if (start.DayOfWeek == DayOfWeek.Saturday)
+            {
+                dateTime = dateTime.AddDays(2).Date;
+                length = length.Add(TimeOnly.MaxValue.ToTimeSpan().Add(TimeOnly.MaxValue.ToTimeSpan()));
+            }
             
             TimeSpan rest = timeSpan;
 
@@ -94,9 +101,8 @@ namespace Lieferliste_WPF.Utilities
 
             if (rest.TotalMinutes > 0) //we needs a next day?
             {
-
-                length = length.Add(GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource,
-                    length.Add(TimeOnly.MaxValue.ToTimeSpan().Subtract(endPos.ToTimeSpan()))) );
+                length = length.Add(TimeOnly.MaxValue.ToTimeSpan().Subtract(endPos.ToTimeSpan()));
+                length = GetCalculatedEndDate(rest, dateTime.AddDays(1).Date, ressource, length);
             }
             return length;
         }
@@ -134,7 +140,7 @@ namespace Lieferliste_WPF.Utilities
             get { return StartTime.ToString(); }
             set
             {
-                if (value != null)
+                if (string.IsNullOrEmpty(value) == false)
                     StartTime = TimeOnly.Parse(value);
                 else StartTime = null;
                 Changed = true;
@@ -146,7 +152,7 @@ namespace Lieferliste_WPF.Utilities
             get { return EndTime.ToString(); }
             set
             {
-                if (value != null)
+                if (string.IsNullOrEmpty(value) == false)
                     EndTime = TimeOnly.Parse(value);
                 else EndTime = null;
                 Changed |= true;

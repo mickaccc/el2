@@ -1,4 +1,6 @@
-﻿using System;
+﻿using El2Core.ViewModelBase;
+using Prism.Ioc;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -10,38 +12,72 @@ using System.Xml.Serialization;
 
 namespace Lieferliste_WPF.Utilities
 {
-    public class Holiday : IComparable<Holiday>
+    public class Holiday : ViewModelBase, IComparable<Holiday>
     {
-        private int type;
         private int? timeDistance;
         private int? month;
         private string _locale = "";
-
         public Holiday() { }
         public Holiday(DateTime datum, string name, int type, string locale)
         {
             this.type = type;
-            this.Datum = datum;
-            this.Name = name;
+            this.datum = datum;
+            this.name = name;
             this._locale = locale;
         }
 
         /// <summary>
         /// Beschreibung: 
         /// </summary>
-        public string Name { get; set; } = "";
+        private string? name;
+        public string? Name
+        {
+            get { return name; }
+            set
+            {
+                if (value != name)
+                {
+                    name = value;
+                    NotifyPropertyChanged(() => Name);
+                }
+            }
+        }
 
 
         /// <summary>
         /// Beschreibung: 
         /// </summary>
-        public DateTime Datum { get; set; }   
+        private DateTime datum = DateTime.Now;
+        public DateTime Datum
+        {
+            get { return datum; }
+            set
+            {
+                if (value != datum)
+                {
+                    datum = value;
+                    NotifyPropertyChanged(() => Datum);
+                }
+            }
+        }
 
 
         /// <summary>
         /// Beschreibung: 
         /// </summary>
-        public int Type => type;
+        private int type;
+        public int Type
+        {
+            get { return type; }
+            set
+            {
+                if (value != type)
+                {
+                    type = value;
+                    NotifyPropertyChanged(() => Type);
+                }
+            }
+        }
   
         /// <summary>
         /// Locale String
@@ -53,7 +89,7 @@ namespace Lieferliste_WPF.Utilities
 
         public int CompareTo(Holiday other)
         {
-            return this.Datum.CompareTo(other.Datum);
+            return this.datum.CompareTo(other.datum);
         }
 
         #endregion
@@ -78,13 +114,13 @@ namespace Lieferliste_WPF.Utilities
         {
             get { return locale; }
             set { locale = value; }
-        }
-        public static HolydayLogic GetInstance(int year, String locale = "")
+        }private IContainerExtension _container;
+        public static HolydayLogic GetInstance(int year, String locale = "de-AT")
         {
             if (Instance == null || year != Instance.CurrentYear)
             {
                 Instance = new HolydayLogic(year);
-                if (locale == "") { Instance.Locale = locale; } else { Instance.Locale = Thread.CurrentThread.CurrentCulture.Name; }
+                if (locale == "de-AT") { Instance.Locale = locale; } else { Instance.Locale = Thread.CurrentThread.CurrentCulture.Name; }
                 return Instance;
             }
             return Instance;
@@ -215,9 +251,9 @@ namespace Lieferliste_WPF.Utilities
     public class CloseAndHolidayRule
     {
 
-        public readonly List<HolidayRule>? FixHoliday  = [];
-        public readonly List<HolidayRule>? VariousHoliday  = [];
-        public readonly List<Holiday>? CloseDay;
+        public readonly List<HolidayRule> FixHoliday  = [];
+        public readonly List<HolidayRule> VariousHoliday  = [];
+        public readonly List<Holiday> CloseDay = [];
 
         public CloseAndHolidayRule()
         {

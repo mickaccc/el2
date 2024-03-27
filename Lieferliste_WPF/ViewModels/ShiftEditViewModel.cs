@@ -3,19 +3,13 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.IdentityModel.Tokens;
 using Prism.Ioc;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml;
@@ -35,10 +29,9 @@ namespace Lieferliste_WPF.ViewModels
             ShiftView = CollectionViewSource.GetDefaultView(WorkShiftCollection);
             ShiftView.MoveCurrentToFirst();
             ShiftView.CurrentChanged += onCurrentChanged;
-
         }
 
-
+        public string Title { get; } = "Schicht Editor";
         IContainerExtension _container;
         public ObservableCollection<WorkShiftService> WorkShiftCollection { get; private set; } = [];
         public ObservableCollection<DataTable> ShiftDataSets { get; private set; } = [];
@@ -107,7 +100,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool onSaveCanExecute(object arg)
         {
-            return  changed;
+            return true;
         }
 
         private void onSaveExecuted(object obj)
@@ -124,11 +117,11 @@ namespace Lieferliste_WPF.ViewModels
                     serializer.Serialize(sw, w.Items);    
                     var work = new WorkShift() { ShiftName = w.ShiftName, ShiftDef = sw.ToString() };
                     
-                    wo.Add(work);                    
-                }
-                else if(w.Items.Any(x => x.Changed))
-                {
-                    serializer.Serialize(sw, w.Items);
+                    wo.Add(work);
+            }
+                else if (w.Items.Any(x => x.Changed))
+            {
+                serializer.Serialize(sw, w.Items);
                     var work = wo.First(x => x.Sid == w.id);
                     work.ShiftName = w.ShiftName;
                     work.ShiftDef = sw.ToString();

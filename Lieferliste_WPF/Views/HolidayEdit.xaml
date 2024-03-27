@@ -4,14 +4,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
+
+    <UserControl.Resources>
+        <System:DateTime x:Key="datetime"/>
+    </UserControl.Resources>
     <Grid>
-        <TabControl>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Speichern" Command="{Binding SaveHolidayCommand}"/>
+        </StackPanel>
+        <TabControl Grid.Row="1">
             <TabItem Header="Schließtage">
                 <DataGrid ItemsSource="{Binding CloseHolidays}" AutoGenerateColumns="False">
                     <DataGrid.Columns>
@@ -19,7 +31,8 @@
                         <DataGridTemplateColumn Header="Datum">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <DatePicker SelectedDate="{Binding Datum, Mode=TwoWay}" />
+                                    <DatePicker SelectedDate="{Binding Datum, Mode=TwoWay}"
+                                                DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

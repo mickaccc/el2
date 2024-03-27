@@ -15,14 +15,11 @@ using System;
 using System.Collections;
 using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -264,7 +261,7 @@ namespace Lieferliste_WPF.Planning
                 TimeSpan length;
                 var end = ProcessStripeService.GetProcessLength(p, start, out length);
                 if (length.TotalMinutes == 0) p.Extends = "---";
-                    else p.Extends = string.Format("{0:N2}h \n{1}",length.TotalHours, end.ToString("dd.MM.yy - HH:mm"));
+                    else p.Extends = string.Format("({0}){1:N2}h \n{2}",p.QuantityMissNeo, length.TotalHours, end.ToString("dd.MM.yy - HH:mm"));
                 start = end;
             }
         }
