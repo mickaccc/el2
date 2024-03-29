@@ -60,16 +60,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var vorg = db.Vorgangs
-                .Include(x => x.AidNavigation)
-                .Include(x => x.RidNavigation)
-                .ThenInclude(x => x.RessourceWorkshifts)
-                .ThenInclude(x => x.SidNavigation)
-                .Where(x => x.RidNavigation != null && x.QuantityMiss > 0)
-                .First();
 
-            EndTime = ProcessStripeService.GetProcessLength(vorg, DateTime.Now, out stripe);
         }
     }
 }

@@ -255,11 +255,12 @@ namespace Lieferliste_WPF.Planning
         }
         private void CalculateEndTime()
         {
+            using var processService = _container.Resolve<ProcessStripeService>();
             DateTime start = DateTime.Now;
             foreach(var p in Processes)
             {
                 TimeSpan length;
-                var end = ProcessStripeService.GetProcessLength(p, start, out length);
+                var end = processService.GetProcessLength(p, start, out length);
                 if (length.TotalMinutes == 0) p.Extends = "---";
                     else p.Extends = string.Format("({0}){1:N2}h \n{2}",p.QuantityMissNeo, length.TotalHours, end.ToString("dd.MM.yy - HH:mm"));
                 start = end;

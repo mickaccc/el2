@@ -1,4 +1,5 @@
 ﻿
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml;
+using static Lieferliste_WPF.Utilities.WorkShiftService;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -66,7 +68,8 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand RemoveCommand { get; private set; }
         private RelayCommand? lostFocusCommand;
         public RelayCommand LostFocusCommand => lostFocusCommand ??= new RelayCommand(onLostFocus);
-  
+
+
         private void LoadData()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -79,6 +82,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     ShiftName = w.ShiftName,
                     id = w.Sid,
+                    ShiftType = (ShiftTypes)w.ShiftType,
                     Items = (ObservableCollection<WorkShiftItem>)serializer.Deserialize(reader),
                     Changed = false
                 };
@@ -115,7 +119,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (w.id == 0)
                 {
                     serializer.Serialize(sw, w.Items);    
-                    var work = new WorkShift() { ShiftName = w.ShiftName, ShiftDef = sw.ToString() };
+                    var work = new WorkShift() { ShiftName = w.ShiftName, ShiftType = (int)w.ShiftType, ShiftDef = sw.ToString() };
                     
                     wo.Add(work);
             }
@@ -124,6 +128,7 @@ namespace Lieferliste_WPF.ViewModels
                 serializer.Serialize(sw, w.Items);
                     var work = wo.First(x => x.Sid == w.id);
                     work.ShiftName = w.ShiftName;
+                    work.ShiftType = (int)w.ShiftType;
                     work.ShiftDef = sw.ToString();
                 }
                 foreach (var item in w.Items.Where(x => x.Changed))

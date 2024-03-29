@@ -6,11 +6,24 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:utility="clr-namespace:Lieferliste_WPF.Utilities"
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
+    <UserControl.Resources>
+        <!--<ObjectDataProvider x:Key="shiftTypeEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}" >
+            <ObjectDataProvider.MethodParameters>
+                <x:Type Type="const:ShiftTypes"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>-->
+        <conv:EnumToCollectionConverter x:Key="enumConv"/>
+
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -35,7 +48,10 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </DataGridTextColumn>
-                    
+                <DataGridComboBoxColumn Header="Schichttyp"
+                                        SelectedItemBinding="{Binding ShiftType}"
+                                        SelectedValuePath="id"
+                                        ItemsSource="{Binding Path=ShiftTypes, Converter={StaticResource enumConv}}"/>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         

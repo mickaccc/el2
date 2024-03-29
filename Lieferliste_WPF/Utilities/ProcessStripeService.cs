@@ -1,16 +1,36 @@
-﻿using El2Core.Models;
+﻿using El2Core.Constants;
+using El2Core.Models;
+using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Prism.Ioc;
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Xml;
 using System.Xml.Serialization;
+
 
 namespace Lieferliste_WPF.Utilities
 {
-    internal static class ProcessStripeService
+    internal interface IProcessStripeService
+    { }
+    internal class ProcessStripeService : IProcessStripeService, IDisposable
     {
-        public static DateTime GetProcessLength(Vorgang vorgang, DateTime start, out TimeSpan ProcessLength)
+
+        HolidayLogic holidayLogic;
+        public ProcessStripeService(IContainerExtension container) { holidayLogic = container.Resolve<HolidayLogic>(); }
+
+        public void Dispose()
+        {
+        }
+
+        public DateTime GetProcessLength(Vorgang vorgang, DateTime start, out TimeSpan ProcessLength)
         {
             var r = (vorgang.Rstze == null) ? 0.0 : (short)vorgang.Rstze; //Setup time
             var c = (vorgang.Correction == null) ? 0.0 :(short)vorgang.Correction; //correction time
@@ -32,7 +52,7 @@ namespace Lieferliste_WPF.Utilities
             ProcessLength = TimeSpan.Zero;
             return start;
         }
-        private static TimeSpan GetCalculatedEndDate(TimeSpan timeSpan, DateTime start, Ressource ressource, TimeSpan length)
+        private TimeSpan GetCalculatedEndDate(TimeSpan timeSpan, DateTime start, Ressource ressource, TimeSpan length)
         {
             DateTime dateTime = start;
             if (start.DayOfWeek == DayOfWeek.Saturday)
@@ -47,9 +67,10 @@ namespace Lieferliste_WPF.Utilities
             if (shifts.Count == 0) { return TimeSpan.Zero; } //no shifts
             var serializer = XmlSerializerHelper.GetSerializer(typeof(List<WorkShiftItem>));
             TimeOnly endPos = TimeOnly.FromDateTime(dateTime);
-            foreach (var shift in shifts)
+            foreach (var shift in shifts.OrderBy(x => x.SidNavigation.ShiftType))
             {
-                while (HolydayLogic.GetInstance(dateTime.Year).isHolyday(dateTime)) { dateTime = dateTime.AddDays(1).Date; }
+                
+                while (holidayLogic.IsHolyday(dateTime)) { dateTime = dateTime.AddDays(1).Date; }
                 if (rest.TotalMinutes < 0) break;
                 var data = shift.SidNavigation.ShiftDef;
                 TextReader reader = new StringReader(data);
@@ -108,7 +129,7 @@ namespace Lieferliste_WPF.Utilities
         }
  
     }
-    public class WorkShiftService
+    public class WorkShiftService : ViewModelBase
     {
         public WorkShiftService() { }
         private int _id;
@@ -122,7 +143,60 @@ namespace Lieferliste_WPF.Utilities
             }
         }
         public bool Changed { get; set; } = false;
-        public string ShiftName { get; set; }
+        private string shiftName;
+
+        public string ShiftName
+        {
+            get
+            {
+                return shiftName;
+            }
+            set
+            {
+                if (value != shiftName)
+                {
+                    shiftName = value;
+                    Changed = true;
+                    NotifyPropertyChanged(() => ShiftName);
+                }
+            }
+        }
+
+        private ShiftTypes shiftType;
+
+        public ShiftTypes ShiftType
+        {
+            get
+            {
+                return shiftType;
+            }
+            set
+            {
+                if (value != shiftType)
+                {
+                    shiftType = value;
+                    Changed = true;
+                    NotifyPropertyChanged(() => ShiftType);
+                }
+            }
+        }
+        public enum ShiftTypes
+        {
+            [Description("Start So 1")]
+            StartSun1 = 1,
+            [Description("Start So 2")]
+            StartSun2 = 2,
+            [Description("Start So 3")]
+            StartSun3 = 3,
+            [Description("Start Mo 1")]
+            StartMon1 = 11,
+            [Description("Start Mo 2")]
+            StartMon2 = 12,
+            [Description("Start Mo 3")]
+            StartMon3 = 13,
+            [Description("Ausfall")]
+            DropOut = 100
+        }
         public ObservableCollection<WorkShiftItem> Items { get; set; } = [];
     }
     public class WorkShiftItem : ViewModelBase

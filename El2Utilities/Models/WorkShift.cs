@@ -13,5 +13,7 @@ public partial class WorkShift
 
     public string ShiftDef { get; set; } = null!;
 
+    public int ShiftType { get; set; }
+
     public virtual ICollection<RessourceWorkshift> RessourceWorkshifts { get; set; } = new List<RessourceWorkshift>();
 }
