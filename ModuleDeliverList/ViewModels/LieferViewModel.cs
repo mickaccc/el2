@@ -53,7 +53,6 @@ namespace ModuleDeliverList.ViewModels
         private string _selectedProjectFilter = string.Empty;
         private string _selectedSectionFilter = string.Empty;
         private string _markerCode = string.Empty;
-        private static System.Timers.Timer? _timer;
         private static System.Timers.Timer? _autoSaveTimer;
         private IContainerProvider _container;
         private IEventAggregator _ea;
@@ -77,7 +76,6 @@ namespace ModuleDeliverList.ViewModels
         }
 
         private bool _filterInvers;
-
         public bool FilterInvers
         {
             get { return _filterInvers; }

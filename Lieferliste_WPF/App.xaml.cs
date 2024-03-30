@@ -1,6 +1,7 @@
 ﻿using ControlzEx.Theming;
 using MahApps.Metro.Theming;
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 

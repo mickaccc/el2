@@ -6,7 +6,9 @@ using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
 using Prism.Ioc;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
@@ -14,7 +16,7 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml;
-using static Lieferliste_WPF.Utilities.WorkShiftService;
+using static El2Core.Constants.ShiftTypes;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -26,11 +28,10 @@ namespace Lieferliste_WPF.ViewModels
             SaveCommand = new ActionCommand(onSaveExecuted, onSaveCanExecute);
             AddCommand = new ActionCommand(onAddExecuted, onAddCanExecute);
             RemoveCommand = new ActionCommand(onRemoveExecuted, onRemoveCanExecute);
-
+           
             LoadData();
             ShiftView = CollectionViewSource.GetDefaultView(WorkShiftCollection);
             ShiftView.MoveCurrentToFirst();
-            ShiftView.CurrentChanged += onCurrentChanged;
         }
 
         public string Title { get; } = "Schicht Editor";
@@ -38,9 +39,7 @@ namespace Lieferliste_WPF.ViewModels
         public ObservableCollection<WorkShiftService> WorkShiftCollection { get; private set; } = [];
         public ObservableCollection<DataTable> ShiftDataSets { get; private set; } = [];
         private ObservableCollection<WorkShiftItem> WorkShiftItems = [];
-        private bool changed;
         private bool isAdding;
-
         public bool IsAdding
         {
             get
@@ -82,29 +81,46 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     ShiftName = w.ShiftName,
                     id = w.Sid,
-                    ShiftType = (ShiftTypes)w.ShiftType,
-                    Items = (ObservableCollection<WorkShiftItem>)serializer.Deserialize(reader),
-                    Changed = false
+                    ShiftType = (ShiftType)w.ShiftType,
+                    Items = (ObservableCollection<WorkShiftItem>)serializer.Deserialize(reader)
                 };
+                wos.Changed = false;
                 foreach (var item in wos.Items)
                 {
-                    item.Changed = false;
+                    item.PropertyChanged += onShiftItemChanged;
                 }
-
+                wos.PropertyChanged += onWorkShiftServiceChanged;
+                wos.Items.CollectionChanged += onItemsCollectionChanged;
                 WorkShiftCollection.Add(wos);
             }
- 
         }
 
-        private void onCurrentChanged(object? sender, EventArgs e)
+        private void onItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            var send = sender as ListCollectionView;
-            changed = send.IsAddingNew || send.IsEditingItem;
+            var items = sender as ObservableCollection<WorkShiftItem>;
+            if (items != null)
+                items.Last().Changed = true;
+        }
+
+        private void onShiftItemChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            var item = sender as WorkShiftItem;
+            if (item != null)
+                item.Changed = true;
+        }
+
+        private void onWorkShiftServiceChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            var ws = sender as WorkShiftService;
+            if (ws != null)
+                ws.Changed = true;
         }
 
         private bool onSaveCanExecute(object arg)
         {
-            return true;
+            var serv = WorkShiftCollection.Any(x => x.Changed);
+            var item = WorkShiftCollection.Where(x => x.Items.Any(y => y.Changed)).Any();
+            return serv || item;
         }
 
         private void onSaveExecuted(object obj)
@@ -122,9 +138,16 @@ namespace Lieferliste_WPF.ViewModels
                     var work = new WorkShift() { ShiftName = w.ShiftName, ShiftType = (int)w.ShiftType, ShiftDef = sw.ToString() };
                     
                     wo.Add(work);
-            }
-                else if (w.Items.Any(x => x.Changed))
-            {
+                }
+                else if( w.Changed )
+                {
+                    var sh = wo.Find(w.id);
+                    sh.ShiftName = w.ShiftName;
+                    sh.ShiftType = (int)w.ShiftType;
+                    w.Changed = false;
+                }
+                if (w.Items.Any(x => x.Changed))
+                {
                 serializer.Serialize(sw, w.Items);
                     var work = wo.First(x => x.Sid == w.id);
                     work.ShiftName = w.ShiftName;
@@ -137,7 +160,6 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
             db.SaveChanges();
-            changed = false;
 
         }
 
@@ -181,7 +203,6 @@ namespace Lieferliste_WPF.ViewModels
             }
             WorkShiftService e = (WorkShiftService)ShiftView.CurrentItem;
             e.Items.Add(new WorkShiftItem());
-            changed = true;
         }
         private void onLostFocus(object obj)
         {

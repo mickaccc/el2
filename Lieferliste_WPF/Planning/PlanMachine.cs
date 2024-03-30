@@ -101,7 +101,7 @@ namespace Lieferliste_WPF.Planning
         public ICommand? MachinePrintCommand { get; private set; }
         public ICommand? HistoryCommand { get; private set; }
         public ICommand? FastCopyCommand { get; private set; }
-
+        private static readonly object _lock = new();
         private readonly int _rId;
         private string _title;
         public string Title => _title;
@@ -249,7 +249,7 @@ namespace Lieferliste_WPF.Planning
             //    live.LiveFilteringProperties.Add("SysStatus");
             //    live.IsLiveFiltering = true;
             //}
-            //_eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
+            _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
         }
@@ -275,40 +275,44 @@ namespace Lieferliste_WPF.Planning
             if (ind != null) ScrollItem = ind;
         }
 
-        //private void MessageReceived(List<string?> vorgangIdList)
-        //{
-        //    try
-        //    {               
-        //        foreach (string? id in vorgangIdList.Where(x => x != null))
-        //        {
-                    
-        //            var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
-        //            if (pr != null)
-        //            {
-        //                string op = "PROP";
-        //                _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
-        //                pr.RunPropertyChanged();
-        //                var vo = _dbCtx.Vorgangs.First(x => x.VorgangId == id);
-        //                if (vo.SysStatus?.Contains("RÜCK") ?? false)
-        //                {
-        //                    Processes?.Remove(pr);
-        //                    _dbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != vo.VorgangId).State = EntityState.Unchanged;
-        //                    ProcessesCV.Refresh();
-        //                    op = "RÜCK";
-        //                }
-        //                string str = string.Format("{0} - {1:T} Operation: {2}", id, DateTime.Now, op);
-        //                Application.Current.Dispatcher.Invoke(() =>
-        //                {
-        //                    LastChanges.Add(str);
-        //                }, System.Windows.Threading.DispatcherPriority.Normal);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(string.Format("{0}\n{1}",ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
-        //    }
-        //}
+        private void MessageReceived(List<string?> vorgangIdList)
+        {
+            try
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                lock (_lock)
+                {
+                    foreach (string? id in vorgangIdList.Where(x => x != null))
+                    {
+
+                        var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
+                        if (pr != null)
+                        {
+                            string op = "PROP";
+                            db.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
+                            pr.RunPropertyChanged();
+                            var vo = db.Vorgangs.First(x => x.VorgangId == id);
+                            if (vo.SysStatus?.Contains("RÜCK") ?? false)
+                            {
+                                Processes?.Remove(pr);
+                                db.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != vo.VorgangId).State = EntityState.Unchanged;
+                                ProcessesCV.Refresh();
+                                op = "RÜCK";
+                            }
+                            //string str = string.Format("{0} - {1:T} Operation: {2}", id, DateTime.Now, op);
+                            //Application.Current.Dispatcher.Invoke(() =>
+                            //{
+                            //    //LastChanges.Add(str);
+                            //}, System.Windows.Threading.DispatcherPriority.Normal);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         private bool OnHistoryCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.HistoryDialog);

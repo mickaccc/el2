@@ -3,13 +3,14 @@
 using El2Core.ViewModelBase;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Serialization;
 
 namespace El2Core.Models;
 
 public partial class Vorgang : ModelBase
 {
-    [XmlIgnore]
+    [NotMapped]
     public string? Extends { get; set; }
     public string VorgangId { get; set; } = null!;
 

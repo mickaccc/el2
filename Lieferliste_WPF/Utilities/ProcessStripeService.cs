@@ -14,6 +14,8 @@ using System.Linq;
 using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
+using static El2Core.Constants.ShiftTypes;
+using static Lieferliste_WPF.App;
 
 
 namespace Lieferliste_WPF.Utilities
@@ -57,7 +59,7 @@ namespace Lieferliste_WPF.Utilities
             DateTime dateTime = start;
             if (start.DayOfWeek == DayOfWeek.Saturday)
             {
-                dateTime = dateTime.AddDays(2).Date;
+                dateTime = dateTime.AddDays(1).Date;
                 length = length.Add(TimeOnly.MaxValue.ToTimeSpan().Add(TimeOnly.MaxValue.ToTimeSpan()));
             }
             
@@ -69,16 +71,24 @@ namespace Lieferliste_WPF.Utilities
             TimeOnly endPos = TimeOnly.FromDateTime(dateTime);
             foreach (var shift in shifts.OrderBy(x => x.SidNavigation.ShiftType))
             {
+                var sh = shift.SidNavigation;
+                if(sh.ShiftType > 10 && sh.ShiftType < 20)
+                {
+                    if (dateTime.DayOfWeek == DayOfWeek.Sunday) { dateTime = dateTime.AddDays(1).Date; length.Add(TimeOnly.MaxValue.ToTimeSpan()); }
+                    while (holidayLogic.IsHolyday(dateTime)) { dateTime = dateTime.AddDays(1).Date; length.Add(TimeOnly.MaxValue.ToTimeSpan()); }
+                }
+                if(sh.ShiftType > 0  && sh.ShiftType < 10)
+                {
+                    while (holidayLogic.IsHolyday(dateTime.AddDays(1))) { dateTime = dateTime.AddDays(1).Date; length.Add(TimeOnly.MaxValue.ToTimeSpan()); }
+                }
                 
-                while (holidayLogic.IsHolyday(dateTime)) { dateTime = dateTime.AddDays(1).Date; }
                 if (rest.TotalMinutes < 0) break;
                 var data = shift.SidNavigation.ShiftDef;
                 TextReader reader = new StringReader(data);
                 var ws = (List<WorkShiftItem>)serializer.Deserialize(reader);
  
                 foreach (var wsItem in ws)
-                {
-
+                { 
                     var timespst = wsItem.StartTime.Value.ToTimeSpan();
                     var timespen = wsItem.EndTime.Value.ToTimeSpan();
                     if(length == TimeSpan.Zero)  //the first entry
@@ -156,15 +166,14 @@ namespace Lieferliste_WPF.Utilities
                 if (value != shiftName)
                 {
                     shiftName = value;
-                    Changed = true;
                     NotifyPropertyChanged(() => ShiftName);
                 }
             }
         }
 
-        private ShiftTypes shiftType;
+        private ShiftType shiftType;
 
-        public ShiftTypes ShiftType
+        public ShiftType ShiftType
         {
             get
             {
@@ -175,38 +184,47 @@ namespace Lieferliste_WPF.Utilities
                 if (value != shiftType)
                 {
                     shiftType = value;
-                    Changed = true;
                     NotifyPropertyChanged(() => ShiftType);
                 }
             }
         }
-        public enum ShiftTypes
-        {
-            [Description("Start So 1")]
-            StartSun1 = 1,
-            [Description("Start So 2")]
-            StartSun2 = 2,
-            [Description("Start So 3")]
-            StartSun3 = 3,
-            [Description("Start Mo 1")]
-            StartMon1 = 11,
-            [Description("Start Mo 2")]
-            StartMon2 = 12,
-            [Description("Start Mo 3")]
-            StartMon3 = 13,
-            [Description("Ausfall")]
-            DropOut = 100
-        }
+
         public ObservableCollection<WorkShiftItem> Items { get; set; } = [];
     }
     public class WorkShiftItem : ViewModelBase
     { 
         public WorkShiftItem() { }
         [XmlIgnore]
-        public TimeOnly? StartTime { get; set; }
+        private TimeOnly? _startTime;
+        [XmlIgnore]
+        public TimeOnly? StartTime
+        {
+            get { return _startTime; }
+            set
+            {
+                if (_startTime != value)
+                {
+                    _startTime = value;
+                    NotifyPropertyChanged(() => StartTime);
+                }
+            }
+        }
 
         [XmlIgnore]
-        public TimeOnly? EndTime { get; set; }
+        private TimeOnly? _endTime;
+        [XmlIgnore]
+        public TimeOnly? EndTime
+        {
+            get { return _endTime; }
+            set
+            {
+                if (_endTime != value)
+                {
+                    _endTime = value;
+                    NotifyPropertyChanged(() => EndTime);
+                }
+            }
+        }
         [XmlIgnore]
         public bool Changed { get; set; } = false;
         public string? StartTimeProxy
@@ -217,8 +235,6 @@ namespace Lieferliste_WPF.Utilities
                 if (string.IsNullOrEmpty(value) == false)
                     StartTime = TimeOnly.Parse(value);
                 else StartTime = null;
-                Changed = true;
-                NotifyPropertyChanged(()  => StartTimeProxy);
             }
         }
         public string? EndTimeProxy
@@ -229,8 +245,6 @@ namespace Lieferliste_WPF.Utilities
                 if (string.IsNullOrEmpty(value) == false)
                     EndTime = TimeOnly.Parse(value);
                 else EndTime = null;
-                Changed |= true;
-                NotifyPropertyChanged(() => EndTimeProxy);
             }
         }
     }
