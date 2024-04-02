@@ -53,7 +53,7 @@ namespace El2Core.Services
         }
         public bool UpgradeFlag
         {
-            get { return Properties.Settings.Default.UpgradeFlag; }
+            get => Properties.Settings.Default.UpgradeFlag;
             set { Properties.Settings.Default[nameof(UpgradeFlag)] = value; }
         }
         private bool _isChanged;

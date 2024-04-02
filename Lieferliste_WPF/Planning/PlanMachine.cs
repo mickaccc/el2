@@ -17,6 +17,7 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -284,12 +285,12 @@ namespace Lieferliste_WPF.Planning
                 {
                     foreach (string? id in vorgangIdList.Where(x => x != null))
                     {
-
                         var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
                         if (pr != null)
                         {
                             string op = "PROP";
-                            db.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == pr.VorgangId).Reload();
+
+                            db.Entry<Vorgang>(pr).Reload();
                             pr.RunPropertyChanged();
                             var vo = db.Vorgangs.First(x => x.VorgangId == id);
                             if (vo.SysStatus?.Contains("RÜCK") ?? false)
@@ -299,11 +300,6 @@ namespace Lieferliste_WPF.Planning
                                 ProcessesCV.Refresh();
                                 op = "RÜCK";
                             }
-                            //string str = string.Format("{0} - {1:T} Operation: {2}", id, DateTime.Now, op);
-                            //Application.Current.Dispatcher.Invoke(() =>
-                            //{
-                            //    //LastChanges.Add(str);
-                            //}, System.Windows.Threading.DispatcherPriority.Normal);
                         }
                     }
                 }

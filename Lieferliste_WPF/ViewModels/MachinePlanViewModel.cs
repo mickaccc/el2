@@ -106,15 +106,11 @@ namespace Lieferliste_WPF.ViewModels
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
+
             if (_settingsService.IsAutoSave) SetAutoSaveTimer();
 
         }
 
-        private void MessageVorgangReceived(List<string?> list)
-        {
-            throw new NotImplementedException();
-        }
 
         private void MessageOrderReceived(List<string?> list)
         {

@@ -298,7 +298,7 @@ namespace ModuleDeliverList.ViewModels
                                 {
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State = EntityState.Unchanged;
                                 }
-                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).Reload();
+                                DBctx.Entry<Vorgang>(o).Reload();
                                 o.RunPropertyChanged();
                             }
                             else
@@ -330,7 +330,7 @@ namespace ModuleDeliverList.ViewModels
                      var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
                      if (v != null)
                      {
-                         DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).Reload();
+                         DBctx.Entry<Vorgang>(v).Reload();
                          v.RunPropertyChanged();
                          if (v.Aktuell == false)
                          {

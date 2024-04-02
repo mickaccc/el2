@@ -143,7 +143,7 @@ namespace Lieferliste_WPF.Utilities
 
             
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var holis = db.Rules.Find(5);
+            var holis = db.Rules.Find(3);
             StringReader reader = new StringReader(holis.RuleData);
             var serializer = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
             var holiRule = (CloseAndHolidayRule)serializer.Deserialize(reader);
@@ -171,7 +171,7 @@ namespace Lieferliste_WPF.Utilities
                     foreach (var d in holiRule.CloseDay)
                     {
                         if(d.Datum.Year == i)
-                            dict.Add(DateOnly.FromDateTime(d.Datum), d);
+                            dict.TryAdd(DateOnly.FromDateTime(d.Datum), d);
                     }
                 }
             }

@@ -604,7 +604,7 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         msgListV.AddRange(m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList());
                         msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
-                        int IdMin = m.Min(x => x.MsgId), IdMax = m.Max(x => x.MsgId);
+
                         foreach (var msg in m)
                         {
                             await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);

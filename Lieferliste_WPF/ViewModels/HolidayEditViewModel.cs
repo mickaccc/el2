@@ -23,9 +23,37 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             LoadData();
             SaveHolidayCommand = new ActionCommand(onSaveExecuted, onSaveCanExecute);
+            DeleteHolidayCommand = new ActionCommand(onDelExecuted, onDelCanExecute);
             FixHolidays.CollectionChanged += FixHolidayChanged;
             VarHolidays.CollectionChanged += VarHolidaysChanged;
             CloseHolidays.CollectionChanged += CloseHolidayChanged;
+        }
+
+        private bool onDelCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void onDelExecuted(object obj)
+        {
+            if(obj is Holiday holi)
+            {
+                CloseHolidays.Remove(holi);
+                _isChanged = true;
+            }
+            else if(obj is HolidayRule rule)
+            {
+                if(rule.DayDistance != null)
+                {
+                    FixHolidays.Remove(rule);
+                    _isChanged = true;
+                }
+                else
+                {
+                    VarHolidays.Remove(rule);
+                    _isChanged = true;
+                }
+            }
         }
 
         private bool onSaveCanExecute(object arg)
@@ -75,6 +103,7 @@ namespace Lieferliste_WPF.ViewModels
         public ObservableCollection<Holiday> CloseHolidays { get; set; } = [];
         IContainerExtension _container;
         public ICommand SaveHolidayCommand { get; private set; }
+        public ICommand DeleteHolidayCommand { get; private set; }
         private bool _isChanged;
         void LoadData()
         {
