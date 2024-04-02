@@ -101,6 +101,10 @@
                 <materialDesign:PackIcon Kind="Helicopter"/>
             </MenuItem.Icon>
         </MenuItem>
+        <MenuItem Command="{Binding CorrectionCommand}"
+                  Header="Korrekturwert">
+            
+        </MenuItem>
     </x:Array>
     <x:Array x:Key="MeasureCm" Type="{x:Type MenuItem}">
         <MenuItem Command="{Binding KlimaPrintCommand}"

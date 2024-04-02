@@ -72,5 +72,6 @@
         public const string ShiftEdit = "SHE00";
         public const string HoliEdit = "HOL00";
         public const string ShiftAlloc = "SHE01";
+        public const string Correction = "CORR";
     }
 }

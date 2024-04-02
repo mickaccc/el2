@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -102,6 +103,7 @@ namespace Lieferliste_WPF.Planning
         public ICommand? MachinePrintCommand { get; private set; }
         public ICommand? HistoryCommand { get; private set; }
         public ICommand? FastCopyCommand { get; private set; }
+        public ICommand? CorrectionCommand { get; private set; }
         private static readonly object _lock = new();
         private readonly int _rId;
         private string _title;
@@ -237,6 +239,7 @@ namespace Lieferliste_WPF.Planning
             OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
             HistoryCommand = new ActionCommand(OnHistoryExecuted, OnHistoryCanExecute);
             FastCopyCommand = new ActionCommand(OnFastCopyExecuted, OnFastCopyCanExecute);
+            CorrectionCommand = new ActionCommand(OnCorrectionExecuted, OnCorrectionCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
             ProcessesCVSource.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
@@ -254,6 +257,8 @@ namespace Lieferliste_WPF.Planning
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
         }
+
+
         private void CalculateEndTime()
         {
             using var processService = _container.Resolve<ProcessStripeService>();
@@ -309,6 +314,28 @@ namespace Lieferliste_WPF.Planning
                 MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
+        private bool OnCorrectionCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Correction);
+        }
+
+        private void OnCorrectionExecuted(object obj)
+        {
+            if(obj is Vorgang vrg)
+            {
+                var par = new DialogParameters();
+                par.Add("correction", vrg?.Correction);
+                _dialogService.ShowDialog("CorrectionDialog", par, CorrectionCallback);
+            }
+        }
+
+        private void CorrectionCallback(IDialogResult result)
+        {
+            
+        }
+
         private bool OnHistoryCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.HistoryDialog);
