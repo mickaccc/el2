@@ -47,9 +47,9 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenWorkAreaCommand { get; private set; }
         public ICommand OpenProjectCombineCommand { get; private set; }
         public ICommand OpenMeasuringCommand { get; private set; }
-        public ICommand OpenTimeLineCommand { get; private set; }
         public ICommand OpenShiftCommand { get; private set; }
         public ICommand OpenHolidayCommand { get; private set; }
+        public ICommand OpenMeasureOperCommand { get; private set; }
 
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
@@ -144,19 +144,25 @@ namespace Lieferliste_WPF.ViewModels
             OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
             OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
             OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
-            OpenTimeLineCommand = new ActionCommand(OnOpenTimeLineExecuted, OnOpenTimeLineCanExecute);
             OpenHolidayCommand = new ActionCommand(OnOpenHolidayExecuted, OnOpenHolidayCanExecute);
             OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
+            OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
             
             
             //DbOperations();
         }
 
 
-
-
-
         #region Commands
+        private bool OnOpenMeasureOperCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenMeaOper);
+        }
+
+        private void OnOpenMeasureOperExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MeasuringDocuments", UriKind.Relative));
+        }
         private bool OnOpenShiftCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ShiftEdit);
@@ -176,15 +182,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("HolidayEdit", UriKind.Relative));
         }
-        private bool OnOpenTimeLineCanExecute(object arg)
-        {
-            return true;
-        }
-
-        private void OnOpenTimeLineExecuted(object obj)
-        {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("TimeLine", UriKind.Relative));
-        }
+ 
         private bool OnOpenProjectCombineCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProjectCombine);

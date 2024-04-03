@@ -3,7 +3,6 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Planning;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using System;
@@ -41,7 +40,7 @@ namespace ModuleMeasuring.ViewModels
         private void LoadData()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            _rootPath = db.Rules.Single<Rule>(x => x.RuleName == "ROOT").RuleValue;
+            _rootPath = db.Rules.Single<Rule>(x => x.RuleName == "RootPath").RuleValue;
             _orders = new();
             var ord = db.OrderRbs
                 .Include(x => x.MaterialNavigation)
@@ -73,14 +72,17 @@ namespace ModuleMeasuring.ViewModels
         }
         private void onFilterPredicate(object sender, FilterEventArgs e)
         {
-            OrderRb ord = (OrderRb)e.Item;
-            e.Accepted = ord.Aid.Contains(OrderSearch, StringComparison.OrdinalIgnoreCase);
+            if (!string.IsNullOrEmpty(OrderSearch))
+            {
+                OrderRb ord = (OrderRb)e.Item;
+                e.Accepted = ord.Aid.Contains(OrderSearch, StringComparison.OrdinalIgnoreCase);
+            }
         }
         public void DragOver(IDropInfo dropInfo)
         {
             if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc))
             {
-                if (dropInfo.Data is PlanMachine)
+                if (dropInfo.Data is File)
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.All;

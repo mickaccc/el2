@@ -81,7 +81,7 @@
                 </i:Interaction.Triggers>
             </TextBox>
         </DockPanel>
-        <ProgressBar Grid.Row="1" IsIndeterminate="True" Style="{DynamicResource MaterialDesignCircularProgressBar}"
+        <mah:ProgressRing Grid.Row="1" IsActive="True" Foreground="{DynamicResource ActiveProcess}"
                      Visibility="{Binding MachineTask.IsNotCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <TextBlock Grid.Row="1" Text="{Binding MachineTask.ErrorMessage}"
                    Visibility="{Binding MachineTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
