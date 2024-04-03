@@ -17,6 +17,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             get { return correctValue; }
             set { correctValue = value; }
         }
+        private Vorgang? vorgang;
         public string Title => "Zeit Korrektur";
 
         public event Action<IDialogResult> RequestClose;
@@ -42,8 +43,9 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 result = ButtonResult.Cancel;
             else
             {
-                result = ButtonResult.Yes;
-                param.Add("correct", correctValue);
+                result = ButtonResult.OK;
+                param.Add("correct", correctValue * 60);
+                param.Add("correction", vorgang);
             }
             RaiseRequestClose(new DialogResult(result, param));
         }
@@ -54,8 +56,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-            var correct = parameters.GetValue<double?>("correct");
-            correctValue = correct;
+            vorgang = parameters.GetValue<Vorgang>("correction");
+            correctValue = vorgang.Correction / 60;
             
         }
     }

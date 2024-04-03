@@ -106,11 +106,28 @@ namespace Lieferliste_WPF.ViewModels
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-
+            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             if (_settingsService.IsAutoSave) SetAutoSaveTimer();
 
         }
 
+        private void MessageVorgangReceived(List<string?> list)
+        {
+            foreach (var item in list)
+            {
+                if ((item != null))
+                {
+                    var vo = Priv_processes?.FirstOrDefault(x => x.VorgangId == item);
+                    if (vo != null)
+                    {
+                        if(vo.Rid != null)
+                        {
+                            Priv_processes?.Remove(vo);
+                        }
+                    }
+                }
+            }
+        }
 
         private void MessageOrderReceived(List<string?> list)
         {

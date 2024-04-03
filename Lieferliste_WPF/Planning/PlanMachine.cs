@@ -17,9 +17,7 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -306,6 +304,11 @@ namespace Lieferliste_WPF.Planning
                                 op = "RÜCK";
                             }
                         }
+                        else if(db.Vorgangs.Find(id)?.Rid == Rid)
+                        {
+                            var vo = db.Vorgangs.Find(id);
+                            Processes?.Add(vo);
+                        }
                     }
                 }
             }
@@ -326,14 +329,22 @@ namespace Lieferliste_WPF.Planning
             if(obj is Vorgang vrg)
             {
                 var par = new DialogParameters();
-                par.Add("correction", vrg?.Correction);
+                par.Add("correction", vrg);
                 _dialogService.ShowDialog("CorrectionDialog", par, CorrectionCallback);
             }
         }
 
         private void CorrectionCallback(IDialogResult result)
         {
-            
+            if (result.Result == ButtonResult.OK)
+            {
+                var vrg = result.Parameters.GetValue<Vorgang>("correction");
+                var corr = result.Parameters.GetValue<double?>("correct");
+                var v = Processes.First(x => x.VorgangId == vrg.VorgangId);
+                v.Correction = (float?)corr;
+                v.RunPropertyChanged();
+                
+            }          
         }
 
         private bool OnHistoryCanExecute(object arg)
@@ -462,7 +473,9 @@ namespace Lieferliste_WPF.Planning
             {
                 var par = new DialogParameters();
                 par.Add("PlanMachine", this);
-
+                ListCollectionView lv = ProcessesCV as ListCollectionView;
+                if(lv.IsEditingItem) lv.CommitEdit();
+                if(lv.IsAddingNew) lv.CommitNew();
                 _dialogService.Show("MachineView", par, MachineViewCallBack);
             }
             catch (Exception e)
@@ -546,6 +559,9 @@ namespace Lieferliste_WPF.Planning
                     {
                         InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
                     }
+                    ListCollectionView lv = ProcessesCV as ListCollectionView;
+                    if (lv.IsAddingNew) { lv.CommitNew(); }
+                    if (lv.IsEditingItem) { lv.CommitEdit(); }
                     ProcessesCV.Refresh();                  
                 }    
             }

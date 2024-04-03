@@ -259,7 +259,7 @@
                         <MultiBinding Converter="{StaticResource plus}">
                             <Binding Path="Beaze"/>
                             <Binding Path="Rstze"/>
-                            <Binding Path="Correction"/>
+                            <Binding Path="Correction" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
                         </MultiBinding>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
