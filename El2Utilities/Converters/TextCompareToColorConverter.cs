@@ -22,7 +22,7 @@ namespace El2Core.Converters
             {
                 return Brushes.Khaki;
             }
-            else return Brushes.White;
+            else return null;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

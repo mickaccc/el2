@@ -114,7 +114,7 @@
                    HorizontalAlignment="Right" Margin="5" x:Name="Count" VerticalAlignment="Top"
                    Background="#FFEBEB73" Width="71" />
             <Button Grid.Column="5" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
-                    VerticalAlignment="Top"  SnapsToDevicePixels="True"
+                    VerticalAlignment="Top"  SnapsToDevicePixels="True" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"
                     Command="{Binding Path=ApplicationCommands.ArchivateCommand}">
                 <Button.CommandParameter>
                     <MultiBinding Converter="{StaticResource multiobj}">
@@ -124,7 +124,7 @@
                 </Button.CommandParameter>
             </Button> 
             <Button Grid.Column="5" Grid.Row="1" Content="Explorer" Height="23" HorizontalAlignment="left" Margin="5" x:Name="btnExplorer"
-                    VerticalAlignment="Top" SnapsToDevicePixels="True"
+                    VerticalAlignment="Top" SnapsToDevicePixels="True" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"
                     Command="{Binding Path=ApplicationCommands.ExplorerCommand}" CommandParameter="{Binding}"/>
         </Grid>
             <ListBox Grid.Row="1"  x:Name="listBox1" ItemsSource="{Binding VorgangCV}" Background="{StaticResource ListBackgroud}"
@@ -144,7 +144,7 @@
                                 <Setter Property="Background" Value="{StaticResource ValueBackground}"/>
                                 <Setter Property="Margin" Value="1"/>
                             </Style>
-                        <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource MaterialDesignGroupBox}">
+                        <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource MahApps.Styles.GroupBox}">
                             <Setter Property="Width" Value="150"/>
                         </Style>
                         </DataTemplate.Resources>

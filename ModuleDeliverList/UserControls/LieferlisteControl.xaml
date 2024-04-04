@@ -52,8 +52,8 @@
         <Style TargetType="{x:Type Controls:SelectableTextBlock}" BasedOn="{StaticResource MahApps.Styles.TextBlock}">
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="FontFamily" Value="Calibri" />
-            <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="MinWidth" Value="20"/>
             <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent4}"/>
@@ -132,13 +132,13 @@
                      Text="{Binding EckEnd, Converter={StaticResource KwConv}, ConverterParameter=1, ElementName=luc}"  />
             <TextBox x:Name="txtLiefT" ToolTip="Liefertermin lt. Meister"  Grid.Row="1" Text="{Binding LieferTermin, Mode=TwoWay, ElementName=luc}"
                      IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.LieferTermInvers}}"
-                     TextWrapping="Wrap"/>
+                     TextWrapping="Wrap" AcceptsReturn="True"/>
             <Controls:SelectableTextBlock Grid.Column="1" Grid.Row="0" x:Name="txtProj" ToolTip="Projekt" 
                                             Style="{StaticResource AlertProjectStyle}"
                                             Text="{Binding Path=Project, ElementName=luc}" TextWrapping="WrapWithOverflow"/>
                 <materialdesign:Badged Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                                        VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Badge="{Binding ProjectAttachmentCount, ElementName=luc}"  >
-                <TextBox x:Name="txtProjInfo" TextWrapping="Wrap"
+                <TextBox x:Name="txtProjInfo" TextWrapping="Wrap" AcceptsReturn="True"
                     IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
                                         Text="{Binding ProjectInfo, ElementName=luc}" />
                 </materialdesign:Badged>
@@ -270,7 +270,7 @@
             </Canvas>
                 <Label Grid.Column="10" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Margin="6" Padding="2" HorizontalAlignment="Center"
                        Visibility="{Binding InVisible, ElementName=luc, Converter={StaticResource BooleanToVisibilityConverter}}">ausgeblendet</Label>
-            <Button Grid.Column="10" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv"
+                <Button Grid.Column="10" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"
                         Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}">
                 <Button.CommandParameter>
@@ -281,12 +281,12 @@
                 </Button.CommandParameter>
             </Button>
 
-            <Button Grid.Column="10" Grid.Row="1" Content="Auftrag" 
+                <Button Grid.Column="10" Grid.Row="1" Content="Auftrag" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"
                         Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding Aid, ElementName=luc}" />
             <DockPanel Grid.Column="8" Grid.Row="2" Background="{DynamicResource MahApps.Brushes.Button.Flat.Background}" >
-                <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" 
+                <CheckBox  Height="16" x:Name="chkMap"  SnapsToDevicePixels="True" ToolTip="Mappe vorhanden"
                       IsChecked="{Binding Doku, ElementName=luc}"
                            IsEnabled="{Binding Converter={StaticResource Permission},
                     ConverterParameter={x:Static const:Permissions.OrderBrief}}"/>

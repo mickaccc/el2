@@ -30,7 +30,7 @@ namespace Lieferliste_WPF
             var settingsService = Container.Resolve<UserSettingsService>();
             settingsService.Upgrade();
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
-            
+            App.GlobalFontSize = 16;
             return Container.Resolve<MainWindow>();
         }
         protected override void OnInitialized()

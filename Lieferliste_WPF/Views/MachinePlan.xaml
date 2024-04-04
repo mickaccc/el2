@@ -7,9 +7,11 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:control="clr-namespace:Lieferliste_WPF.Planning"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:Dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:dd="urn:gong-wpf-dragdrop"
@@ -46,9 +48,11 @@
             </Style>
         </Grid.Resources>
         <DockPanel HorizontalAlignment="Stretch">
-            <Button Content="Speichern" Command="{Binding SaveCommand}" HorizontalAlignment="Right" />
+            <Button Command="{Binding SaveCommand}" HorizontalAlignment="Right"
+                    Style="{DynamicResource MahApps.Styles.Button.Square.Accent}">
+                <icons:MaterialDesign Width="40" Kind="Save"/>
+            </Button>
             <ComboBox x:Name="workArea" ItemsSource="{Binding WorkAreas}" DockPanel.Dock="Left" MinWidth="100"
-                      Style="{DynamicResource MahApps.Styles.ComboBox}"
                       DisplayMemberPath="Bereich"
                       SelectedValuePath="WorkAreaId"
                       SelectedIndex="0">
@@ -86,7 +90,7 @@
         <TextBlock Grid.Row="1" Text="{Binding MachineTask.ErrorMessage}"
                    Visibility="{Binding MachineTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ListBox x:Name="machines" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.Row="1"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding MachineTask.Result}"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding MachineTask.Result}"
                  VirtualizingPanel.IsVirtualizing="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
@@ -99,11 +103,12 @@
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Padding" Value="1"/>
+                    <Setter Property="Background" Value="Black"/>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <control:MachineUserControl Height="{Binding ActualHeight, ElementName=stackPanel, Mode=OneWay}"
+                    <control:MachineUserControl Height="{Binding ActualHeight, ElementName=machines, Mode=OneWay}"
                                                 Width="{Binding Path=Value, ElementName=slider}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -136,7 +141,7 @@
         </Border>
 
         <Slider x:Name="slider" Width="200" Minimum="30" Maximum="240" Margin="10"
-                    Value="240" HorizontalAlignment="Right" />
+                    Value="200" HorizontalAlignment="Right" />
         <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
                   CanUserAddRows="False" CanUserDeleteRows="False" HorizontalContentAlignment="Center" ColumnWidth="Auto"

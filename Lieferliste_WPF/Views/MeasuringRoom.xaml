@@ -26,7 +26,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="0,0,10,0"/>
+            <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="0,0,10,0" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"/>
             <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="nach Auftragsnummer, Materialnummer oder Materialbezeichnung suchen">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
@@ -36,7 +36,7 @@
         </TextBox>
  
         </StackPanel>
-        <ListBox Grid.Row="1" ItemsSource="{Binding MemberTask.Result}" VerticalContentAlignment="Stretch" >
+        <ListBox Grid.Row="1" x:Name="worker" ItemsSource="{Binding MemberTask.Result}" VerticalContentAlignment="Stretch" >
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Horizontal"/>
@@ -44,7 +44,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <uc:WorkerUserControl/>
+                    <uc:WorkerUserControl Height="{Binding Path=ActualHeight, ElementName=worker}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>  
         </ListBox>

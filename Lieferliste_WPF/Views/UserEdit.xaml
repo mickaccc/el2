@@ -23,7 +23,7 @@
     <Grid Margin="10,10,0,0" >
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="130"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -38,13 +38,13 @@
         <GridSplitter ResizeDirection="Rows" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="3" VerticalAlignment="Stretch" Height="4" HorizontalAlignment="Stretch"/>
         <DockPanel >
 
-            <Button Command="{Binding NewCommand}" materialDesign:ButtonAssist.CornerRadius="10" >
+            <Button Command="{Binding NewCommand}" materialDesign:ButtonAssist.CornerRadius="10" Style="{StaticResource btnStyle}" >
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="UserAdd"/>
                     <Label Content="_Neuer User"/>
                 </StackPanel>
             </Button>
-            <Button Command="{Binding SaveCommand}" materialDesign:ButtonAssist.CornerRadius="10">
+            <Button Command="{Binding SaveCommand}" materialDesign:ButtonAssist.CornerRadius="10" Style="{StaticResource btnStyle}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ContentSave"/>
                     <Label Content="_Speichern"/>

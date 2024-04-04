@@ -13,7 +13,11 @@ namespace Lieferliste_WPF
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public partial class App : Application
     {
-
+        public static double GlobalFontSize
+        {
+            get => (double)Current.Resources["GlobalFontSize"];
+            set => Current.Resources["GlobalFontSize"] = value;
+        }
         protected override void OnStartup(StartupEventArgs e)
         {
             //ThemeManager.Current.AddLibraryTheme(new LibraryTheme(

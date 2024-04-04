@@ -19,11 +19,11 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Prüfdatenblatt"/>
-            <Button Content="Vormusterpüfbericht"/>
+            <Button Content="Prüfdatenblatt" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"/>
+            <Button Content="Vormusterpüfbericht" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"/>
         </StackPanel>
         <Border Grid.Row="1">
-            <ItemsControl Background="{DynamicResource MahApps.Brushes.Accent}"  
+            <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}"  
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
                 <ItemsControl.ItemsPanel>

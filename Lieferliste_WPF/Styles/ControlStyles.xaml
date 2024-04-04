@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:custom="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary">
+
+ 
+  <Style TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource GlobalFontSize}"/>
+    </Style>
+
+    <Style TargetType="DataGridCell">
+        <Setter Property="FontSize" Value="{DynamicResource GlobalFontSize}"/>
+    </Style>
+
+    <Style TargetType="ListBoxItem">
+        <Setter Property="FontSize" Value="{DynamicResource GlobalFontSize}"/>
+    </Style>
+
+
+</ResourceDictionary>

@@ -62,7 +62,7 @@
                 <GradientStop Color="#FF0B91E6" Offset="1"/>
             </LinearGradientBrush>
         </DockPanel.Background>
-        <Button Content="Speichern" Command="{Binding SaveCommand}"/>
+        <Button Content="Speichern" Command="{Binding SaveCommand}" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"/>
         <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Background="White" Padding="10" Text="{Binding SearchFilterText, Mode=OneWay}"
                  materialDesign:HintAssist.Hint="suchen in Auftragsnr, TTNR, Materialtext">
             <i:Interaction.Triggers>
@@ -71,10 +71,10 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-        <Button Command="{Binding FilterDeleteCommand}" ToolTip="alle Filter rücksetzen" Margin="5">
-            <materialDesign:PackIcon Kind="DeleteEmpty" />
+            <Button Command="{Binding FilterDeleteCommand}" ToolTip="alle Filter rücksetzen" Margin="5" Style="{StaticResource MahApps.Styles.Button.Square.Accent}">
+            <materialDesign:PackIcon Kind="DeleteEmpty" Width="30" />
         </Button>
-        <Button Command="{Binding FilterSaveCommand}" ToolTip="Customfilter speichern" Margin="5">
+            <Button Command="{Binding FilterSaveCommand}" ToolTip="Customfilter speichern" Margin="5" Style="{StaticResource MahApps.Styles.Button.Square.Accent}">
             <materialDesign:PackIcon Kind="ContentSaveCog"/>
         </Button>
 

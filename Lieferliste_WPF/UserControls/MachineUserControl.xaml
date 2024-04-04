@@ -5,7 +5,7 @@
 			 DataContextChanged="UserControl_DataContextChanged"
 			 xmlns:dd="urn:gong-wpf-dragdrop"
 			 d:DesignHeight="450"
-			 d:DesignWidth="200"
+			 d:DesignWidth="180"
 			 mc:Ignorable="d"
 			 xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -35,7 +35,7 @@
 			<RowDefinition Height="60"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
-		<Border Background="{DynamicResource MahApps.Brushes.Button.Flat.Background}"
+		<Border Background="{DynamicResource MahApps.Brushes.AccentBase}"
 				ClipToBounds="True"
 				CornerRadius="5">
 			<Grid>
@@ -80,7 +80,7 @@
 												 Width="25"/>
 					</Button>
                     <ToggleButton Canvas.Left="70" Canvas.Top="30" x:Name="shiftOpen"
-                                  Style="{DynamicResource MaterialDesignExpanderToggleButton}"
+                                  Style="{DynamicResource MahApps.Styles.ToggleButton.ExpanderHeader.Down}"
                                   IsEnabled="{Binding Converter={StaticResource permiss},
 									ConverterParameter={x:Static const:Permissions.ShiftAlloc}}" />
                 </Canvas>
@@ -181,7 +181,7 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
-				<DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" x:Name="txtAid"
+				<DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" x:Name="txtAid" 
 									Header="Auftrag"
 									IsReadOnly="True"
 									Width="Auto">
@@ -203,7 +203,7 @@
 				</DataGridTextColumn>
 
 				<DataGridTextColumn Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}"
-									Header="Vorgang"
+									Header="Vorg"
 									IsReadOnly="True"
 									Width="Auto"/>
 
