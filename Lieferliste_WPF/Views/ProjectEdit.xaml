@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
@@ -155,8 +156,7 @@
                     </TextBox>
                 </Grid>
             <Grid Grid.Row="1" VerticalAlignment="Stretch">
-                <ProgressBar HorizontalAlignment="Center" VerticalAlignment="Center" IsIndeterminate="True" Value="0" Margin="50"
-                     Style="{StaticResource MaterialDesignCircularProgressBar}"
+                <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" IsActive="True" Foreground="{DynamicResource MahApps.Brushes.Tile}"
                              Visibility="{Binding PspTask.IsNotCompleted, Converter={StaticResource boolVis}}"/>
                 <TextBlock Text="{Binding PspTask.ErrorMessage}" Visibility="{Binding OrdTask.IsFaulted, Converter={StaticResource boolVis}}"/>
             <TreeView ItemsSource="{Binding PspTask.Result}" Visibility="{Binding PspTask.IsSuccessfullyCompleted, Converter={StaticResource boolVis}}"
@@ -166,8 +166,7 @@
         </Grid>
         <Grid Grid.Column="1" Grid.Row="1">
  
-                <ProgressBar HorizontalAlignment="Center" VerticalAlignment="Center" IsIndeterminate="True" Value="0" Margin="50"
-                     Style="{StaticResource MaterialDesignCircularProgressBar}"
+                <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" Foreground="{DynamicResource MahApps.Brushes.Tile}"
                              Visibility="{Binding OrdTask.IsNotCompleted, Converter={StaticResource boolVis}}"/>
                 <TextBlock Text="{Binding OrdTask.ErrorMessage}" Visibility="{Binding OrdTask.IsFaulted, Converter={StaticResource boolVis}}"/>
                 <DataGrid x:Name="orders" ItemsSource="{Binding OrdTask.Result}" AutoGenerateColumns="False" IsReadOnly="True"

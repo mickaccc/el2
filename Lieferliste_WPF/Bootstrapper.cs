@@ -11,6 +11,7 @@ using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ModuleDeliverList.Views;
+using ModuleMeasuring.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
@@ -43,7 +44,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
           
@@ -91,6 +92,8 @@ namespace Lieferliste_WPF
             base.ConfigureModuleCatalog(moduleCatalog);
 
             moduleCatalog.AddModule<ModuleDeliverList.DeliverListModule>();
+            moduleCatalog.AddModule<ModuleMeasuring.MeasuringModule>();
+            moduleCatalog.AddModule<ModulePlanning.PlanningModule>();
 
         }
 
