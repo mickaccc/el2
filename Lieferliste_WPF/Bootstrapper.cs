@@ -66,8 +66,6 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<TimeLine>();
             containerRegistry.RegisterForNavigation<HolidayEdit>();
             containerRegistry.RegisterForNavigation<ShiftEdit>();
-            containerRegistry.RegisterForNavigation<MeasuringDocuments>();
-
 
             containerRegistry.RegisterSingleton<IPlanMachineFactory, PlanMachineFactory>();
             containerRegistry.RegisterSingleton<IPlanWorkerFactory, PlanWorkerFactory>();

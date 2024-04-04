@@ -119,7 +119,7 @@ namespace Lieferliste_WPF.ViewModels
 
             RegisterMe();
             SetTimer();
-            SetMsgTimer();
+            SetMsgDBTimer();
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
             _applicationCommands.CloseCommand.RegisterCommand(CloseCommand);
@@ -579,16 +579,16 @@ namespace Lieferliste_WPF.ViewModels
                 Onlines = db.InMemoryOnlines.Count();
             }), System.Windows.Threading.DispatcherPriority.Background);
         }
-        private void SetMsgTimer()
+        private void SetMsgDBTimer()
         {
             // Create a timer with a 60 seconds interval.
             _timer = new System.Timers.Timer(60000);
             // Hook up the Elapsed event for the timer. 
-            _timer.Elapsed += OnMsgTimedEvent;
+            _timer.Elapsed += OnMsgDBTimedEvent;
             _timer.AutoReset = true;
             _timer.Enabled = true;
         }
-        private async void OnMsgTimedEvent(object? sender, ElapsedEventArgs e)
+        private async void OnMsgDBTimedEvent(object? sender, ElapsedEventArgs e)
         {
             List<string?> msgListV = [];
             List<string?> msgListO = [];
@@ -602,7 +602,8 @@ namespace Lieferliste_WPF.ViewModels
                         .ToListAsync();
                     if (m.Count > 0)
                     {
-                        msgListV.AddRange(m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList());
+                        var mv = m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList();
+                        msgListV.AddRange(mv);
                         msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
 
                         foreach (var msg in m)
@@ -621,12 +622,10 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "MsgTimer", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format("{0}\nAuftrag:{1} -- Vorgang:{2}",ex.Message, msgListO.Count, msgListV.Count), "MsgDBTimer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("AsyncUsage", "AsyncFixer03:Fire-and-forget async-void methods or delegates",
-            Justification = "<Pending>")]
         private async void RegisterMe()
         {
             try

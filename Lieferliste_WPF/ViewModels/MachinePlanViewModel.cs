@@ -25,7 +25,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Unity;
 
 
@@ -88,9 +87,8 @@ namespace Lieferliste_WPF.ViewModels
         private int _currentWorkArea;
         private string? _searchFilterText;
         private readonly object _lock = new();
-        private List<Vorgang>? _processesAll;
         private string? _searchFilterTextArbPl;
-
+        private List<Vorgang> _processAll = [];
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
 
@@ -113,19 +111,35 @@ namespace Lieferliste_WPF.ViewModels
 
         private void MessageVorgangReceived(List<string?> list)
         {
-            foreach (var item in list)
+            try
             {
-                if ((item != null))
+                
+                foreach (var item in list)
                 {
-                    var vo = Priv_processes?.FirstOrDefault(x => x.VorgangId == item);
-                    if (vo != null)
+                    if ((item != null))
                     {
-                        if(vo.Rid != null)
+                        var vo = _processAll.FirstOrDefault(x => x.VorgangId == item);
+                        
+                        if (vo != null)
                         {
-                            Priv_processes?.Remove(vo);
+                            _DbCtx.Entry(vo).Reload();
+                            if (vo.Rid != null)
+                            {
+                                Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
+                                _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
+                            }
+                            else
+                            {
+                                Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
+                                _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "MessageVorgangReceved MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -135,25 +149,22 @@ namespace Lieferliste_WPF.ViewModels
             {
                 foreach (var item in list)
                 {
-                    if (_processesAll?.Any(x => x.Aid == item) ?? false)
+                    if (Priv_processes?.Any(x => x.Aid == item) ?? false)
                     {
                         Task.Factory.StartNew(async () =>
                         {
-                            await GetVorgangsAsync(item);
+                            ///todo///
+                            ///Add New Order
                         });
-                        Application.Current.Dispatcher.BeginInvoke(AddProcesses, DispatcherPriority.Background, item);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "MessageOrderReceved MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, "MessageOrderReceived MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void AddProcesses(string aid)
-        {
-            Priv_processes.AddRange(_processesAll?.Where(x => x.Aid == aid));
-        }
+ 
         private bool OnSaveCanExecute(object arg)
         {
             try
@@ -211,12 +222,11 @@ namespace Lieferliste_WPF.ViewModels
                 && y.SysStatus.Contains("RÜCK") == false)
               .ToListAsync();
 
-            if (_processesAll == null)
-                _processesAll = query;
-            else if (aid != null && query != null)
-                _processesAll.AddRange(query.Where(x => x.Aid == aid).ToList());
-
-            return _processesAll;
+            var result = new List<Vorgang>();
+            if (aid != null && query != null)
+                result.AddRange(query.Where(x => x.Aid == aid).ToList());
+            else if (query != null) result.AddRange(query);
+            return result;
         }
 
         private void SetAutoSaveTimer()
@@ -274,7 +284,7 @@ namespace Lieferliste_WPF.ViewModels
                             x.ArbPlSapNavigation.CostId == c.CostId));
                     }
                 }
-
+                _processAll.AddRange(list);
                 Priv_processes = list.FindAll(x => x.Rid == null)
                     .ToObservableCollection();
                 Priv_parking = list.FindAll(x => x.Rid < 0)

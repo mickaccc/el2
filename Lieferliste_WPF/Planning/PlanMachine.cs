@@ -283,34 +283,32 @@ namespace Lieferliste_WPF.Planning
         {
             try
             {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                lock (_lock)
+                Task.Run(() =>
                 {
-                    foreach (string? id in vorgangIdList.Where(x => x != null))
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    lock (_lock)
                     {
-                        var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
-                        if (pr != null)
+                        foreach (string? id in vorgangIdList.Where(x => x != null))
                         {
-                            string op = "PROP";
-
-                            db.Entry<Vorgang>(pr).Reload();
-                            pr.RunPropertyChanged();
-                            var vo = db.Vorgangs.First(x => x.VorgangId == id);
-                            if (vo.SysStatus?.Contains("RÜCK") ?? false)
+                            var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
+                            if (pr != null)
                             {
-                                Processes?.Remove(pr);
-                                db.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId != vo.VorgangId).State = EntityState.Unchanged;
-                                ProcessesCV.Refresh();
-                                op = "RÜCK";
+                                db.Entry<Vorgang>(pr).Reload();
+                                
+                                if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
+                                {
+                                    Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));                                  
+                                }
+                                pr.RunPropertyChanged();
                             }
-                        }
-                        else if(db.Vorgangs.Find(id)?.Rid == Rid)
-                        {
-                            var vo = db.Vorgangs.Find(id);
-                            Processes?.Add(vo);
-                        }
+                            else if (db.Vorgangs.Find(id)?.Rid == Rid)
+                            {
+                                var vo = db.Vorgangs.Find(id);
+                                Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));                             
+                            }
+                        }                      
                     }
-                }
+                });        
             }
             catch (Exception ex)
             {
