@@ -260,7 +260,8 @@
 
             <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
-                        CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"/>
+                        CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"
+                    Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"/>
                 <Canvas x:Name="prio" Grid.Row="2" Grid.Column="7" >
                     <TextBox  x:Name="CommentHighPrio" Canvas.Left="20"  ToolTip="Priotext" Width="80" TextWrapping="Wrap"
                                Height="{Binding Path=ActualHeight, ElementName=prio}"
@@ -270,7 +271,7 @@
             </Canvas>
                 <Label Grid.Column="10" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Margin="6" Padding="2" HorizontalAlignment="Center"
                        Visibility="{Binding InVisible, ElementName=luc, Converter={StaticResource BooleanToVisibilityConverter}}">ausgeblendet</Label>
-                <Button Grid.Column="10" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"
+                <Button Grid.Column="10" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
                         Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}">
                 <Button.CommandParameter>
@@ -281,7 +282,7 @@
                 </Button.CommandParameter>
             </Button>
 
-                <Button Grid.Column="10" Grid.Row="1" Content="Auftrag" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"
+                <Button Grid.Column="10" Grid.Row="1" Content="Auftrag" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
                         Command="{Binding Path=DataContext.ApplicationCommands.OpenOrderCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding Aid, ElementName=luc}" />

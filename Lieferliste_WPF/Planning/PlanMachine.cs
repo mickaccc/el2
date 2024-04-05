@@ -303,8 +303,13 @@ namespace Lieferliste_WPF.Planning
                             }
                             else if (db.Vorgangs.Find(id)?.Rid == Rid)
                             {
-                                var vo = db.Vorgangs.Find(id);
-                                Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));                             
+
+                                    var vo = db.Vorgangs.Find(id);
+
+                                if (vo?.SysStatus?.Contains("RÜCK") == false)
+                                {
+                                    Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));  
+                                }                            
                             }
                         }                      
                     }
@@ -401,22 +406,25 @@ namespace Lieferliste_WPF.Planning
         {
             try
             {
-                if (obj is Vorgang v)
-                {
-                    var m = v.AidNavigation.Quantity.ToString();
-                    var a = v.Aid.Trim();
-                    var vnr = v.Vnr.ToString();
-                    var mat = v.AidNavigation.Material?.Trim();
-                    var bez = v.AidNavigation.MaterialNavigation?.Bezeichng?.Trim();
+                lock (_lock)
+                    {
+                    if (obj is Vorgang v)
+                    {
+                        var m = v.AidNavigation.Quantity.ToString();
+                        var a = v.Aid.Trim();
+                        var vnr = v.Vnr.ToString();
+                        var mat = v.AidNavigation.Material?.Trim();
+                        var bez = v.AidNavigation.MaterialNavigation?.Bezeichng?.Trim();
 
-                    OnFastCopyExecuted(m);
-                    OnFastCopyExecuted(bez ?? a);
-                    OnFastCopyExecuted(mat ?? "DUMMY");
-                    OnFastCopyExecuted(vnr);
-                    OnFastCopyExecuted(a);
+                        OnFastCopyExecuted(m);
+                        OnFastCopyExecuted(bez ?? a);
+                        OnFastCopyExecuted(mat ?? "DUMMY");
+                        OnFastCopyExecuted(vnr);
+                        OnFastCopyExecuted(a);
+                    }
+                    if (obj is string s)
+                    { setTextToClipboard(s); }
                 }
-                if (obj is string s)
-                { setTextToClipboard(s); }
             }
             catch (Exception e)
             {

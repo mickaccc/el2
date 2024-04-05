@@ -11,8 +11,8 @@
     <Grid Background="{DynamicResource MahApps.Brushes.Control.Background}">
         <StackPanel>
             <StackPanel Orientation="Horizontal" Margin="3">
-                <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" />
-                <Button Content="Reset" Command="{Binding ResetCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.Square.Accent}" />
+                <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}" />
+                <Button Content="Reset" Command="{Binding ResetCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}" />
         </StackPanel>
         <Grid>
             <Grid.Resources>

@@ -30,7 +30,7 @@ namespace Lieferliste_WPF
             var settingsService = Container.Resolve<UserSettingsService>();
             settingsService.Upgrade();
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
-            App.GlobalFontSize = 16;
+            App.GlobalFontSize = 14;
             return Container.Resolve<MainWindow>();
         }
         protected override void OnInitialized()
@@ -44,7 +44,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
           
@@ -64,6 +64,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<ShowWorkArea>();
             containerRegistry.RegisterForNavigation<ProjectEdit>();
             containerRegistry.RegisterForNavigation<MeasuringRoom>();
+            containerRegistry.RegisterForNavigation<MeasuringDocuments>();
             containerRegistry.RegisterForNavigation<TimeLine>();
             containerRegistry.RegisterForNavigation<HolidayEdit>();
             containerRegistry.RegisterForNavigation<ShiftEdit>();
@@ -93,7 +94,6 @@ namespace Lieferliste_WPF
 
             moduleCatalog.AddModule<ModuleDeliverList.DeliverListModule>();
             moduleCatalog.AddModule<ModuleMeasuring.MeasuringModule>();
-            moduleCatalog.AddModule<ModulePlanning.PlanningModule>();
 
         }
 

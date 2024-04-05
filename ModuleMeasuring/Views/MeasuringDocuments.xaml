@@ -19,8 +19,8 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Prüfdatenblatt" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"/>
-            <Button Content="Vormusterpüfbericht" Style="{StaticResource MahApps.Styles.Button.Square.Accent}"/>
+            <Button Content="Prüfdatenblatt" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="Vormusterpüfbericht" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
         <Border Grid.Row="1">
             <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}"  

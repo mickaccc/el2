@@ -102,8 +102,8 @@
                     <ColumnDefinition Width="80*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40*"/>
-                    <RowDefinition Height="30*"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
             <Button
                 ToolTip="Drucken" Grid.RowSpan="2"
@@ -113,10 +113,10 @@
                     <materialDesign:PackIcon Kind="PrinterFavorite" Width="30" Height="30"/>
             </Button>
 
-                <TextBox Text="{Binding PlanWorker.Name}" Grid.Column="1" FontSize="30" FontWeight="Bold" Background="Transparent"
+                <TextBox Text="{Binding PlanWorker.Name}" Grid.Column="1" FontSize="30" FontWeight="SemiBold" Background="Transparent"
                          IsReadOnly="true"/>
 
-                <TextBlock Text="{Binding PlanWorker.UserId}" Grid.Column="2" FontSize="32" FontWeight="Bold"/>
+                <TextBlock Text="{Binding PlanWorker.UserId}" Grid.Column="2" FontSize="30" FontWeight="Bold"/>
             <TextBox Text="{Binding PlanWorker.Description}" Grid.Row="1" Grid.Column="1" FontSize="20" Background="Transparent"
                       IsReadOnly="{Binding Converter={StaticResource permiss},ConverterParameter={x:Static const:Permissions.MachRenameInvers}}"/>
             </Grid>

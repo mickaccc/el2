@@ -30,8 +30,8 @@
             <TextBox x:Name="correct" Text="{Binding CorrectValue, TargetNullValue=0}" HorizontalAlignment="Stretch" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Content="abbrechen" Command="{Binding CloseDialogCommand}" Style="{StaticResource btnStyle}"/>
-            <Button Content="OK" Command="{Binding CloseDialogCommand}" CommandParameter="1" Style="{StaticResource btnStyle}"/>
+            <Button Content="abbrechen" Command="{Binding CloseDialogCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="OK" Command="{Binding CloseDialogCommand}" CommandParameter="1" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
             
     </Grid>

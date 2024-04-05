@@ -294,12 +294,11 @@ namespace ModuleDeliverList.ViewModels
                             var o = _orders.FirstOrDefault(x => x.Aid == rbId);
                             if (o != null)
                             {
-                                if (DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State != EntityState.Unchanged)
-                                {
-                                    DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State = EntityState.Unchanged;
-                                }
+                    
+                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State = EntityState.Detached;
                                 DBctx.Entry<Vorgang>(o).Reload();
                                 o.RunPropertyChanged();
+                                
                             }
                             else
                             {

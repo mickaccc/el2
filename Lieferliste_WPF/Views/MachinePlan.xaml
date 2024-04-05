@@ -49,7 +49,7 @@
         </Grid.Resources>
         <DockPanel HorizontalAlignment="Stretch">
             <Button Command="{Binding SaveCommand}" HorizontalAlignment="Right"
-                    Style="{DynamicResource MahApps.Styles.Button.Square.Accent}">
+                    Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}">
                 <icons:MaterialDesign Width="40" Kind="Save"/>
             </Button>
             <ComboBox x:Name="workArea" ItemsSource="{Binding WorkAreas}" DockPanel.Dock="Left" MinWidth="100"
@@ -91,6 +91,7 @@
                    Visibility="{Binding MachineTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ListBox x:Name="machines" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.Row="1"
                  ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding MachineTask.Result}"
+                 Visibility="{Binding MachineTask.IsSuccessfullyCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"
                  VirtualizingPanel.IsVirtualizing="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
