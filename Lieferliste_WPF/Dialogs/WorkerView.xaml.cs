@@ -22,7 +22,7 @@ namespace Lieferliste_WPF.Dialogs
 
         // Using a DependencyProperty as the backing store for BemTInfo.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BemTInfoProperty =
-            DependencyProperty.Register("BemTInfo", typeof(string), typeof(MachineView), new PropertyMetadata(""));
+            DependencyProperty.Register("BemTInfo", typeof(string), typeof(WorkerView), new PropertyMetadata(""));
 
 
         public WorkerView()

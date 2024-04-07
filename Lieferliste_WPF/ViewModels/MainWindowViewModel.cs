@@ -9,12 +9,15 @@ using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ModulePlanning.Dialogs.ViewModels;
+using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Regions;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -147,9 +150,9 @@ namespace Lieferliste_WPF.ViewModels
             OpenHolidayCommand = new ActionCommand(OnOpenHolidayExecuted, OnOpenHolidayCanExecute);
             OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
             OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
-            
-            
-            //DbOperations();
+
+
+            DbOperations();
         }
 
 
@@ -523,10 +526,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 wo = plan.WorkArea?.WorkAreaId ?? 0;               
             }
-            else if(arg is MachineViewVM mvm)
-            {
-                wo = mvm.PlanMachine?.WorkArea?.WorkAreaId ?? 0;
-            }
+
             if (wo != 0) { return PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachPrint, wo); }
             return false;
         }
@@ -540,7 +540,11 @@ namespace Lieferliste_WPF.ViewModels
                 ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
                 ticket.PageOrientation = PageOrientation.Landscape;
                 print.PrintTicket = ticket;
-                Printing.DoPrintPreview(obj, print);
+                PrintingProxy printingProxy = new PrintingProxy();
+                if(obj is PlanMachine planMachine)
+                {
+                    printingProxy.PrintPreview(planMachine, ticket);
+                }
             }
             catch (System.Exception e)
             {
@@ -649,26 +653,31 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void DbOperations()
         {
-            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-            {
-                var ch = new CloseAndHolidayRule();
+            var Doc = _container.Resolve<DocumentManager>();
+            Doc.Construct(new MeasureFirstPartBuilder(), "F00", "2100");
+            
+            Doc.SaveDocumentData("C:\\Users\\mgsch\\Documents\\Mess", "C:\\Users\\mgsch\\Documents\\Mess\\Vorlage\\Messblatt_1.Gutteil.xlsm", "^(\\w{4})(\\w{3})(\\w+),[TTNR],,[AID]");
+
+            //using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            //{
+            //    var ch = new CloseAndHolidayRule();
 
 
-                var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
-                StringWriter sw = new();
-                //xml.Serialize(sw, CloseAndHolidayRule);
+            //    var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
+            //    StringWriter sw = new();
+            //    //xml.Serialize(sw, CloseAndHolidayRule);
 
-                xml.Serialize(sw, ch);
-                var r = new Rule()
-                {
-                    RuleName = "Feiertage",
-                    RuleValue = "Holi",
-                    RuleData = sw.ToString()
-                };
-                db.Rules.Add(r);
-                db.SaveChanges();
-                
-            }
+            //    xml.Serialize(sw, ch);
+            //    var r = new Rule()
+            //    {
+            //        RuleName = "Feiertage",
+            //        RuleValue = "Holi",
+            //        RuleData = sw.ToString()
+            //    };
+            //    db.Rules.Add(r);
+            //    db.SaveChanges();
+
+            //}
         }
 
     }

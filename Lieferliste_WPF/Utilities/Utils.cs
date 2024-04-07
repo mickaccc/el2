@@ -708,14 +708,6 @@ namespace Lieferliste_WPF.Utilities
         }
     }
 
-    public static class Helper
-    {
-        public static ObservableCollection<T> ToObservableCollection<T>
-             (this IEnumerable<T> en)
-        {
-            var ob = new ObservableCollection<T>(en);
-            return ob;
-        }
-    }
+
 }
 

@@ -1,10 +1,11 @@
 ﻿using MahApps.Metro.Controls;
+using ModulePlanning.Planning;
 using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Lieferliste_WPF.Planning
+namespace ModulePlanning.UserControls
 {
     /// <summary>
     /// Interaction logic for MachineUserControl.xaml

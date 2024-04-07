@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Lieferliste_WPF.Views
+namespace ModulePlanning.Views
 {
     /// <summary>
     /// Interaction logic for MachinePlan.xaml

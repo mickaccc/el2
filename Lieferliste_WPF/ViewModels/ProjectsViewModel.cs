@@ -331,8 +331,9 @@ namespace Lieferliste_WPF.ViewModels
         {
             PrintDialog printDialog = new PrintDialog();
             PrintTicket ticket = new PrintTicket();
+            PrintingProxy proxy = new PrintingProxy();
 
-            Printing.DoPrintPreview(this, printDialog);
+            //proxy.PrintPreview(Title, null, null,  ticket);
         }
         private bool OnAddFileCanExecute(object arg)
         {

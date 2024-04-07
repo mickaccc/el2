@@ -1,13 +1,14 @@
-﻿<UserControl x:Class="Lieferliste_WPF.Planning.MachineUserControl"
+﻿<UserControl x:Class="ModulePlanning.UserControls.MachineUserControl"
 			 xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
 			 DataContextChanged="UserControl_DataContextChanged"
 			 xmlns:dd="urn:gong-wpf-dragdrop"
 			 d:DesignHeight="450"
 			 d:DesignWidth="180"
 			 mc:Ignorable="d"
-			 xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+			 xmlns:iconpack="http://metro.mahapps.com/winfx/xaml/iconpacks"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
 			 MinWidth="0"
@@ -52,9 +53,9 @@
 						HorizontalAlignment="Left"
 						x:Name="HideDetails"
 						Padding="2"
-						Style="{StaticResource MaterialDesignFlatButton}">
-					<materialdesign:PackIcon Height="25"
-											 Kind="Hide"
+						Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
+					<iconpack:BootstrapIcons Height="25"
+											 Kind="ArrowUpCircle"
 											 Width="25"/>
 				</Button>
 
@@ -63,9 +64,9 @@
 							CommandParameter="{Binding InventNo}"
 							HorizontalAlignment="Left"
 							Padding="2"
-							Style="{StaticResource MaterialDesignFlatButton}"
+							Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
 							ToolTip="Alternativ: Strg + LMB oder Strg + M">
-						<materialdesign:PackIcon Height="25"
+						<iconpack:MaterialDesign Height="25"
 												 Kind="Details"
 												 Width="25"/>
 					</Button>
@@ -73,10 +74,10 @@
 							Command="{Binding ApplicationCommands.MachinePrintCommand}"
 							CommandParameter="{Binding}"
 							Padding="2"
-							Style="{StaticResource MaterialDesignFlatButton}"
+							Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent }"
 							ToolTip="Drucken">
-						<materialdesign:PackIcon Height="25"
-												 Kind="PrinterEye"
+						<iconpack:BootstrapIcons Height="25"
+												 Kind="Printer"
 												 Width="25"/>
 					</Button>
                     <ToggleButton Canvas.Left="70" Canvas.Top="30" x:Name="shiftOpen"

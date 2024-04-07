@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="Lieferliste_WPF.Views.MachinePlan"
+    x:Class="ModulePlanning.Views.MachinePlan"
     xml:lang="de-AT"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,10 +8,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    xmlns:control="clr-namespace:Lieferliste_WPF.Planning"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:Dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:control="clr-namespace:ModulePlanning.UserControls"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:dd="urn:gong-wpf-dragdrop"

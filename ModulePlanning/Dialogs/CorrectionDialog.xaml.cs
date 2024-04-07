@@ -1,7 +1,6 @@
 ﻿using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,14 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Lieferliste_WPF.Dialogs
+namespace ModulePlanning.Dialogs
 {
     /// <summary>
-    /// Interaction logic for HistoryDialog.xaml
+    /// Interaction logic for CorrectionDialog.xaml
     /// </summary>
-    public partial class HistoryDialog : UserControl
+    public partial class CorrectionDialog : UserControl
     {
-        public HistoryDialog()
+        public CorrectionDialog()
         {
             InitializeComponent();
         }

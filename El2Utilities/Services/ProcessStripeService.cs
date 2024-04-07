@@ -15,14 +15,13 @@ using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
 using static El2Core.Constants.ShiftTypes;
-using static Lieferliste_WPF.App;
 
 
-namespace Lieferliste_WPF.Utilities
+namespace El2Core.Services
 {
-    internal interface IProcessStripeService
+    public interface IProcessStripeService
     { }
-    internal class ProcessStripeService : IProcessStripeService, IDisposable
+    public class ProcessStripeService : IProcessStripeService, IDisposable
     {
 
         HolidayLogic holidayLogic;
@@ -34,14 +33,14 @@ namespace Lieferliste_WPF.Utilities
 
         public DateTime GetProcessLength(Vorgang vorgang, DateTime start, out TimeSpan ProcessLength)
         {
-            var r = (vorgang.Rstze == null) ? 0.0 : (short)vorgang.Rstze; //Setup time
-            var c = (vorgang.Correction == null) ? 0.0 :(short)vorgang.Correction; //correction time
+            var r = vorgang.Rstze == null ? 0.0 : (short)vorgang.Rstze; //Setup time
+            var c = vorgang.Correction == null ? 0.0 : (short)vorgang.Correction; //correction time
             if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0.0) //if have Total quantity
             {
                 //calculation of the currently required time
-                var procT = (vorgang.Beaze == null) ? 0.0 : (short)vorgang.Beaze;
+                var procT = vorgang.Beaze == null ? 0.0 : (short)vorgang.Beaze;
                 var quant = (short)vorgang.AidNavigation.Quantity;
-                var miss = (vorgang.QuantityMissNeo == null) ? 0.0 : (short)vorgang.QuantityMissNeo;
+                var miss = vorgang.QuantityMissNeo == null ? 0.0 : (short)vorgang.QuantityMissNeo;
                 var duration = procT / quant * miss + r + c;
 
                 if (duration > 0)
@@ -62,7 +61,7 @@ namespace Lieferliste_WPF.Utilities
                 dateTime = dateTime.AddDays(1).Date;
                 length = length.Add(TimeOnly.MaxValue.ToTimeSpan().Add(TimeOnly.MaxValue.ToTimeSpan()));
             }
-            
+
             TimeSpan rest = timeSpan;
 
             var shifts = ressource.RessourceWorkshifts;
@@ -72,26 +71,26 @@ namespace Lieferliste_WPF.Utilities
             foreach (var shift in shifts.OrderBy(x => x.SidNavigation.ShiftType))
             {
                 var sh = shift.SidNavigation;
-                if(sh.ShiftType > 10 && sh.ShiftType < 20)
+                if (sh.ShiftType > 10 && sh.ShiftType < 20)
                 {
                     if (dateTime.DayOfWeek == DayOfWeek.Sunday) { dateTime = dateTime.AddDays(1).Date; length.Add(TimeOnly.MaxValue.ToTimeSpan()); }
                     while (holidayLogic.IsHolyday(dateTime)) { dateTime = dateTime.AddDays(1).Date; length.Add(TimeOnly.MaxValue.ToTimeSpan()); }
                 }
-                if(sh.ShiftType > 0  && sh.ShiftType < 10)
+                if (sh.ShiftType > 0 && sh.ShiftType < 10)
                 {
                     while (holidayLogic.IsHolyday(dateTime.AddDays(1))) { dateTime = dateTime.AddDays(1).Date; length.Add(TimeOnly.MaxValue.ToTimeSpan()); }
                 }
-                
+
                 if (rest.TotalMinutes < 0) break;
                 var data = shift.SidNavigation.ShiftDef;
                 TextReader reader = new StringReader(data);
                 var ws = (List<WorkShiftItem>)serializer.Deserialize(reader);
- 
+
                 foreach (var wsItem in ws)
-                { 
+                {
                     var timespst = wsItem.StartTime.Value.ToTimeSpan();
                     var timespen = wsItem.EndTime.Value.ToTimeSpan();
-                    if(length == TimeSpan.Zero)  //the first entry
+                    if (length == TimeSpan.Zero)  //the first entry
                     {
                         if (dateTime.TimeOfDay < timespst) //we come from ground
                         {
@@ -120,13 +119,13 @@ namespace Lieferliste_WPF.Utilities
                         length = length.Add(timespen.Subtract(endPos.ToTimeSpan()));
                         rest -= timespen.Subtract(timespst);
                         endPos = TimeOnly.FromTimeSpan(timespen);
-                        if(rest.TotalMinutes < 0) //we are override
+                        if (rest.TotalMinutes < 0) //we are override
                         {
                             length = length.Add(rest);
                             break;
                         }
                     }
-                                
+
                 }
             }
 
@@ -137,9 +136,9 @@ namespace Lieferliste_WPF.Utilities
             }
             return length;
         }
- 
+
     }
-    public class WorkShiftService : ViewModelBase
+    public class WorkShiftService : ViewModelBase.ViewModelBase
     {
         public WorkShiftService() { }
         private int _id;
@@ -191,8 +190,8 @@ namespace Lieferliste_WPF.Utilities
 
         public ObservableCollection<WorkShiftItem> Items { get; set; } = [];
     }
-    public class WorkShiftItem : ViewModelBase
-    { 
+    public class WorkShiftItem : ViewModelBase.ViewModelBase
+    {
         public WorkShiftItem() { }
         [XmlIgnore]
         private TimeOnly? _startTime;

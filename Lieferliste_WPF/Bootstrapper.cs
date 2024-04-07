@@ -12,6 +12,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ModuleDeliverList.Views;
 using ModuleMeasuring.Views;
+using ModulePlanning.Dialogs;
+using ModulePlanning.Dialogs.ViewModels;
+using ModulePlanning.Planning;
+using ModulePlanning.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
@@ -31,6 +35,7 @@ namespace Lieferliste_WPF
             settingsService.Upgrade();
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
             App.GlobalFontSize = 14;
+ 
             return Container.Resolve<MainWindow>();
         }
         protected override void OnInitialized()
@@ -44,7 +49,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
           
@@ -54,6 +59,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterSingleton<IProcessStripeService, ProcessStripeService>();
             containerRegistry.RegisterScoped<IRegionManager, RegionManager>();
             containerRegistry.RegisterSingleton<IUserSettingsService, UserSettingsService>();
+            containerRegistry.RegisterSingleton<DocumentManager>();
             containerRegistry.RegisterForNavigation<UserSettings>();
             containerRegistry.RegisterForNavigation<RoleEdit>();
             containerRegistry.RegisterForNavigation<MachinePlan>();
@@ -87,6 +93,8 @@ namespace Lieferliste_WPF
             RuleInfo rule = new RuleInfo();
             rule.Initialize(gl.Rules);
             containerRegistry.RegisterInstance(rule);
+
+  
         }
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
@@ -94,7 +102,7 @@ namespace Lieferliste_WPF
 
             moduleCatalog.AddModule<ModuleDeliverList.DeliverListModule>();
             moduleCatalog.AddModule<ModuleMeasuring.MeasuringModule>();
-
+            moduleCatalog.AddModule<ModulePlanning.PlanningModule>();
         }
 
     }

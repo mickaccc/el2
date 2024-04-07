@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows.Threading;
 
-namespace Lieferliste_WPF.Utilities
+namespace El2Core.Utils
 {
     public class ObservableCollectionWrapper<T> : ICollection<T>, INotifyCollectionChanged
     {
@@ -68,5 +68,14 @@ namespace Lieferliste_WPF.Utilities
 
         public bool IsReadOnly => throw new NotImplementedException();
         /* Implement the rest of the ICollection<T> interface */
+    }
+    public static class Helper
+    {
+        public static ObservableCollection<T> ToObservableCollection<T>
+             (this IEnumerable<T> en)
+        {
+            var ob = new ObservableCollection<T>(en);
+            return ob;
+        }
     }
 }

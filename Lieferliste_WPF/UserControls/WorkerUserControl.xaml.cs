@@ -31,7 +31,7 @@ namespace Lieferliste_WPF.Planning
 
         private void UserControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var dtx = this.DataContext as PlanMachine;
+            var dtx = this.DataContext as PlanWorker;
             if (dtx != null)
             {
                 dtx.ProcessesCV.SortDescriptions.Clear();

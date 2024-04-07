@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Lieferliste_WPF.Dialogs
+namespace ModulePlanning.Dialogs
 {
     /// <summary>
     /// Interaction logic for MachineView.xaml

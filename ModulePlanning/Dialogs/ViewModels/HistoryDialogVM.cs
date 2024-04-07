@@ -10,10 +10,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Lieferliste_WPF.Dialogs
+namespace ModulePlanning.Dialogs.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
-    class HistoryDialogVM : IDialogAware
+    public class HistoryDialogVM : IDialogAware
     {
         public HistoryDialogVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public string Title => "Historische Aufträge";

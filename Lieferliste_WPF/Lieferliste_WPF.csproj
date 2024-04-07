@@ -186,6 +186,7 @@
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
     <ProjectReference Include="..\ModuleDeliverList\ModuleDeliverList.csproj" />
     <ProjectReference Include="..\ModuleMeasuring\ModuleMeasuring.csproj" />
+    <ProjectReference Include="..\ModulePlanning\ModulePlanning.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -273,9 +274,6 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="UserControls\WorkerUserControl.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="UserControls\MachineUserControl.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

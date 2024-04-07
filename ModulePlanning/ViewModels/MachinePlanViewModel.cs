@@ -6,9 +6,8 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Planning;
-using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
+using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -28,7 +27,7 @@ using System.Windows.Input;
 using Unity;
 
 
-namespace Lieferliste_WPF.ViewModels
+namespace ModulePlanning.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class MachinePlanViewModel : ViewModelBase, IDropTarget, IViewModel

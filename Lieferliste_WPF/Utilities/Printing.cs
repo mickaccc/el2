@@ -1,9 +1,12 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
+using El2Core.ViewModelBase;
 using Lieferliste_WPF.Dialogs.ViewModels;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
+using ModulePlanning.Dialogs.ViewModels;
+using ModulePlanning.Planning;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -24,6 +27,47 @@ using ValidationResult = System.Printing.ValidationResult;
 namespace Lieferliste_WPF.Utilities
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
+    public interface IPrinting
+    {
+        void PrintPreview(PlanMachine planMachine, PrintTicket ticket);
+        void Print(PlanMachine planMachine);
+        void PrintPreview(List<Vorgang> vorgangs, PrintTicket ticket);
+        void Print(List<Vorgang> vorgangs);
+        void PrintPreview(IViewModel projects, PrintTicket ticket);
+        
+    }
+    public class PrintingProxy : IPrinting
+    {
+        public void Print(PlanMachine planMachine)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Print(List<Vorgang> vorgangs)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PrintPreview(PlanMachine planMachine, PrintTicket ticket)
+        {
+            Printing.DoPrintPreview
+                (planMachine.Name,
+                planMachine.InventNo,
+                planMachine.Description,
+                planMachine.Processes.ToList(),
+                ticket);
+        }
+
+        public void PrintPreview(IViewModel viewModel, PrintTicket ticket)
+        {
+            
+        }
+
+        public void PrintPreview(List<Vorgang> vorgangs, PrintTicket ticket)
+        {
+            throw new NotImplementedException();
+        }
+    }
     internal static class Printing
     {
         public static void DoThePrint(FlowDocument document, PrintTicket ticket, string description)
@@ -53,43 +97,13 @@ namespace Lieferliste_WPF.Utilities
             docWriter.Write(paginator, ticket);
             
         }
-        public static FlowDocument CreateFlowDocument(object parameter, PrintDialog printDlg)
+        private static FlowDocument CreateFlowDocument(string Name, string? Second, string? Description, List<Vorgang> proces, PrintTicket ticket)
         {
-            string Name;
-            string? Second;
-            string? Description;
 
-            List<Vorgang> proces;
-            if (parameter is PlanMachine plm)
-            {
-                Name = plm.Name ?? string.Empty;
-                Second = plm.InventNo ?? string.Empty;
-                proces = plm.Processes?.ToList() ?? [];
-                Description = plm.Description ?? string.Empty;
-            }
-            else if (parameter is PlanWorker plw)
-            {
-                Name = plw.Name ?? string.Empty;
-                Second = plw.PersNo.ToString() ?? string.Empty;
-                proces = plw.Processes?.ToList() ?? [];
-                Description = plw.Description ?? string.Empty;
-            }
-            else if (parameter is MachineViewVM mvvm)
-            {
-                Name= mvvm.PlanMachine.Name ?? string.Empty;
-                Second = mvvm.PlanMachine.InventNo ?? string.Empty;
-                proces = mvvm.PlanMachine.Processes?.ToList() ?? [];
-                Description= mvvm.PlanMachine.Description ?? string.Empty;
-            }
-            else if (parameter is ProjectsViewModel pvm)
-            {
-                Name = pvm.Title ?? string.Empty;
-                Second = string.Empty;
-                Description = string.Empty;
-                proces = new();
-            }
-            else throw new InvalidDataException();
 
+            printDlg = new PrintDialog();
+            printDlg.PrintTicket = ticket;
+ 
             FlowDocument fd = new FlowDocument();
             Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy HH:mm")));
             fd.PageWidth = printDlg.PrintableAreaWidth;
@@ -198,10 +212,11 @@ namespace Lieferliste_WPF.Utilities
 
         }
 
-        public static void DoPrintPreview(object obj, PrintDialog print)
+        internal static void DoPrintPreview(string name, string? second, string? description, List<Vorgang> proces, PrintTicket ticket)
         {
-            var doc = CreateFlowDocument(obj, print);
-            var fix = Get_Fixed_From_FlowDoc(doc, print);
+
+            var doc = CreateFlowDocument(name, second, description, proces, ticket);
+            var fix = Get_Fixed_From_FlowDoc(doc, ticket);
             
             var windows = new PrintWindow(fix);
             windows.ShowDialog();
@@ -216,6 +231,8 @@ namespace Lieferliste_WPF.Utilities
         WindowStartupLocation ='CenterOwner'>
                       <DocumentViewer Name='dv1'/>
      </Window>";
+        private static PrintDialog printDlg;
+
         public static void PreviewWindowXaml(object usefulData)
         {
             Grid grid;
@@ -288,13 +305,13 @@ namespace Lieferliste_WPF.Utilities
         //        }
         //    }
         //}
-        public static FixedDocument Get_Fixed_From_FlowDoc(FlowDocument flowDoc, PrintDialog printDlg)
-        {
+        public static FixedDocument Get_Fixed_From_FlowDoc(FlowDocument flowDoc, PrintTicket ticket)
+        { 
             var fixedDocument = new FixedDocument();
             try
             {
-                var pdlgPrint = printDlg ?? new PrintDialog();
-                
+                var pdlgPrint = new PrintDialog();
+                printDlg.PrintTicket = ticket;
                 DocumentPaginator dpPages = (DocumentPaginator)((IDocumentPaginatorSource)flowDoc).DocumentPaginator;
                 dpPages.ComputePageCount();
                 PrintCapabilities capabilities = pdlgPrint.PrintQueue.GetPrintCapabilities(pdlgPrint.PrintTicket);

@@ -157,8 +157,8 @@
 
             <StatusBarItem Foreground="{DynamicResource MahApps.Brushes.SystemControlHighlightAltBaseHigh}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock x:FieldModifier="private" x:Name="myDateTime" />
-                    <TextBlock x:FieldModifier="private" x:Name="aktKW"/>
+                    <TextBlock x:FieldModifier="public" x:Name="myDateTime" />
+                    <TextBlock x:FieldModifier="public" x:Name="aktKW"/>
                 </StackPanel>
             </StatusBarItem>
             <Separator/>

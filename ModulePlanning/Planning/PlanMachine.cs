@@ -5,9 +5,8 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Utilities;
-using Lieferliste_WPF.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using ModulePlanning.ViewModels;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
@@ -26,7 +25,7 @@ using System.Windows.Media;
 
 
 
-namespace Lieferliste_WPF.Planning
+namespace ModulePlanning.Planning
 {
     public interface IPlanMachineFactory
     {
@@ -36,7 +35,7 @@ namespace Lieferliste_WPF.Planning
         IUserSettingsService SettingsService { get; }
         IDialogService DialogService { get; }
     }
-    internal class PlanMachineFactory : IPlanMachineFactory
+    public class PlanMachineFactory : IPlanMachineFactory
     {
         public IContainerProvider Container { get; }
 
@@ -71,7 +70,7 @@ namespace Lieferliste_WPF.Planning
         public int Rid { get; }
     }
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
-    internal class PlanMachine : ViewModelBase, IPlanMachine, IDropTarget, IViewModel
+    public class PlanMachine : ViewModelBase, IPlanMachine, IDropTarget, IViewModel
     {
 
         #region Constructors
@@ -144,7 +143,6 @@ namespace Lieferliste_WPF.Planning
         public List<int> CostUnits { get; set; } = [];
         private ObservableCollection<ShiftStruct> _shifts = [];
         public ICollectionView ShiftsView { get; private set; }
-        protected MachinePlanViewModel? Owner { get; }
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }

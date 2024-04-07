@@ -1,6 +1,4 @@
 ﻿using El2Core.Models;
-using El2Core.Utils;
-using El2Core.ViewModelBase;
 using Prism.Ioc;
 using System;
 using System.Collections.Concurrent;
@@ -15,10 +13,10 @@ using System.Xml;
 using System.Xml.Serialization;
 
 
-namespace Lieferliste_WPF.Utilities
+namespace El2Core.Utils
 {
 
-    public class Holiday : ViewModelBase, IComparable<Holiday>
+    public class Holiday : ViewModelBase.ViewModelBase, IComparable<Holiday>
     {
         private string _locale = "";
         public Holiday() { }
@@ -126,7 +124,7 @@ namespace Lieferliste_WPF.Utilities
             return holydays.ContainsKey(DateOnly.FromDateTime(value));
         }
 
-        public string GetHolydayName(DateTime Datevalue)
+        public string? GetHolydayName(DateTime Datevalue)
         {
             var d = DateOnly.FromDateTime(Datevalue);
             if(holydays.TryGetValue(d, out Holiday? value))

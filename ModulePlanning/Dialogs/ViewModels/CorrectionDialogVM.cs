@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lieferliste_WPF.Dialogs.ViewModels
+namespace ModulePlanning.Dialogs.ViewModels
 {
-    class CorrectionDialogVM : IDialogAware
+    public class CorrectionDialogVM : IDialogAware
     {
         private double? correctValue;
         public double? CorrectValue

@@ -97,9 +97,6 @@ namespace Lieferliste_WPF.Planning
         public int? PersNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        private List<Vorgang> _processesAll;
-        protected MachinePlanViewModel? Owner { get; }
-
         public ObservableCollection<Vorgang>? Processes { get; set; }
 
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
@@ -254,7 +251,7 @@ namespace Lieferliste_WPF.Planning
                 ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA4);
                 ticket.PageOrientation = PageOrientation.Portrait;
                 print.PrintTicket = ticket;
-                Printing.DoPrintPreview(obj, print);
+                //Printing.DoPrintPreview(obj, print);
             }
             catch (System.Exception e)
             {

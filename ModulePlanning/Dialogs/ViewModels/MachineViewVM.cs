@@ -1,14 +1,14 @@
 ﻿using CompositeCommands.Core;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Planning;
+using ModulePlanning.Planning;
 using Prism.Services.Dialogs;
 using System;
 using System.Windows.Input;
 
-namespace Lieferliste_WPF.Dialogs.ViewModels
+namespace ModulePlanning.Dialogs.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
-    class MachineViewVM : IDialogAware, IDropTarget
+    public class MachineViewVM : IDialogAware, IDropTarget
     {
         public string Title => "Maschinen Details";
         public PlanMachine? PlanMachine { get; private set; }
