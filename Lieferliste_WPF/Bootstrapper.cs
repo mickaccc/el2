@@ -6,7 +6,6 @@ using El2Core.Utils;
 using Lieferliste_WPF.Dialogs;
 using Lieferliste_WPF.Dialogs.ViewModels;
 using Lieferliste_WPF.Planning;
-using Lieferliste_WPF.Utilities;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -49,7 +48,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
           

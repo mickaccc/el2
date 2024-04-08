@@ -152,7 +152,7 @@ namespace Lieferliste_WPF.ViewModels
             OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
 
 
-            DbOperations();
+            //DbOperations();
         }
 
 

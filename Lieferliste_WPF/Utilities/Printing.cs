@@ -1,11 +1,7 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Lieferliste_WPF.Dialogs.ViewModels;
-using Lieferliste_WPF.Planning;
-using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
-using ModulePlanning.Dialogs.ViewModels;
 using ModulePlanning.Planning;
 using System;
 using System.Collections.Generic;
@@ -101,7 +97,7 @@ namespace Lieferliste_WPF.Utilities
         {
 
 
-            printDlg = new PrintDialog();
+            var printDlg = new PrintDialog();
             printDlg.PrintTicket = ticket;
  
             FlowDocument fd = new FlowDocument();
@@ -231,7 +227,6 @@ namespace Lieferliste_WPF.Utilities
         WindowStartupLocation ='CenterOwner'>
                       <DocumentViewer Name='dv1'/>
      </Window>";
-        private static PrintDialog printDlg;
 
         public static void PreviewWindowXaml(object usefulData)
         {
@@ -311,7 +306,7 @@ namespace Lieferliste_WPF.Utilities
             try
             {
                 var pdlgPrint = new PrintDialog();
-                printDlg.PrintTicket = ticket;
+                pdlgPrint.PrintTicket = ticket;
                 DocumentPaginator dpPages = (DocumentPaginator)((IDocumentPaginatorSource)flowDoc).DocumentPaginator;
                 dpPages.ComputePageCount();
                 PrintCapabilities capabilities = pdlgPrint.PrintQueue.GetPrintCapabilities(pdlgPrint.PrintTicket);

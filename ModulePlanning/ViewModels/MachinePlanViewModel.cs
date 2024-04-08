@@ -10,15 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -112,25 +107,27 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                
-                foreach (var item in list)
+                lock (_lock)
                 {
-                    if ((item != null))
+                    foreach (var item in list)
                     {
-                        var vo = _processAll.FirstOrDefault(x => x.VorgangId == item);
-                        
-                        if (vo != null)
+                        if ((item != null))
                         {
-                            _DbCtx.Entry(vo).Reload();
-                            if (vo.Rid != null)
+                            var vo = _processAll.FirstOrDefault(x => x.VorgangId == item);
+
+                            if (vo != null)
                             {
-                                Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
-                                _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
-                            }
-                            else
-                            {
-                                Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
-                                _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
+                                _DbCtx.Entry(vo).Reload();
+                                if (vo.Rid != null)
+                                {
+                                    Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
+                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
+                                }
+                                else
+                                {
+                                    Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
+                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
+                                }
                             }
                         }
                     }

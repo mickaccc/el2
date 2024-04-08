@@ -1,6 +1,4 @@
-﻿using MahApps.Metro.Controls;
-using ModulePlanning.Planning;
-using System;
+﻿using ModulePlanning.Planning;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;

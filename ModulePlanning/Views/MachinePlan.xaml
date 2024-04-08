@@ -119,9 +119,9 @@
                     dd:DragDrop.IsDragSource="True"
                     dd:DragDrop.IsDropTarget="True"
                     dd:DragDrop.DropHandler="{Binding}" >
-                <ListBox.Background>
+                <!--<ListBox.Background>
                     <ImageBrush ImageSource="/Images/parking.png" />
-                </ListBox.Background>
+                </ListBox.Background>-->
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseDoubleClick">
                         <i:InvokeCommandAction Command="{Binding ApplicationCommands.OpenOrderCommand}"
