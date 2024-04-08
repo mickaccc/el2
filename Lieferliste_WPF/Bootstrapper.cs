@@ -19,7 +19,9 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
 using Prism.Unity;
+using System;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using Unity;
 
@@ -31,7 +33,29 @@ namespace Lieferliste_WPF
         protected override DependencyObject CreateShell()
         {
             var settingsService = Container.Resolve<UserSettingsService>();
-            settingsService.Upgrade();
+            if (Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed")?.ToLower() == "true")
+            {
+                var previous = Environment.GetEnvironmentVariable("EL2_PREVIOUS_VERSION", EnvironmentVariableTarget.User);
+                if (previous == null)
+                {
+                    var ver = Assembly.GetExecutingAssembly().GetName().Version;
+                    var dir = string.Format("{0}.{1}.{2}.{3}", ver?.Major, ver?.Minor, ver?.Build, ver?.Revision);
+                    var current = Environment.GetEnvironmentVariable("ClickOnce_CurrentVersion");
+                    Environment.SetEnvironmentVariable("EL2_PREVIOUS_VERSION", dir, EnvironmentVariableTarget.User);
+                    var upd = Environment.GetEnvironmentVariable("ClickOnce_UpdatedVersion");
+                    var updfull = Environment.GetEnvironmentVariable("ClickOnce_UpdatedApplicationFullName");
+
+                    Console.WriteLine(current);
+                    Console.WriteLine(upd);
+                    Console.WriteLine(updfull);
+                }
+                else
+                {
+                    settingsService.Save();
+
+                    settingsService.Upgrade();
+                }
+            }
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
             App.GlobalFontSize = 14;
  
