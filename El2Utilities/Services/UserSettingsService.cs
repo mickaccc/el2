@@ -82,21 +82,27 @@ namespace El2Core.Services
         {
             var fp = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
 
-            //if (Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed")?.ToLower() == "false")
-            //{
+            if (Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed")?.ToLower() == "true")
+            {
                 var previous = Environment.GetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", EnvironmentVariableTarget.User);
                 if (previous != null)
                 {
-                    var FileInfo = new FileInfo(fp);
-                    if (FileInfo.DirectoryName != null)
+                    var curFileInfo = new FileInfo(fp);
+                    var preFileInfo = new FileInfo(previous);
+
+                    if (curFileInfo.DirectoryName != null)
                     {
-                       if(Directory.Exists(FileInfo.Directory.FullName) == false) {  Directory.CreateDirectory(FileInfo.Directory.FullName); }   
-                       
-                    }
+                        var UrlhashNew = curFileInfo.Directory.Parent.Name;
+                        var UrlhashOld = preFileInfo.Directory.Parent.Name;
+                        var newFile = previous.Replace(UrlhashOld, UrlhashNew);
+                        var newDir = new FileInfo(newFile).Directory;
+                        if (newDir.Exists == false) { Directory.CreateDirectory(newDir.FullName); }
+                        File.Copy(previous, newFile, true);
+                    }              
                 }
                 Environment.SetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", fp, EnvironmentVariableTarget.User);
-            //}
-                if (Properties.Settings.Default.UpgradeFlag == true)
+            }
+            if (Properties.Settings.Default.UpgradeFlag == true)
             {
                 try
                 {

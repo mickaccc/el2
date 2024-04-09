@@ -51,7 +51,8 @@ namespace ModuleMeasuring.ViewModels
         }
         private void onSearchChanged(object obj)
         {
-            OrderList.Refresh();
+            if(OrderSearch.Length > 3)
+                OrderList.Refresh();
         }
         private bool onPruefCanExecute(object arg)
         {
@@ -60,7 +61,7 @@ namespace ModuleMeasuring.ViewModels
 
         private void onPruefExecuted(object obj)
         {
-            throw new NotImplementedException();
+            var mes = _orders.First(x => x.Aid == OrderSearch);
         }
         private bool onVmpbCanExecute(object arg)
         {
@@ -68,7 +69,7 @@ namespace ModuleMeasuring.ViewModels
         }
         private void onVmpbExecuted(object obj)
         {
-            throw new NotImplementedException();
+            
         }
         private void onFilterPredicate(object sender, FilterEventArgs e)
         {

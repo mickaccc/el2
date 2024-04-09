@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:dd="urn:gong-wpf-dragdrop"
@@ -19,8 +19,8 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Prüfdatenblatt" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-            <Button Content="Vormusterpüfbericht" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="Prüfdatenblatt" Command="{Binding PruefDataCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="Vormusterpüfbericht" Command="{Binding VmpbCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
         <Border Grid.Row="1">
             <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}"  
@@ -33,7 +33,13 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Border>
-        <TextBox Grid.Column="1" Text="{Binding OrderSearch}" Style="{DynamicResource MahApps.Styles.TextBox}"/>
+        <TextBox Grid.Column="1" Text="{Binding OrderSearch, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource MahApps.Styles.TextBox}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="TextChanged">
+                    <i:InvokeCommandAction Command="{Binding SearchChangedCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
         <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OrderList}"/>
     </Grid>
 </UserControl>
