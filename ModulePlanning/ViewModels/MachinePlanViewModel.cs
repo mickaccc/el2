@@ -7,6 +7,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
@@ -207,6 +208,7 @@ namespace ModulePlanning.ViewModels
               .ThenInclude(x => x.MaterialNavigation)
               .Include(x => x.AidNavigation.DummyMatNavigation)
               .Include(x => x.ArbPlSapNavigation)
+              .Include(x => x.RidNavigation.WorkArea)
               .Include(x => x.RidNavigation)
               .ThenInclude(x => x.RessourceWorkshifts)
               .ThenInclude(x => x.SidNavigation)
@@ -250,26 +252,29 @@ namespace ModulePlanning.ViewModels
         private async Task<ICollectionView?> LoadMachinesAsync()
         {
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
-            var re = await _DbCtx.Ressources
-            .Include(x => x.RessourceCostUnits)
-            .Include(x => x.WorkArea)
-            .Where(x => (x.WorkArea != null) && WorkAreas.Contains(x.WorkArea)).OrderBy(x => x.Sort).ToListAsync();
+ 
 
             var proc = await GetVorgangsAsync(null);
 
             await Task.Factory.StartNew(() =>
             {
-                HashSet<PlanMachine> result = [];
+                SortedDictionary<int[], PlanMachine> result = new SortedDictionary<int[], PlanMachine>(new ArrayKeyComparer());
                 lock (_lock)
                 {
                     PlanMachineFactory factory = _container.Resolve<PlanMachineFactory>();
 
-                    foreach (var q in re)
+                    foreach (var q in proc)
                     {
-                        result.Add(factory.CreatePlanMachine(q.RessourceId, proc.Where(x => x.Rid == q.RessourceId).ToList()));
+                        if (q.RidNavigation != null)
+                        {
+                            int[] kay = new int[2];
+                            kay[0] = q.RidNavigation.Sort ?? 0;
+                            kay[1] = q.Rid ?? 0;                           
+                            result.TryAdd(kay, factory.CreatePlanMachine(q.RidNavigation));
+                        }
                     }
                 }
-                _machines.AddRange(result);
+                _machines.AddRange(result.Values);
 
                 List<Vorgang> list = new();
                 foreach (PlanMachine m in _machines)
@@ -469,6 +474,18 @@ namespace ModulePlanning.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Closing", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private class ArrayKeyComparer : IComparer<int[]>
+        {
+            public int Compare(int[]? x, int[]? y)
+            {
+                if (x[0].CompareTo(y[0])==0)
+                {
+                    return x[1].CompareTo(y[1]);
+                }
+                return x[0].CompareTo(y[0]);
             }
         }
     }

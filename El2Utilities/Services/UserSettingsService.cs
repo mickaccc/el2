@@ -1,4 +1,7 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
+using System.IO;
+using System.Reflection;
 using System.Windows;
 
 namespace El2Core.Services
@@ -77,7 +80,23 @@ namespace El2Core.Services
 
         public void Upgrade()
         {
-            if(Properties.Settings.Default.UpgradeFlag == true)
+            var fp = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+
+            //if (Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed")?.ToLower() == "false")
+            //{
+                var previous = Environment.GetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", EnvironmentVariableTarget.User);
+                if (previous != null)
+                {
+                    var FileInfo = new FileInfo(fp);
+                    if (FileInfo.DirectoryName != null)
+                    {
+                       if(Directory.Exists(FileInfo.Directory.FullName) == false) {  Directory.CreateDirectory(FileInfo.Directory.FullName); }   
+                       
+                    }
+                }
+                Environment.SetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", fp, EnvironmentVariableTarget.User);
+            //}
+                if (Properties.Settings.Default.UpgradeFlag == true)
             {
                 try
                 {

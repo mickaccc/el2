@@ -60,10 +60,11 @@ namespace ModulePlanning.Planning
             DataObject dt = new();
             
         }
-        public PlanMachine CreatePlanMachine(int Rid, List<Vorgang> processes)
+        public PlanMachine CreatePlanMachine(Ressource res)
         {
-            return new PlanMachine(Rid, processes, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
+            return new PlanMachine(res, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
         }
+
     }
     public interface IPlanMachine
     {
@@ -75,18 +76,18 @@ namespace ModulePlanning.Planning
 
         #region Constructors
 
-        public PlanMachine(int Rid, List<Vorgang> processes, IContainerProvider container, IApplicationCommands applicationCommands,
+        public PlanMachine(Ressource ressource, IContainerProvider container, IApplicationCommands applicationCommands,
             IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
         {
             _container = container;
-            _rId = Rid;
+            _rId = ressource.RessourceId;
             _applicationCommands = applicationCommands;
             _eventAggregator = eventAggregator;
             _settingsService = settingsService;
             _dialogService = dialogService;
             Initialize();
-            Processes.AddRange(processes.OrderBy(x => x.Spos));
-            LoadData();
+            Processes.AddRange(ressource.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.Spos));
+            LoadData(ressource);
             CalculateEndTime();
             ProcessesCV.Refresh();
         }
@@ -183,20 +184,8 @@ namespace ModulePlanning.Planning
         }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
 
-        private void LoadData()
-        {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var res = db.Ressources
-                .Include(x => x.WorkArea)
-                .Include(x => x.WorkSaps)
-                .Include(x => x.RessourceCostUnits)
-                .Include(x => x.Vorgangs)
-                .ThenInclude(x => x.AidNavigation)
-                .ThenInclude(x => x.MaterialNavigation)
-                .Include(x => x.RessourceUsers)
-                .ThenInclude(x => x.Us)
-                .First(x => x.RessourceId == Rid);
-
+        private void LoadData(Ressource res)
+        { 
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
             WorkArea = res.WorkArea;
             Name = res.RessName;
@@ -204,21 +193,8 @@ namespace ModulePlanning.Planning
             Vis = res.Visability;
             Description = res.Info;
             InventNo = res.Inventarnummer;
-            var empl = db.Users
-                .Include(x => x.UserCosts)
-                .ToList();
 
-
-            //for (int i = 0; i < CostUnits?.Count; i++)
-            //{
-            //    foreach (var emp in db.Users.Where(x => x.UserCosts.Any(y => y.CostId == CostUnits[i])
-            //                && x.UserWorkAreas.Any(z => z.WorkAreaId == WorkArea.WorkAreaId)))
-            //    {
-
-            //        if (_shifts.All(x => x.User != emp))
-            //            _shifts.Add(new UserStruct(emp, res.RessourceUsers.Any(x => x.UsId == emp.UserIdent)));
-            //    }
-            //}
+            var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var sh = db.WorkShifts
                 .Include(x => x.RessourceWorkshifts)
                 .ToFrozenSet();
