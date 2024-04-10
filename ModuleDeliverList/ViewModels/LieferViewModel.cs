@@ -20,6 +20,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
+
 namespace ModuleDeliverList.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
@@ -33,6 +34,7 @@ namespace ModuleDeliverList.ViewModels
         public ICommand SortAscCommand => _sortAscCommand ??= new RelayCommand(OnAscSortExecuted);
         public ICommand SortDescCommand => _sortDescCommand ??= new RelayCommand(OnDescSortExecuted);
         public ICommand ProjectPrioCommand { get; private set; }
+        public ICommand CopyClipboardCommand { get; private set; }
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SaveCommand { get; private set; }
@@ -216,6 +218,7 @@ namespace ModuleDeliverList.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             FilterSaveCommand = new ActionCommand(OnFilterSaveExecuted, OnFilterSaveCanExecute);
             ProjectPrioCommand = new ActionCommand(OnSetProjectPrioExecuted, OnSetProjectPrioCanExecute);
+            CopyClipboardCommand = new ActionCommand(OnCopyClipboardExecuted, OnCopyClipboardCanExecute);
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
 
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
@@ -224,6 +227,30 @@ namespace ModuleDeliverList.ViewModels
 
             if (_settingsService.IsAutoSave) SetAutoSave();
 
+        }
+
+        private bool OnCopyClipboardCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnCopyClipboardExecuted(object obj)
+        {
+            TableBuilder t = new TableBuilder();
+            string[] headers = new[]{ "Auftrag", "Ttnr", "Bez", "Text", "Termin"};
+            object[] data = new object[headers.Length];
+            AbstracatBuilder builder = new FlowTableBuilder(headers, data);
+            List<Vorgang> query = OrdersView.Cast<Vorgang>().ToList();
+            var sel = query.Select(x => new string?[]
+            {
+                x.Aid,
+                x.AidNavigation.Material,
+                x.AidNavigation.MaterialNavigation?.Bezeichng,
+                x.Text,
+                x.Termin.ToString(),
+            }).ToList();
+            builder.SetContext((List<string?[]>)sel);
+            t.Build(builder);
         }
 
         private bool OnSetProjectPrioCanExecute(object arg)

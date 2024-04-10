@@ -73,11 +73,15 @@
             </i:Interaction.Triggers>
         </TextBox>
             <Button Command="{Binding FilterDeleteCommand}" ToolTip="alle Filter rücksetzen" Margin="5" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
-            <materialDesign:PackIcon Kind="DeleteEmpty" Width="30" />
-        </Button>
+                <materialDesign:PackIcon Kind="DeleteEmpty" Width="30" />
+            </Button>
+
             <Button Command="{Binding FilterSaveCommand}" ToolTip="Customfilter speichern" Margin="5" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
-            <materialDesign:PackIcon Kind="ContentSaveCog"/>
-        </Button>
+                <materialDesign:PackIcon Kind="ContentSaveCog"/>
+            </Button>
+            <Button Command="{Binding CopyClipboardCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
+                Copy
+            </Button>
 
             <materialDesign:ColorZone DockPanel.Dock="Right"
             FontSize="14"
