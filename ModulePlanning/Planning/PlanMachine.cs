@@ -277,8 +277,12 @@ namespace ModulePlanning.Planning
                             }
                             else if (db.Vorgangs.Find(id)?.Rid == Rid)
                             {
-
-                                    var vo = db.Vorgangs.Find(id);
+                                var vo = db.Vorgangs.AsNoTracking()
+                                    .Include(x => x.AidNavigation)
+                                    .ThenInclude(x => x.MaterialNavigation)
+                                    .Include(x => x.AidNavigation.DummyMatNavigation)
+                                    .Include(x => x.RidNavigation)
+                                    .First(x => x.VorgangId == id);
 
                                 if (vo?.SysStatus?.Contains("RÜCK") == false)
                                 {

@@ -20,13 +20,11 @@
 
     <Grid Margin="10,10,0,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
-
         </Grid.RowDefinitions>
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding RessourcesCV}" AlternatingRowBackground="LightGray"
+        <DataGrid Grid.Row="1" ItemsSource="{Binding RessourcesCV}" AlternatingRowBackground="LightGray"
                   AutoGenerateColumns="False" GridLinesVisibility="Vertical">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" FontWeight="Bold" Binding="{Binding Path=RessName, Mode=TwoWay}"/>
@@ -55,12 +53,12 @@
            
             </DataGrid.Columns>
         </DataGrid>
-        <materialDesign:ColorZone
+        <materialDesign:ColorZone Grid.Row="0"
             Margin="5">
-        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Stretch" Height="35"  VerticalAlignment="Bottom" >
+        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Stretch" >
             <Button  Command="{Binding SaveCommand}">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source= "/Images/DB_Y32.png" Margin="1"/>
+                    <Image Source= "/Images/DB_Y32.png" Margin="1" Height="20"/>
                     <Label Content="Speichern"/>
                 </StackPanel>
             </Button>

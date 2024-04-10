@@ -53,7 +53,7 @@
 
     <Grid.RowDefinitions>
         <RowDefinition Height="50"/>
-        <RowDefinition/>
+        <RowDefinition />
     </Grid.RowDefinitions>
     <DockPanel LastChildFill="False">
         <DockPanel.Background>
@@ -63,8 +63,9 @@
             </LinearGradientBrush>
         </DockPanel.Background>
         <Button Content="Speichern" Command="{Binding SaveCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-        <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Background="White" Padding="10" Text="{Binding SearchFilterText, Mode=OneWay}"
-                 materialDesign:HintAssist.Hint="suchen in Auftragsnr, TTNR, Materialtext">
+        <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Padding="3" Text="{Binding SearchFilterText, Mode=OneWay}"
+                 materialDesign:HintAssist.Hint="suchen in Auftragsnr, TTNR, Materialtext"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Background="{DynamicResource MahApps.Brushes.ThemeBackground}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
                     <i:InvokeCommandAction Command="{Binding TextSearchCommand}" CommandParameter="{Binding Path=Text, ElementName=SearchBox}"/>

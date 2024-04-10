@@ -13,6 +13,7 @@ namespace El2Core.Services
         bool IsAutoSave { get; set; }
         bool IsSaveMessage { get; set; }
         string Theme { get; set; }
+        double FontSize { get; set; }
         bool IsDefaults();
         bool IsChanged { get; }
         void Save();
@@ -42,7 +43,11 @@ namespace El2Core.Services
             get { return Properties.Settings.Default.IsSaveMessage; }
             set { Properties.Settings.Default[nameof(IsSaveMessage)] = value; _isChanged = true; }
         }
-
+        public double FontSize
+        {
+            get { return Properties.Settings.Default.FontSize; }
+            set { Properties.Settings.Default[nameof(FontSize)] = value; _isChanged = true; }
+        }
         public string Theme
         {
             get { return Properties.Settings.Default.Theme; }
@@ -61,6 +66,7 @@ namespace El2Core.Services
         }
         private bool _isChanged;
         public bool IsChanged { get { return _isChanged; } }
+
 
         public void Save()
         {
@@ -81,13 +87,13 @@ namespace El2Core.Services
         public void Upgrade()
         {
             var fp = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
-
-            if (Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed")?.ToLower() == "true")
+            bool.TryParse(Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed"), out bool isNetworkDeployed);
+            if (isNetworkDeployed)
             {
                 var previous = Environment.GetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", EnvironmentVariableTarget.User);
-                if (previous != null)
-                {
-                    var curFileInfo = new FileInfo(fp);
+            if (previous != null)
+            {
+                var curFileInfo = new FileInfo(fp);
                     var preFileInfo = new FileInfo(previous);
 
                     if (curFileInfo.DirectoryName != null)
@@ -97,7 +103,8 @@ namespace El2Core.Services
                         var newFile = previous.Replace(UrlhashOld, UrlhashNew);
                         var newDir = new FileInfo(newFile).Directory;
                         if (newDir.Exists == false) { Directory.CreateDirectory(newDir.FullName); }
-                        File.Copy(previous, newFile, true);
+                        if(previous.Equals(newFile) == false)
+                            File.Copy(previous, newFile, false);
                     }              
                 }
                 Environment.SetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", fp, EnvironmentVariableTarget.User);

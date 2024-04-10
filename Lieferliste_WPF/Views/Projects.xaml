@@ -84,7 +84,7 @@
                     <Button ToolTip="{Binding Name}" Background="Transparent" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             CommandParameter="{Binding}">
-                        <Image Source="{Binding Content}"/>
+                        <Image Source="{Binding Content}" MaxHeight="80"/>
                         <Button.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Anhang löschen"

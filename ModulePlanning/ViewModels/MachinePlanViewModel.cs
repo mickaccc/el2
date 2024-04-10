@@ -98,7 +98,7 @@ namespace ModulePlanning.ViewModels
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
-            _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
+            //_ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             if (_settingsService.IsAutoSave) SetAutoSaveTimer();
 
@@ -122,12 +122,12 @@ namespace ModulePlanning.ViewModels
                                 if (vo.Rid != null)
                                 {
                                     Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
-                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
+                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
                                 }
                                 else
                                 {
                                     Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
-                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
+                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
                                 }
                             }
                         }

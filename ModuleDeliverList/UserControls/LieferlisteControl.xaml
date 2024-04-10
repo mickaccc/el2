@@ -94,6 +94,7 @@
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="MinHeight" Value="20"/>
             <Setter Property="MinWidth" Value="20"/>
+            <Setter Property="MaxWidth" Value="150"/>
         </Style>
         <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource MahApps.Styles.GroupBox}">
             <Setter Property="Grid.RowSpan" Value="3"/>
