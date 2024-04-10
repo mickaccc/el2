@@ -7,7 +7,6 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
@@ -255,22 +254,45 @@ namespace ModulePlanning.ViewModels
  
 
             var proc = await GetVorgangsAsync(null);
-
+            var mach = await _DbCtx.Ressources
+                .Include(x => x.WorkArea)
+                .Include(x => x.RessourceCostUnits)
+                .ToListAsync();
+            var mach2 = new List<Ressource>();
+            foreach( var uc in UserInfo.User.UserCosts)
+            {
+                var m = mach.Where(x => x.RessourceCostUnits.Any(y => y.CostId == uc.CostId));
+                foreach(var mm in m)
+                {
+                    var o = UserInfo.User.UserCosts.IntersectBy(mm.RessourceCostUnits.Select(y => y.CostId), x => x.CostId).Any();
+                    if (o) mach2.Add(mm);
+                }
+                
+            }
+            
             await Task.Factory.StartNew(() =>
             {
                 SortedDictionary<int[], PlanMachine> result = new SortedDictionary<int[], PlanMachine>(new ArrayKeyComparer());
                 lock (_lock)
                 {
                     PlanMachineFactory factory = _container.Resolve<PlanMachineFactory>();
-
-                    foreach (var q in proc)
+                    
+                    foreach (var m in mach2)
                     {
-                        if (q.RidNavigation != null)
+                        var v = proc.FirstOrDefault(x => x.Rid == m.RessourceId);
+                        if (v != null)
                         {
                             int[] kay = new int[2];
-                            kay[0] = q.RidNavigation.Sort ?? 0;
-                            kay[1] = q.Rid ?? 0;                           
-                            result.TryAdd(kay, factory.CreatePlanMachine(q.RidNavigation));
+                            kay[0] = v.RidNavigation.Sort ?? 0;
+                            kay[1] = v.Rid ?? 0;                           
+                            result.TryAdd(kay, factory.CreatePlanMachine(v.RidNavigation));
+                        }
+                        else
+                        {
+                            int[] kay = new int[2];
+                            kay[0] = m.Sort ?? 0;
+                            kay[1] = m.RessourceId;
+                            result.TryAdd(kay, factory.CreatePlanMachine(m));
                         }
                     }
                 }
@@ -350,20 +372,28 @@ namespace ModulePlanning.ViewModels
         }
         private void ProcessCV_Filter(object sender, FilterEventArgs e)
         {
-            Vorgang v = (Vorgang)e.Item;
-            e.Accepted = false;
-            var l = _machines.Where(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
-            if (l.Any(x => x.Rid == v.ArbPlSapNavigation?.RessourceId))
+            try
             {
-                e.Accepted = true;
-                if (!string.IsNullOrWhiteSpace(_searchFilterText))
+                Vorgang v = (Vorgang)e.Item;
+                e.Accepted = false;
+                var l = _machines.Where(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
+                if (l.Any(x => x.Rid == v.ArbPlSapNavigation?.RessourceId))
                 {
-                    if (!(e.Accepted = v.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
-                        if (!(e.Accepted = v.AidNavigation?.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
-                            e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
+                    e.Accepted = true;
+                    if (!string.IsNullOrWhiteSpace(_searchFilterText))
+                    {
+                        if (!(e.Accepted = v.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
+                            if (!(e.Accepted = v.AidNavigation?.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
+                                e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
+                    }
+                    else if (string.IsNullOrWhiteSpace(_searchFilterTextArbPl) == false)
+                        e.Accepted = v.ArbPlSap?.Contains(_searchFilterTextArbPl, StringComparison.CurrentCultureIgnoreCase) ?? false;
                 }
-                else if (string.IsNullOrWhiteSpace(_searchFilterTextArbPl) == false)
-                    e.Accepted = v.ArbPlSap?.Contains(_searchFilterTextArbPl, StringComparison.CurrentCultureIgnoreCase) ?? false;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "ProcessCV Filter", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         public void DragOver(IDropInfo dropInfo)
