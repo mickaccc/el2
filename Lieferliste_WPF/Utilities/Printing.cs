@@ -392,7 +392,7 @@ namespace Lieferliste_WPF.Utilities
             p5.Inlines.Add(new Run("Bemerkung: "));
             p5.Inlines.Add(new Run(vorgang.BemT));
 
-            var h = int.Parse(RuleInfo.Rules.First(x => x.RuleName == "ClimaticWaitTime").RuleValue);
+            var h = int.Parse(RuleInfo.Rules["ClimaticWaitTime"].RuleValue);
             var hh = (vorgang.KlimaPrint.HasValue) ? vorgang.KlimaPrint.Value.AddHours(h).ToString("dd/MM/yy HH:mm:ss") :null;
 
             Paragraph p6 = new Paragraph(new Run(string.Format("Start messen frühestens {0}", hh)));

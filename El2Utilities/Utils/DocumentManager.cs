@@ -9,6 +9,7 @@ using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -51,7 +52,8 @@ namespace El2Core.Utils
             get => parts[key];
             set => parts[key] = value;
         }
-        public IEnumerator enumerator => parts.GetEnumerator();
+
+        public IEnumerator enumerator => this.parts.GetEnumerator();
         public int Count => parts.Count;
         public void FinalizeDocu() { }
     }
@@ -64,24 +66,34 @@ namespace El2Core.Utils
         public override void Build(IContainerExtension container, string ttnr, string orderNr)
         {
             base.container = container;
-            using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var rule = db.Rules.SingleOrDefault(x => x.RuleValue == "M1");
-            if (rule != null)
-            {
-                var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+ 
+            var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
-                TextReader reader = new StringReader(rule.RuleData);
-                List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
-                foreach (var entry in doc)
-                {
-                    DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), (string)entry.Key);
-                    Document[DokuPart] = (string)entry.Value;
-                }
+            TextReader reader = new StringReader(RuleInfo.Rules["FirstPart"].RuleData);
+            List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+            foreach (var entry in doc)
+            {
+                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), (string)entry.Key);
+                Document[DokuPart] = (string)entry.Value;
             }
+            Document[DocumentPart.Order] = orderNr;
+            Document[DocumentPart.TTNR] = ttnr;
+            Regex regex = new Regex(Document[DocumentPart.RegularEx]);
+            Match match2 = regex.Match(ttnr);
+            StringBuilder nsb = new StringBuilder();
+            foreach (Group ma in match2.Groups.Values)
+            {
+                if (ma.Value != ttnr)
+                    nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+            }
+            nsb.Append(orderNr);
+            Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString());
+            FileInfo f = new(Document[DocumentPart.Template]);
+            Document[DocumentPart.File] = new StringBuilder(Document[DocumentPart.SavePath]).Append(Path.DirectorySeparatorChar).Append(f.Name).ToString();
         }
         public override FileInfo GetDataSheet()
         {
-            throw new NotImplementedException();
+            return new FileInfo(Document[DocumentPart.File]);
         }
 
         public override void SaveDocumentData()
@@ -112,14 +124,13 @@ namespace El2Core.Utils
         }
         public static void Serialize(TextWriter writer, Document dictionary)
         {
-            List<Entry> entries = new List<Entry>(dictionary.Count);
-            dictionary.enumerator.MoveNext();
-            do
-            {
-                var curr = dictionary.enumerator.Current;
+            List<Entry> entries = new List<Entry>();
+    
                 
-                entries.Add(new Entry(DocumentPart.Order, dictionary.enumerator.Current));
-            }while(dictionary.enumerator.MoveNext());
+            entries.Add(new Entry(DocumentPart.RootPath, dictionary[DocumentPart.RootPath]));
+            entries.Add(new Entry(DocumentPart.Template, dictionary[DocumentPart.Template]));
+            entries.Add(new Entry(DocumentPart.RegularEx, dictionary[DocumentPart.RegularEx]));
+
             var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
             serializer.Serialize(writer, entries);
         }
@@ -156,7 +167,8 @@ namespace El2Core.Utils
         RegularEx,
         SavePath,
         TTNR,
-        Order
+        Order,
+        File
     }
     public enum DocumentType
     {

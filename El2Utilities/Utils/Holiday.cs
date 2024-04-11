@@ -139,10 +139,7 @@ namespace El2Core.Utils
             #region fillList
             Dictionary<DateOnly, Holiday> dict = new();
 
-            
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var holis = db.Rules.Find(3);
-            StringReader reader = new StringReader(holis.RuleData);
+            StringReader reader = new StringReader(RuleInfo.Rules["Feiertage"].RuleData);
             var serializer = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
             var holiRule = (CloseAndHolidayRule)serializer.Deserialize(reader);
             for (int i = year; i <= year + 1; i++)

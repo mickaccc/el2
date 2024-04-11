@@ -656,7 +656,7 @@ namespace Lieferliste_WPF.ViewModels
             var Doc = _container.Resolve<DocumentManager>();
             Doc.Construct(new MeasureFirstPartBuilder(), "F00", "2100");
             
-            Doc.SaveDocumentData("C:\\Users\\mgsch\\Documents\\Mess", "C:\\Users\\mgsch\\Documents\\Mess\\Vorlage\\Messblatt_1.Gutteil.xlsm", "^(\\w{4})(\\w{3})(\\w+),[TTNR],,[AID]");
+            Doc.SaveDocumentData("C:\\Users\\mgsch\\Documents\\Mess", "C:\\Users\\mgsch\\Documents\\Mess\\Vorlage\\Messblatt_1.Gutteil.xlsm", "^(\\w{4})(\\w{3})(\\w+)");
 
             //using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             //{

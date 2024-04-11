@@ -33,10 +33,10 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Border>
-        <TextBox Grid.Column="1" Text="{Binding OrderSearch, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource MahApps.Styles.TextBox}">
+        <TextBox Grid.Column="1" x:Name="searchOrd" Style="{DynamicResource MahApps.Styles.TextBox}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
-                    <i:InvokeCommandAction Command="{Binding SearchChangedCommand}"/>
+                    <i:InvokeCommandAction Command="{Binding SearchChangedCommand}" CommandParameter="{Binding Text, ElementName=searchOrd}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>

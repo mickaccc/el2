@@ -1,18 +1,11 @@
-﻿using El2Core.Constants;
-using El2Core.Models;
+﻿using El2Core.Models;
 using El2Core.Utils;
-using El2Core.ViewModelBase;
 using Prism.Ioc;
 using System;
-using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Xml;
 using System.Xml.Serialization;
 using static El2Core.Constants.ShiftTypes;
 

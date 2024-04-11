@@ -107,11 +107,9 @@ namespace Lieferliste_WPF.ViewModels
         private bool _isChanged;
         void LoadData()
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var holi = db.Rules.First(x => x.RuleValue == "Holi");
             var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
 
-            TextReader reader = new StringReader(holi.RuleData);
+            TextReader reader = new StringReader(RuleInfo.Rules["Feiertage"].RuleData);
             CloseAndHolidayRule result;
             result = (CloseAndHolidayRule)xml.Deserialize(reader);
 

@@ -3,12 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
-using System.Formats.Asn1;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace El2Core.Utils
 
 {
+    public interface IGlobals
+    {
+        static string PC { get; }
+        static User User { get; }
+    }
     public class Globals : IGlobals, IDisposable
     {
         public User User { get; private set; }
@@ -42,19 +47,35 @@ namespace El2Core.Utils
                 .Single(x => x.UserIdent == us);
 
                 User = u;
-
-                Rules ??= new();
-                foreach (var rule in db.Rules)
-                { 
-                    var r = new Rule() { RuleId = rule.RuleId, RuleName = rule.RuleName.Trim(), RuleValue = rule.RuleValue };
-                    Rules.Add(r);
-                }
+                Rules = db.Rules.ToList(); 
             }
         }
 
         public void Dispose()
         {
 
+        }
+    }
+    public readonly struct UserInfo
+    {
+        public static string? PC => _PC ?? string.Empty;
+        public static User User => _User;
+
+        private static string? _PC;
+        private static User _User;
+
+        public void Initialize(string PC, User Usr)
+        {
+            _PC = PC;
+            _User = Usr;
+        }
+    }
+    public readonly struct RuleInfo
+    {
+        public static ImmutableDictionary<string, Rule> Rules { get; private set; } = ImmutableDictionary<string, Rule>.Empty;
+        public RuleInfo(List<Rule> rules)
+        {
+            Rules = rules.ToImmutableDictionary(x => x.RuleName.Trim(), x => x);   
         }
     }
 }

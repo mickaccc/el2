@@ -32,15 +32,14 @@ namespace ModuleMeasuring.ViewModels
         public ICommand? PruefDataCommand { get; private set; }
         private RelayCommand? _searchChanged;
         public RelayCommand SearchChangedCommand => _searchChanged ??= new RelayCommand(onSearchChanged);
-        private string _rootPath;
         private List<OrderRb> _orders;
         public ICollectionView OrderList { get { return orderViewSource.View; } }
         private CollectionViewSource orderViewSource { get; } = new();
-        public string OrderSearch { get; set; }
+        private string _orderSearch { get; set; }
         private void LoadData()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            _rootPath = db.Rules.Single<Rule>(x => x.RuleName == "RootPath").RuleValue;
+
             _orders = new();
             var ord = db.OrderRbs
                 .Include(x => x.MaterialNavigation)
@@ -51,8 +50,12 @@ namespace ModuleMeasuring.ViewModels
         }
         private void onSearchChanged(object obj)
         {
-            if(OrderSearch.Length > 3)
-                OrderList.Refresh();
+            if (obj is string s)
+                if (s.Length > 3)
+                {
+                    _orderSearch = s;
+                    OrderList.Refresh();
+                }
         }
         private bool onPruefCanExecute(object arg)
         {
@@ -61,7 +64,11 @@ namespace ModuleMeasuring.ViewModels
 
         private void onPruefExecuted(object obj)
         {
-            var mes = _orders.First(x => x.Aid == OrderSearch);
+            var mes = _orders.First(x => x.Aid == _orderSearch);
+            DocumentManager documentManager = _container.Resolve<DocumentManager>();
+            DocumentBuilder builder = new MeasureFirstPartBuilder();
+            documentManager.Construct(builder, mes.Material, mes.Aid);
+            
         }
         private bool onVmpbCanExecute(object arg)
         {
@@ -73,10 +80,10 @@ namespace ModuleMeasuring.ViewModels
         }
         private void onFilterPredicate(object sender, FilterEventArgs e)
         {
-            if (!string.IsNullOrEmpty(OrderSearch))
+            if (!string.IsNullOrEmpty(_orderSearch))
             {
                 OrderRb ord = (OrderRb)e.Item;
-                e.Accepted = ord.Aid.Contains(OrderSearch, StringComparison.OrdinalIgnoreCase);
+                e.Accepted = ord.Aid.Contains(_orderSearch, StringComparison.OrdinalIgnoreCase);
             }
         }
         public void DragOver(IDropInfo dropInfo)
