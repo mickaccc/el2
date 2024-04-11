@@ -216,15 +216,13 @@ namespace ModulePlanning.Planning
             ProcessesCVSource.Source = Processes;
             ProcessesCVSource.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             ProcessesCVSource.IsLiveSortingRequested = true;
-            //ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
 
-            //var live = ProcessesCV as ICollectionViewLiveShaping;
-            //if (live != null)
-            //{
-            //    live.IsLiveSorting = false;
-            //    live.LiveFilteringProperties.Add("SysStatus");
-            //    live.IsLiveFiltering = true;
-            //}
+            var live = ProcessesCV as ICollectionViewLiveShaping;
+            if (live != null)
+            {
+                live.IsLiveSorting = false;
+                live.IsLiveFiltering = false;
+            }
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);

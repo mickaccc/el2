@@ -259,17 +259,11 @@ namespace ModulePlanning.ViewModels
                 .Include(x => x.RessourceCostUnits)
                 .ToListAsync();
             var mach2 = new List<Ressource>();
-            foreach( var uc in UserInfo.User.UserCosts)
+            foreach (var uc in UserInfo.User.UserWorkAreas)
             {
-                var m = mach.Where(x => x.RessourceCostUnits.Any(y => y.CostId == uc.CostId));
-                foreach(var mm in m)
-                {
-                    var o = UserInfo.User.UserCosts.IntersectBy(mm.RessourceCostUnits.Select(y => y.CostId), x => x.CostId).Any();
-                    if (o) mach2.Add(mm);
-                }
-                
+                mach2.AddRange(mach.Where(x => uc.WorkAreaId == x.WorkAreaId));
             }
-            
+
             await Task.Factory.StartNew(() =>
             {
                 SortedDictionary<int[], PlanMachine> result = new SortedDictionary<int[], PlanMachine>(new ArrayKeyComparer());

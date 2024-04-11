@@ -77,6 +77,7 @@
   <ItemGroup>
     <None Remove="appsettings.json" />
     <None Remove="CodeMetricsConfig.txt" />
+    <None Remove="flowdocumenttoxhtml.xslt" />
     <None Remove="Images\1602309.png" />
     <None Remove="Images\3160908.png" />
     <None Remove="Images\AboutLogo.png" />
@@ -190,6 +191,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="flowdocumenttoxhtml.xslt" />
     <Resource Include="Images\1602309.png" />
     <Resource Include="Images\3160908.png" />
     <Resource Include="Images\AboutLogo.png" />

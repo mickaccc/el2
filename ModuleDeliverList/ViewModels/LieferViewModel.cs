@@ -5,6 +5,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
+using ModuleDeliverList.Views;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -12,13 +13,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Windows.ApplicationModel.DataTransfer;
 
 
 namespace ModuleDeliverList.ViewModels
@@ -231,15 +235,14 @@ namespace ModuleDeliverList.ViewModels
 
         private bool OnCopyClipboardCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CopyClipboard);
         }
 
         private void OnCopyClipboardExecuted(object obj)
         {
             TableBuilder t = new TableBuilder();
-            string[] headers = new[]{ "Auftrag", "Ttnr", "Bez", "Text", "Termin"};
-            object[] data = new object[headers.Length];
-            AbstracatBuilder builder = new FlowTableBuilder(headers, data);
+            string[] headers = new[]{ "Auftragsnummer", "Material", "Bezeichnng", "Kurztext", "Termin"};
+            AbstracatBuilder builder = new FlowTableBuilder(headers);
             List<Vorgang> query = OrdersView.Cast<Vorgang>().ToList();
             var sel = query.Select(x => new string?[]
             {
@@ -251,6 +254,48 @@ namespace ModuleDeliverList.ViewModels
             }).ToList();
             builder.SetContext((List<string?[]>)sel);
             t.Build(builder);
+            DataPackage data = new DataPackage();
+            string htmlFormat = Windows.ApplicationModel.DataTransfer.HtmlFormatHelper.CreateHtmlFormat(builder.GetResult("HTML"));
+            data.SetText(htmlFormat);
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(data);
+
+            Window docView = new FlowDocumentViewer();
+            docView.DataContext = builder.GetDoc();
+            docView.Show();
+        }
+        // This method accepts an input stream and a corresponding data format.  The method
+        // will attempt to load the input stream into a TextRange selection, apply Bold formatting
+        // to the selection, save the reformatted selection to an alternat stream, and return 
+        // the reformatted stream.  
+        Stream BoldFormatStream(Stream inputStream, string dataFormat)
+        {
+            // A text container to read the stream into.
+            FlowDocument workDoc = new FlowDocument();
+            TextRange selection = new TextRange(workDoc.ContentStart, workDoc.ContentEnd);
+            Stream outputStream = new MemoryStream();
+
+            try
+            {
+                // Check for a valid data format, and then attempt to load the input stream
+                // into the current selection.  Note that CanLoad ONLY checks whether dataFormat
+                // is a currently supported data format for loading a TextRange.  It does not 
+                // verify that the stream actually contains the specified format.  An exception 
+                // may be raised when there is a mismatch between the specified data format and 
+                // the data in the stream. 
+                if (selection.CanLoad(dataFormat))
+                    selection.Load(inputStream, dataFormat);
+            }
+            catch (Exception e) { return outputStream; /* Load failure; return a null stream. */ }
+
+            // Apply Bold formatting to the selection, if it is not empty.
+            if (!selection.IsEmpty)
+                selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+
+            // Save the formatted selection to a stream, and return the stream.
+            if (selection.CanSave(dataFormat))
+                selection.Save(outputStream, dataFormat);
+
+            return outputStream;
         }
 
         private bool OnSetProjectPrioCanExecute(object arg)
@@ -570,6 +615,7 @@ namespace ModuleDeliverList.ViewModels
                .Include(v => v.ArbPlSapNavigation)
                .Where(x => x.AidNavigation.Abgeschlossen == false)
                .ToListAsync();
+            
             var ress = await DBctx.Ressources.AsNoTracking()
                 .Include(x => x.WorkArea)
                 .ToArrayAsync();

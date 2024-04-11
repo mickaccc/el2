@@ -76,5 +76,6 @@
         public const string AddPruefDoc = "PRUEFDATA";
         public const string AddVmpb = "ADDVMPB";
         public const string OpenMeaOper = "MEA03";
+        public const string CopyClip = "COPYCLIP01";
     }
 }
