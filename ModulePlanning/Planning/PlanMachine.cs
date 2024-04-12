@@ -411,7 +411,7 @@ namespace ModulePlanning.Planning
         private void setTextToClipboard(string text)
         {
             System.Windows.Clipboard.SetText(text);
-            Task.Delay(250).Wait();          
+            Task.Delay(500).Wait();          
         }
 
         private static bool OnSetMarkerCanExecute(object arg)

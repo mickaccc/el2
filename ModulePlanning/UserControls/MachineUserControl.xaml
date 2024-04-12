@@ -207,6 +207,7 @@
 									Header="Vorg"
 									IsReadOnly="True"
 									Width="Auto"/>
+                <DataGridTextColumn Binding="{Binding Spos}" IsReadOnly="True"/>
 
             </DataGrid.Columns>
 		</DataGrid>

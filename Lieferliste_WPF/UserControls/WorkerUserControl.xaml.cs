@@ -38,6 +38,5 @@ namespace Lieferliste_WPF.Planning
                 dtx.ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
             }
         }
-
     }
 }

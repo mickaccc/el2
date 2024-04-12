@@ -28,9 +28,13 @@ namespace El2Core.Utils
         {
             builder?.SaveDocumentData(rootPath, template, RegEx);
         }
-        public void FinalzeDocument()
+        public void Collect()
         {
-            builder?.Document.FinalizeDocu();
+            var dir = Directory.EnumerateDirectories(builder?.Document[DocumentPart.SavePath]);
+            foreach (var dirEntry in dir)
+            {
+                var d = dirEntry;
+            }
         }
     }
     public abstract class DocumentBuilder(DocumentType documentType)
@@ -52,10 +56,7 @@ namespace El2Core.Utils
             get => parts[key];
             set => parts[key] = value;
         }
-
-        public IEnumerator enumerator => this.parts.GetEnumerator();
         public int Count => parts.Count;
-        public void FinalizeDocu() { }
     }
     public class MeasureFirstPartBuilder : DocumentBuilder
     {
@@ -66,14 +67,14 @@ namespace El2Core.Utils
         public override void Build(IContainerExtension container, string ttnr, string orderNr)
         {
             base.container = container;
- 
+            if (RuleInfo.Rules.Keys.Contains("FirstPart") == false) return;
             var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
             TextReader reader = new StringReader(RuleInfo.Rules["FirstPart"].RuleData);
             List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
             foreach (var entry in doc)
             {
-                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), (string)entry.Key);
+                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
                 Document[DokuPart] = (string)entry.Value;
             }
             Document[DocumentPart.Order] = orderNr;
@@ -109,12 +110,9 @@ namespace El2Core.Utils
 
             if(rule == null) { rule = new(); rule.RuleName = "FirstPart"; rule.RuleValue = "M1"; db.Rules.Add(rule); }
             var dict = new Dictionary<string, string>();
-            dict.Add(DocumentPart.RootPath.ToString(), rootPath);
-            dict.Add(DocumentPart.Template.ToString(), template);
-            dict.Add(DocumentPart.RegularEx.ToString(), RegEx);
-            //Document[DocumentPart.RootPath] = rootPath;
-            //Document[DocumentPart.Template] = template;
-            //Document[DocumentPart.RegularEx] = RegEx;
+            Document[DocumentPart.RootPath] = rootPath;
+            Document[DocumentPart.Template] = template;
+            Document[DocumentPart.RegularEx] = RegEx;
 
             StringWriter sw = new StringWriter();
             Serialize(sw, Document);
@@ -122,7 +120,7 @@ namespace El2Core.Utils
             
             db.SaveChanges();
         }
-        public static void Serialize(TextWriter writer, Document dictionary)
+        private static void Serialize(TextWriter writer, Document dictionary)
         {
             List<Entry> entries = new List<Entry>();
     
@@ -134,7 +132,7 @@ namespace El2Core.Utils
             var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
             serializer.Serialize(writer, entries);
         }
-        public static void Deserialize(TextReader reader, IDictionary dictionary)
+        private static void Deserialize(TextReader reader, IDictionary dictionary)
         {
             dictionary.Clear();
             XmlSerializer serializer = new XmlSerializer(typeof(List<Entry>));
@@ -174,6 +172,56 @@ namespace El2Core.Utils
     {
         MeasureFirstPart,
         MeasureVMPB
+    }
+
+    /// <summary>
+    /// Generic tree node class
+    /// </summary>
+    /// <typeparam name="T">Node type</typeparam>
+    public class DirNode<T> where T : IComparable<T>
+    {
+        // Add a child tree node
+        public DirNode<T> Add(T child)
+        {
+            var newNode = new DirNode<T> { Node = child };
+            Children.Add(newNode);
+            return newNode;
+        }
+        // Remove a child tree node
+        public void Remove(T child)
+        {
+            foreach (var dirNode in Children)
+            {
+                if (dirNode.Node.CompareTo(child) == 0)
+                {
+                    Children.Remove(dirNode);
+                    return;
+                }
+            }
+        }
+        // Gets or sets the node
+        public T Node { get; set; } = default!;
+        // Gets treenode children
+        public List<DirNode<T>> Children { get; } = [];
+        // Recursively displays node and its children 
+        public static void Display(DirNode<T> node, int indentation)
+        {
+            var line = new string('-', indentation);
+            //WriteLine(line + " " + node.Node);
+            node.Children.ForEach(n => Display(n, indentation + 1));
+        }
+    }
+    /// <summary>
+    /// Shape class
+    /// <remarks>
+    /// Implements generic IComparable interface
+    /// </remarks>
+    /// </summary>
+    public class Shape(string name) : IComparable<Shape>
+    {
+        public override string ToString() => name;
+        // IComparable<Shape> Member
+        public int CompareTo(Shape? other) => (this == other) ? 0 : -1;
     }
 
 }

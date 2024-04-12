@@ -40,6 +40,12 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OrderList}"/>
+        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OrderList}" IsReadOnly="True" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding Aid}"/>
+                <DataGridTextColumn Header="Material" Binding="{Binding Material}"/>
+                <DataGridTextColumn Header="Bezeichnung" Binding="{Binding MaterialNavigation.Bezeichng}"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>
