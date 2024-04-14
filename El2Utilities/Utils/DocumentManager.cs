@@ -30,11 +30,7 @@ namespace El2Core.Utils
         }
         public void Collect()
         {
-            var dir = Directory.EnumerateDirectories(builder?.Document[DocumentPart.SavePath]);
-            foreach (var dirEntry in dir)
-            {
-                var d = dirEntry;
-            }
+            builder?.Collect();
         }
     }
     public abstract class DocumentBuilder(DocumentType documentType)
@@ -45,6 +41,7 @@ namespace El2Core.Utils
         public abstract FileInfo GetDataSheet();
         public abstract void SaveDocumentData();
         public abstract void SaveDocumentData(string rootPath, string template, string RegEx);
+        public abstract void Collect();
     }
 
     public class Document(DocumentType documentType)
@@ -60,10 +57,9 @@ namespace El2Core.Utils
     }
     public class MeasureFirstPartBuilder : DocumentBuilder
     {
-        
+        public CompositeNode<Shape> Root { get; private set; }
         public MeasureFirstPartBuilder() : base(DocumentType.MeasureFirstPart)
         { }
-
         public override void Build(IContainerExtension container, string ttnr, string orderNr)
         {
             base.container = container;
@@ -77,17 +73,22 @@ namespace El2Core.Utils
                 DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
                 Document[DokuPart] = (string)entry.Value;
             }
+            Root = new CompositeNode<Shape> { Node = new Shape(Document[DocumentPart.RootPath]) };
             Document[DocumentPart.Order] = orderNr;
             Document[DocumentPart.TTNR] = ttnr;
             Regex regex = new Regex(Document[DocumentPart.RegularEx]);
             Match match2 = regex.Match(ttnr);
             StringBuilder nsb = new StringBuilder();
-            foreach (Group ma in match2.Groups.Values)
+            foreach (Group ma in match2.Groups.Values.Skip(1))
             {
                 if (ma.Value != ttnr)
+                {
                     nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                    Root.Add(new Shape(ma.Value));
+                }
             }
             nsb.Append(orderNr);
+            Root.Add(new (orderNr));
             Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString());
             FileInfo f = new(Document[DocumentPart.Template]);
             Document[DocumentPart.File] = new StringBuilder(Document[DocumentPart.SavePath]).Append(Path.DirectorySeparatorChar).Append(f.Name).ToString();
@@ -142,6 +143,19 @@ namespace El2Core.Utils
                 dictionary[entry.Key] = entry.Value;
             }
         }
+
+        public override void Collect()
+        {
+            string path = Root.Node.ToString();
+            if (!Directory.Exists(path)) return;
+            List<CompositeNode<Shape>>? listdir = Root.Children;
+
+            for (int i = 0; i < listdir?.Count; i++)
+            {
+                path = Path.Combine(path, listdir[i].Node.ToString());
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            }
+        }
     }
 
     public class Entry
@@ -178,23 +192,23 @@ namespace El2Core.Utils
     /// Generic tree node class
     /// </summary>
     /// <typeparam name="T">Node type</typeparam>
-    public class DirNode<T> where T : IComparable<T>
+    public class CompositeNode<T> where T : IComparable<T>
     {
         // Add a child tree node
-        public DirNode<T> Add(T child)
+        public CompositeNode<T> Add(T child)
         {
-            var newNode = new DirNode<T> { Node = child };
+            var newNode = new CompositeNode<T> { Node = child };
             Children.Add(newNode);
             return newNode;
         }
         // Remove a child tree node
         public void Remove(T child)
         {
-            foreach (var dirNode in Children)
+            foreach (var compositeNode in Children)
             {
-                if (dirNode.Node.CompareTo(child) == 0)
+                if (compositeNode.Node.CompareTo(child) == 0)
                 {
-                    Children.Remove(dirNode);
+                    Children.Remove(compositeNode);
                     return;
                 }
             }
@@ -202,9 +216,9 @@ namespace El2Core.Utils
         // Gets or sets the node
         public T Node { get; set; } = default!;
         // Gets treenode children
-        public List<DirNode<T>> Children { get; } = [];
+        public List<CompositeNode<T>> Children { get; } = [];
         // Recursively displays node and its children 
-        public static void Display(DirNode<T> node, int indentation)
+        public static void Display(CompositeNode<T> node, int indentation)
         {
             var line = new string('-', indentation);
             //WriteLine(line + " " + node.Node);

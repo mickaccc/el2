@@ -19,8 +19,6 @@ namespace Lieferliste_WPF.Planning
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            //PlanMachine? pl = DataContext as PlanMachine;
-            //pl?.Exit();
         }
 
         private void HideDetails_Click(object sender, RoutedEventArgs e)

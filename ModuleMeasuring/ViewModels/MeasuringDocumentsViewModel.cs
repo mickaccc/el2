@@ -69,10 +69,10 @@ namespace ModuleMeasuring.ViewModels
             DocumentBuilder builder = new MeasureFirstPartBuilder();
             documentManager.Construct(builder, mes.Material, mes.Aid);
             documentManager.Collect();
-            Microsoft.Office.Interop.Excel.Application excel = new();
+            //Microsoft.Office.Interop.Excel.Application excel = new();
             
-            Microsoft.Office.Interop.Excel.Workbook wb = excel.Workbooks.Open(builder.Document[DocumentPart.Template]);
-            wb.Activate();
+            //Microsoft.Office.Interop.Excel.Workbook wb = excel.Workbooks.Open(builder.Document[DocumentPart.Template]);
+            //wb.Activate();
         }
         private bool onVmpbCanExecute(object arg)
         {

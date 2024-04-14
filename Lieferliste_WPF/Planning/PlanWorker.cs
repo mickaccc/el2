@@ -311,8 +311,6 @@ namespace Lieferliste_WPF.Planning
                 for (var i = 0; i < p.Count; i++)
                 {
                     p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
-                    p[i].Spos = i;
-
                 }
                 vrg.UserVorgangs.Add(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
 

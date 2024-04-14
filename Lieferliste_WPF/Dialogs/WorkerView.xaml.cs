@@ -12,8 +12,6 @@ namespace Lieferliste_WPF.Dialogs
     /// </summary>
     public partial class WorkerView : UserControl
     {
-
-
         public string BemTInfo
         {
             get { return (string)GetValue(BemTInfoProperty); }
@@ -24,12 +22,10 @@ namespace Lieferliste_WPF.Dialogs
         public static readonly DependencyProperty BemTInfoProperty =
             DependencyProperty.Register("BemTInfo", typeof(string), typeof(WorkerView), new PropertyMetadata(""));
 
-
         public WorkerView()
         {
             InitializeComponent();
         }
-
 
         private void Process_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
@@ -48,7 +44,6 @@ namespace Lieferliste_WPF.Dialogs
                 (dgtc.Binding as Binding).Converter = con;
             }
         }
-
 
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
