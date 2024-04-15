@@ -93,7 +93,7 @@ namespace El2Core.Utils
             }
             Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString());
             FileInfo f = new(Document[DocumentPart.Template]);
-            Document[DocumentPart.File] = new StringBuilder(Document[DocumentPart.SavePath]).Append(Path.DirectorySeparatorChar).Append(f.Name).ToString();
+            Document[DocumentPart.File] = Path.Combine(Document[DocumentPart.SavePath], f.Name.Replace("Messblatt", ttnr));
         }
         public override FileInfo GetDataSheet()
         {

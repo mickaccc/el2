@@ -23,7 +23,7 @@
             <Button Content="Vormusterpüfbericht" Command="{Binding VmpbCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
         <Border Grid.Row="1">
-            <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}"  
+            <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding MaterialItems}" 
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
                 <ItemsControl.ItemsPanel>
@@ -31,9 +31,14 @@
                         <WrapPanel/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Border>
-        <TextBox Grid.Column="1" x:Name="searchOrd" Style="{DynamicResource MahApps.Styles.TextBox}">
+        <TextBox Grid.Column="1" x:Name="searchOrd" Style="{DynamicResource MahApps.Styles.TextBox}" Text="{Binding OrderSearch}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
                     <i:InvokeCommandAction Command="{Binding SearchChangedCommand}" CommandParameter="{Binding Text, ElementName=searchOrd}"/>
@@ -46,6 +51,12 @@
                 <DataGridTextColumn Header="Material" Binding="{Binding Material}"/>
                 <DataGridTextColumn Header="Bezeichnung" Binding="{Binding MaterialNavigation.Bezeichng}"/>
             </DataGrid.Columns>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding SelectionCommand}"
+                                           CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </DataGrid>
     </Grid>
 </UserControl>

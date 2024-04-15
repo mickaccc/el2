@@ -5,10 +5,11 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Office.Interop.Excel;
+//using Microsoft.Office.Interop.Excel;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace ModuleMeasuring.ViewModels
             VmpbCommand = new ActionCommand(onVmpbExecuted, onVmpbCanExecute);
             PruefDataCommand = new ActionCommand(onPruefExecuted, onPruefCanExecute);
             LoadData();
-           orderViewSource.Filter += onFilterPredicate;
+            orderViewSource.Filter += onFilterPredicate;
         }
 
         IContainerExtension _container;
@@ -34,10 +35,26 @@ namespace ModuleMeasuring.ViewModels
         public ICommand? PruefDataCommand { get; private set; }
         private RelayCommand? _searchChanged;
         public RelayCommand SearchChangedCommand => _searchChanged ??= new RelayCommand(onSearchChanged);
+        private RelayCommand? _selectionCommand;
+        public RelayCommand SelectionCommand => _selectionCommand ??= new RelayCommand(onSelectionChanged);
         private List<OrderRb> _orders;
         public ICollectionView OrderList { get { return orderViewSource.View; } }
         private CollectionViewSource orderViewSource { get; } = new();
-        private string _orderSearch { get; set; }
+        private ObservableCollection<string> _MaterialItems = [];
+        public ICollectionView MaterialItems { get; private set; }
+        private string _orderSearch;
+        public string OrderSearch
+        {
+            get { return _orderSearch; }
+            set
+            {
+                if (_orderSearch != value)
+                {
+                    _orderSearch = value;
+                    NotifyPropertyChanged(() => OrderSearch);
+                }
+            }
+        }
         private void LoadData()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -49,6 +66,8 @@ namespace ModuleMeasuring.ViewModels
                 .Where(x => x.Abgeschlossen == false);
             _orders.AddRange(ord);
             orderViewSource.Source = _orders;
+
+            MaterialItems = CollectionViewSource.GetDefaultView(_MaterialItems);
         }
         private void onSearchChanged(object obj)
         {
@@ -58,6 +77,14 @@ namespace ModuleMeasuring.ViewModels
                     _orderSearch = s;
                     OrderList.Refresh();
                 }
+        }
+        private void onSelectionChanged(object obj)
+        {
+            if(obj is OrderRb o)
+            {
+                OrderSearch = o.Aid;
+                OrderList.Refresh();
+            }
         }
         private bool onPruefCanExecute(object arg)
         {
@@ -71,25 +98,28 @@ namespace ModuleMeasuring.ViewModels
             DocumentBuilder builder = new MeasureFirstPartBuilder();
             documentManager.Construct(builder, mes.Material);
             var target = documentManager.Collect();
+            _MaterialItems.Clear();
+            _MaterialItems.AddRange(Directory.GetFiles(target));
             FileInfo file = new FileInfo(builder.Document[DocumentPart.Template]);
-            var targ = Path.Combine(target, file.Name.Replace("Messblatt", mes.Material));
-            File.Copy(file.FullName, targ);
+            var targ = builder.GetDataSheet();
+            //if(!targ.Exists)
+               // File.Copy(file.FullName, targ.FullName);
         
-            Microsoft.Office.Interop.Excel.Application excel = new();
-            Microsoft.Office.Interop.Excel.Workbook wb = excel.Workbooks.Open(targ, ReadOnly: false, Editable: true);
-            Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
-            if (worksheet != null )
-            {
-                Microsoft.Office.Interop.Excel.Range row1 = worksheet.Rows.Cells[3, 3];
-                Microsoft.Office.Interop.Excel.Range row2 = worksheet.Rows.Cells[3, 10];
-                Microsoft.Office.Interop.Excel.Range row3 = worksheet.Rows.Cells[4, 3];
+            //Microsoft.Office.Interop.Excel.Application excel = new();
+            //Microsoft.Office.Interop.Excel.Workbook wb = excel.Workbooks.Open(targ, ReadOnly: false, Editable: true);
+            //Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
+            //if (worksheet != null )
+            //{
+            //    Microsoft.Office.Interop.Excel.Range row1 = worksheet.Rows.Cells[3, 3];
+            //    Microsoft.Office.Interop.Excel.Range row2 = worksheet.Rows.Cells[3, 10];
+            //    Microsoft.Office.Interop.Excel.Range row3 = worksheet.Rows.Cells[4, 3];
 
-                row1.Value = mes.MaterialNavigation.Bezeichng;
-                row2.Value = mes.Material;
-                row3.Value = mes.Aid;
-                excel.ActiveWorkbook.Save();
-                excel.Quit();
-            }
+            //    row1.Value = mes.MaterialNavigation.Bezeichng;
+            //    row2.Value = mes.Material;
+            //    row3.Value = mes.Aid;
+            //    excel.ActiveWorkbook.Save();
+            //    excel.Quit();
+            //}
         }
         private bool onVmpbCanExecute(object arg)
         {
