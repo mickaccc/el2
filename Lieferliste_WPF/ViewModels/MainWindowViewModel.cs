@@ -4,12 +4,9 @@ using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Lieferliste_WPF.Dialogs.ViewModels;
-using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ModulePlanning.Dialogs.ViewModels;
 using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
@@ -17,7 +14,6 @@ using Prism.Regions;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -653,13 +649,27 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void DbOperations()
         {
-            var Doc = _container.Resolve<DocumentManager>();
-            Doc.Construct(new MeasureFirstPartBuilder(), "F00", "2100");
-            
-            Doc.SaveDocumentData("C:\\Users\\mgsch\\Documents\\Mess", "C:\\Users\\mgsch\\Documents\\Mess\\Vorlage\\Messblatt_1.Gutteil.xlsm", "^(\\w{4})(\\w{3})(\\w+)");
 
-            //using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-            //{
+            //var Doc = _container.Resolve<DocumentManager>();
+            //Doc.Construct(new MeasureFirstPartBuilder(), "F00", "2100");
+
+            //Doc.SaveDocumentData("C:\\Users\\mgsch\\Documents\\Mess", "C:\\Users\\mgsch\\Documents\\Mess\\Vorlage\\Messblatt_1.Gutteil.xlsm", "^(\\w{4})(\\w{3})(\\w+)");
+
+            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            {
+                var vorg = db.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK"));
+                foreach (var v in vorg)
+                {
+                    v.SortPos = "Z";
+                }
+                var vrg = db.Vorgangs.Where(x => x.Rid != null);
+                foreach (var v in vrg)
+                {
+                    var st = string.Format("{0,4:0}_{1,3:0}", v.Rid?.ToString("D3"), v.Spos?.ToString("D3"));
+                    v.SortPos = st;
+                }
+                db.SaveChanges();
+            }
             //    var ch = new CloseAndHolidayRule();
 
 

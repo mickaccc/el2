@@ -19,29 +19,34 @@ namespace El2Core.Utils
     {
         
         private DocumentBuilder? builder;
-        public void Construct(DocumentBuilder Docubuilder, string TTNR, string OrderNr)
+        public void Construct(DocumentBuilder Docubuilder, string TTNR)
         {
             builder = Docubuilder;
-            builder.Build(container, TTNR, OrderNr);
+            builder.Build(container, TTNR);
         }
         public void SaveDocumentData(string rootPath, string template, string RegEx)
         {
             builder?.SaveDocumentData(rootPath, template, RegEx);
         }
-        public void Collect()
+        public string Collect()
         {
-            builder?.Collect();
+            return builder?.Collect();
+        }
+        public string Collect(string target)
+        {
+            return builder?.Collect(target);
         }
     }
     public abstract class DocumentBuilder(DocumentType documentType)
     {
         public IContainerExtension container;
         public Document Document { get; private set; } = new Document(documentType);
-        public abstract void Build(IContainerExtension container, string ttnr, string OrderNr);
+        public abstract void Build(IContainerExtension container, string ttnr);
         public abstract FileInfo GetDataSheet();
         public abstract void SaveDocumentData();
         public abstract void SaveDocumentData(string rootPath, string template, string RegEx);
-        public abstract void Collect();
+        public abstract string Collect();
+        public abstract string Collect(string target);
     }
 
     public class Document(DocumentType documentType)
@@ -60,7 +65,7 @@ namespace El2Core.Utils
         public CompositeNode<Shape> Root { get; private set; }
         public MeasureFirstPartBuilder() : base(DocumentType.MeasureFirstPart)
         { }
-        public override void Build(IContainerExtension container, string ttnr, string orderNr)
+        public override void Build(IContainerExtension container, string ttnr)
         {
             base.container = container;
             if (RuleInfo.Rules.Keys.Contains("FirstPart") == false) return;
@@ -74,7 +79,6 @@ namespace El2Core.Utils
                 Document[DokuPart] = (string)entry.Value;
             }
             Root = new CompositeNode<Shape> { Node = new Shape(Document[DocumentPart.RootPath]) };
-            Document[DocumentPart.Order] = orderNr;
             Document[DocumentPart.TTNR] = ttnr;
             Regex regex = new Regex(Document[DocumentPart.RegularEx]);
             Match match2 = regex.Match(ttnr);
@@ -87,8 +91,6 @@ namespace El2Core.Utils
                     Root.Add(new Shape(ma.Value));
                 }
             }
-            nsb.Append(orderNr);
-            Root.Add(new (orderNr));
             Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString());
             FileInfo f = new(Document[DocumentPart.Template]);
             Document[DocumentPart.File] = new StringBuilder(Document[DocumentPart.SavePath]).Append(Path.DirectorySeparatorChar).Append(f.Name).ToString();
@@ -144,10 +146,10 @@ namespace El2Core.Utils
             }
         }
 
-        public override void Collect()
+        public override string Collect()
         {
             string path = Root.Node.ToString();
-            if (!Directory.Exists(path)) return;
+            if (!Directory.Exists(path)) return string.Empty;
             List<CompositeNode<Shape>>? listdir = Root.Children;
 
             for (int i = 0; i < listdir?.Count; i++)
@@ -155,6 +157,12 @@ namespace El2Core.Utils
                 path = Path.Combine(path, listdir[i].Node.ToString());
                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             }
+            return path;
+        }
+
+        public override string Collect(string target)
+        {
+            return Path.Combine(Collect(), target);
         }
     }
 

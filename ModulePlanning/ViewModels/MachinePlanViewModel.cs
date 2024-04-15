@@ -429,10 +429,12 @@ namespace ModulePlanning.ViewModels
                             _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource OFF");
                         }
                         vrg.Rid = parkRid;
+                        vrg.SortPos = null;
                     }
                     else
                     {
                         vrg.Rid = null;
+                        vrg.SortPos = null;
                         _DbCtx.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Rid = vrg.Rid;
                     }
                     var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);

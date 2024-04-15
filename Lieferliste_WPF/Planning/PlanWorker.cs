@@ -137,7 +137,7 @@ namespace Lieferliste_WPF.Planning
             Description = usr.UsrInfo;
             PersNo = usr.Personalnumber;
 
-            ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+            ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
             ProcessesCV.Refresh();
             var live = ProcessesCV as ICollectionViewLiveShaping;
@@ -310,7 +310,8 @@ namespace Lieferliste_WPF.Planning
 
                 for (var i = 0; i < p.Count; i++)
                 {
-                    p[i].Spos = (p[i].SysStatus?.Contains("RÜCK") == true) ? 1000 : i;
+                    p[i].SortPos = (p[i].SysStatus?.Contains("RÜCK") == true) ? "Z" :
+                        string.Format("{0}_{1,3:0}", UserId[..4], i.ToString("D3"));
                 }
                 vrg.UserVorgangs.Add(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
 

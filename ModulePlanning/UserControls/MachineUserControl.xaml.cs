@@ -40,7 +40,7 @@ namespace ModulePlanning.UserControls
             if (dtx != null)
             {
                 dtx.ProcessesCV.SortDescriptions.Clear();
-                dtx.ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+                dtx.ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             }
         }
 

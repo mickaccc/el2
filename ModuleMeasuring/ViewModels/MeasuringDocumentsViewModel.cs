@@ -1,9 +1,11 @@
 ﻿using El2Core.Constants;
+using El2Core.Converters;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Office.Interop.Excel;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -67,12 +69,27 @@ namespace ModuleMeasuring.ViewModels
             var mes = _orders.First(x => x.Aid == _orderSearch);
             DocumentManager documentManager = _container.Resolve<DocumentManager>();
             DocumentBuilder builder = new MeasureFirstPartBuilder();
-            documentManager.Construct(builder, mes.Material, mes.Aid);
-            documentManager.Collect();
-            //Microsoft.Office.Interop.Excel.Application excel = new();
-            
-            //Microsoft.Office.Interop.Excel.Workbook wb = excel.Workbooks.Open(builder.Document[DocumentPart.Template]);
-            //wb.Activate();
+            documentManager.Construct(builder, mes.Material);
+            var target = documentManager.Collect();
+            FileInfo file = new FileInfo(builder.Document[DocumentPart.Template]);
+            var targ = Path.Combine(target, file.Name.Replace("Messblatt", mes.Material));
+            File.Copy(file.FullName, targ);
+        
+            Microsoft.Office.Interop.Excel.Application excel = new();
+            Microsoft.Office.Interop.Excel.Workbook wb = excel.Workbooks.Open(targ, ReadOnly: false, Editable: true);
+            Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
+            if (worksheet != null )
+            {
+                Microsoft.Office.Interop.Excel.Range row1 = worksheet.Rows.Cells[3, 3];
+                Microsoft.Office.Interop.Excel.Range row2 = worksheet.Rows.Cells[3, 10];
+                Microsoft.Office.Interop.Excel.Range row3 = worksheet.Rows.Cells[4, 3];
+
+                row1.Value = mes.MaterialNavigation.Bezeichng;
+                row2.Value = mes.Material;
+                row3.Value = mes.Aid;
+                excel.ActiveWorkbook.Save();
+                excel.Quit();
+            }
         }
         private bool onVmpbCanExecute(object arg)
         {

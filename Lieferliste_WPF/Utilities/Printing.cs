@@ -129,7 +129,7 @@ namespace Lieferliste_WPF.Utilities
             table.CellSpacing = 1;
 
 
-            var headerList = proces.OrderBy(x => x.Spos).Select(x => new
+            var headerList = proces.OrderBy(x => x.SortPos).Select(x => new
             {
                 x.Aid,
                 ProcessingUom = string.Format("{0:d4}", x.Vnr),

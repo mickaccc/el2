@@ -4,7 +4,6 @@ using El2Core.ViewModelBase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Xml.Serialization;
 
 namespace El2Core.Models;
 
@@ -60,8 +59,6 @@ public partial class Vorgang : ModelBase
 
     public int? QuantityMiss { get; set; }
 
-    public string? MarkCode { get; set; }
-
     public string? ProcessingUom { get; set; }
 
     public float? ProcessTime { get; set; }
@@ -78,17 +75,21 @@ public partial class Vorgang : ModelBase
 
     public int? Spos { get; set; }
 
-    public string? CommentMach { get; set; }
-
     public int? Rid { get; set; }
 
+    public string? CommentMach { get; set; }
+
     public string? BulletTwo { get; set; }
+
+    public string? MarkCode { get; set; }
 
     public DateTime? KlimaPrint { get; set; }
 
     public float? Correction { get; set; }
 
     public int? QuantityMissNeo { get; set; }
+
+    public string? SortPos { get; set; }
 
     public virtual OrderRb AidNavigation { get; set; } = null!;
 

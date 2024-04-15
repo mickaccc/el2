@@ -86,7 +86,7 @@ namespace ModulePlanning.Planning
             _settingsService = settingsService;
             _dialogService = dialogService;
             Initialize();
-            Processes.AddRange(ressource.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.Spos));
+            Processes.AddRange(ressource.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.SortPos));
             LoadData(ressource);
             CalculateEndTime();
             ProcessesCV.Refresh();
@@ -214,7 +214,7 @@ namespace ModulePlanning.Planning
             CorrectionCommand = new ActionCommand(OnCorrectionExecuted, OnCorrectionCanExecute);
             Processes = new ObservableCollection<Vorgang>();
             ProcessesCVSource.Source = Processes;
-            ProcessesCVSource.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+            ProcessesCVSource.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             ProcessesCVSource.IsLiveSortingRequested = true;
 
             var live = ProcessesCV as ICollectionViewLiveShaping;
@@ -269,6 +269,7 @@ namespace ModulePlanning.Planning
                                 
                                 if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
                                 {
+                                    pr.SortPos = "Z";
                                     Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));                                  
                                 }
                                 pr.RunPropertyChanged();
@@ -511,11 +512,7 @@ namespace ModulePlanning.Planning
  
             for (int i=0; i < p.Count; ++i)
             {
-                p[i].Spos = i;
-   
-                //var vv = _dbCtx.Vorgangs.First(x => x.VorgangId == p[i].VorgangId);
-                //vv.Spos = i;
-                //vv.Rid = _rId;
+                p[i].SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
             }
             Target.MoveCurrentTo(Item);
         }

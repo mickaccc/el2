@@ -13,7 +13,6 @@ namespace Lieferliste_WPF.Planning
         public WorkerUserControl()
         {
             InitializeComponent();
-            //Planed.SelectedIndex = -1;
         }
 
 
@@ -22,7 +21,7 @@ namespace Lieferliste_WPF.Planning
         }
 
         private void HideDetails_Click(object sender, RoutedEventArgs e)
-        {
+        {  
             Planed.SelectedIndex = -1;
             e.Handled = true;
         }
@@ -33,7 +32,7 @@ namespace Lieferliste_WPF.Planning
             if (dtx != null)
             {
                 dtx.ProcessesCV.SortDescriptions.Clear();
-                dtx.ProcessesCV.SortDescriptions.Add(new SortDescription("Spos", ListSortDirection.Ascending));
+                dtx.ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             }
         }
     }
