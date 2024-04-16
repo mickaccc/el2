@@ -4,24 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="70*"/>
+            <ColumnDefinition Width="50*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button Content="Prüfdatenblatt" Command="{Binding PruefDataCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-            <Button Content="Vormusterpüfbericht" Command="{Binding VmpbCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
+        <Button Grid.Column="2" Content="Vormusterpüfbericht" Command="{Binding VmpbCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         <Border Grid.Row="1">
             <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding MaterialItems}" 
                 dd:DragDrop.IsDropTarget="True"
@@ -33,7 +36,15 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button Content="{Binding}"/>
+                        <mah:Badged BadgePlacementMode="BottomLeft" >
+                            <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                <StackPanel>
+                                    <icon:FileIcons Kind="Excel" Width="120"/>
+                                    <TextBlock Text="{Binding Display}"/>
+                                </StackPanel>
+                            </Button>
+                        </mah:Badged>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -58,5 +69,27 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </DataGrid>
+        <ItemsControl Grid.Row="1" Grid.Column="2"  Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding MaterialItems}" 
+                dd:DragDrop.IsDropTarget="True"
+                dd:DragDrop.DropHandler="{Binding}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <mah:Badged BadgePlacementMode="BottomLeft" >
+                        <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                            <StackPanel>
+                                <icon:FileIcons Kind="Excel" Width="120"/>
+                                <TextBlock Text="{Binding Display}"/>
+                            </StackPanel>
+                        </Button>
+                    </mah:Badged>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </UserControl>

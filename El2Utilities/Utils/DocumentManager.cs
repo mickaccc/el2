@@ -36,6 +36,10 @@ namespace El2Core.Utils
         {
             return builder?.Collect(target);
         }
+        public DocumentBuilder? GetBuilder()
+        {
+            return builder;
+        }
     }
     public abstract class DocumentBuilder(DocumentType documentType)
     {
@@ -47,6 +51,8 @@ namespace El2Core.Utils
         public abstract void SaveDocumentData(string rootPath, string template, string RegEx);
         public abstract string Collect();
         public abstract string Collect(string target);
+        public abstract DocumentBuilder GetBuilder();
+ 
     }
 
     public class Document(DocumentType documentType)
@@ -164,6 +170,11 @@ namespace El2Core.Utils
         {
             return Path.Combine(Collect(), target);
         }
+
+        public override DocumentBuilder GetBuilder()
+        {
+            return this;
+        }
     }
 
     public class Entry
@@ -192,6 +203,7 @@ namespace El2Core.Utils
     }
     public enum DocumentType
     {
+        //file://///bosch.com/DfsRB/DfsAT/Loc/Hl/Abt/Technical_Functions/420_Musterbau/200_Bereiche/250_Vormuster/COS_Messraum/Vorlagen/Vorlagen_VMPB
         MeasureFirstPart,
         MeasureVMPB
     }

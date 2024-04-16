@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EfCore.SchemaCompare" Version="8.0.1" />
+    <PackageReference Include="EfCore.SchemaCompare" Version="8.0.2" />
     <PackageReference Include="HtmlToXaml" Version="1.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

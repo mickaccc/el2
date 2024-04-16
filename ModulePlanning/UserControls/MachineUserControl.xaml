@@ -2,7 +2,6 @@
 			 xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
 			 DataContextChanged="UserControl_DataContextChanged"
 			 xmlns:dd="urn:gong-wpf-dragdrop"
 			 d:DesignHeight="450"

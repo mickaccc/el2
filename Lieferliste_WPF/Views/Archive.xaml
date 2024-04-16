@@ -16,12 +16,12 @@
             
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="35"/>
+            <RowDefinition Height="45"/>
             <RowDefinition Height="80*"/>
         </Grid.RowDefinitions>
         <DockPanel>
         <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="suche nach Auftragsnummer, TTNR, Materialbezeichnung oder Projekt"
-                 materialDesign:TextFieldAssist.HasClearButton="True"
+                 materialDesign:TextFieldAssist.HasClearButton="True" FontSize="14"
                  Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
@@ -35,7 +35,7 @@
 
         <DataGrid x:Name="data" Grid.Row="1" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="True"
                   CanUserResizeColumns="True" CanUserSortColumns="True" IsReadOnly="True" SelectionMode="Single"
-                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" IsSynchronizedWithCurrentItem="True"
+                  AutoGenerateColumns="False" IsSynchronizedWithCurrentItem="True"
                   ItemsSource="{Binding ContentTask.Result}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
@@ -53,6 +53,16 @@
                         Path=PlacementTarget.SelectedItem.ProId}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding Aid}"/>
+                <DataGridTextColumn Header="Material" Binding="{Binding Material}"/>
+                <DataGridTextColumn Header="Bezeichnung" Binding="{Binding MaterialNavigation.Bezeichng}"/>
+                <DataGridTextColumn Header="Bez. Dummy" Binding="{Binding DummyMatNavigation.Mattext}"/>
+                <DataGridTextColumn Header="Stückzahl" Binding="{Binding Quantity}"/>
+                <DataGridTextColumn Header="Projekt" Binding="{Binding Pro.ProjectPsp}"/>
+                <DataGridTextColumn Header="SysStatus" Binding="{Binding SysStatus}"/>
+
+            </DataGrid.Columns>
         </DataGrid>
     </Grid>
 </UserControl>
