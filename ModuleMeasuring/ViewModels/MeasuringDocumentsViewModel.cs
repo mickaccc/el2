@@ -6,6 +6,8 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Word;
+using Microsoft.Office.Core;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -33,7 +35,8 @@ namespace ModuleMeasuring.ViewModels
             OpenFileCommand = new ActionCommand(onOpenFileExecuted, onOpenFileCanExecute);
             LoadData();
             orderViewSource.Filter += onFilterPredicate;
-            documentManager = _container.Resolve<DocumentManager>();
+            FirstDocumentManager = _container.Resolve<DocumentManager>();
+            VmpbDocumentManager = _container.Resolve<DocumentManager>();
         }
 
         IContainerExtension _container;
@@ -47,9 +50,12 @@ namespace ModuleMeasuring.ViewModels
         private List<OrderRb> _orders;
         public ICollectionView OrderList { get { return orderViewSource.View; } }
         private CollectionViewSource orderViewSource { get; } = new();
-        private ObservableCollection<DocumentDisplay> _MaterialItems = [];
-        public ICollectionView MaterialItems { get; private set; }
-        private DocumentManager documentManager;
+        private ObservableCollection<DocumentDisplay> _FirstDocumentItems = [];
+        public ICollectionView FirstDocumentItems { get; private set; }
+        private ObservableCollection<DocumentDisplay> _VmpbDocumentItems = [];
+        public ICollectionView VmpbDocumentItems { get; private set; }
+        private DocumentManager FirstDocumentManager;
+        private DocumentManager VmpbDocumentManager;
         private string _orderSearch;
         public string OrderSearch
         {
@@ -75,7 +81,8 @@ namespace ModuleMeasuring.ViewModels
             _orders.AddRange(ord);
             orderViewSource.Source = _orders;
 
-            MaterialItems = CollectionViewSource.GetDefaultView(_MaterialItems);
+            FirstDocumentItems = CollectionViewSource.GetDefaultView(_FirstDocumentItems);
+            VmpbDocumentItems = CollectionViewSource.GetDefaultView(_VmpbDocumentItems);
             OrderList.CollectionChanged += OnOrderChanged;
 
         }
@@ -89,22 +96,33 @@ namespace ModuleMeasuring.ViewModels
                 {
                     if (list.CurrentItem is OrderRb o)
                     {
-                        DocumentBuilder builder = new MeasureFirstPartBuilder();
-                        documentManager.Construct(builder, o.Material);
-                        if (Directory.Exists(builder.Document[DocumentPart.SavePath]))
+                        DocumentBuilder Firstbuilder = new MeasureFirstPartBuilder();
+                        var oa = new string[] { o.Material, o.Aid };
+                        FirstDocumentManager.Construct(Firstbuilder, oa);
+                        if (Directory.Exists(Firstbuilder.Document[DocumentPart.SavePath]))
                         {
-                            foreach(var d in Directory.GetFiles(builder.Document[DocumentPart.SavePath]))
+                            foreach(var d in Directory.GetFiles(Firstbuilder.Document[DocumentPart.SavePath]))
                             {
                                 FileInfo f = new FileInfo(d);
-                                _MaterialItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
+                                _FirstDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
+                            }                           
+                        }
+                        DocumentBuilder Vmpbbuilder = new VmpbPartBuilder();
+                        VmpbDocumentManager.Construct(Vmpbbuilder, oa);
+                        if (Directory.Exists(Vmpbbuilder.Document[DocumentPart.SavePath]))
+                        {
+                            foreach (var d in Directory.GetFiles(Vmpbbuilder.Document[DocumentPart.SavePath]))
+                            {
+                                FileInfo f = new FileInfo(d);
+                                _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
                             }
-                            
                         }
                     }
                 }
                 else
                 {
-                    _MaterialItems.Clear();
+                    _FirstDocumentItems.Clear();
+                    _VmpbDocumentItems.Clear();
                 }
             }
 
@@ -145,17 +163,19 @@ namespace ModuleMeasuring.ViewModels
         {
             var mes = _orders.First(x => x.Aid == _orderSearch);
 
-            DocumentBuilder builder = new MeasureFirstPartBuilder();
-            documentManager.Construct(builder, mes.Material);
-            var target = documentManager.Collect();
+            #region FirstMeasure
+            DocumentBuilder FirstBuilder = new MeasureFirstPartBuilder();
+            var oa = new string[] { mes.Material, mes.Aid };
+            FirstDocumentManager.Construct(FirstBuilder, oa);
+            var target = FirstDocumentManager.Collect();
 
-            FileInfo file = new FileInfo(builder.Document[DocumentPart.Template]);
-            var targ = builder.GetDataSheet();
-            if (!targ.Exists)
-                File.Copy(file.FullName, targ.FullName);
+            FileInfo Firstfile = new FileInfo(FirstBuilder.Document[DocumentPart.Template]);
+            var Firsttarg = FirstBuilder.GetDataSheet();
+            if (!Firsttarg.Exists)
+                File.Copy(Firstfile.FullName, Firsttarg.FullName);
 
             Microsoft.Office.Interop.Excel.Application excel = new();
-            Workbook wb = excel.Workbooks.Open(targ.FullName, ReadOnly: false, Editable: true);
+            Workbook wb = excel.Workbooks.Open(Firsttarg.FullName, ReadOnly: false, Editable: true);
             Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
             if (worksheet != null)
             {
@@ -174,12 +194,58 @@ namespace ModuleMeasuring.ViewModels
                 int wbo = Marshal.ReleaseComObject(wb);
                 int ex = Marshal.ReleaseComObject(excel);
             }
-            _MaterialItems.Clear();
-            foreach(var d in targ.Directory.GetFiles())
+            _FirstDocumentItems.Clear();
+            foreach (var d in Firsttarg.Directory.GetFiles())
             {
-                _MaterialItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+                _FirstDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
             }
-            
+            #endregion
+
+            #region VmpbMeasure
+            DocumentBuilder VmpbBuilder = new VmpbPartBuilder();
+            VmpbDocumentManager.Construct(VmpbBuilder, oa);
+            var VmpbTarget = VmpbDocumentManager.Collect();
+
+            FileInfo Vmpbfile = new FileInfo(VmpbBuilder.Document[DocumentPart.Template]);
+            var Vmpbtarg = VmpbBuilder.GetDataSheet();
+            if (!Vmpbtarg.Exists)
+                File.Copy(Vmpbfile.FullName, Vmpbtarg.FullName);
+
+            Microsoft.Office.Interop.Word.Application word = new();
+            var doc = word.Documents.Open(Vmpbtarg.FullName, ReadOnly: false);
+            var tab = doc.Tables;
+            var t = tab.Count;
+            var tt = tab[1];
+            var c = tt.Cell(1,1).Range.Text;
+            doc.Save();
+            doc.Close();
+            word.Quit();
+
+            //Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
+            //if (worksheet != null)
+            //{
+            //    Microsoft.Office.Interop.Excel.Range row1 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[3, 3];
+            //    Microsoft.Office.Interop.Excel.Range row2 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[3, 10];
+            //    Microsoft.Office.Interop.Excel.Range row3 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[4, 3];
+
+            //    row1.Value = mes.MaterialNavigation.Bezeichng;
+            //    row2.Value = ConvertToFormat.ConvertTTNR(mes.Material, 4, 3, '.', '-');
+            //    row3.Value = mes.Aid;
+            //    excel.ActiveWorkbook.Save();
+            //    excel.ActiveWorkbook.Close();
+            //    excel.Quit();
+
+            //    int ws = Marshal.ReleaseComObject(worksheet);
+            //    int wbo = Marshal.ReleaseComObject(wb);
+            //    int ex = Marshal.ReleaseComObject(excel);
+            //}
+            _VmpbDocumentItems.Clear();
+            foreach (var d in Vmpbtarg.Directory.GetFiles())
+            {
+                _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+            }
+
+            #endregion
         }
         private bool onVmpbCanExecute(object arg)
         {
@@ -201,10 +267,8 @@ namespace ModuleMeasuring.ViewModels
         {
             if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc))
             {
-
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                 dropInfo.Effects = DragDropEffects.All;
-
             }
         }
 
@@ -216,13 +280,13 @@ namespace ModuleMeasuring.ViewModels
                 
                 if (o.Length > 0)
                 {
-                    var builder = documentManager.GetBuilder();
+                    var builder = FirstDocumentManager.GetBuilder();
                     if (builder != null)
                     {
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(builder.Document[DocumentPart.SavePath], source.Name));
                         File.Copy(source.FullName, target.FullName);
-                        _MaterialItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name });
+                        _FirstDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name });
                     }
                 }
             }

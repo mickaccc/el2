@@ -48,7 +48,6 @@ namespace ModulePlanning.ViewModels
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         private IApplicationCommands _applicationCommands;
-        private static System.Timers.Timer? _timer;
         private static System.Timers.Timer? _autoSaveTimer;
         private NotifyTaskCompletion<ICollectionView>? _machineTask;
 
@@ -82,7 +81,6 @@ namespace ModulePlanning.ViewModels
         private string? _searchFilterText;
         private readonly object _lock = new();
         private string? _searchFilterTextArbPl;
-        private List<Vorgang> _processAll = [];
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
 
@@ -113,7 +111,7 @@ namespace ModulePlanning.ViewModels
                     {
                         if ((item != null))
                         {
-                            var vo = _processAll.FirstOrDefault(x => x.VorgangId == item);
+                            var vo = Priv_processes?.FirstOrDefault(x => x.VorgangId == item);
 
                             if (vo != null)
                             {
@@ -301,7 +299,6 @@ namespace ModulePlanning.ViewModels
                             x.ArbPlSapNavigation.CostId == c.CostId));
                     }
                 }
-                _processAll.AddRange(list);
                 Priv_processes = list.FindAll(x => x.Rid == null)
                     .ToObservableCollection();
                 Priv_parking = list.FindAll(x => x.Rid < 0)

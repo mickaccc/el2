@@ -19,12 +19,12 @@ namespace El2Core.Utils
     {
         
         private DocumentBuilder? builder;
-        public void Construct(DocumentBuilder Docubuilder, string TTNR)
+        public void Construct(DocumentBuilder Docubuilder, string[] TTNR)
         {
             builder = Docubuilder;
             builder.Build(container, TTNR);
         }
-        public void SaveDocumentData(string rootPath, string template, string RegEx)
+        public void SaveDocumentData(string rootPath, string[] template, string RegEx)
         {
             builder?.SaveDocumentData(rootPath, template, RegEx);
         }
@@ -41,24 +41,23 @@ namespace El2Core.Utils
             return builder;
         }
     }
-    public abstract class DocumentBuilder(DocumentType documentType)
+    public abstract class DocumentBuilder()
     {
         public IContainerExtension container;
-        public Document Document { get; private set; } = new Document(documentType);
-        public abstract void Build(IContainerExtension container, string ttnr);
+        public Document Document { get; private set; } = new Document();
+        public abstract void Build(IContainerExtension container, string[] ttnr);
         public abstract FileInfo GetDataSheet();
         public abstract void SaveDocumentData();
-        public abstract void SaveDocumentData(string rootPath, string template, string RegEx);
+        public abstract void SaveDocumentData(string rootPath, string[] template, string RegEx);
         public abstract string Collect();
         public abstract string Collect(string target);
         public abstract DocumentBuilder GetBuilder();
  
     }
 
-    public class Document(DocumentType documentType)
+    public class Document()
     {
         private readonly Dictionary<DocumentPart, string> parts =[];
-        private readonly DocumentType documentType = documentType;
         public string this[DocumentPart key]
         {
             get => parts[key];
@@ -69,9 +68,9 @@ namespace El2Core.Utils
     public class MeasureFirstPartBuilder : DocumentBuilder
     {
         public CompositeNode<Shape> Root { get; private set; }
-        public MeasureFirstPartBuilder() : base(DocumentType.MeasureFirstPart)
+        public MeasureFirstPartBuilder() : base()
         { }
-        public override void Build(IContainerExtension container, string ttnr)
+        public override void Build(IContainerExtension container, string[] ttnr)
         {
             base.container = container;
             if (RuleInfo.Rules.Keys.Contains("FirstPart") == false) return;
@@ -85,13 +84,13 @@ namespace El2Core.Utils
                 Document[DokuPart] = (string)entry.Value;
             }
             Root = new CompositeNode<Shape> { Node = new Shape(Document[DocumentPart.RootPath]) };
-            Document[DocumentPart.TTNR] = ttnr;
+            Document[DocumentPart.TTNR] = ttnr[0];
             Regex regex = new Regex(Document[DocumentPart.RegularEx]);
-            Match match2 = regex.Match(ttnr);
+            Match match2 = regex.Match(ttnr[0]);
             StringBuilder nsb = new StringBuilder();
             foreach (Group ma in match2.Groups.Values.Skip(1))
             {
-                if (ma.Value != ttnr)
+                if (ma.Value != ttnr[0])
                 {
                     nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
                     Root.Add(new Shape(ma.Value));
@@ -99,7 +98,7 @@ namespace El2Core.Utils
             }
             Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString());
             FileInfo f = new(Document[DocumentPart.Template]);
-            Document[DocumentPart.File] = Path.Combine(Document[DocumentPart.SavePath], f.Name.Replace("Messblatt", ttnr));
+            Document[DocumentPart.File] = Path.Combine(Document[DocumentPart.SavePath], f.Name.Replace("Messblatt", ttnr[0]));
         }
         public override FileInfo GetDataSheet()
         {
@@ -111,7 +110,7 @@ namespace El2Core.Utils
             throw new NotImplementedException();
         }
 
-        public override void SaveDocumentData(string rootPath, string template, string RegEx)
+        public override void SaveDocumentData(string rootPath, string[] template, string RegEx)
         {
             var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var rule = db.Rules.SingleOrDefault(x => x.RuleValue == "M1");
@@ -120,7 +119,7 @@ namespace El2Core.Utils
             if(rule == null) { rule = new(); rule.RuleName = "FirstPart"; rule.RuleValue = "M1"; db.Rules.Add(rule); }
             var dict = new Dictionary<string, string>();
             Document[DocumentPart.RootPath] = rootPath;
-            Document[DocumentPart.Template] = template;
+            Document[DocumentPart.Template] = template[0];
             Document[DocumentPart.RegularEx] = RegEx;
 
             StringWriter sw = new StringWriter();
@@ -176,7 +175,118 @@ namespace El2Core.Utils
             return this;
         }
     }
+    public class VmpbPartBuilder : DocumentBuilder
+    {
+        public CompositeNode<Shape> Root { get; private set; }
+        public VmpbPartBuilder() : base()
+        { }
+        public override void Build(IContainerExtension container, string[] ttnr)
+        {
+            base.container = container;
+            if (RuleInfo.Rules.Keys.Contains("VmpbPart") == false) return;
+            var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
+            TextReader reader = new StringReader(RuleInfo.Rules["VmpbPart"].RuleData);
+            List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+            foreach (var entry in doc)
+            {
+                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+                Document[DokuPart] = (string)entry.Value;
+            }
+            Root = new CompositeNode<Shape> { Node = new Shape(Document[DocumentPart.RootPath]) };
+            Document[DocumentPart.TTNR] = ttnr[0];
+            Regex regex = new Regex(Document[DocumentPart.RegularEx]);
+            Match match2 = regex.Match(ttnr[0]);
+            StringBuilder nsb = new StringBuilder();
+            foreach (Group ma in match2.Groups.Values.Skip(1))
+            {
+                if (ma.Value != ttnr[0])
+                {
+                    nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                    Root.Add(new Shape(ma.Value));
+                }
+            }
+            
+            Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString(), ttnr[1]);
+            FileInfo f = new(Document[DocumentPart.Template]);
+            Document[DocumentPart.File] = Path.Combine(Document[DocumentPart.SavePath], ttnr[0] + "_VMPB.dotx");
+        }
+        public override FileInfo GetDataSheet()
+        {
+            return new FileInfo(Document[DocumentPart.File]);
+        }
+
+        public override void SaveDocumentData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SaveDocumentData(string rootPath, string[] template, string RegEx)
+        {
+            var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var rule = db.Rules.SingleOrDefault(x => x.RuleValue == "M2");
+            //var xml = XmlSerializerHelper.GetSerializer(typeof(Dictionary<string, string>));
+
+            if (rule == null) { rule = new(); rule.RuleName = "VmpbPart"; rule.RuleValue = "M2"; db.Rules.Add(rule); }
+            var dict = new Dictionary<string, string>();
+            Document[DocumentPart.RootPath] = rootPath;
+            Document[DocumentPart.Template] = template[0];
+            Document[DocumentPart.Template_Size2] = template[1];
+            Document[DocumentPart.Template_Size3] = template[2];
+            Document[DocumentPart.RegularEx] = RegEx;
+
+            StringWriter sw = new StringWriter();
+            Serialize(sw, Document);
+            rule.RuleData = sw.ToString();
+
+            db.SaveChanges();
+        }
+        private static void Serialize(TextWriter writer, Document dictionary)
+        {
+            List<Entry> entries = new List<Entry>();
+
+
+            entries.Add(new Entry(DocumentPart.RootPath, dictionary[DocumentPart.RootPath]));
+            entries.Add(new Entry(DocumentPart.Template, dictionary[DocumentPart.Template]));
+            entries.Add(new Entry(DocumentPart.Template_Size2, dictionary[DocumentPart.Template_Size2]));
+            entries.Add(new Entry(DocumentPart.Template_Size3, dictionary[DocumentPart.Template_Size3]));
+            entries.Add(new Entry(DocumentPart.RegularEx, dictionary[DocumentPart.RegularEx]));
+
+            var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+            serializer.Serialize(writer, entries);
+        }
+        private static void Deserialize(TextReader reader, IDictionary dictionary)
+        {
+            dictionary.Clear();
+            XmlSerializer serializer = new XmlSerializer(typeof(List<Entry>));
+            List<Entry> list = (List<Entry>)serializer.Deserialize(reader);
+            foreach (Entry entry in list)
+            {
+                dictionary[entry.Key] = entry.Value;
+            }
+        }
+
+        public override string Collect()
+        {
+
+            if (!Directory.Exists(Document[DocumentPart.RootPath])) return string.Empty;
+            
+            string path = Document[DocumentPart.SavePath];
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+      
+            return path;
+        }
+
+        public override string Collect(string target)
+        {
+            return Path.Combine(Collect(), target);
+        }
+
+        public override DocumentBuilder GetBuilder()
+        {
+            return this;
+        }
+    }
     public class Entry
     {
         public object Key;
@@ -196,9 +306,10 @@ namespace El2Core.Utils
         RootPath,
         Template,
         RegularEx,
+        Template_Size2,
+        Template_Size3,
         SavePath,
         TTNR,
-        Order,
         File
     }
     public enum DocumentType

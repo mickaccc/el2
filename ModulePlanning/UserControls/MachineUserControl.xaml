@@ -124,7 +124,7 @@
 				  IsSynchronizedWithCurrentItem="True"
 				  ItemsSource="{Binding ProcessesCV}"
 				  x:Name="Planed" VirtualizingPanel.IsVirtualizing="False"
-				  RowDetailsVisibilityMode="VisibleWhenSelected">
+				  RowDetailsVisibilityMode="VisibleWhenSelected" IsReadOnly="True">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <ContextMenu.Resources>
@@ -183,7 +183,6 @@
 
 				<DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" x:Name="txtAid" 
 									Header="Auftrag"
-									IsReadOnly="True"
 									Width="Auto">
 					<DataGridTextColumn.ElementStyle>
 						<Style TargetType="TextBlock">
@@ -204,9 +203,8 @@
 
                 <DataGridTextColumn Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}"
 									Header="Vorg"
-									IsReadOnly="True"
 									Width="Auto"/>
-
+                <DataGridTextColumn Binding="{Binding SortPos}"/>
             </DataGrid.Columns>
 		</DataGrid>
 	</Grid>

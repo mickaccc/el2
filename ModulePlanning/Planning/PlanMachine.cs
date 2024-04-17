@@ -496,15 +496,19 @@ namespace ModulePlanning.Planning
         {
  
             Item.Rid = _rId;
-            if (Source.CanRemove) Source.Remove(Item);
-
-            if (Index > Target.Count)
+            int RelIndex = Index;
+            int Count = Target.Count;
+            if (Source.IndexOf(Item) < Index) RelIndex--; //If Sorting UpDown
+            if (Source.CanRemove) { Source.Remove(Item); }
+            if(Count == Target.Count) RelIndex = Index; //If AddNew
+            if (RelIndex >= Target.Count)
             {
                 ((IList)Target.SourceCollection).Add(Item);
             }
             else
             {
-                ((IList)Target.SourceCollection).Insert(Index, Item);
+                ((IList)Target.SourceCollection).Insert(RelIndex, Item);
+                
             }
 
             var p = Target.SourceCollection as Collection<Vorgang>;

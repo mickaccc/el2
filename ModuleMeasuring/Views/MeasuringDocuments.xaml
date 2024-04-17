@@ -26,7 +26,7 @@
         </StackPanel>
         <Button Grid.Column="2" Content="Vormusterpüfbericht" Command="{Binding VmpbCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         <Border Grid.Row="1">
-            <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding MaterialItems}" 
+            <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding FirstDocumentItems}" 
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
                 <ItemsControl.ItemsPanel>
@@ -69,7 +69,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </DataGrid>
-        <ItemsControl Grid.Row="1" Grid.Column="2"  Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding MaterialItems}" 
+        <ItemsControl Grid.Row="1" Grid.Column="2"  Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" 
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
             <ItemsControl.ItemsPanel>
