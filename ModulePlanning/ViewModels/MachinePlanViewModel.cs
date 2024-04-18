@@ -232,7 +232,7 @@ namespace ModulePlanning.ViewModels
 
         private void SetAutoSaveTimer()
         {
-            _autoSaveTimer = new System.Timers.Timer(60000);
+            _autoSaveTimer = new System.Timers.Timer(5000);
             _autoSaveTimer.Elapsed += OnAutoSave;
             _autoSaveTimer.AutoReset = true;
             _autoSaveTimer.Enabled = true;
@@ -246,7 +246,6 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message, "AutoSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
