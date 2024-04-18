@@ -314,7 +314,7 @@ namespace Lieferliste_WPF.Planning
                         string.Format("{0}_{1,3:0}", UserId[..4], i.ToString("D3"));
                 }
                 vrg.UserVorgangs.Add(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
-
+                
                 t.Refresh();
 
             }

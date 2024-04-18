@@ -217,6 +217,7 @@ namespace ModulePlanning.Planning
             ProcessesCVSource.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             ProcessesCVSource.IsLiveSortingRequested = true;
 
+
             var live = ProcessesCV as ICollectionViewLiveShaping;
             if (live != null)
             {
@@ -545,8 +546,9 @@ namespace ModulePlanning.Planning
                     ListCollectionView lv = ProcessesCV as ListCollectionView;
                     if (lv.IsAddingNew) { lv.CommitNew(); }
                     if (lv.IsEditingItem) { lv.CommitEdit(); }
-                    ProcessesCV.Refresh();                  
-                }    
+                    ProcessesCV.Refresh();
+                    _eventAggregator.GetEvent<ContextPlanMachineChanged>().Publish(Rid);
+                }               
             }
             catch (Exception e)
             {

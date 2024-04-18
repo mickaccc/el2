@@ -97,8 +97,14 @@ namespace ModulePlanning.ViewModels
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             //_ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
+            _ea.GetEvent<ContextPlanMachineChanged>().Subscribe(ctxChanged);
             if (_settingsService.IsAutoSave) SetAutoSaveTimer();
 
+        }
+
+        private void ctxChanged(int obj)
+        {
+            _DbCtx.SaveChanges();
         }
 
         private void MessageVorgangReceived(List<string?> list)
@@ -237,7 +243,6 @@ namespace ModulePlanning.ViewModels
             try
             {
                 if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
-               // foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
             }
             catch (Exception ex)
             {
@@ -272,14 +277,14 @@ namespace ModulePlanning.ViewModels
                     foreach (var m in mach2)
                     {
                         var v = proc.FirstOrDefault(x => x.Rid == m.RessourceId);
-                        if (v != null)
+                        if (v != null) //is in my costunit allocated
                         {
                             int[] kay = new int[2];
                             kay[0] = v.RidNavigation.Sort ?? 0;
                             kay[1] = v.Rid ?? 0;                           
                             result.TryAdd(kay, factory.CreatePlanMachine(v.RidNavigation));
                         }
-                        else
+                        else //is not in my costunit
                         {
                             int[] kay = new int[2];
                             kay[0] = m.Sort ?? 0;
@@ -455,7 +460,8 @@ namespace ModulePlanning.ViewModels
                 {
                     var vv = _DbCtx.Ressources.First(x => x.RessourceId == _machines[i].Rid);
                     vv.Sort = (vv.Visability) ? i : 1000;
-                }              
+                }
+                _DbCtx.SaveChanges();
             }
             catch (Exception e)
             {

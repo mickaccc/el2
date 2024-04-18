@@ -163,64 +163,19 @@ namespace ModuleMeasuring.ViewModels
         {
             var mes = _orders.First(x => x.Aid == _orderSearch);
 
-            #region FirstMeasure
-            DocumentBuilder FirstBuilder = new MeasureFirstPartBuilder();
-            var oa = new string[] { mes.Material, mes.Aid };
-            FirstDocumentManager.Construct(FirstBuilder, oa);
-            var target = FirstDocumentManager.Collect();
+            //#region FirstMeasure
+            //DocumentBuilder FirstBuilder = new MeasureFirstPartBuilder();
+            //var oa = new string[] { mes.Material, mes.Aid };
+            //FirstDocumentManager.Construct(FirstBuilder, oa);
+            //var target = FirstDocumentManager.Collect();
 
-            FileInfo Firstfile = new FileInfo(FirstBuilder.Document[DocumentPart.Template]);
-            var Firsttarg = FirstBuilder.GetDataSheet();
-            if (!Firsttarg.Exists)
-                File.Copy(Firstfile.FullName, Firsttarg.FullName);
+            //FileInfo Firstfile = new FileInfo(FirstBuilder.Document[DocumentPart.Template]);
+            //var Firsttarg = FirstBuilder.GetDataSheet();
+            //if (!Firsttarg.Exists)
+            //    File.Copy(Firstfile.FullName, Firsttarg.FullName);
 
-            Microsoft.Office.Interop.Excel.Application excel = new();
-            Workbook wb = excel.Workbooks.Open(Firsttarg.FullName, ReadOnly: false, Editable: true);
-            Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
-            if (worksheet != null)
-            {
-                Microsoft.Office.Interop.Excel.Range row1 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[3, 3];
-                Microsoft.Office.Interop.Excel.Range row2 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[3, 10];
-                Microsoft.Office.Interop.Excel.Range row3 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[4, 3];
-
-                row1.Value = mes.MaterialNavigation.Bezeichng;
-                row2.Value = ConvertToFormat.ConvertTTNR(mes.Material, 4, 3, '.', '-');
-                row3.Value = mes.Aid;
-                excel.ActiveWorkbook.Save();
-                excel.ActiveWorkbook.Close();
-                excel.Quit();
-
-                int ws = Marshal.ReleaseComObject(worksheet);
-                int wbo = Marshal.ReleaseComObject(wb);
-                int ex = Marshal.ReleaseComObject(excel);
-            }
-            _FirstDocumentItems.Clear();
-            foreach (var d in Firsttarg.Directory.GetFiles())
-            {
-                _FirstDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
-            }
-            #endregion
-
-            #region VmpbMeasure
-            DocumentBuilder VmpbBuilder = new VmpbPartBuilder();
-            VmpbDocumentManager.Construct(VmpbBuilder, oa);
-            var VmpbTarget = VmpbDocumentManager.Collect();
-
-            FileInfo Vmpbfile = new FileInfo(VmpbBuilder.Document[DocumentPart.Template]);
-            var Vmpbtarg = VmpbBuilder.GetDataSheet();
-            if (!Vmpbtarg.Exists)
-                File.Copy(Vmpbfile.FullName, Vmpbtarg.FullName);
-
-            Microsoft.Office.Interop.Word.Application word = new();
-            var doc = word.Documents.Open(Vmpbtarg.FullName, ReadOnly: false);
-            var tab = doc.Tables;
-            var t = tab.Count;
-            var tt = tab[1];
-            var c = tt.Cell(1,1).Range.Text;
-            doc.Save();
-            doc.Close();
-            word.Quit();
-
+            //Microsoft.Office.Interop.Excel.Application excel = new();
+            //Workbook wb = excel.Workbooks.Open(Firsttarg.FullName, ReadOnly: false, Editable: true);
             //Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
             //if (worksheet != null)
             //{
@@ -239,13 +194,58 @@ namespace ModuleMeasuring.ViewModels
             //    int wbo = Marshal.ReleaseComObject(wb);
             //    int ex = Marshal.ReleaseComObject(excel);
             //}
-            _VmpbDocumentItems.Clear();
-            foreach (var d in Vmpbtarg.Directory.GetFiles())
-            {
-                _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
-            }
+            //_FirstDocumentItems.Clear();
+            //foreach (var d in Firsttarg.Directory.GetFiles())
+            //{
+            //    _FirstDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+            //}
+            //#endregion
 
-            #endregion
+            //#region VmpbMeasure
+            //DocumentBuilder VmpbBuilder = new VmpbPartBuilder();
+            //VmpbDocumentManager.Construct(VmpbBuilder, oa);
+            //var VmpbTarget = VmpbDocumentManager.Collect();
+
+            //FileInfo Vmpbfile = new FileInfo(VmpbBuilder.Document[DocumentPart.Template]);
+            //var Vmpbtarg = VmpbBuilder.GetDataSheet();
+            //if (!Vmpbtarg.Exists)
+            //    File.Copy(Vmpbfile.FullName, Vmpbtarg.FullName);
+
+            //Microsoft.Office.Interop.Word.Application word = new();
+            //var doc = word.Documents.Open(Vmpbtarg.FullName, ReadOnly: false);
+            //var tab = doc.Tables;
+            //var t = tab.Count;
+            //var tt = tab[1];
+            //var c = tt.Cell(1,1).Range.Text;
+            //doc.Save();
+            //doc.Close();
+            //word.Quit();
+
+            ////Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
+            ////if (worksheet != null)
+            ////{
+            ////    Microsoft.Office.Interop.Excel.Range row1 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[3, 3];
+            ////    Microsoft.Office.Interop.Excel.Range row2 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[3, 10];
+            ////    Microsoft.Office.Interop.Excel.Range row3 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[4, 3];
+
+            ////    row1.Value = mes.MaterialNavigation.Bezeichng;
+            ////    row2.Value = ConvertToFormat.ConvertTTNR(mes.Material, 4, 3, '.', '-');
+            ////    row3.Value = mes.Aid;
+            ////    excel.ActiveWorkbook.Save();
+            ////    excel.ActiveWorkbook.Close();
+            ////    excel.Quit();
+
+            ////    int ws = Marshal.ReleaseComObject(worksheet);
+            ////    int wbo = Marshal.ReleaseComObject(wb);
+            ////    int ex = Marshal.ReleaseComObject(excel);
+            ////}
+            //_VmpbDocumentItems.Clear();
+            //foreach (var d in Vmpbtarg.Directory.GetFiles())
+            //{
+            //    _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+            //}
+
+            //#endregion
         }
         private bool onVmpbCanExecute(object arg)
         {
