@@ -204,7 +204,6 @@
                 <DataGridTextColumn Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}"
 									Header="Vorg"
 									Width="Auto"/>
-                <DataGridTextColumn Binding="{Binding SortPos}"/>
             </DataGrid.Columns>
 		</DataGrid>
 	</Grid>

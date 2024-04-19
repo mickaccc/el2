@@ -5,9 +5,9 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Interop.Word;
-using Microsoft.Office.Core;
+//using Microsoft.Office.Interop.Excel;
+//using Microsoft.Office.Interop.Word;
+//using Microsoft.Office.Core;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -201,11 +201,44 @@ namespace ModuleMeasuring.ViewModels
             //}
             //#endregion
 
-            //#region VmpbMeasure
+        }
+        private bool onVmpbCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddVmpb);
+        }
+        private void onVmpbExecuted(object obj)
+        {
+            //var mes = _orders.First(x => x.Aid == _orderSearch);
+            //var oa = new string[] { mes.Material, mes.Aid };
+
+            //DocumentBuilder FirstMeaDocBuilder = new MeasureFirstPartBuilder();
+            //FirstDocumentManager.Construct(FirstMeaDocBuilder, oa);
+
             //DocumentBuilder VmpbBuilder = new VmpbPartBuilder();
             //VmpbDocumentManager.Construct(VmpbBuilder, oa);
             //var VmpbTarget = VmpbDocumentManager.Collect();
 
+            //Microsoft.Office.Interop.Excel.Application excel = new();
+            //Microsoft.Office.Interop.Excel.Workbook wb = excel.Workbooks.Open(FirstMeaDocBuilder.Document[DocumentPart.File], 
+            //    ReadOnly: true);
+            //Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
+            //if (worksheet != null)
+            //{
+            //    var row1 = worksheet.Names;
+
+
+            //    //row1.Value = mes.MaterialNavigation.Bezeichng;
+            //    //row2.Value = ConvertToFormat.ConvertTTNR(mes.Material, 4, 3, '.', '-');
+            //    //row3.Value = mes.Aid;
+            //    excel.ActiveWorkbook.Close();
+            //    excel.Quit();
+
+            //    int ws = Marshal.ReleaseComObject(worksheet);
+            //    int wbo = Marshal.ReleaseComObject(wb);
+            //    int ex = Marshal.ReleaseComObject(excel);
+            //}
+
+            //#region VmpbMeasure
             //FileInfo Vmpbfile = new FileInfo(VmpbBuilder.Document[DocumentPart.Template]);
             //var Vmpbtarg = VmpbBuilder.GetDataSheet();
             //if (!Vmpbtarg.Exists)
@@ -215,30 +248,13 @@ namespace ModuleMeasuring.ViewModels
             //var doc = word.Documents.Open(Vmpbtarg.FullName, ReadOnly: false);
             //var tab = doc.Tables;
             //var t = tab.Count;
-            //var tt = tab[1];
-            //var c = tt.Cell(1,1).Range.Text;
+            //var tt = tab[10];
+            //var c = tt.Cell(1, 1).Range.Text;
             //doc.Save();
             //doc.Close();
             //word.Quit();
 
-            ////Worksheet worksheet = wb.Worksheets.Item[1] as Worksheet;
-            ////if (worksheet != null)
-            ////{
-            ////    Microsoft.Office.Interop.Excel.Range row1 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[3, 3];
-            ////    Microsoft.Office.Interop.Excel.Range row2 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[3, 10];
-            ////    Microsoft.Office.Interop.Excel.Range row3 = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows.Cells[4, 3];
 
-            ////    row1.Value = mes.MaterialNavigation.Bezeichng;
-            ////    row2.Value = ConvertToFormat.ConvertTTNR(mes.Material, 4, 3, '.', '-');
-            ////    row3.Value = mes.Aid;
-            ////    excel.ActiveWorkbook.Save();
-            ////    excel.ActiveWorkbook.Close();
-            ////    excel.Quit();
-
-            ////    int ws = Marshal.ReleaseComObject(worksheet);
-            ////    int wbo = Marshal.ReleaseComObject(wb);
-            ////    int ex = Marshal.ReleaseComObject(excel);
-            ////}
             //_VmpbDocumentItems.Clear();
             //foreach (var d in Vmpbtarg.Directory.GetFiles())
             //{
@@ -246,14 +262,6 @@ namespace ModuleMeasuring.ViewModels
             //}
 
             //#endregion
-        }
-        private bool onVmpbCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddVmpb);
-        }
-        private void onVmpbExecuted(object obj)
-        {
-
         }
         private void onFilterPredicate(object sender, FilterEventArgs e)
         {
