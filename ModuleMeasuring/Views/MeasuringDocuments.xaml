@@ -40,7 +40,7 @@
                             <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}">
                                 <StackPanel>
-                                    <icon:FileIcons Kind="Excel" Width="120"/>
+                                    <icon:FileIcons Kind="Default" Width="120"/>
                                     <TextBlock Text="{Binding Display}"/>
                                 </StackPanel>
                             </Button>

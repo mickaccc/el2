@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -260,7 +261,8 @@ namespace ModuleDeliverList.ViewModels
             Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(data);
 
             Window docView = new FlowDocumentViewer();
-            docView.DataContext = builder.GetDoc();
+            
+            docView.DataContext = new FlowDocumentReader().DataContext = builder.GetDoc();
             docView.Show();
         }
         // This method accepts an input stream and a corresponding data format.  The method

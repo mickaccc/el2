@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Xml;
@@ -35,7 +36,8 @@ namespace El2Core.Utils
         public override void Build()
         {
             doc = new FlowDocument();
-            doc.PageWidth = 400.0;
+            doc.PageWidth = 700.0;
+            doc.ColumnWidth = doc.PageWidth;
             table = new Table();
             TableRow row = new TableRow();
             TableRowGroup rowGroup = new TableRowGroup();
@@ -59,7 +61,23 @@ namespace El2Core.Utils
                 row = new TableRow();
                 foreach (var cell in body)
                 {
-                    row.Cells.Add(new TableCell(new Paragraph(new Run(cell))));
+                    if (row.Cells.Count < 5)
+                    {
+                        row.Cells.Add(new TableCell(new Paragraph(new Run(cell))));
+                    }
+                    else
+                    {
+                        var inl = new InlineUIContainer();
+                        var txb = new TextBox
+                        {
+                            Text = cell,
+                            IsReadOnly = false
+                        };
+                        inl.Child = txb;
+                        var tc = new TableCell(new Paragraph(inl));
+                        
+                        row.Cells.Add(tc);
+                    }
                 }
                 rowGroup.Rows.Add(row);
                 table.RowGroups.Add(rowGroup);
