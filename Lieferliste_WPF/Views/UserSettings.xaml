@@ -9,62 +9,68 @@
       Height="600" Width="1000" Tag="{Binding Title}" >
 
     <Grid Background="{DynamicResource MahApps.Brushes.Control.Background}">
-        <StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="3">
-                <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}" />
-                <Button Content="Reset" Command="{Binding ResetCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="3">
+            <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}" />
+            <Button Content="Reset" Command="{Binding ResetCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}" />
         </StackPanel>
-        <Grid>
-            <Grid.Resources>
-                <ResourceDictionary>
-                    <CollectionViewSource x:Key="Themes"
+        <TabControl Grid.Row="1">
+            <TabItem Header="Individual">
+                <StackPanel>
+                    <Grid>
+                        <Grid.Resources>
+                            <ResourceDictionary>
+                                <CollectionViewSource x:Key="Themes"
                                 Source="{Binding Source={x:Static controlzex:ThemeManager.Current}, Path=Themes}">
-                        <CollectionViewSource.SortDescriptions>
-                            <componentModel:SortDescription PropertyName="Name" />
-                        </CollectionViewSource.SortDescriptions>
-                            
-                    </CollectionViewSource>
-                </ResourceDictionary>
-            </Grid.Resources>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="10*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*"/>
-                <ColumnDefinition Width="5"/>
-                 <ColumnDefinition Width="3*"/>
-                 <ColumnDefinition Width="5"/>
-                 <ColumnDefinition Width="5*"/>
-                </Grid.ColumnDefinitions>
-            <TextBlock Text="EXPLORER" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
-            <TextBlock Grid.Column="2" Text="STEUERUNG" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
-                <TextBlock Grid.Column="4" Text="THEMES" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
-                <StackPanel Grid.Row="1">
-                <Label Content="Hauptpfad"/>
-                <TextBox x:Name="ExpRoot" Text="{Binding Path=ExplorerRoot}"/>
+                                    <CollectionViewSource.SortDescriptions>
+                                        <componentModel:SortDescription PropertyName="Name" />
+                                    </CollectionViewSource.SortDescriptions>
 
-                <Label Content="Muster für Ordnerpfad:"/>
-                <TextBox x:Name="OrderPath" Text="{Binding Path=ExplorerPathPattern}"/>
-            </StackPanel>
-            <Rectangle Grid.Column="1" Grid.RowSpan="2" Fill="{DynamicResource MahApps.Brushes.Accent}"/>
-                <Rectangle Grid.Column="3" Grid.RowSpan="2" Fill="{DynamicResource MahApps.Brushes.Accent}"/>
-                <StackPanel Grid.Row="1" Grid.Column="2" >
-                    <materialDesign:Chip >
-                        <StackPanel Orientation="Horizontal" >
-                        <Label Content="AutoSave"/>
-                        <ToggleButton IsChecked="{Binding AutoSave}" ToolTip="automatisch speichern" />
+                                </CollectionViewSource>
+                            </ResourceDictionary>
+                        </Grid.Resources>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="10*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="5*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="EXPLORER" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
+                        <TextBlock Grid.Column="2" Text="STEUERUNG" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
+                        <TextBlock Grid.Column="4" Text="THEMES" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
+                        <StackPanel Grid.Row="1">
+                            <Label Content="Hauptpfad"/>
+                            <TextBox x:Name="ExpRoot" Text="{Binding Path=ExplorerRoot}"/>
+
+                            <Label Content="Muster für Ordnerpfad:"/>
+                            <TextBox x:Name="OrderPath" Text="{Binding Path=ExplorerPathPattern}"/>
                         </StackPanel>
-                    </materialDesign:Chip>
-                    <materialDesign:Chip>
-                        <StackPanel Orientation="Horizontal">
-                        <Label Content="Save Message"/>
-                        <ToggleButton IsChecked="{Binding SaveMessage}" ToolTip="beim schliessen nachfragen" />
- 
+                        <Rectangle Grid.Column="1" Grid.RowSpan="2" Fill="{DynamicResource MahApps.Brushes.Accent}"/>
+                        <Rectangle Grid.Column="3" Grid.RowSpan="2" Fill="{DynamicResource MahApps.Brushes.Accent}"/>
+                        <StackPanel Grid.Row="1" Grid.Column="2" >
+                            <materialDesign:Chip >
+                                <StackPanel Orientation="Horizontal" >
+                                    <Label Content="AutoSave"/>
+                                    <ToggleButton IsChecked="{Binding AutoSave}" ToolTip="automatisch speichern" />
+                                </StackPanel>
+                            </materialDesign:Chip>
+                            <materialDesign:Chip>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Save Message"/>
+                                    <ToggleButton IsChecked="{Binding SaveMessage}" ToolTip="beim schliessen nachfragen" />
+
+                                </StackPanel>
+                            </materialDesign:Chip>
                         </StackPanel>
-                    </materialDesign:Chip>
-                </StackPanel>
-                <ComboBox x:Name="AccentSelector" Grid.Column="4" Grid.Row="1"
+                        <ComboBox x:Name="AccentSelector" Grid.Column="4" Grid.Row="1"
                               Margin="0 0 2 0"
                               VerticalAlignment="Center"
                               IsSynchronizedWithCurrentItem="False"
@@ -72,7 +78,12 @@
                               DisplayMemberPath="Name"
                               SelectedValue="{Binding DataContext.SelectedTheme, RelativeSource={RelativeSource AncestorType=UserControl}}"
                               ItemsSource="{Binding Source={StaticResource Themes}}" />
-            </Grid>
-        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Global">
+                
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>
