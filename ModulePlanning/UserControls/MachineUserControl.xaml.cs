@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace ModulePlanning.UserControls
 {
@@ -39,6 +40,9 @@ namespace ModulePlanning.UserControls
             var dtx = this.DataContext as PlanMachine;
             if (dtx != null)
             {
+                var list = dtx.ProcessesCV as ListCollectionView;
+                if (list.IsAddingNew) { list.CommitNew(); }
+                if (list.IsEditingItem) { list.CommitEdit(); }
                 dtx.ProcessesCV.SortDescriptions.Clear();
                 dtx.ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             }
@@ -46,7 +50,8 @@ namespace ModulePlanning.UserControls
 
         private void HideDetails_Click(object sender, RoutedEventArgs e)
         {
-            Planed.SelectedIndex = -1;
+            var pl = FindName("Planed") as DataGrid;
+            pl.SelectedIndex = -1;
             e.Handled = true;
         }
 
