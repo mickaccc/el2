@@ -478,21 +478,7 @@ namespace ModulePlanning.Planning
             }
         }
 
-        //private void MachineClosed(object? sender, EventArgs e)
-        //{
-        //    if (_dbCtx.ChangeTracker.HasChanges() || _employees.Any(x => x.IsChanged))
-        //    {
-        //        if (!SaveQuestion())
-        //        {
-        //            var canged = _dbCtx.ChangeTracker.Entries()
-        //                .Where(x => x.State == EntityState.Modified).ToList();
-        //            foreach (var c in canged)
-        //            {
-        //                c.State = EntityState.Unchanged;
-        //            }
-        //        }
-        //    }
-        //}
+ 
         private void InsertItems(Vorgang Item, ListCollectionView Source, ListCollectionView Target, int Index, bool sorting)
         {
  
@@ -508,18 +494,23 @@ namespace ModulePlanning.Planning
             }
             else
             {
-                ((IList)Target.SourceCollection).Insert(RelIndex, Item);
-                
+                ((IList)Target.SourceCollection).Insert(RelIndex, Item);               
             }
 
             var p = Target.SourceCollection as Collection<Vorgang>;
- 
  
             for (int i=0; i < p.Count; ++i)
             {
                 p[i].SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
             }
             Target.MoveCurrentTo(Item);
+            if (Item.AidNavigation.Material != null)
+            {
+                string[] oa = new[] {Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich}; 
+                var work = _container.Resolve<WorkareaDocumentInfo>();
+                work.CreateDocumentInfos(oa);
+                work.Collect();
+            }
         }
         public void Drop(IDropInfo dropInfo)
         {

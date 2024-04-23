@@ -75,6 +75,7 @@ namespace El2Core.Utils
         private IContainerExtension Container => container;
         public abstract Document CreateDocumentInfos();
         public abstract Document CreateDocumentInfos(string[] folders);
+        public abstract Document GetDocument();
         public void SaveDocumentData(Document document)
         {
             using var db = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -83,8 +84,15 @@ namespace El2Core.Utils
             {
                 rule = new Rule()
                 { RuleValue = document[DocumentPart.Type], RuleName = document[DocumentPart.Type] };
+                db.Rules.Add(rule);
             }
             else rule = db.Rules.First(x => x.RuleValue == document[DocumentPart.Type]);
+
+            StringWriter sw = new StringWriter();
+            Serialize(sw, document);
+            rule.RuleData = sw.ToString();
+
+            db.SaveChanges();
         }
         public void Collect(Document document)
         {
@@ -95,6 +103,18 @@ namespace El2Core.Utils
                 path = Path.Combine(path, s);
                 if(!Directory.Exists(path)) Directory.CreateDirectory(path);
             }
+        }
+        private static void Serialize(TextWriter writer, Document dictionary)
+        {
+            List<Entry> entries =
+            [
+                new Entry(DocumentPart.RootPath, dictionary[DocumentPart.RootPath]),
+                new Entry(DocumentPart.Template, dictionary[DocumentPart.Template]),
+                new Entry(DocumentPart.RegularEx, dictionary[DocumentPart.RegularEx]),
+            ];
+
+            var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+            serializer.Serialize(writer, entries);
         }
     }
     public class MeasureFirstPartInfo : DocumentInfo
@@ -159,6 +179,11 @@ namespace El2Core.Utils
         {
             base.Collect(document);
         }
+
+        public override Document GetDocument()
+        {
+            return document;
+        }
     }
     public class VmpbDocumentInfo : DocumentInfo
     {
@@ -175,7 +200,7 @@ namespace El2Core.Utils
             document[DocumentPart.RootPath] = string.Empty;
             document[DocumentPart.Template] = string.Empty;
             document[DocumentPart.RegularEx] = string.Empty;
-            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) throw new ArgumentNullException();
+            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
             var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
             TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
@@ -220,6 +245,11 @@ namespace El2Core.Utils
         public void Collect()
         {
             base.Collect(document);
+        }
+
+        public override Document GetDocument()
+        {
+            return document;
         }
     }
     public class WorkareaDocumentInfo : DocumentInfo
@@ -280,6 +310,11 @@ namespace El2Core.Utils
         public void Collect()
         {
             base.Collect(document);
+        }
+
+        public override Document GetDocument()
+        {
+            return document;
         }
     }
     //public class MeasureFirstPartBuilder : DocumentBuilder
@@ -504,6 +539,7 @@ namespace El2Core.Utils
     //        return this;
     //    }
     //}
+
     public class Entry
     {
         public object Key;

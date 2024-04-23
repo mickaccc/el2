@@ -52,6 +52,9 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        public MeasureFirstPartInfo FirstPartInfo { get; private set; }
+        public VmpbDocumentInfo VmpbDocumentInfo { get; private set; }
+        public WorkareaDocumentInfo WorkareaDocumentInfo { get; private set; }
         public string Froot { get; set; }
         public string Ftemplate { get; set; }
         public string Fregex { get; set; }
@@ -72,9 +75,12 @@ namespace Lieferliste_WPF.ViewModels
             ChangeThemeCommand = new ActionCommand(OnChangeThemeExecuted, OnChangeThemeCanExecute);
             ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
             SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
-            var Fdocu = new MeasureFirstPartInfo(container).CreateDocumentInfos();
-            var Vdocu = new VmpbDocumentInfo(container).CreateDocumentInfos();
-            var Workdocu = new WorkareaDocumentInfo(container).CreateDocumentInfos();
+            FirstPartInfo = new MeasureFirstPartInfo(container);
+            var Fdocu = FirstPartInfo.CreateDocumentInfos();
+            VmpbDocumentInfo = new VmpbDocumentInfo(container);
+            var Vdocu = VmpbDocumentInfo.CreateDocumentInfos();
+            WorkareaDocumentInfo = new WorkareaDocumentInfo(container);
+            var Workdocu = WorkareaDocumentInfo.CreateDocumentInfos();
             Froot = Fdocu[DocumentPart.RootPath];
             Ftemplate = Fdocu[DocumentPart.Template];
             Fregex = Fdocu[DocumentPart.RegularEx];
@@ -123,6 +129,28 @@ namespace Lieferliste_WPF.ViewModels
         private void OnSaveExecuted(object obj)
         { 
             _settingsService.Save();
+            bool changed = false;
+            var docu = FirstPartInfo.GetDocument();
+            if (docu[DocumentPart.RootPath] != Froot) { docu[DocumentPart.RootPath] = Froot; changed = true; }
+            if (docu[DocumentPart.Template] != Ftemplate) { docu[DocumentPart.Template] = Ftemplate; changed = true; }
+            if (docu[DocumentPart.RegularEx] != Fregex) { docu[DocumentPart.RegularEx] = Fregex; changed = true; }
+
+            if (changed) { FirstPartInfo.SaveDocumentData(); }
+
+            changed = false;
+            docu = VmpbDocumentInfo.GetDocument();
+            if (docu[DocumentPart.RootPath] != Vroot) { docu[DocumentPart.RootPath] = Vroot; changed = true; }
+            if (docu[DocumentPart.Template] != Vtemplate) { docu[DocumentPart.Template] = Vtemplate; changed = true; }
+            if (docu[DocumentPart.RegularEx] != Vregex) { docu[DocumentPart.RegularEx] = Vregex; changed = true; }
+
+            if (changed) { VmpbDocumentInfo.SaveDocumentData(); }
+
+            changed = false;
+            docu = WorkareaDocumentInfo.GetDocument();
+            if (docu[DocumentPart.RootPath] != Wroot) { docu[DocumentPart.RootPath] = Wroot; changed = true; }
+            if (docu[DocumentPart.RegularEx] != Wregex) { docu[DocumentPart.RegularEx] = Wregex; changed = true; }
+
+            if (changed) { WorkareaDocumentInfo.SaveDocumentData(); }
         }
 
         public string ExplorerPathPattern
