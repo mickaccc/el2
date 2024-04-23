@@ -3,6 +3,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using MaterialDesignColors;
+using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -51,8 +52,16 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-
-        public UserSettingsViewModel(IUserSettingsService settingsService)
+        public string Froot { get; set; }
+        public string Ftemplate { get; set; }
+        public string Fregex { get; set; }
+        public string Vroot { get; set; }
+        public string Vtemplate { get; set; }
+        public string Vregex { get; set; }
+        public string Wroot { get; set; }
+        public string Wregex { get; set; }
+        public WorkareaDocumentInfo WorkareaDocument { get; private set; }
+        public UserSettingsViewModel(IUserSettingsService settingsService, IContainerExtension container)
         {
 
             _settingsService = settingsService;
@@ -63,6 +72,17 @@ namespace Lieferliste_WPF.ViewModels
             ChangeThemeCommand = new ActionCommand(OnChangeThemeExecuted, OnChangeThemeCanExecute);
             ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
             SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
+            var Fdocu = new MeasureFirstPartInfo(container).CreateDocumentInfos();
+            var Vdocu = new VmpbDocumentInfo(container).CreateDocumentInfos();
+            var Workdocu = new WorkareaDocumentInfo(container).CreateDocumentInfos();
+            Froot = Fdocu[DocumentPart.RootPath];
+            Ftemplate = Fdocu[DocumentPart.Template];
+            Fregex = Fdocu[DocumentPart.RegularEx];
+            Vroot = Vdocu[DocumentPart.RootPath];
+            Vtemplate = Vdocu[DocumentPart.Template];
+            Vregex = Vdocu[DocumentPart.RegularEx];
+            Wroot = Workdocu[DocumentPart.RootPath];
+            Wregex = Workdocu[DocumentPart.RegularEx];
         }
 
         private bool OnChangeThemeCanExecute(object arg)

@@ -648,13 +648,12 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void DbOperations()
         {
-
             var Doc = _container.Resolve<DocumentManager>();
-            Doc.Construct(new VmpbPartBuilder(), ["t","w"]);
-            string[] templates = new string[] { "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_93_Positionen.dotx",
-                "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_156_Positionen.dotx",
-                "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_406_Positionen.dotx" };
-            Doc.SaveDocumentData("Q:\\ZproE\\COS_Messdaten", templates, "^(\\w{4})(\\w{3})(\\w+)");
+            //Doc.Construct(new VmpbPartBuilder(), ["t","w"]);
+            //string[] templates = new string[] { "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_93_Positionen.dotx",
+            //    "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_156_Positionen.dotx",
+            //    "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_406_Positionen.dotx" };
+            //Doc.SaveDocumentData("Q:\\ZproE\\COS_Messdaten", templates, "^(\\w{4})(\\w{3})(\\w+)");
 
             //using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             //{

@@ -82,7 +82,38 @@
                 </StackPanel>
             </TabItem>
             <TabItem Header="Global">
-                
+                <TabControl TabStripPlacement="Left">
+                    <TabItem Header="Prüfdatenblatt">
+                        <StackPanel>
+                            <TextBlock Text="Root:"/>
+                            <TextBox Text="{Binding Froot}"/>
+                            <TextBlock Text="Template:"/>
+                            <TextBox Text="{Binding Ftemplate}"/>
+                            <TextBlock Text="RegEx:"/>
+                            <TextBox Text="{Binding Fregex}"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Vormuster">
+
+                        <StackPanel>
+                            <TextBlock Text="Root:"/>
+                                <TextBox Text="{Binding Vroot}"/>
+                                <TextBlock Text="Template:"/>
+                                <TextBox Text="{Binding Vtemplate}"/>
+                                <TextBlock Text="Regex:"/>
+                                <TextBox Text="{Binding Vregex}"/>
+                            </StackPanel>
+         
+                    </TabItem>
+                    <TabItem Header="Bereich">
+                        <StackPanel>
+                            <TextBlock Text="Root:"/>
+                            <TextBox Text="{Binding Wroot}"/>
+                            <TextBlock Text="Regex:"/>
+                            <TextBox Text="{Binding Wregex}"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
             </TabItem>
         </TabControl>
     </Grid>

@@ -44,7 +44,7 @@ namespace El2Core.Utils
     public abstract class DocumentBuilder()
     {
         public IContainerExtension container;
-        public Document Document { get; private set; } = new Document();
+        //public Document Document { get; private set; } = new Document();
         public abstract void Build(IContainerExtension container, string[] ttnr);
         public abstract FileInfo GetDataSheet();
         public abstract void SaveDocumentData();
@@ -54,8 +54,10 @@ namespace El2Core.Utils
         public abstract DocumentBuilder GetBuilder();
  
     }
-
-    public class Document()
+    public interface IDocument
+    {
+    }
+    public abstract class Document()
     {
         private readonly Dictionary<DocumentPart, string> parts =[];
         public string this[DocumentPart key]
@@ -65,228 +67,443 @@ namespace El2Core.Utils
         }
         public int Count => parts.Count;
     }
-    public class MeasureFirstPartBuilder : DocumentBuilder
+    public class FirstPartDocument : Document { }
+    public class VmpbDocument : Document { }
+    public class WorkAreaDocument : Document { }
+    public abstract class DocumentInfo(IContainerExtension container)
     {
-        public CompositeNode<Shape> Root { get; private set; }
-        public MeasureFirstPartBuilder() : base()
-        { }
-        public override void Build(IContainerExtension container, string[] ttnr)
+        private IContainerExtension Container => container;
+        public abstract Document CreateDocumentInfos();
+        public abstract Document CreateDocumentInfos(string[] folders);
+        public void SaveDocumentData(Document document)
         {
-            base.container = container;
-            if (RuleInfo.Rules.Keys.Contains("FirstPart") == false) return;
+            using var db = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            Rule rule;
+            if(db.Rules.All(x => x.RuleValue != document[DocumentPart.Type]))
+            {
+                rule = new Rule()
+                { RuleValue = document[DocumentPart.Type], RuleName = document[DocumentPart.Type] };
+            }
+            else rule = db.Rules.First(x => x.RuleValue == document[DocumentPart.Type]);
+        }
+        public void Collect(Document document)
+        {
+            if (!Directory.Exists(document[DocumentPart.RootPath])) return;
+            string path = document[DocumentPart.RootPath];
+            foreach(var s in document[DocumentPart.SavePath].Split(Path.DirectorySeparatorChar))
+            {
+                path = Path.Combine(path, s);
+                if(!Directory.Exists(path)) Directory.CreateDirectory(path);
+            }
+        }
+    }
+    public class MeasureFirstPartInfo : DocumentInfo
+    {
+        private Document document;
+
+        public MeasureFirstPartInfo(IContainerExtension container) : base(container)
+        {
+        }
+
+        public override Document CreateDocumentInfos(string[]? folders)
+        {
+            document = new FirstPartDocument();
+            document[DocumentPart.Type] = "FirstPart";
+            document[DocumentPart.RootPath] = string.Empty;
+            document[DocumentPart.Template] = string.Empty;
+            document[DocumentPart.RegularEx] = string.Empty;
+            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
             var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
-            TextReader reader = new StringReader(RuleInfo.Rules["FirstPart"].RuleData);
+            TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
             List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
             foreach (var entry in doc)
             {
                 DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
-                Document[DokuPart] = (string)entry.Value;
+                document[DokuPart] = (string)entry.Value;
             }
-            Root = new CompositeNode<Shape> { Node = new Shape(Document[DocumentPart.RootPath]) };
-            Document[DocumentPart.TTNR] = ttnr[0];
-            Regex regex = new Regex(Document[DocumentPart.RegularEx]);
-            Match match2 = regex.Match(ttnr[0]);
-            StringBuilder nsb = new StringBuilder();
-            foreach (Group ma in match2.Groups.Values.Skip(1))
+            if (folders != null)
             {
-                if (ma.Value != ttnr[0])
+
+                document[DocumentPart.TTNR] = folders[0];
+                Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                Match match2 = regex.Match(folders[0]);
+                StringBuilder nsb = new StringBuilder();
+                foreach (Group ma in match2.Groups.Values.Skip(1))
                 {
-                    nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
-                    Root.Add(new Shape(ma.Value));
+                    if (ma.Value != folders[0])
+                    {
+                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                    }
                 }
+                document[DocumentPart.SavePath] = nsb.ToString();
+                FileInfo f = new(document[DocumentPart.Template]);
+                document[DocumentPart.File] = Path.Combine(
+                    document[DocumentPart.RootPath],
+                    document[DocumentPart.SavePath],
+                    f.Name.Replace("Messblatt", folders[0])); 
             }
-            Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString());
-            FileInfo f = new(Document[DocumentPart.Template]);
-            Document[DocumentPart.File] = Path.Combine(Document[DocumentPart.SavePath], f.Name.Replace("Messblatt", ttnr[0]));
-        }
-        public override FileInfo GetDataSheet()
-        {
-            return new FileInfo(Document[DocumentPart.File]);
+
+            return document;
         }
 
-        public override void SaveDocumentData()
+        public override Document CreateDocumentInfos()
         {
-            throw new NotImplementedException();
+            return CreateDocumentInfos(null);
         }
-
-        public override void SaveDocumentData(string rootPath, string[] template, string RegEx)
+        public void SaveDocumentData()
         {
-            var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var rule = db.Rules.SingleOrDefault(x => x.RuleValue == "M1");
-            //var xml = XmlSerializerHelper.GetSerializer(typeof(Dictionary<string, string>));
-
-            if(rule == null) { rule = new(); rule.RuleName = "FirstPart"; rule.RuleValue = "M1"; db.Rules.Add(rule); }
-            var dict = new Dictionary<string, string>();
-            Document[DocumentPart.RootPath] = rootPath;
-            Document[DocumentPart.Template] = template[0];
-            Document[DocumentPart.RegularEx] = RegEx;
-
-            StringWriter sw = new StringWriter();
-            Serialize(sw, Document);
-            rule.RuleData = sw.ToString();
-            
-            db.SaveChanges();
+            base.SaveDocumentData(document);
         }
-        private static void Serialize(TextWriter writer, Document dictionary)
+        public void Collect()
         {
-            List<Entry> entries = new List<Entry>();
-    
-                
-            entries.Add(new Entry(DocumentPart.RootPath, dictionary[DocumentPart.RootPath]));
-            entries.Add(new Entry(DocumentPart.Template, dictionary[DocumentPart.Template]));
-            entries.Add(new Entry(DocumentPart.RegularEx, dictionary[DocumentPart.RegularEx]));
-
-            var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
-            serializer.Serialize(writer, entries);
-        }
-        private static void Deserialize(TextReader reader, IDictionary dictionary)
-        {
-            dictionary.Clear();
-            XmlSerializer serializer = new XmlSerializer(typeof(List<Entry>));
-            List<Entry> list = (List<Entry>)serializer.Deserialize(reader);
-            foreach (Entry entry in list)
-            {
-                dictionary[entry.Key] = entry.Value;
-            }
-        }
-
-        public override string Collect()
-        {
-            string path = Root.Node.ToString();
-            if (!Directory.Exists(path)) return string.Empty;
-            List<CompositeNode<Shape>>? listdir = Root.Children;
-
-            for (int i = 0; i < listdir?.Count; i++)
-            {
-                path = Path.Combine(path, listdir[i].Node.ToString());
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            }
-            return path;
-        }
-
-        public override string Collect(string target)
-        {
-            return Path.Combine(Collect(), target);
-        }
-
-        public override DocumentBuilder GetBuilder()
-        {
-            return this;
+            base.Collect(document);
         }
     }
-    public class VmpbPartBuilder : DocumentBuilder
+    public class VmpbDocumentInfo : DocumentInfo
     {
-        public CompositeNode<Shape> Root { get; private set; }
-        public VmpbPartBuilder() : base()
-        { }
-        public override void Build(IContainerExtension container, string[] ttnr)
+        private Document document;
+
+        public VmpbDocumentInfo(IContainerExtension container) : base(container)
         {
-            base.container = container;
-            if (RuleInfo.Rules.Keys.Contains("VmpbPart") == false) return;
+        }
+
+        public override Document CreateDocumentInfos(string[]? folders)
+        {
+            document = new VmpbDocument();
+            document[DocumentPart.Type] = "VmpbPart";
+            document[DocumentPart.RootPath] = string.Empty;
+            document[DocumentPart.Template] = string.Empty;
+            document[DocumentPart.RegularEx] = string.Empty;
+            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) throw new ArgumentNullException();
             var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
-            TextReader reader = new StringReader(RuleInfo.Rules["VmpbPart"].RuleData);
+            TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
             List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
             foreach (var entry in doc)
             {
                 DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
-                Document[DokuPart] = (string)entry.Value;
+                document[DokuPart] = (string)entry.Value;
             }
-            Root = new CompositeNode<Shape> { Node = new Shape(Document[DocumentPart.RootPath]) };
-            Document[DocumentPart.TTNR] = ttnr[0];
-            Regex regex = new Regex(Document[DocumentPart.RegularEx]);
-            Match match2 = regex.Match(ttnr[0]);
-            StringBuilder nsb = new StringBuilder();
-            foreach (Group ma in match2.Groups.Values.Skip(1))
+            if (folders != null)
             {
-                if (ma.Value != ttnr[0])
+
+                document[DocumentPart.TTNR] = folders[0];
+                Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                Match match2 = regex.Match(folders[0]);
+                StringBuilder nsb = new StringBuilder();
+                foreach (Group ma in match2.Groups.Values.Skip(1))
                 {
-                    nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
-                    Root.Add(new Shape(ma.Value));
+                    if (ma.Value != folders[0])
+                    {
+                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                    }
                 }
+                document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar).ToString();
+                document[DocumentPart.File] = Path.Combine(
+                    document[DocumentPart.RootPath],
+                    document[DocumentPart.SavePath],
+                    folders[0] + "_VMPB.dotx"); 
             }
-            
-            Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString(), ttnr[1]);
-            FileInfo f = new(Document[DocumentPart.Template]);
-            Document[DocumentPart.File] = Path.Combine(Document[DocumentPart.SavePath], ttnr[0] + "_VMPB.dotx");
-        }
-        public override FileInfo GetDataSheet()
-        {
-            return new FileInfo(Document[DocumentPart.File]);
+
+            return document;
         }
 
-        public override void SaveDocumentData()
+        public override Document CreateDocumentInfos()
         {
-            throw new NotImplementedException();
+            return CreateDocumentInfos(null);
         }
-
-        public override void SaveDocumentData(string rootPath, string[] template, string RegEx)
+        public void SaveDocumentData()
         {
-            var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var rule = db.Rules.SingleOrDefault(x => x.RuleValue == "M2");
-            //var xml = XmlSerializerHelper.GetSerializer(typeof(Dictionary<string, string>));
-
-            if (rule == null) { rule = new(); rule.RuleName = "VmpbPart"; rule.RuleValue = "M2"; db.Rules.Add(rule); }
-            var dict = new Dictionary<string, string>();
-            Document[DocumentPart.RootPath] = rootPath;
-            Document[DocumentPart.Template] = template[0];
-            Document[DocumentPart.Template_Size2] = template[1];
-            Document[DocumentPart.Template_Size3] = template[2];
-            Document[DocumentPart.RegularEx] = RegEx;
-
-            StringWriter sw = new StringWriter();
-            Serialize(sw, Document);
-            rule.RuleData = sw.ToString();
-
-            db.SaveChanges();
+            base.SaveDocumentData(document);
         }
-        private static void Serialize(TextWriter writer, Document dictionary)
+        public void Collect()
         {
-            List<Entry> entries = new List<Entry>();
-
-
-            entries.Add(new Entry(DocumentPart.RootPath, dictionary[DocumentPart.RootPath]));
-            entries.Add(new Entry(DocumentPart.Template, dictionary[DocumentPart.Template]));
-            entries.Add(new Entry(DocumentPart.Template_Size2, dictionary[DocumentPart.Template_Size2]));
-            entries.Add(new Entry(DocumentPart.Template_Size3, dictionary[DocumentPart.Template_Size3]));
-            entries.Add(new Entry(DocumentPart.RegularEx, dictionary[DocumentPart.RegularEx]));
-
-            var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
-            serializer.Serialize(writer, entries);
-        }
-        private static void Deserialize(TextReader reader, IDictionary dictionary)
-        {
-            dictionary.Clear();
-            XmlSerializer serializer = new XmlSerializer(typeof(List<Entry>));
-            List<Entry> list = (List<Entry>)serializer.Deserialize(reader);
-            foreach (Entry entry in list)
-            {
-                dictionary[entry.Key] = entry.Value;
-            }
-        }
-
-        public override string Collect()
-        {
-
-            if (!Directory.Exists(Document[DocumentPart.RootPath])) return string.Empty;
-            
-            string path = Document[DocumentPart.SavePath];
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-      
-            return path;
-        }
-
-        public override string Collect(string target)
-        {
-            return Path.Combine(Collect(), target);
-        }
-
-        public override DocumentBuilder GetBuilder()
-        {
-            return this;
+            base.Collect(document);
         }
     }
+    public class WorkareaDocumentInfo : DocumentInfo
+    {
+        private Document document;
+
+        public WorkareaDocumentInfo(IContainerExtension container) : base(container)
+        {
+        }
+
+        public override Document CreateDocumentInfos(string[]? folders)
+        {
+            document = new FirstPartDocument();
+            document[DocumentPart.Type] = "WorkPart";
+            document[DocumentPart.RootPath] = string.Empty;
+            document[DocumentPart.Template] = string.Empty;
+            document[DocumentPart.RegularEx] = string.Empty;
+            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
+            var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+
+            TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
+            List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+            foreach (var entry in doc)
+            {
+                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+                document[DokuPart] = (string)entry.Value;
+            }
+
+            if (folders != null)
+            {
+
+                document[DocumentPart.TTNR] = folders[0];
+                Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                Match match2 = regex.Match(folders[0]);
+                StringBuilder nsb = new StringBuilder();
+                foreach (Group ma in match2.Groups.Values.Skip(1))
+                {
+                    if (ma.Value != folders[0])
+                    {
+                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                    }
+                }
+                document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar)
+                    .Append(folders[2]).Append(Path.DirectorySeparatorChar).ToString(); 
+            }
+
+            return document;
+        }
+
+        public override Document CreateDocumentInfos()
+        {
+            return CreateDocumentInfos(null);
+        }
+        public void SaveDocumentData()
+        {
+            base.SaveDocumentData(document);
+        }
+        public void Collect()
+        {
+            base.Collect(document);
+        }
+    }
+    //public class MeasureFirstPartBuilder : DocumentBuilder
+    //{
+    //    public CompositeNode<Shape> Root { get; private set; }
+    //    public MeasureFirstPartBuilder() : base()
+    //    { }
+    //    public override void Build(IContainerExtension container, string[] ttnr)
+    //    {
+    //        base.container = container;
+    //        if (RuleInfo.Rules.Keys.Contains("FirstPart") == false) return;
+    //        var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+
+    //        TextReader reader = new StringReader(RuleInfo.Rules["FirstPart"].RuleData);
+    //        List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+    //        foreach (var entry in doc)
+    //        {
+    //            DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+    //            Document[DokuPart] = (string)entry.Value;
+    //        }
+    //        Root = new CompositeNode<Shape> { Node = new Shape(Document[DocumentPart.RootPath]) };
+    //        Document[DocumentPart.TTNR] = ttnr[0];
+    //        Regex regex = new Regex(Document[DocumentPart.RegularEx]);
+    //        Match match2 = regex.Match(ttnr[0]);
+    //        StringBuilder nsb = new StringBuilder();
+    //        foreach (Group ma in match2.Groups.Values.Skip(1))
+    //        {
+    //            if (ma.Value != ttnr[0])
+    //            {
+    //                nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+    //                Root.Add(new Shape(ma.Value));
+    //            }
+    //        }
+    //        Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString());
+    //        FileInfo f = new(Document[DocumentPart.Template]);
+    //        Document[DocumentPart.File] = Path.Combine(Document[DocumentPart.SavePath], f.Name.Replace("Messblatt", ttnr[0]));
+    //    }
+    //    public override FileInfo GetDataSheet()
+    //    {
+    //        return new FileInfo(Document[DocumentPart.File]);
+    //    }
+
+    //    public override void SaveDocumentData()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public override void SaveDocumentData(string rootPath, string[] template, string RegEx)
+    //    {
+    //        var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+    //        var rule = db.Rules.SingleOrDefault(x => x.RuleValue == "M1");
+    //        //var xml = XmlSerializerHelper.GetSerializer(typeof(Dictionary<string, string>));
+
+    //        if(rule == null) { rule = new(); rule.RuleName = "FirstPart"; rule.RuleValue = "M1"; db.Rules.Add(rule); }
+    //        var dict = new Dictionary<string, string>();
+    //        Document[DocumentPart.RootPath] = rootPath;
+    //        Document[DocumentPart.Template] = template[0];
+    //        Document[DocumentPart.RegularEx] = RegEx;
+
+    //        StringWriter sw = new StringWriter();
+    //        Serialize(sw, Document);
+    //        rule.RuleData = sw.ToString();
+
+    //        db.SaveChanges();
+    //    }
+    //    private static void Serialize(TextWriter writer, Document dictionary)
+    //    {
+    //        List<Entry> entries = new List<Entry>();
+
+
+    //        entries.Add(new Entry(DocumentPart.RootPath, dictionary[DocumentPart.RootPath]));
+    //        entries.Add(new Entry(DocumentPart.Template, dictionary[DocumentPart.Template]));
+    //        entries.Add(new Entry(DocumentPart.RegularEx, dictionary[DocumentPart.RegularEx]));
+
+    //        var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+    //        serializer.Serialize(writer, entries);
+    //    }
+    //    private static void Deserialize(TextReader reader, IDictionary dictionary)
+    //    {
+    //        dictionary.Clear();
+    //        XmlSerializer serializer = new XmlSerializer(typeof(List<Entry>));
+    //        List<Entry> list = (List<Entry>)serializer.Deserialize(reader);
+    //        foreach (Entry entry in list)
+    //        {
+    //            dictionary[entry.Key] = entry.Value;
+    //        }
+    //    }
+
+    //    public override string Collect()
+    //    {
+    //        string path = Root.Node.ToString();
+    //        if (!Directory.Exists(path)) return string.Empty;
+    //        List<CompositeNode<Shape>>? listdir = Root.Children;
+
+    //        for (int i = 0; i < listdir?.Count; i++)
+    //        {
+    //            path = Path.Combine(path, listdir[i].Node.ToString());
+    //            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+    //        }
+    //        return path;
+    //    }
+
+    //    public override string Collect(string target)
+    //    {
+    //        return Path.Combine(Collect(), target);
+    //    }
+
+    //    public override DocumentBuilder GetBuilder()
+    //    {
+    //        return this;
+    //    }
+    //}
+    //public class VmpbPartBuilder : DocumentBuilder
+    //{
+    //    public CompositeNode<Shape> Root { get; private set; }
+    //    public VmpbPartBuilder() : base()
+    //    { }
+    //    public override void Build(IContainerExtension container, string[] ttnr)
+    //    {
+    //        base.container = container;
+    //        if (RuleInfo.Rules.Keys.Contains("VmpbPart") == false) return;
+    //        var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+
+    //        TextReader reader = new StringReader(RuleInfo.Rules["VmpbPart"].RuleData);
+    //        List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+    //        foreach (var entry in doc)
+    //        {
+    //            DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+    //            Document[DokuPart] = (string)entry.Value;
+    //        }
+    //        Root = new CompositeNode<Shape> { Node = new Shape(Document[DocumentPart.RootPath]) };
+    //        Document[DocumentPart.TTNR] = ttnr[0];
+    //        Regex regex = new Regex(Document[DocumentPart.RegularEx]);
+    //        Match match2 = regex.Match(ttnr[0]);
+    //        StringBuilder nsb = new StringBuilder();
+    //        foreach (Group ma in match2.Groups.Values.Skip(1))
+    //        {
+    //            if (ma.Value != ttnr[0])
+    //            {
+    //                nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+    //                Root.Add(new Shape(ma.Value));
+    //            }
+    //        }
+
+    //        Document[DocumentPart.SavePath] = Path.Combine(Document[DocumentPart.RootPath], nsb.ToString(), ttnr[1]);
+    //        FileInfo f = new(Document[DocumentPart.Template]);
+    //        Document[DocumentPart.File] = Path.Combine(Document[DocumentPart.SavePath], ttnr[0] + "_VMPB.dotx");
+    //    }
+    //    public override FileInfo GetDataSheet()
+    //    {
+    //        return new FileInfo(Document[DocumentPart.File]);
+    //    }
+
+    //    public override void SaveDocumentData()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public override void SaveDocumentData(string rootPath, string[] template, string RegEx)
+    //    {
+    //        var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+    //        var rule = db.Rules.SingleOrDefault(x => x.RuleValue == "M2");
+    //        //var xml = XmlSerializerHelper.GetSerializer(typeof(Dictionary<string, string>));
+
+    //        if (rule == null) { rule = new(); rule.RuleName = "VmpbPart"; rule.RuleValue = "M2"; db.Rules.Add(rule); }
+    //        var dict = new Dictionary<string, string>();
+    //        Document[DocumentPart.RootPath] = rootPath;
+    //        Document[DocumentPart.Template] = template[0];
+    //        Document[DocumentPart.Template_Size2] = template[1];
+    //        Document[DocumentPart.Template_Size3] = template[2];
+    //        Document[DocumentPart.RegularEx] = RegEx;
+
+    //        StringWriter sw = new StringWriter();
+    //        Serialize(sw, Document);
+    //        rule.RuleData = sw.ToString();
+
+    //        db.SaveChanges();
+    //    }
+    //    private static void Serialize(TextWriter writer, Document dictionary)
+    //    {
+    //        List<Entry> entries = new List<Entry>();
+
+
+    //        entries.Add(new Entry(DocumentPart.RootPath, dictionary[DocumentPart.RootPath]));
+    //        entries.Add(new Entry(DocumentPart.Template, dictionary[DocumentPart.Template]));
+    //        entries.Add(new Entry(DocumentPart.Template_Size2, dictionary[DocumentPart.Template_Size2]));
+    //        entries.Add(new Entry(DocumentPart.Template_Size3, dictionary[DocumentPart.Template_Size3]));
+    //        entries.Add(new Entry(DocumentPart.RegularEx, dictionary[DocumentPart.RegularEx]));
+
+    //        var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+    //        serializer.Serialize(writer, entries);
+    //    }
+    //    private static void Deserialize(TextReader reader, IDictionary dictionary)
+    //    {
+    //        dictionary.Clear();
+    //        XmlSerializer serializer = new XmlSerializer(typeof(List<Entry>));
+    //        List<Entry> list = (List<Entry>)serializer.Deserialize(reader);
+    //        foreach (Entry entry in list)
+    //        {
+    //            dictionary[entry.Key] = entry.Value;
+    //        }
+    //    }
+
+    //    public override string Collect()
+    //    {
+
+    //        if (!Directory.Exists(Document[DocumentPart.RootPath])) return string.Empty;
+
+    //        string path = Document[DocumentPart.SavePath];
+    //        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+    //        return path;
+    //    }
+
+    //    public override string Collect(string target)
+    //    {
+    //        return Path.Combine(Collect(), target);
+    //    }
+
+    //    public override DocumentBuilder GetBuilder()
+    //    {
+    //        return this;
+    //    }
+    //}
     public class Entry
     {
         public object Key;
@@ -310,7 +527,8 @@ namespace El2Core.Utils
         Template_Size3,
         SavePath,
         TTNR,
-        File
+        File,
+        Type
     }
     public enum DocumentType
     {
@@ -318,6 +536,13 @@ namespace El2Core.Utils
         MeasureFirstPart,
         MeasureVMPB
     }
+
+    abstract class DocumentCreator
+    {
+        public abstract IDocument FactoryMethod();
+    }
+
+
 
     /// <summary>
     /// Generic tree node class
