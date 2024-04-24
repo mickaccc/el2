@@ -37,7 +37,7 @@
                     Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
         <Border Grid.Row="1">
-            <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding FirstDocumentItems}" 
+            <ItemsControl Background="{DynamicResource MahApps.Brushes.Accent}" ItemsSource="{Binding FirstDocumentItems}" x:Name="first" 
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
                 <ItemsControl.ItemsPanel>
@@ -69,8 +69,9 @@
             <dotnetkit:AutoCompleteComboBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Aid}"/>
-                        <TextBlock Text="{Binding Material}"/>
+                        <TextBlock Text="{Binding Aid}" Margin="10"/>
+                        <TextBlock Text="{Binding Material}" Margin="10"/>
+                        <TextBlock Text="{Binding MaterialNavigation.Bezeichng}" Margin="10"/>
                     </StackPanel>
                 </DataTemplate>
             </dotnetkit:AutoCompleteComboBox.ItemTemplate>
@@ -90,7 +91,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>-->
-        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OrderList}" IsReadOnly="True" AutoGenerateColumns="False">
+        <!--<DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OrderList}" IsReadOnly="True" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding Aid}"/>
                 <DataGridTextColumn Header="Material" Binding="{Binding Material}"/>
@@ -102,13 +103,13 @@
                                            CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-        </DataGrid>
-        <Grid  Grid.Row="1" Grid.Column="2">
+        </DataGrid>-->
+        <Grid  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-        <ItemsControl Grid.Column="0" Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" 
+        <ItemsControl Grid.Column="0" Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" x:Name="vmpb"
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
             <ItemsControl.ItemsPanel>
@@ -130,7 +131,7 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-            <ItemsControl Grid.Column="1" Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" 
+            <ItemsControl Grid.Column="1" Background="{DynamicResource MahApps.Brushes.Accent2}" ItemsSource="{Binding PartDocumentItems}" x:Name="part"
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
                 <ItemsControl.ItemsPanel>
