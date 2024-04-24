@@ -217,43 +217,48 @@ namespace ModuleMeasuring.ViewModels
         }
         private void onVmpbExecuted(object obj)
         {
-            var mes = _orders.First(x => x.Aid == _orderSearch);
-            var oa = new string[] { mes.Material, mes.Aid };
-
-            //DocumentBuilder FirstMeaDocBuilder = new MeasureFirstPartBuilder();
-            //FirstDocumentManager.Construct(FirstMeaDocBuilder, oa);
-
-            //DocumentBuilder VmpbBuilder = new VmpbPartBuilder();
-            //VmpbDocumentManager.Construct(VmpbBuilder, oa);
-            //var VmpbTarget = VmpbDocumentManager.Collect();
-
-            //#region VmpbMeasure
-            //FileInfo Vmpbfile = new FileInfo(VmpbBuilder.Document[DocumentPart.Template]);
-            //var Vmpbtarg = VmpbBuilder.GetDataSheet();
-            //if (!Vmpbtarg.Exists)
-            //    File.Copy(Vmpbfile.FullName, Vmpbtarg.FullName);
-
-            //_VmpbDocumentItems.Clear();
-            //foreach (var d in Vmpbtarg.Directory.GetFiles())
-            //{
-            //    _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
-            //}
-
-            //#endregion
-
-            var vm = new VmpbDocumentInfo(_container);
-            var docu = vm.CreateDocumentInfos(oa);
-            vm.Collect();
-            FileInfo vmfile = new FileInfo(docu[DocumentPart.Template]);
-            var vmtarg = new FileInfo(docu[DocumentPart.File]);
-            if (!vmtarg.Exists)
-                File.Copy(vmfile.FullName, vmtarg.FullName);
-
-            _VmpbDocumentItems.Clear();
-            foreach (var d in vmtarg.Directory.GetFiles())
+            try
             {
-                _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+                var mes = _orders.First(x => x.Aid == _orderSearch);
+                var oa = new string[] { mes.Material, mes.Aid };
+                var size = (string)obj;
+                var vm = new VmpbDocumentInfo(_container);
+                var docu = vm.CreateDocumentInfos(oa);
+                vm.Collect();
+                FileInfo vmFile;
+                switch (size)
+                {
+                    case "size1":
+                        vmFile = new FileInfo(docu[DocumentPart.Template]);
+                        break;
+                    case "size2":
+                        vmFile = new FileInfo(docu[DocumentPart.Template_Size2]);
+                        break;
+                    case "size3":
+                        vmFile = new FileInfo(docu[DocumentPart.Template_Size3]);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+                var vmtarg = new FileInfo(docu[DocumentPart.File]);
+                if (!vmtarg.Exists)
+                    File.Copy(vmFile.FullName, vmtarg.FullName);
+
+                _VmpbDocumentItems.Clear();
+                foreach (var d in vmtarg.Directory.GetFiles())
+                {
+                    _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+                }
             }
+            catch (NotImplementedException)
+            {
+                MessageBox.Show("Keine Vorlage definiert", "Vormusterprüfbericht", MessageBoxButton.OK);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error Vmpb", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+ 
         }
         private void onFilterPredicate(object sender, FilterEventArgs e)
         {

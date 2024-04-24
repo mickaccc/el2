@@ -104,7 +104,10 @@ namespace ModulePlanning.ViewModels
 
         private void ctxChanged(int obj)
         {
-            _DbCtx.SaveChanges();
+            lock (_lock)
+            {
+                _DbCtx.SaveChangesAsync();
+            }
         }
 
         private void MessageVorgangReceived(List<string?> list)
@@ -242,7 +245,10 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
+                lock (_lock)
+                {
+                    if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -458,7 +464,7 @@ namespace ModulePlanning.ViewModels
                 for (var i = 0; i < _machines.Count; i++)
                 {
                     var vv = _DbCtx.Ressources.First(x => x.RessourceId == _machines[i].Rid);
-                    vv.Sort = (vv.Visability) ? i : 1000;
+                    vv.Sort = (vv.Visability ??= false) ? i : 1000;
                 }
                 _DbCtx.SaveChanges();
             }

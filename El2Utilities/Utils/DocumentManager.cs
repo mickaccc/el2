@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace El2Core.Utils
@@ -66,6 +67,7 @@ namespace El2Core.Utils
             set => parts[key] = value;
         }
         public int Count => parts.Count;
+        public HashSet<DocumentPart> Keys => parts.Keys.ToHashSet();
     }
     public class FirstPartDocument : Document { }
     public class VmpbDocument : Document { }
@@ -106,12 +108,13 @@ namespace El2Core.Utils
         }
         private static void Serialize(TextWriter writer, Document dictionary)
         {
-            List<Entry> entries =
-            [
-                new Entry(DocumentPart.RootPath, dictionary[DocumentPart.RootPath]),
-                new Entry(DocumentPart.Template, dictionary[DocumentPart.Template]),
-                new Entry(DocumentPart.RegularEx, dictionary[DocumentPart.RegularEx]),
-            ];
+
+            List<Entry> entries = [];
+
+            foreach(var k in dictionary.Keys)
+            {
+                entries.Add(new Entry(k, dictionary[k]));
+            }
 
             var serializer = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
             serializer.Serialize(writer, entries);

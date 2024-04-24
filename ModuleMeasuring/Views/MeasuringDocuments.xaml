@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:dotnetkit="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox"
              xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:prism="http://prismlibrary.com/"
@@ -24,7 +25,17 @@
         <StackPanel Orientation="Horizontal">
             <Button Content="Prüfdatenblatt" Command="{Binding PruefDataCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
-        <Button Grid.Column="2" Content="Vormusterpüfbericht" Command="{Binding VmpbCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+        <StackPanel Grid.Column="2" Orientation="Horizontal">
+            <Button Content="Vmpb_93" Command="{Binding VmpbCommand}"
+                    CommandParameter="size1"
+                    Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="Vmpb_156" Command="{Binding VmpbCommand}"
+                    CommandParameter="size2"
+                    Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="Vmpb_406" Command="{Binding VmpbCommand}"
+                    CommandParameter="size3"
+                    Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+        </StackPanel>
         <Border Grid.Row="1">
             <ItemsControl Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding FirstDocumentItems}" 
                 dd:DragDrop.IsDropTarget="True"
@@ -49,13 +60,36 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Border>
-        <TextBox Grid.Column="1" x:Name="searchOrd" Style="{DynamicResource MahApps.Styles.TextBox}" Text="{Binding OrderSearch}">
+        <dotnetkit:AutoCompleteComboBox Grid.Column="1"
+                                        SelectedValuePath="Aid"
+                                        TextSearch.TextPath="Aid"
+                                        ItemsSource="{Binding OrderList}"
+                                        SelectedItem="{Binding SelectedItem}"
+                                        SelectedValue="{Binding SelectedValue}">
+            <dotnetkit:AutoCompleteComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Aid}"/>
+                        <TextBlock Text="{Binding Material}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </dotnetkit:AutoCompleteComboBox.ItemTemplate>
+            <dotnetkit:AutoCompleteComboBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </dotnetkit:AutoCompleteComboBox.ItemsPanel>
+        
+        </dotnetkit:AutoCompleteComboBox>
+
+
+        <!--<TextBox Grid.Column="1" x:Name="searchOrd" Style="{DynamicResource MahApps.Styles.TextBox}" Text="{Binding OrderSearch}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="TextChanged">
                     <i:InvokeCommandAction Command="{Binding SearchChangedCommand}" CommandParameter="{Binding Text, ElementName=searchOrd}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-        </TextBox>
+        </TextBox>-->
         <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OrderList}" IsReadOnly="True" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding Aid}"/>
@@ -69,7 +103,12 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </DataGrid>
-        <ItemsControl Grid.Row="1" Grid.Column="2"  Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" 
+        <Grid  Grid.Row="1" Grid.Column="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+        <ItemsControl Grid.Column="0" Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" 
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
             <ItemsControl.ItemsPanel>
@@ -91,5 +130,28 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+            <ItemsControl Grid.Column="1" Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" 
+                dd:DragDrop.IsDropTarget="True"
+                dd:DragDrop.DropHandler="{Binding}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <mah:Badged BadgePlacementMode="BottomLeft" >
+                            <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                <StackPanel>
+                                    <icon:FileIcons Kind="Excel" Width="120"/>
+                                    <TextBlock Text="{Binding Display}"/>
+                                </StackPanel>
+                            </Button>
+                        </mah:Badged>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
     </Grid>
 </UserControl>

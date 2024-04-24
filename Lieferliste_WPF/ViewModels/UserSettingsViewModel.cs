@@ -55,14 +55,9 @@ namespace Lieferliste_WPF.ViewModels
         public MeasureFirstPartInfo FirstPartInfo { get; private set; }
         public VmpbDocumentInfo VmpbDocumentInfo { get; private set; }
         public WorkareaDocumentInfo WorkareaDocumentInfo { get; private set; }
-        public string Froot { get; set; }
-        public string Ftemplate { get; set; }
-        public string Fregex { get; set; }
-        public string Vroot { get; set; }
-        public string Vtemplate { get; set; }
-        public string Vregex { get; set; }
-        public string Wroot { get; set; }
-        public string Wregex { get; set; }
+        public Document Fdocu {  get; private set; }
+        public Document Vdocu { get; private set; }
+        public Document Wdocu { get; private set; }
         public WorkareaDocumentInfo WorkareaDocument { get; private set; }
         public UserSettingsViewModel(IUserSettingsService settingsService, IContainerExtension container)
         {
@@ -76,19 +71,11 @@ namespace Lieferliste_WPF.ViewModels
             ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
             SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
             FirstPartInfo = new MeasureFirstPartInfo(container);
-            var Fdocu = FirstPartInfo.CreateDocumentInfos();
+            Fdocu = FirstPartInfo.CreateDocumentInfos();
             VmpbDocumentInfo = new VmpbDocumentInfo(container);
-            var Vdocu = VmpbDocumentInfo.CreateDocumentInfos();
+            Vdocu = VmpbDocumentInfo.CreateDocumentInfos();
             WorkareaDocumentInfo = new WorkareaDocumentInfo(container);
-            var Workdocu = WorkareaDocumentInfo.CreateDocumentInfos();
-            Froot = Fdocu[DocumentPart.RootPath];
-            Ftemplate = Fdocu[DocumentPart.Template];
-            Fregex = Fdocu[DocumentPart.RegularEx];
-            Vroot = Vdocu[DocumentPart.RootPath];
-            Vtemplate = Vdocu[DocumentPart.Template];
-            Vregex = Vdocu[DocumentPart.RegularEx];
-            Wroot = Workdocu[DocumentPart.RootPath];
-            Wregex = Workdocu[DocumentPart.RegularEx];
+            Wdocu = WorkareaDocumentInfo.CreateDocumentInfos();
         }
 
         private bool OnChangeThemeCanExecute(object arg)
@@ -123,34 +110,15 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
-            return _settingsService.IsChanged;
+            return _settingsService.IsChanged ;
         }
 
         private void OnSaveExecuted(object obj)
         { 
             _settingsService.Save();
-            bool changed = false;
-            var docu = FirstPartInfo.GetDocument();
-            if (docu[DocumentPart.RootPath] != Froot) { docu[DocumentPart.RootPath] = Froot; changed = true; }
-            if (docu[DocumentPart.Template] != Ftemplate) { docu[DocumentPart.Template] = Ftemplate; changed = true; }
-            if (docu[DocumentPart.RegularEx] != Fregex) { docu[DocumentPart.RegularEx] = Fregex; changed = true; }
-
-            if (changed) { FirstPartInfo.SaveDocumentData(); }
-
-            changed = false;
-            docu = VmpbDocumentInfo.GetDocument();
-            if (docu[DocumentPart.RootPath] != Vroot) { docu[DocumentPart.RootPath] = Vroot; changed = true; }
-            if (docu[DocumentPart.Template] != Vtemplate) { docu[DocumentPart.Template] = Vtemplate; changed = true; }
-            if (docu[DocumentPart.RegularEx] != Vregex) { docu[DocumentPart.RegularEx] = Vregex; changed = true; }
-
-            if (changed) { VmpbDocumentInfo.SaveDocumentData(); }
-
-            changed = false;
-            docu = WorkareaDocumentInfo.GetDocument();
-            if (docu[DocumentPart.RootPath] != Wroot) { docu[DocumentPart.RootPath] = Wroot; changed = true; }
-            if (docu[DocumentPart.RegularEx] != Wregex) { docu[DocumentPart.RegularEx] = Wregex; changed = true; }
-
-            if (changed) { WorkareaDocumentInfo.SaveDocumentData(); }
+            FirstPartInfo.SaveDocumentData();
+            VmpbDocumentInfo.SaveDocumentData();
+            WorkareaDocumentInfo.SaveDocumentData();
         }
 
         public string ExplorerPathPattern

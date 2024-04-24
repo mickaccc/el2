@@ -433,7 +433,7 @@ namespace ModuleDeliverList.ViewModels
 
             var accepted = ord.Aktuell;
 
-            if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = ord.Visability;
+            if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = ord.Visability ??= false;
 
             if (!string.IsNullOrWhiteSpace(_searchFilterText))
             {

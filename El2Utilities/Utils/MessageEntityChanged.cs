@@ -13,5 +13,6 @@ namespace El2Core.Utils
     public class ContextPlanMachineChanged : PubSubEvent<int>
     { }
     public class SearchTextFilter : PubSubEvent<string> { }
+    public class MessagePlanmachineChanged : PubSubEvent<Vorgang> { }
 
 }

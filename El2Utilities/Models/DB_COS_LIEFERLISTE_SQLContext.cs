@@ -273,9 +273,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Abteilung).HasMaxLength(15);
             entity.Property(e => e.Info).HasMaxLength(255);
             entity.Property(e => e.Inventarnummer).HasMaxLength(255);
-            entity.Property(e => e.ProcessAddable).HasDefaultValue(true);
+            entity.Property(e => e.ProcessAddable)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
             entity.Property(e => e.RessName).HasMaxLength(30);
-            entity.Property(e => e.Visability).HasDefaultValue(true);
+            entity.Property(e => e.Visability)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
 
             entity.HasOne(d => d.WorkArea).WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.WorkAreaId)
@@ -394,7 +398,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.ToTable("User");
 
             entity.Property(e => e.UserIdent).HasMaxLength(255);
-            entity.Property(e => e.Exited).HasDefaultValue(false);
+            entity.Property(e => e.Exited).HasDefaultValueSql("((0))");
             entity.Property(e => e.UsrEmail).HasMaxLength(50);
             entity.Property(e => e.UsrGroup).HasMaxLength(50);
             entity.Property(e => e.UsrInfo).HasMaxLength(50);
@@ -523,7 +527,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("Bem_T");
             entity.Property(e => e.Bullet)
                 .HasMaxLength(9)
-                .HasDefaultValue("#FFFFFFFF");
+                .HasDefaultValueSql("(N'#FFFFFFFF')");
             entity.Property(e => e.BulletTwo).HasMaxLength(9);
             entity.Property(e => e.CommentMach).IsUnicode(false);
             entity.Property(e => e.MarkCode).HasMaxLength(50);
@@ -551,7 +555,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.SysStatus).HasMaxLength(255);
             entity.Property(e => e.Termin).HasColumnType("datetime");
             entity.Property(e => e.Text).HasMaxLength(150);
-            entity.Property(e => e.Visability).HasDefaultValue(true);
+            entity.Property(e => e.Visability)
+                .IsRequired()
+                .HasDefaultValueSql("((1))");
             entity.Property(e => e.Vnr).HasColumnName("VNR");
             entity.Property(e => e.Wrtze).HasColumnName("WRTZE");
             entity.Property(e => e.WrtzeEinheit)

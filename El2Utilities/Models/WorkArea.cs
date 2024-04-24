@@ -17,6 +17,8 @@ public partial class WorkArea
 
     public bool IsLocked { get; set; }
 
+    public bool CreateFolder { get; set; }
+
     public virtual ICollection<Ressource> Ressources { get; set; } = new List<Ressource>();
 
     public virtual ICollection<UserWorkArea> UserWorkAreas { get; set; } = new List<UserWorkArea>();

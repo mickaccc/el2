@@ -6,18 +6,14 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using ModulePlanning.ViewModels;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
-using System;
 using System.Collections;
 using System.Collections.Frozen;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -86,7 +82,6 @@ namespace ModulePlanning.Planning
             _settingsService = settingsService;
             _dialogService = dialogService;
             Initialize();
-            Processes.AddRange(ressource.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.SortPos));
             LoadData(ressource);
             CalculateEndTime();
             ProcessesCV.Refresh();
@@ -103,6 +98,7 @@ namespace ModulePlanning.Planning
         public ICommand? FastCopyCommand { get; private set; }
         public ICommand? CorrectionCommand { get; private set; }
         private static readonly object _lock = new();
+        private HashSet<string> ImChanged = [];
         private readonly int _rId;
         private string _title;
         public string Title => _title;
@@ -190,10 +186,16 @@ namespace ModulePlanning.Planning
             WorkArea = res.WorkArea;
             Name = res.RessName;
             _title = res.Inventarnummer ?? string.Empty;
-            Vis = res.Visability;
+            Vis = res.Visability ??= false;
             Description = res.Info;
             InventNo = res.Inventarnummer;
-
+            Processes ??= [];
+            foreach(var vrg in res.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.SortPos))
+            {
+                Processes.Add(vrg);
+                vrg.PropertyChanged += OnProcessPropertyChanged;
+            }
+            Processes.CollectionChanged += OnProcessesChanged;
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var sh = db.WorkShifts
                 .Include(x => x.RessourceWorkshifts)
@@ -204,6 +206,7 @@ namespace ModulePlanning.Planning
             }
             ShiftsView = CollectionViewSource.GetDefaultView(_shifts);
         }
+
         private void Initialize()
         {
 
@@ -255,7 +258,7 @@ namespace ModulePlanning.Planning
         private void MessageReceived(List<string?> vorgangIdList)
         {
             try
-            {
+            { 
                 Task.Run(() =>
                 {
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -263,31 +266,34 @@ namespace ModulePlanning.Planning
                     {
                         foreach (string? id in vorgangIdList.Where(x => x != null))
                         {
-                            var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
-                            if (pr != null)
+                            if (id != null)
                             {
-                                db.Entry<Vorgang>(pr).Reload();
-                                
-                                if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
+                                var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
+                                if (pr != null)
                                 {
-                                    pr.SortPos = "Z";
-                                    Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));                                  
-                                }
-                                pr.RunPropertyChanged();
-                            }
-                            else if (db.Vorgangs.Find(id)?.Rid == Rid)
-                            {
-                                var vo = db.Vorgangs.AsNoTracking()
-                                    .Include(x => x.AidNavigation)
-                                    .ThenInclude(x => x.MaterialNavigation)
-                                    .Include(x => x.AidNavigation.DummyMatNavigation)
-                                    .Include(x => x.RidNavigation)
-                                    .First(x => x.VorgangId == id);
+                                    var proc = db.Vorgangs.Single(x => x.VorgangId == id);
 
-                                if (vo?.SysStatus?.Contains("RÜCK") == false)
+                                    if ((proc.SysStatus?.Contains("RÜCK") ?? false) || proc.Rid == null)
+                                    {
+                                        proc.SortPos = "Z";
+                                        Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
+                                    }
+                                    if (pr.Equals(proc) == false) { pr = proc; pr.RunPropertyChanged(); }
+                                }
+                                else if (db.Vorgangs.Find(id)?.Rid == Rid)
                                 {
-                                    Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));  
-                                }                            
+                                    var vo = db.Vorgangs.AsNoTracking()
+                                        .Include(x => x.AidNavigation)
+                                        .ThenInclude(x => x.MaterialNavigation)
+                                        .Include(x => x.AidNavigation.DummyMatNavigation)
+                                        .Include(x => x.RidNavigation)
+                                        .First(x => x.VorgangId == id);
+
+                                    if (vo?.SysStatus?.Contains("RÜCK") == false)
+                                    {
+                                        Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));
+                                    }
+                                }
                             }
                         }                      
                     }
@@ -298,7 +304,21 @@ namespace ModulePlanning.Planning
                 MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        private void OnProcessesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            
+        }
 
+        private void OnProcessPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            var send = sender as Vorgang;
+            if (send != null)
+            {
+                var thisVrg = Processes.FirstOrDefault(x => x.VorgangId == send.VorgangId);
+                if(send.Equals(thisVrg))
+                    _eventAggregator.GetEvent<MessagePlanmachineChanged>().Publish(send);
+            }
+        }
 
         private bool OnCorrectionCanExecute(object arg)
         {
@@ -504,7 +524,7 @@ namespace ModulePlanning.Planning
                 p[i].SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
             }
             Target.MoveCurrentTo(Item);
-            if (Item.AidNavigation.Material != null)
+            if (Item.AidNavigation.Material != null && WorkArea.CreateFolder)
             {
                 string[] oa = new[] {Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich}; 
                 var work = _container.Resolve<WorkareaDocumentInfo>();

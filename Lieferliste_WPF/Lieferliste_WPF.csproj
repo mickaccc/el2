@@ -161,6 +161,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetKit.Wpf.AutoCompleteComboBox" Version="1.6.0" />
     <PackageReference Include="FileAssociation2" Version="22.12.21.18" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="MahApps.Metro" Version="2.4.10" />

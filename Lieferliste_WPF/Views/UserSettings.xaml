@@ -86,31 +86,35 @@
                     <TabItem Header="Prüfdatenblatt">
                         <StackPanel>
                             <TextBlock Text="Root:"/>
-                            <TextBox Text="{Binding Froot}"/>
+                            <TextBox Text="{Binding Fdocu[0]}"/>
                             <TextBlock Text="Template:"/>
-                            <TextBox Text="{Binding Ftemplate}"/>
+                            <TextBox Text="{Binding Fdocu[1]}"/>
                             <TextBlock Text="RegEx:"/>
-                            <TextBox Text="{Binding Fregex}"/>
+                            <TextBox Text="{Binding Fdocu[2]}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="Vormuster">
 
                         <StackPanel>
                             <TextBlock Text="Root:"/>
-                                <TextBox Text="{Binding Vroot}"/>
-                                <TextBlock Text="Template:"/>
-                                <TextBox Text="{Binding Vtemplate}"/>
-                                <TextBlock Text="Regex:"/>
-                                <TextBox Text="{Binding Vregex}"/>
+                                <TextBox Text="{Binding Vdocu[0]}"/>
+                                <TextBlock Text="Template1:"/>
+                                <TextBox Text="{Binding Vdocu[1]}"/>
+                            <TextBlock Text="Template2:"/>
+                            <TextBox Text="{Binding Vdocu[3]}"/>
+                            <TextBlock Text="Template3:"/>
+                            <TextBox Text="{Binding Vdocu[4]}"/>
+                            <TextBlock Text="Regex:"/>
+                                <TextBox Text="{Binding Vdocu[2]}"/>
                             </StackPanel>
          
                     </TabItem>
                     <TabItem Header="Bereich">
                         <StackPanel>
                             <TextBlock Text="Root:"/>
-                            <TextBox Text="{Binding Wroot}"/>
+                            <TextBox Text="{Binding Wdocu[0]}"/>
                             <TextBlock Text="Regex:"/>
-                            <TextBox Text="{Binding Wregex}"/>
+                            <TextBox Text="{Binding Wdocu[2]}"/>
                         </StackPanel>
                     </TabItem>
                 </TabControl>
