@@ -91,23 +91,39 @@
                             <TextBox Text="{Binding Fdocu[1]}"/>
                             <TextBlock Text="RegEx:"/>
                             <TextBox Text="{Binding Fdocu[2]}"/>
+                            <TextBlock Text="Sprungziel"/>
+                            <TextBox Text="{Binding Fdocu[9]}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="Vormuster">
 
                         <StackPanel>
                             <TextBlock Text="Root:"/>
-                                <TextBox Text="{Binding Vdocu[0]}"/>
-                                <TextBlock Text="Template1:"/>
-                                <TextBox Text="{Binding Vdocu[1]}"/>
+                            <TextBox Text="{Binding Vdocu[0]}"/>
+                            <TextBlock Text="Template1:"/>
+                            <TextBox Text="{Binding Vdocu[1]}"/>
                             <TextBlock Text="Template2:"/>
                             <TextBox Text="{Binding Vdocu[3]}"/>
                             <TextBlock Text="Template3:"/>
                             <TextBox Text="{Binding Vdocu[4]}"/>
                             <TextBlock Text="Regex:"/>
-                                <TextBox Text="{Binding Vdocu[2]}"/>
-                            </StackPanel>
+                            <TextBox Text="{Binding Vdocu[2]}"/>
+                            <TextBlock Text="Sprungziel"/>
+                            <TextBox Text="{Binding Vdocu[9]}"/>
+                        </StackPanel>
          
+                    </TabItem>
+                    <TabItem Header="Messen">
+                        <StackPanel>
+                            <TextBlock Text="Root:"/>
+                            <TextBox Text="{Binding Mdocu[0]}"/>
+                            <TextBlock Text="Regex:"/>
+                            <TextBox Text="{Binding Mdocu[2]}"/>
+                            <TextBlock Text="Ordner:"/>
+                            <TextBox Text="{Binding Mdocu[10]}"/>
+                            <TextBlock Text="Sprungziel:"/>
+                            <TextBox Text="{Binding Mdocu[9]}"/>
+                        </StackPanel>
                     </TabItem>
                     <TabItem Header="Bereich">
                         <StackPanel>

@@ -31,7 +31,6 @@ namespace ModuleDeliverList.ViewModels
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class LieferViewModel : ViewModelBase, IViewModel
     {
-
         public ICollectionView OrdersView { get; private set; }
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
         public ICommand FilterDeleteCommand => _filterDeleteCommand ??= new RelayCommand(OnFilterDelete);
@@ -485,7 +484,7 @@ namespace ModuleDeliverList.ViewModels
 
         private void SetAutoSave()
         {
-            _autoSaveTimer = new System.Timers.Timer(5000);
+            _autoSaveTimer = new System.Timers.Timer(15000);
             _autoSaveTimer.Elapsed += OnAutoSave;
             _autoSaveTimer.AutoReset = true;
             _autoSaveTimer.Enabled = true;

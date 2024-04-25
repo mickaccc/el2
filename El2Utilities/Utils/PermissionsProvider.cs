@@ -1,4 +1,5 @@
 ﻿using El2Core.Models;
+using System;
 using System.Collections.Generic;
 
 namespace El2Core.Utils
@@ -55,5 +56,9 @@ namespace El2Core.Utils
             return false;
         }
 
+        public bool GetUserPermission(object delMeasureDocu)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -55,10 +55,11 @@ namespace Lieferliste_WPF.ViewModels
         public MeasureFirstPartInfo FirstPartInfo { get; private set; }
         public VmpbDocumentInfo VmpbDocumentInfo { get; private set; }
         public WorkareaDocumentInfo WorkareaDocumentInfo { get; private set; }
+        public MeasureDocumentInfo MeasureDocumentInfo { get; private set; }
         public Document Fdocu {  get; private set; }
         public Document Vdocu { get; private set; }
         public Document Wdocu { get; private set; }
-        public WorkareaDocumentInfo WorkareaDocument { get; private set; }
+        public Document Mdocu { get; private set; }
         public UserSettingsViewModel(IUserSettingsService settingsService, IContainerExtension container)
         {
 
@@ -76,6 +77,8 @@ namespace Lieferliste_WPF.ViewModels
             Vdocu = VmpbDocumentInfo.CreateDocumentInfos();
             WorkareaDocumentInfo = new WorkareaDocumentInfo(container);
             Wdocu = WorkareaDocumentInfo.CreateDocumentInfos();
+            MeasureDocumentInfo = new MeasureDocumentInfo(container);
+            Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
         }
 
         private bool OnChangeThemeCanExecute(object arg)
@@ -119,6 +122,7 @@ namespace Lieferliste_WPF.ViewModels
             FirstPartInfo.SaveDocumentData();
             VmpbDocumentInfo.SaveDocumentData();
             WorkareaDocumentInfo.SaveDocumentData();
+            MeasureDocumentInfo.SaveDocumentData();
         }
 
         public string ExplorerPathPattern

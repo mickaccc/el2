@@ -77,5 +77,6 @@
         public const string AddVmpb = "ADDVMPB";
         public const string OpenMeaOper = "MEA03";
         public const string CopyClip = "COPYCLIP01";
+        public const string DelMeasureDocu = "DELMEADOCU";
     }
 }

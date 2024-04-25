@@ -1,18 +1,11 @@
 ﻿using El2Core.Models;
-using Newtonsoft.Json.Linq;
 using Prism.Ioc;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Serialization;
 
 namespace El2Core.Utils
 {
@@ -135,6 +128,7 @@ namespace El2Core.Utils
             document[DocumentPart.RootPath] = string.Empty;
             document[DocumentPart.Template] = string.Empty;
             document[DocumentPart.RegularEx] = string.Empty;
+            document[DocumentPart.JumpTarget] = string.Empty;
             if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
             var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
@@ -203,6 +197,7 @@ namespace El2Core.Utils
             document[DocumentPart.RootPath] = string.Empty;
             document[DocumentPart.Template] = string.Empty;
             document[DocumentPart.RegularEx] = string.Empty;
+            document[DocumentPart.JumpTarget] = string.Empty;
             if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
             var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
@@ -268,7 +263,6 @@ namespace El2Core.Utils
             document = new FirstPartDocument();
             document[DocumentPart.Type] = "WorkPart";
             document[DocumentPart.RootPath] = string.Empty;
-            document[DocumentPart.Template] = string.Empty;
             document[DocumentPart.RegularEx] = string.Empty;
             if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
             var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
@@ -297,6 +291,72 @@ namespace El2Core.Utils
                 }
                 document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar)
                     .Append(folders[2]).Append(Path.DirectorySeparatorChar).ToString(); 
+            }
+
+            return document;
+        }
+
+        public override Document CreateDocumentInfos()
+        {
+            return CreateDocumentInfos(null);
+        }
+        public void SaveDocumentData()
+        {
+            base.SaveDocumentData(document);
+        }
+        public void Collect()
+        {
+            base.Collect(document);
+        }
+
+        public override Document GetDocument()
+        {
+            return document;
+        }
+    }
+    public class MeasureDocumentInfo : DocumentInfo
+    {
+        private Document document;
+
+        public MeasureDocumentInfo(IContainerExtension container) : base(container)
+        {
+        }
+
+        public override Document CreateDocumentInfos(string[]? folders)
+        {
+            document = new FirstPartDocument();
+            document[DocumentPart.Type] = "MeasurePart";
+            document[DocumentPart.RootPath] = string.Empty;
+            document[DocumentPart.RegularEx] = string.Empty;
+            document[DocumentPart.JumpTarget] = string.Empty;
+            document[DocumentPart.Folder] = string.Empty;
+            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
+            var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
+
+            TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
+            List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+            foreach (var entry in doc)
+            {
+                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+                document[DokuPart] = (string)entry.Value;
+            }
+
+            if (folders != null)
+            {
+
+                document[DocumentPart.TTNR] = folders[0];
+                Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                Match match2 = regex.Match(folders[0]);
+                StringBuilder nsb = new StringBuilder();
+                foreach (Group ma in match2.Groups.Values.Skip(1))
+                {
+                    if (ma.Value != folders[0])
+                    {
+                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                    }
+                }
+                document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar)
+                    .Append(document[DocumentPart.Folder]).Append(Path.DirectorySeparatorChar).ToString();
             }
 
             return document;
@@ -567,7 +627,9 @@ namespace El2Core.Utils
         SavePath,
         TTNR,
         File,
-        Type
+        Type,
+        JumpTarget,
+        Folder
     }
     public enum DocumentType
     {

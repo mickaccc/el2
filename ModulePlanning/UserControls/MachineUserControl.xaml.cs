@@ -11,11 +11,9 @@ namespace ModulePlanning.UserControls
     /// </summary>
     public partial class MachineUserControl : UserControl
     {
-
         public MachineUserControl()
         {
             InitializeComponent();
-
         }
 
         private void Pl_PropertyChanged(object? sender, PropertyChangedEventArgs e)

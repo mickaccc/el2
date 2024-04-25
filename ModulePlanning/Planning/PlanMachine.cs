@@ -224,7 +224,7 @@ namespace ModulePlanning.Planning
             var live = ProcessesCV as ICollectionViewLiveShaping;
             if (live != null)
             {
-                live.IsLiveSorting = false;
+                live.IsLiveSorting = true;
                 live.IsLiveFiltering = false;
             }
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);

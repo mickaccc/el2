@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:dotnetkit="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox"
              xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
@@ -12,6 +13,9 @@
              xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
+    <UserControl.Resources>
+        <conv:MultiObjectConverter x:Key="multi"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -40,6 +44,12 @@
             <ItemsControl Background="{DynamicResource MahApps.Brushes.Accent}" ItemsSource="{Binding FirstDocumentItems}" x:Name="first" 
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
+                <ItemsControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                    </ContextMenu>
+                </ItemsControl.ContextMenu>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
@@ -47,9 +57,17 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <mah:Badged BadgePlacementMode="BottomLeft" >
+                        <mah:Badged BadgePlacementMode="BottomLeft" Badge="L" >
                             <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}">
+                                    CommandParameter="{Binding}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                <Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Datei löschen"
+                                               Command="{Binding PlacementTarget.Tag.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                               CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                    </ContextMenu>
+                                </Button.ContextMenu>
                                 <StackPanel>
                                     <icon:FileIcons Kind="Default" Width="120"/>
                                     <TextBlock Text="{Binding Display}"/>
@@ -112,6 +130,12 @@
         <ItemsControl Grid.Column="0" Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" x:Name="vmpb"
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
+                <ItemsControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                    </ContextMenu>
+                </ItemsControl.ContextMenu>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>
@@ -121,7 +145,15 @@
                 <DataTemplate>
                     <mah:Badged BadgePlacementMode="BottomLeft" >
                         <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}">
+                                    CommandParameter="{Binding}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                <Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Datei löschen"
+                                                  Command="{Binding PlacementTarget.Tag.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                    </ContextMenu>
+                                </Button.ContextMenu>
                             <StackPanel>
                                 <icon:FileIcons Kind="Excel" Width="120"/>
                                 <TextBlock Text="{Binding Display}"/>
@@ -134,6 +166,12 @@
             <ItemsControl Grid.Column="1" Background="{DynamicResource MahApps.Brushes.Accent2}" ItemsSource="{Binding PartDocumentItems}" x:Name="part"
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding}">
+                <ItemsControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                    </ContextMenu>
+                </ItemsControl.ContextMenu>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
@@ -143,7 +181,15 @@
                     <DataTemplate>
                         <mah:Badged BadgePlacementMode="BottomLeft" >
                             <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}">
+                                    CommandParameter="{Binding}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                <Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Datei löschen"
+                                               Command="{Binding PlacementTarget.Tag.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                               CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+
+                                    </ContextMenu>
+                                </Button.ContextMenu>
                                 <StackPanel>
                                     <icon:FileIcons Kind="Excel" Width="120"/>
                                     <TextBlock Text="{Binding Display}"/>
