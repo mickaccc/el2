@@ -6,11 +6,9 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -107,8 +105,22 @@ namespace ModuleMeasuring.ViewModels
 
         private bool onAddFileCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddMeasureDocu) &&
-                SelectedItem != null;
+            var target = arg as ItemsControl;
+            bool accept;
+            switch (target?.Name)
+            {
+                case "first":
+                    accept = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc) &&
+                        SelectedItem != null; break;
+                case "vmpb":
+                    accept = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddVmpb) &&
+                        SelectedItem != null; break;
+                case "part":
+                    accept = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddMeasureDocu) &&
+                        SelectedItem != null; break;
+                default: accept = false; break;
+            }
+            return accept;
         }
 
         private void onAddFileExecuted(object obj)
@@ -116,30 +128,48 @@ namespace ModuleMeasuring.ViewModels
             var target = obj as ItemsControl;
             if (target != null)
             {
-                string jump = "C:\\";
-                Regex regex = new Regex("^\\[([A-Za-z0-9]*)\\]");
+                string jump;
                 var dialog = new Microsoft.Win32.OpenFileDialog();
 
                 switch (target.Name)
                 {
                     case "first":
                         var Fdocu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material]);
-                    break;
+                        switch (Fdocu[DocumentPart.JumpTarget].ToUpperInvariant())
+                        {
+                            case "DESKTOP":
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
+                            case "DOKUMENTE":
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
+                            default:
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
+                        }
+   
+                        dialog.InitialDirectory = jump;
+                        bool? Fresult = dialog.ShowDialog();
+                        if (Fresult == true)
+                        {
+                            FileInfo fileInfo = new FileInfo(dialog.FileName);
+                            var FilePath = Path.Combine(Fdocu[DocumentPart.RootPath], Fdocu[DocumentPart.SavePath], fileInfo.Name);
+                            File.Copy(dialog.FileName, FilePath);
+
+                            _FirstDocumentItems.Add(new DocumentDisplay() { FullName = dialog.FileName, Display = fileInfo.Name });
+                        }
+                        break;
                     case "vmpb":
                         var VMdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
-                        var v = regex.Match(VMdocu[DocumentPart.JumpTarget]);
-                        if (v.Success)
+                        switch (VMdocu[DocumentPart.JumpTarget].ToUpperInvariant())
                         {
-                            if (v.Groups[1].Value.Equals("USERPROFILE", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                jump = VMdocu[DocumentPart.JumpTarget].Replace(v.Groups[0].Value,
-                                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
-                            }
+                            case "DESKTOP":
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
+                            case "DOKUMENTE":
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
+                            default:
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
                         }
-                        else jump = VMdocu[DocumentPart.JumpTarget];
                         dialog.InitialDirectory = jump;
-                        bool? result = dialog.ShowDialog();
-                        if (result == true)
+                        bool? Vresult = dialog.ShowDialog();
+                        if (Vresult == true)
                         {
                             FileInfo fileInfo = new FileInfo(dialog.FileName);
                             var vmFilePath = Path.Combine(VMdocu[DocumentPart.RootPath], VMdocu[DocumentPart.SavePath], fileInfo.Name);
@@ -148,9 +178,28 @@ namespace ModuleMeasuring.ViewModels
                             _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = dialog.FileName, Display = fileInfo.Name });
                         }
                     break;
- 
+                    case "part":
+                        var Mdocu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        switch (Mdocu[DocumentPart.JumpTarget].ToUpperInvariant())
+                        {
+                            case "DESKTOP":
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
+                            case "DOKUMENTE":
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
+                            default:
+                                jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
+                        }
+                        dialog.InitialDirectory = jump;
+                        bool? Mresult = dialog.ShowDialog();
+                        if (Mresult == true)
+                        {
+                            FileInfo fileInfo = new FileInfo(dialog.FileName);
+                            var mFilePath = Path.Combine(Mdocu[DocumentPart.RootPath], Mdocu[DocumentPart.SavePath], fileInfo.Name);
+                            File.Copy(dialog.FileName, mFilePath);
 
-                  
+                            _PartDocumentItems.Add(new DocumentDisplay() { FullName = dialog.FileName, Display = fileInfo.Name });
+                        }
+                        break;
                 }
             }
         }
@@ -303,7 +352,22 @@ namespace ModuleMeasuring.ViewModels
         }
         public void DragOver(IDropInfo dropInfo)
         {
-            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc) && SelectedItem != null)
+            var t = (ItemsControl)dropInfo.VisualTarget;
+            bool accept;
+            switch (t.Name)
+            {
+                case "first":
+                    accept = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc) && SelectedItem != null;
+                    break;
+                case "vmpb":
+                    accept = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddVmpb) && SelectedItem != null;
+                    break;
+                case "part":
+                    accept = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddMeasureDocu) && SelectedItem != null;
+                    break;
+                default: accept = false; break;
+            }
+            if (accept)
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                 dropInfo.Effects = DragDropEffects.All;

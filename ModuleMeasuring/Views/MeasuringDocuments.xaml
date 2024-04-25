@@ -57,7 +57,10 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <mah:Badged BadgePlacementMode="BottomLeft" Badge="L" >
+                        <mah:Badged BadgePlacementMode="BottomLeft" >
+                            <mah:Badged.Badge>
+                                <icon:Modern Kind="Disk"/>
+                            </mah:Badged.Badge>
                             <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                                 <Button.ContextMenu>
@@ -144,6 +147,9 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <mah:Badged BadgePlacementMode="BottomLeft" >
+                            <mah:Badged.Badge>
+                                <icon:Modern Kind="Disk"/>
+                            </mah:Badged.Badge>
                         <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                                 <Button.ContextMenu>
@@ -180,6 +186,9 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <mah:Badged BadgePlacementMode="BottomLeft" >
+                            <mah:Badged.Badge>
+                                <icon:Modern Kind="Disk"/>
+                            </mah:Badged.Badge>
                             <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                                 <Button.ContextMenu>

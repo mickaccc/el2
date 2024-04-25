@@ -113,7 +113,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
-            return _settingsService.IsChanged ;
+            return _settingsService.IsChanged;
         }
 
         private void OnSaveExecuted(object obj)
