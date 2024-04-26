@@ -224,7 +224,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach, UpdateSourceTrigger=LostFocus}"
+                <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                                     EditingElementStyle="{StaticResource CellEditStyle}"/>
 
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">

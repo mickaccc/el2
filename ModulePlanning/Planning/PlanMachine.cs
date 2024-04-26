@@ -189,12 +189,16 @@ namespace ModulePlanning.Planning
             Vis = res.Visability ??= false;
             Description = res.Info;
             InventNo = res.Inventarnummer;
-            Processes ??= [];
-            foreach(var vrg in res.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.SortPos))
-            {
-                Processes.Add(vrg);
-                vrg.PropertyChanged += OnProcessPropertyChanged;
-            }
+            Processes = res.Vorgangs.ToObservableCollection();
+            ProcessesCVSource.Source = Processes;
+            ProcessesCVSource.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
+            ProcessesCVSource.IsLiveSortingRequested = true;
+            ProcessesCVSource.LiveSortingProperties.Add("SortPos");
+            //foreach(var vrg in res.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.SortPos))
+            //{
+            //    Processes.Add(vrg);
+            //    vrg.PropertyChanged += OnProcessPropertyChanged;
+            //}
             Processes.CollectionChanged += OnProcessesChanged;
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var sh = db.WorkShifts
@@ -215,18 +219,7 @@ namespace ModulePlanning.Planning
             HistoryCommand = new ActionCommand(OnHistoryExecuted, OnHistoryCanExecute);
             FastCopyCommand = new ActionCommand(OnFastCopyExecuted, OnFastCopyCanExecute);
             CorrectionCommand = new ActionCommand(OnCorrectionExecuted, OnCorrectionCanExecute);
-            Processes = new ObservableCollection<Vorgang>();
-            ProcessesCVSource.Source = Processes;
-            ProcessesCVSource.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
-            ProcessesCVSource.IsLiveSortingRequested = true;
-
-
-            var live = ProcessesCV as ICollectionViewLiveShaping;
-            if (live != null)
-            {
-                live.IsLiveSorting = true;
-                live.IsLiveFiltering = false;
-            }
+            
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
@@ -278,7 +271,7 @@ namespace ModulePlanning.Planning
                                         proc.SortPos = "Z";
                                         Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
                                     }
-                                    if (pr.Equals(proc) == false) { pr = proc; pr.RunPropertyChanged(); }
+                                    if (pr.Equals(proc) == false) { ChangedValues(pr, proc); }
                                 }
                                 else if (db.Vorgangs.Find(id)?.Rid == Rid)
                                 {
@@ -303,6 +296,27 @@ namespace ModulePlanning.Planning
             {
                 MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        private void ChangedValues(Vorgang local, Vorgang remote)
+        {
+            local.SpaetEnd = remote.SpaetEnd;
+            local.SpaetStart = remote.SpaetStart;
+            local.SortPos = remote.SortPos;
+            local.QuantityScrap = remote.QuantityScrap;
+            local.QuantityMiss = remote.QuantityMiss;
+            local.QuantityMissNeo = remote.QuantityMissNeo;
+            local.Rid = remote.Rid;
+            local.Aktuell = remote.Aktuell;
+            local.BemM = remote.BemM;
+            local.BemMa = remote.BemMa;
+            local.CommentMach = remote.CommentMach;
+            local.BemT = remote.BemT;
+            local.Bullet = remote.Bullet;
+            local.Correction = remote.Correction;
+            local.QuantityYield = remote.QuantityYield;
+            local.Termin = remote.Termin;
+
+            local.RunPropertyChanged();
         }
         private void OnProcessesChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
@@ -543,6 +557,9 @@ namespace ModulePlanning.Planning
                 var v = dropInfo.InsertIndex;
                 if (s != null && t != null)
                 {
+                    ListCollectionView lv = ProcessesCV as ListCollectionView;
+                    if (lv.IsAddingNew) { lv.CommitNew(); }
+                    if (lv.IsEditingItem) { lv.CommitEdit(); }
                     if (dropInfo.Data is List<dynamic> vrgList)
                     {
                         foreach (var vrg in vrgList)
@@ -554,11 +571,9 @@ namespace ModulePlanning.Planning
                     {
                         InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
                     }
-                    ListCollectionView lv = ProcessesCV as ListCollectionView;
-                    if (lv.IsAddingNew) { lv.CommitNew(); }
-                    if (lv.IsEditingItem) { lv.CommitEdit(); }
+ 
                     ProcessesCV.Refresh();
-                    _eventAggregator.GetEvent<ContextPlanMachineChanged>().Publish(Rid);
+                    //_eventAggregator.GetEvent<ContextPlanMachineChanged>().Publish(Rid);
                 }               
             }
             catch (Exception e)
