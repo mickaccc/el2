@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:userControls="clr-namespace:ModuleDeliverList.UserControls"
@@ -55,14 +56,30 @@
         <RowDefinition Height="50"/>
         <RowDefinition />
     </Grid.RowDefinitions>
-    <DockPanel LastChildFill="False">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Menu>
+            <MenuItem Style="{StaticResource MahApps.Styles.MenuItem}">
+                <MenuItem.Header>
+                    <icon:Coolicons Kind="Hamburger"/>
+                </MenuItem.Header>
+                <!--<MenuItem Header="Erzeuge PDF" Command="{Binding CreatePdfCommand}"/>-->
+                <MenuItem Header="Erzeuge XPS" Command="{Binding CreateRtfCommand}"/>
+                <!--<MenuItem Header="Erzeuge HTML" Command="{Binding CreateHtmlCommand}"/>
+                    <MenuItem Header="Sende Email" Command="{Binding SendMailCommand}"/>-->
+            </MenuItem>
+        </Menu>
+        <DockPanel Grid.Column="1" LastChildFill="False" HorizontalAlignment="Stretch" >
         <DockPanel.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                 <GradientStop Color="#FFB3ADAD"/>
                 <GradientStop Color="#FF0B91E6" Offset="1"/>
             </LinearGradientBrush>
         </DockPanel.Background>
-        <Button Content="Speichern" Command="{Binding SaveCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+
+        <Button Content="Speichern" DockPanel.Dock="Left" Command="{Binding SaveCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Padding="3" Text="{Binding SearchFilterText, Mode=OneWay}"
                  materialDesign:HintAssist.Hint="suchen in Auftragsnr, TTNR, Materialtext"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Background="{DynamicResource MahApps.Brushes.ThemeBackground}">
@@ -79,9 +96,7 @@
             <Button Command="{Binding FilterSaveCommand}" ToolTip="Customfilter speichern" Margin="5" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
                 <materialDesign:PackIcon Kind="ContentSaveCog"/>
             </Button>
-            <Button Command="{Binding CopyClipboardCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
-                Copy
-            </Button>
+
 
             <materialDesign:ColorZone DockPanel.Dock="Right"
             FontSize="14"
@@ -159,7 +174,7 @@
             </StackPanel>
         </materialDesign:ColorZone>
     </DockPanel>
-    <StackPanel Grid.Row="1">
+    <StackPanel Grid.Row="1" Grid.Column="1">
 
         <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" IsActive="True" Foreground="{DynamicResource ActiveProcess}"
                    Visibility="{Binding OrderTask.IsNotCompleted, Converter={StaticResource BoolToVis}}"/>
@@ -167,7 +182,7 @@
                    Visibility="{Binding OrderTask.IsFaulted, Converter={StaticResource BoolToVis}}"/>
     </StackPanel>
 
-    <ListBox x:Name="Lieferlist" Grid.Row="1" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}"
+    <ListBox x:Name="Lieferlist" Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding OrderTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}"
                           Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                           ItemsSource="{Binding OrderTask.Result}"
                           HorizontalContentAlignment="Stretch" Tag="{Binding Path=ItemTemplate, RelativeSource={RelativeSource self}}"

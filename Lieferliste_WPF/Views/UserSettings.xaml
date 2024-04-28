@@ -47,8 +47,8 @@
                         <TextBlock Grid.Column="2" Text="STEUERUNG" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
                         <TextBlock Grid.Column="4" Text="THEMES" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
                         <StackPanel Grid.Row="1">
-                            <Label Content="Hauptpfad"/>
-                            <TextBox x:Name="ExpRoot" Text="{Binding Path=ExplorerRoot}"/>
+                            <Label Content="Personal Path"/>
+                            <TextBox x:Name="ExpRoot" Text="{Binding Path=PersonalFolder}"/>
 
                             <Label Content="Muster für Ordnerpfad:"/>
                             <TextBox x:Name="OrderPath" Text="{Binding Path=ExplorerPathPattern}"/>

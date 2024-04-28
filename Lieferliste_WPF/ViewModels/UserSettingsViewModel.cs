@@ -131,10 +131,10 @@ namespace Lieferliste_WPF.ViewModels
             set { _settingsService.ExplorerPath = value; }
         }
 
-        public string ExplorerRoot
+        public string PersonalFolder
         {
-            get { return _settingsService.ExplorerRoot; }
-            set { _settingsService.ExplorerRoot = value; }
+            get { return _settingsService.PersonalFolder; }
+            set { _settingsService.PersonalFolder = value; }
         }
 
         public bool AutoSave

@@ -5,6 +5,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations.Builders;
 using ModuleDeliverList.Views;
 using Prism.Events;
 using Prism.Ioc;
@@ -23,6 +24,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Windows.Xps.Packaging;
 using Windows.ApplicationModel.DataTransfer;
 
 
@@ -38,7 +40,10 @@ namespace ModuleDeliverList.ViewModels
         public ICommand SortAscCommand => _sortAscCommand ??= new RelayCommand(OnAscSortExecuted);
         public ICommand SortDescCommand => _sortDescCommand ??= new RelayCommand(OnDescSortExecuted);
         public ICommand ProjectPrioCommand { get; private set; }
-        public ICommand CopyClipboardCommand { get; private set; }
+        public ICommand CreateRtfCommand { get; private set; }
+        public ICommand CreatePdfCommand { get; private set; }
+        public ICommand CreateHtmlCommand { get; private set; }
+        public ICommand SendMailCommand { get; private set; }
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SaveCommand { get; private set; }
@@ -222,7 +227,8 @@ namespace ModuleDeliverList.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             FilterSaveCommand = new ActionCommand(OnFilterSaveExecuted, OnFilterSaveCanExecute);
             ProjectPrioCommand = new ActionCommand(OnSetProjectPrioExecuted, OnSetProjectPrioCanExecute);
-            CopyClipboardCommand = new ActionCommand(OnCopyClipboardExecuted, OnCopyClipboardCanExecute);
+            CreateRtfCommand = new ActionCommand(OnCreateRtfExecuted, OnCreateRtfCanExecute);
+            CreateHtmlCommand = new ActionCommand(OnCreateHtmlExecuted, OnCreateHtmlCanExecute);
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
 
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
@@ -233,15 +239,73 @@ namespace ModuleDeliverList.ViewModels
 
         }
 
-        private bool OnCopyClipboardCanExecute(object arg)
+        private bool OnCreateRtfCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CopyClipboard);
         }
 
-        private void OnCopyClipboardExecuted(object obj)
+        private void OnCreateRtfExecuted(object obj)
+        {
+            AbstracatBuilder Tbuilder = CreateTableBuilder();
+
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            var sett = new UserSettingsService();
+            dlg.InitialDirectory = string.IsNullOrEmpty(sett.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.Personal) :
+                sett.PersonalFolder;
+            dlg.FileName = "Document"; // Default file name
+            dlg.DefaultExt = ".rtf"; // Default file extension
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                string filename = dlg.FileName;
+                using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                {
+                    FlowDocument flow = Tbuilder.GetDoc() as FlowDocument;
+                    TextRange tr = new TextRange(flow.ContentStart, flow.ContentEnd);
+                    tr.Save(fs, DataFormats.Rtf);
+                    
+                }
+            }
+        }
+        private bool OnCreateHtmlCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CopyClipboard);
+        }
+
+        private void OnCreateHtmlExecuted(object obj)
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            var sett = new UserSettingsService();
+            dlg.InitialDirectory = string.IsNullOrEmpty(sett.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.Personal) :
+                sett.PersonalFolder;
+            dlg.FileName = "Document"; // Default file name
+            dlg.DefaultExt = ".html"; // Default file extension
+            dlg.Filter = "Web documents (.html)|*.htm"; // Filter files by extension
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                string filename = dlg.FileName;
+
+                AbstracatBuilder Tbuilder = CreateTableBuilder();
+                string content = Tbuilder.GetHtml();
+                File.WriteAllText(filename, content);
+            }
+        }
+
+        private AbstracatBuilder CreateTableBuilder()
         {
             TableBuilder t = new TableBuilder();
-            string[] headers = new[]{ "Auftragsnummer", "Material", "Bezeichnng", "Kurztext", "Termin"};
+            string[] headers = new[] { "Auftragsnummer", "Material", "Bezeichnng", "Kurztext", "Termin" };
             AbstracatBuilder builder = new FlowTableBuilder(headers);
             List<Vorgang> query = OrdersView.Cast<Vorgang>().ToList();
             var sel = query.Select(x => new string?[]
@@ -254,16 +318,9 @@ namespace ModuleDeliverList.ViewModels
             }).ToList();
             builder.SetContext((List<string?[]>)sel);
             t.Build(builder);
-            DataPackage data = new DataPackage();
-            string htmlFormat = Windows.ApplicationModel.DataTransfer.HtmlFormatHelper.CreateHtmlFormat(builder.GetResult("HTML"));
-            data.SetText(htmlFormat);
-            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(data);
-
-            Window docView = new FlowDocumentViewer();
-            
-            docView.DataContext = new FlowDocumentReader().DataContext = builder.GetDoc();
-            docView.Show();
+            return builder;
         }
+
         // This method accepts an input stream and a corresponding data format.  The method
         // will attempt to load the input stream into a TextRange selection, apply Bold formatting
         // to the selection, save the reformatted selection to an alternat stream, and return 

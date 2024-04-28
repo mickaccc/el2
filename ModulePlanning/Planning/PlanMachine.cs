@@ -265,7 +265,7 @@ namespace ModulePlanning.Planning
                                 if (pr != null)
                                 {
                                     var proc = db.Vorgangs.Single(x => x.VorgangId == id);
-
+                                    var v = db.Vorgangs.Local;
                                     if ((proc.SysStatus?.Contains("RÜCK") ?? false) || proc.Rid == null)
                                     {
                                         proc.SortPos = "Z";

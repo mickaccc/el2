@@ -9,7 +9,7 @@ namespace El2Core.Services
     public interface IUserSettingsService
     {
         string ExplorerPath { get; set; }
-        string ExplorerRoot { get; set; }
+        string PersonalFolder { get; set; }
         bool IsAutoSave { get; set; }
         bool IsSaveMessage { get; set; }
         string Theme { get; set; }
@@ -28,10 +28,10 @@ namespace El2Core.Services
             get { return Properties.Settings.Default.ExplorerPath; }
             set { Properties.Settings.Default[nameof(ExplorerPath)] = value; _isChanged = true; }
         }
-        public string ExplorerRoot
+        public string PersonalFolder
         {
-            get { return Properties.Settings.Default.ExplorerRoot; }
-            set { Properties.Settings.Default[nameof(ExplorerRoot)] = value; _isChanged = true; }
+            get { return Properties.Settings.Default.PersonalFolder; }
+            set { Properties.Settings.Default[nameof(PersonalFolder)] = value; _isChanged = true; }
         }
         public bool IsAutoSave
         {

@@ -345,7 +345,7 @@ namespace ModuleMeasuring.ViewModels
                     foreach (var d in Directory.GetFiles(Mpath))
                     {
                         FileInfo f = new FileInfo(d);
-                        _PartDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
+                        _PartDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });                       
                     }
                 }
             }

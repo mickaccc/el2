@@ -1,156 +1,243 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:template match="/">
-    <html>
-      <body>
-        <h2>My CD Collection</h2>
-        <table border="1">
-          <tr bgcolor="#9acd32">
-            <th style="text-align:left">Title</th>
-            <th style="text-align:left">Artist</th>
-          </tr>
-          <xsl:for-each select="catalog/cd">
-            <tr>
-              <td>
-                <xsl:value-of select="Auftragsnummer"/>
-              </td>
-              <td>
-                <xsl:value-of select="Text"/>
-              </td>
-            </tr>
-          </xsl:for-each>
-        </table>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet
+    version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+    exclude-result-prefixes="msxsl x">
 
-		  <!-- Define a table to display data in. -->
-		  <table border="1" cellpadding="3">
-			  <tr>
-				  <td colspan="5" align="center">
-					  <!-- Filter for the project name and display it in a header.  -->
-					  <h2>
-						  <font face="tahoma" size="5">
-							  Status for: <xsl:value-of select="Project/Name" />
-						  </font>
-					  </h2>
-				  </td>
-			  </tr>
-			  <!-- Define headers for task information. -->
-			  <tr>
-				  <td colspan="5" align="center">
-					  Tasks:
-				  </td>
-			  </tr>
-			  <tr>
-				  <th>
-					  <font color="black">ID</font>
-				  </th>
-				  <th>
-					  <font color="black">Name</font>
-				  </th>
-				  <th>
-					  <font color="black">Priority</font>
-				  </th>
-				  <th>
-					  <font color="black">Start</font>
-				  </th>
-				  <th>
-					  <font color="black">Finish</font>
-				  </th>
-			  </tr>
-			  <!-- Filter for tasks -->
-			  <xsl:for-each select="Project/Tasks/Task">
-				  <!-- Exclude summary tasks -->
-				  <xsl:if test="Summary[.=0]">
-					  <xsl:choose>
-						  <!-- Display information for critical tasks with a colored background. -->
-						  <xsl:when test="Critical[.=1]">
-							  <tr>
-								  <td>
-									  <xsl:value-of select="ID"/>
-								  </td>
-								  <td>
-									  <b>
-										  <xsl:value-of select="Name"/>
-									  </b>
-								  </td>
-								  <td>
-									  <b>
-										  <xsl:value-of select="Priority"/>
-									  </b>
-								  </td>
-								  <td>
-									  <b>
-										  <xsl:value-of select="Start"/>
-									  </b>
-								  </td>
-								  <td>
-									  <b>
-										  <xsl:value-of select="Finish"/>
-									  </b>
-								  </td>
-							  </tr>
-						  </xsl:when>
-						  <!-- Display information for noncritical tasks with a white background. -->
-						  <xsl:otherwise>
-							  <tr>
-								  <td>
-									  <xsl:value-of select="ID"/>
-								  </td>
-								  <td>
-									  <xsl:value-of select="Name"/>
-								  </td>
-								  <td>
-									  <xsl:value-of select="Priority"/>
-								  </td>
-								  <td>
-									  <xsl:value-of select="Start"/>
-								  </td>
-								  <td>
-									  <xsl:value-of select="Finish"/>
-								  </td>
-							  </tr>
-						  </xsl:otherwise>
-					  </xsl:choose>
-				  </xsl:if>
-			  </xsl:for-each>
-			  <!-- Define headers for overallocated resource information. -->
-			  <tr>
-				  <td colspan="5" align="center">
-					  Overallocated Resources:
-				  </td>
-			  </tr>
-			  <tr>
-				  <th>
-					  <font color="black">ID</font>
-				  </th>
-				  <th colspan="2">
-					  <font color="black">Name</font>
-				  </th>
-				  <th colspan="2">
-					  <font color="black">Overtime Rate</font>
-				  </th>
-			  </tr>
-			  <!-- Filter for resources -->
-			  <xsl:for-each select="Project/Resources/Resource">
-				  <!-- Sort resources alphabetically by name -->
-				  <xsl:sort select="Name" />
-				  <!-- Display information for only resources that are overallocated. -->
-				  <xsl:if test="OverAllocated[.=1]">
-					  <tr>
-						  <td>
-							  <xsl:value-of select="ID"/>
-						  </td>
-						  <td  colspan="2">
-							  <xsl:value-of select="Name"/>
-						  </td>
-						  <td  colspan="2" align="center">
-							  $<xsl:value-of select="OvertimeRate"/>.00
-						  </td>
-					  </tr>
-				  </xsl:if>
-			  </xsl:for-each>
-		  </table>
-		  
-      </body>
-    </html>
+  <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
+
+  <xsl:template match="x:Section[not(parent::x:Section)]">
+    <div>
+      <xsl:apply-templates select="node()"/>
+    </div>
+  </xsl:template>
+
+  <!--<xsl:template match="x:Section[not(parent::x:Section)]">
+    <xsl:variable name="style">
+      <xsl:if test="@FontStyle='Italic'">
+        <xsl:text>font-style:italic;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontWeight='Bold'">
+        <xsl:text>font-weight:bold;</xsl:text>
+      </xsl:if>
+      <xsl:if test="contains(@TextDecorations, 'Underline')">
+        <xsl:text>text-decoration:underline;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontSize != ''">
+        <xsl:text>font-size:</xsl:text>
+        <xsl:value-of select="@FontSize" />
+        <xsl:text>pt;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontFamily != ''">
+        <xsl:text>font-family:</xsl:text>
+        <xsl:value-of select="@FontFamily" />
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground != ''">
+        <xsl:text>color:</xsl:text>
+        <xsl:value-of select="concat(substring(@Foreground, 1, 1), substring(@Foreground, 4))" />
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground-Color != ''">
+        <xsl:text>color:</xsl:text>
+        <xsl:value-of select="@Foreground-Color"/>
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+    </xsl:variable>
+    <div>
+      <xsl:if test="normalize-space($style) != ''">
+        <xsl:attribute name="style">
+          <xsl:value-of select="normalize-space($style)"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="text()"/>
+      <xsl:apply-templates select="node()"/>
+    </div>
+  </xsl:template>-->
+
+
+  <xsl:template match="x:Section">
+    <xsl:apply-templates select="node()"/>
+  </xsl:template>
+
+  <xsl:template match="x:Paragraph">
+    <xsl:variable name="style">
+      <xsl:if test="@FontStyle='Italic'">
+        <xsl:text>font-style:italic;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontWeight='Bold'">
+        <xsl:text>font-weight:bold;</xsl:text>
+      </xsl:if>
+      <xsl:if test="contains(@TextDecorations, 'Underline')">
+        <xsl:text>text-decoration:underline;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontSize != ''">
+        <xsl:text>font-size:</xsl:text>
+        <xsl:value-of select="@FontSize" />
+        <xsl:text>pt;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontFamily != ''">
+        <xsl:text>font-family:</xsl:text>
+        <xsl:value-of select="@FontFamily" />
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground != ''">
+        <xsl:text>color:</xsl:text>
+        <!--<xsl:value-of select="concat(substring(@Foreground, 1, 1), substring(@Foreground, 4))" />-->
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground-Color != ''">
+        <xsl:text>color:</xsl:text>
+        <xsl:value-of select="@Foreground-Color"/>
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+    </xsl:variable>
+    <tr>
+    <p>
+      <xsl:if test="normalize-space($style) != ''">
+        <xsl:attribute name="style">
+          <xsl:value-of select="normalize-space($style)"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="text()"/>
+        <xsl:apply-templates select="node()"/>
+    </p>
+      </tr>
+  </xsl:template>
+
+  <!--<xsl:template match="x:Span">
+    <xsl:variable name="style">
+      <xsl:if test="@FontStyle='Italic'">
+        <xsl:text>font-style:italic;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontWeight='Bold'">
+        <xsl:text>font-weight:bold;</xsl:text>
+      </xsl:if>
+      <xsl:if test="contains(@TextDecorations, 'Underline')">
+        <xsl:text>text-decoration:underline;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontSize != ''">
+        <xsl:text>font-size:</xsl:text>
+        <xsl:value-of select="@FontSize" />
+        <xsl:text>pt;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontFamily != ''">
+        <xsl:text>font-family:</xsl:text>
+        <xsl:value-of select="@FontFamily" />
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground != ''">
+        <xsl:text>color:</xsl:text>
+        <xsl:value-of select="concat(substring(@Foreground, 1, 1), substring(@Foreground, 4))" />
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground-Color != ''">
+        <xsl:text>color:</xsl:text>
+        <xsl:value-of select="@Foreground-Color"/>
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+    </xsl:variable>
+    <span>
+      <xsl:if test="normalize-space($style) != ''">
+        <xsl:attribute name="style">
+          <xsl:value-of select="normalize-space($style)"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="text()"/>
+      <xsl:apply-templates select="node()"/>
+    </span>
+  </xsl:template>-->
+
+
+  <!--<xsl:template match="x:Run">
+    <xsl:variable name="style">
+      <xsl:if test="@FontStyle='Italic'">
+        <xsl:text>font-style:italic;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontWeight='Bold'">
+        <xsl:text>font-weight:bold;</xsl:text>
+      </xsl:if>
+      <xsl:if test="contains(@TextDecorations, 'Underline')">
+        <xsl:text>text-decoration:underline;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontSize != ''">
+        <xsl:text>font-size:</xsl:text>
+        <xsl:value-of select="@FontSize" />
+        <xsl:text>pt;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontFamily != ''">
+        <xsl:text>font-family:</xsl:text>
+        <xsl:value-of select="@FontFamily" />
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground != ''">
+        <xsl:text>color:</xsl:text>
+        --><!--<xsl:value-of select="concat(substring(@Foreground, 1, 1), substring(@Foreground, 4))" />--><!--
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground-Color != ''">
+        <xsl:text>color:</xsl:text>
+        <xsl:value-of select="@Foreground-Color"/>
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+    </xsl:variable>
+    <span>
+      <xsl:if test="normalize-space($style) != ''">
+        <xsl:attribute name="style">
+          <xsl:value-of select="normalize-space($style)"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="text()"/>
+      <xsl:apply-templates select="node()"/>
+    </span>
+  </xsl:template>-->
+
+<xsl:template match="TableRowGroup">
+    <xsl:variable name="style">
+      <xsl:if test="@FontStyle='Italic'">
+        <xsl:text>font-style:italic;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontWeight='Bold'">
+        <xsl:text>font-weight:bold;</xsl:text>
+      </xsl:if>
+      <xsl:if test="contains(@TextDecorations, 'Underline')">
+        <xsl:text>text-decoration:underline;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontSize != ''">
+        <xsl:text>font-size:</xsl:text>
+        <xsl:value-of select="@FontSize" />
+        <xsl:text>pt;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@FontFamily != ''">
+        <xsl:text>font-family:</xsl:text>
+        <xsl:value-of select="@FontFamily" />
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground != ''">
+        <xsl:text>color:</xsl:text>
+        <xsl:value-of select="concat(substring(@Foreground, 1, 1), substring(@Foreground, 4))" />
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+      <xsl:if test="@Foreground-Color != ''">
+        <xsl:text>color:</xsl:text>
+        <xsl:value-of select="@Foreground-Color"/>
+        <xsl:text>;</xsl:text>
+      </xsl:if>
+    </xsl:variable>
+    <table>
+      <xsl:if test="normalize-space($style) != ''">
+        <xsl:attribute name="style">
+          <xsl:value-of select="normalize-space($style)"/>
+        </xsl:attribute>
+      </xsl:if>
+      <td>
+        <xsl:value-of select="text()"/>
+      </td>
+      <td>
+        <xsl:apply-templates select="node()"/>
+      </td>
+    </table>
   </xsl:template>
 </xsl:stylesheet>

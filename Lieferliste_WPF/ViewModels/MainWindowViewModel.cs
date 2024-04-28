@@ -502,14 +502,14 @@ namespace Lieferliste_WPF.ViewModels
                 }
 
 
-                if (!Directory.Exists(_settingsService.ExplorerRoot))
+                if (!Directory.Exists(_settingsService.PersonalFolder))
                 {
-                    MessageBox.Show($"Der Hauptpfad '{_settingsService.ExplorerRoot}'\nwurde nicht gefunden!"
+                    MessageBox.Show($"Der Hauptpfad '{_settingsService.PersonalFolder}'\nwurde nicht gefunden!"
                         , "Error", MessageBoxButton.OK);
                 }
                 else
                 {
-                    var p = Path.Combine(@_settingsService.ExplorerRoot, sb.ToString());
+                    var p = Path.Combine(@_settingsService.PersonalFolder, sb.ToString());
                     Process.Start("explorer.exe", @p);
                 }
             }
@@ -648,46 +648,8 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void DbOperations()
         {
-            var Doc = _container.Resolve<DocumentManager>();
-            //Doc.Construct(new VmpbPartBuilder(), ["t","w"]);
-            //string[] templates = new string[] { "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_93_Positionen.dotx",
-            //    "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_156_Positionen.dotx",
-            //    "Q:\\Technical_Functions\\420_Musterbau\\200_Bereiche\\250_Vormuster\\COS_Messraum\\Vorlagen\\Vorlagen_VMPB\\leer_Vormusterprüfbericht_406_Positionen.dotx" };
-            //Doc.SaveDocumentData("Q:\\ZproE\\COS_Messdaten", templates, "^(\\w{4})(\\w{3})(\\w+)");
 
-            //using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-            //{
-            //    var vorg = db.Vorgangs.Where(x => x.SysStatus.Contains("RÜCK"));
-            //    foreach (var v in vorg)
-            //    {
-            //        v.SortPos = "Z";
-            //    }
-            //    var vrg = db.Vorgangs.Where(x => x.Rid != null);
-            //    foreach (var v in vrg)
-            //    {
-            //        var st = string.Format("{0,4:0}_{1,3:0}", v.Rid?.ToString("D3"), v.Spos?.ToString("D3"));
-            //        v.SortPos = st;
-            //    }
-            //    db.SaveChanges();
-            //}
-            //    var ch = new CloseAndHolidayRule();
-
-
-            //    var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
-            //    StringWriter sw = new();
-            //    //xml.Serialize(sw, CloseAndHolidayRule);
-
-            //    xml.Serialize(sw, ch);
-            //    var r = new Rule()
-            //    {
-            //        RuleName = "Feiertage",
-            //        RuleValue = "Holi",
-            //        RuleData = sw.ToString()
-            //    };
-            //    db.Rules.Add(r);
-            //    db.SaveChanges();
-
-            //}
+           
         }
 
     }

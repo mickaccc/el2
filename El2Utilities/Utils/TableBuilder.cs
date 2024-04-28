@@ -24,7 +24,7 @@ namespace El2Core.Utils
         { get { return context; } }
         public abstract void Build();
         public abstract void SetContext(List<string?[]> context);
-        public abstract string GetResult(string format);
+        public abstract string GetHtml();
         public abstract FlowDocument GetDoc();
     }
     public class FlowTableBuilder : AbstracatBuilder
@@ -39,11 +39,14 @@ namespace El2Core.Utils
             doc.PageWidth = 700.0;
             doc.ColumnWidth = doc.PageWidth;
             table = new Table();
+            
             TableRow row = new TableRow();
             TableRowGroup rowGroup = new TableRowGroup();
-
+            
+            
             foreach (var head in headers)
             {
+                
                 row.Cells.Add(new TableCell(new Paragraph(new Run(head)))
                 {
                     BorderThickness = new Thickness(1, 0, 0, 1),
@@ -51,6 +54,9 @@ namespace El2Core.Utils
                     Background = Brushes.DarkGray,
                     Foreground = Brushes.White
                 });
+                TableColumn column = new TableColumn();
+                column.Width = new GridLength(doc.PageWidth / 5);
+                table.Columns.Add(column);
             }
             rowGroup.Rows.Add(row);
             table.RowGroups.Add(rowGroup);
@@ -61,6 +67,7 @@ namespace El2Core.Utils
                 row = new TableRow();
                 foreach (var cell in body)
                 {
+                    
                     if (row.Cells.Count < 5)
                     {
                         row.Cells.Add(new TableCell(new Paragraph(new Run(cell))));
@@ -92,7 +99,7 @@ namespace El2Core.Utils
             xslt.Load(xr);
             return xslt;
         }
-        public override string GetResult(string format)
+        public override string GetHtml()
         {
             XslCompiledTransform ToHtmlTransform = LoadTransformResource("/FlowDocumentToXhtml.xslt");
             using (MemoryStream ms = new MemoryStream())
@@ -106,6 +113,7 @@ namespace El2Core.Utils
 
                 // transform the contents of the MemoryStream to HTML
                 StringBuilder sb = new StringBuilder();
+                
                 using (StringWriter sw = new StringWriter(sb))
                 {
                     XmlWriterSettings xws = new XmlWriterSettings();
@@ -141,7 +149,9 @@ namespace El2Core.Utils
             throw new NotImplementedException();
         }
 
-        public override string GetResult(string format)
+
+
+        public override string GetHtml()
         {
             throw new NotImplementedException();
         }
