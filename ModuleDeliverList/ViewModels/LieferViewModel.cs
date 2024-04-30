@@ -452,28 +452,28 @@ namespace ModuleDeliverList.ViewModels
             {
                 Task.Run(() =>
          {
-             lock (_lock)
-             {
-                 foreach (var vrg in vrgIdList.Where(x => x != null))
-                 {
-                     var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
-                     if (v != null)
-                     {
-                         DBctx.Entry<Vorgang>(v).Reload();
-                         v.RunPropertyChanged();
-                         if (v.Aktuell == false)
-                         {
-                             _orders.Remove(v);
-                             DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
-                         }
-                     }
-                     else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg).Aktuell)
-                     {
-                         if (vrg != null)
-                             Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
-                     }
-                 }
-             }
+            lock (_lock)
+            {
+                foreach (var vrg in vrgIdList.Where(x => x != null))
+                {
+                    var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
+                    if (v != null)
+                    {
+                        DBctx.Entry<Vorgang>(v).Reload();
+                        v.RunPropertyChanged();
+                        if (v.Aktuell == false)
+                        {
+                            _orders.Remove(v);
+                            DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
+                        }
+                    }
+                    else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg).Aktuell)
+                    {
+                        if (vrg != null)
+                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
+                    }
+                }
+            }
          });
             }
             catch (Exception ex)
@@ -761,13 +761,14 @@ namespace ModuleDeliverList.ViewModels
         }
         private bool AddRelevantProcess(string vid)
         {
+
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var vrgAdd = db.Vorgangs
-               .Include(x => x.AidNavigation)
-               .ThenInclude(x => x.MaterialNavigation)
-               .Include(x => x.AidNavigation.DummyMatNavigation)
-               .Include(x => x.RidNavigation)
-               .First(x => x.VorgangId.Trim() == vid);
+                .Include(x => x.AidNavigation)
+                .ThenInclude(x => x.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.RidNavigation)
+                .First(x => x.VorgangId.Trim() == vid);
 
             if (vrgAdd.ArbPlSap?.Length >= 3)
             {
@@ -778,6 +779,7 @@ namespace ModuleDeliverList.ViewModels
                         return true;
                     }
             }
+            
             return false;
         }
         public void Closing()

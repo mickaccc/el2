@@ -105,8 +105,8 @@ namespace ModulePlanning.ViewModels
         private void ctxChanged(int obj)
         {
             lock (_lock)
-            {
-                _DbCtx.SaveChangesAsync();
+            {             
+                _DbCtx.SaveChanges();
             }
         }
 

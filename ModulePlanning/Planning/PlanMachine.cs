@@ -517,25 +517,38 @@ namespace ModulePlanning.Planning
         {
  
             Item.Rid = _rId;
-            int RelIndex = Index;
-            int Count = Target.Count;
-            if (Source.IndexOf(Item) < Index) RelIndex--; //If Sorting UpDown
-            if (Source.CanRemove) { Source.Remove(Item); }
-            if(Count == Target.Count) RelIndex = Index; //If AddNew
-            if (RelIndex >= Target.Count)
+            List<Vorgang> lst = [];
+            var p = Target.SourceCollection as Collection<Vorgang>;
+            lst.AddRange(p.OrderBy(x => x.SortPos));
+            int oldIndex = Target.IndexOf(Item);
+            if (oldIndex == -1) // commes from outside
             {
-                ((IList)Target.SourceCollection).Add(Item);
-            }
-            else
-            {
-                ((IList)Target.SourceCollection).Insert(RelIndex, Item);               
+                if (Index >= Target.Count)
+                {
+                    ((IList)Target.SourceCollection).Add(Item);
+                    lst.Add(Item);
+                }
+                else
+                {
+                    ((IList)Target.SourceCollection).Insert(Index, Item);
+                    lst.Insert(Index, Item);
+                }
             }
 
-            var p = Target.SourceCollection as Collection<Vorgang>;
- 
-            for (int i=0; i < p.Count; ++i)
+            if(oldIndex != -1) //sorting inside
             {
-                p[i].SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
+                lst.RemoveAt(oldIndex);
+
+                if (Index > oldIndex) Index--;
+                // the actual index could have shifted due to the removal
+
+                lst.Insert(Index, Item);
+            }
+
+            for (int i=0; i < lst.Count; i++)
+            {
+                var vrg = p.First(x => x.Equals(lst[i]));
+                vrg.SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
             }
             Target.MoveCurrentTo(Item);
             if (Item.AidNavigation.Material != null && WorkArea.CreateFolder)
@@ -573,7 +586,7 @@ namespace ModulePlanning.Planning
                     }
  
                     ProcessesCV.Refresh();
-                    //_eventAggregator.GetEvent<ContextPlanMachineChanged>().Publish(Rid);
+                    _eventAggregator.GetEvent<ContextPlanMachineChanged>().Publish(Rid);
                 }               
             }
             catch (Exception e)
