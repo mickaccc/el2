@@ -94,6 +94,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private WorkareaDocumentInfo? _workareaDocumentInfo;
         private static int _onlines;
         private static System.Timers.Timer? _timer;
         private IRegionManager _regionmanager;
@@ -147,6 +148,7 @@ namespace Lieferliste_WPF.ViewModels
             OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
             OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
 
+            _workareaDocumentInfo = new WorkareaDocumentInfo(container);
             //DbOperations();
         }
 
@@ -447,69 +449,28 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenExplorerExecuted(object obj)
         {
+            Document? docu = null;
+
             Dictionary<string, object>? dic;
             if (obj is OrderViewModel o)
             {
-                dic = new Dictionary<string, object>();
-                dic.Add("aid", o.Aid);
-                dic.Add("ttnr", o.Material ?? string.Empty);
+                docu = _workareaDocumentInfo.CreateDocumentInfos([o.Material, o.Aid]);
             }
             else if (obj is Vorgang v)
             {
-                dic = new Dictionary<string, object>();
-                dic.Add("aid", v.Aid);
-                dic.Add("ttnr", v.AidNavigation.Material ?? string.Empty);
+                docu = _workareaDocumentInfo.CreateDocumentInfos([v.AidNavigation.Material, v.Aid]);
             }
-            else dic = obj as Dictionary<string, object>;
-            if (dic != null)
-
+            if (docu != null)
             {
-                StringBuilder sb = new();
-                String exp = _settingsService.ExplorerPath;
-                string[] pa = exp.Split(',');
 
-                Regex reg2 = new(@"(?<=\[)(.*?)(?=\])");
-
-
-                for (int i = 0; i < pa.Length; i += 2)
+                if (!Directory.Exists(docu[DocumentPart.RootPath]))
                 {
-                    StringBuilder nsb = new StringBuilder();
-                    if (!pa[i].IsNullOrEmpty())
-                    {
-                        Regex reg3 = new(pa[i]);
-                        object? val;
-
-                        if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out val))
-                        {
-                            if (val is string s)
-                            {
-                                s = s.Trim();
-                                Match match2 = reg3.Match(s);
-                                foreach (Group ma in match2.Groups.Values)
-                                {
-                                    if (ma.Value != s)
-                                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (dic.TryGetValue(reg2.Match(pa[i + 1]).ToString().ToLower(), out object? val))
-                            nsb.Append(val).Append(Path.DirectorySeparatorChar);
-                    }
-                    sb.Append(nsb.ToString());
-                }
-
-
-                if (!Directory.Exists(_settingsService.PersonalFolder))
-                {
-                    MessageBox.Show($"Der Hauptpfad '{_settingsService.PersonalFolder}'\nwurde nicht gefunden!"
+                    MessageBox.Show($"Der Hauptpfad '{docu[DocumentPart.RootPath]}'\nwurde nicht gefunden!"
                         , "Error", MessageBoxButton.OK);
                 }
                 else
                 {
-                    var p = Path.Combine(@_settingsService.PersonalFolder, sb.ToString());
+                    var p = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]);
                     Process.Start("explorer.exe", @p);
                 }
             }

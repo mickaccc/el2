@@ -5,8 +5,6 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Operations.Builders;
-using ModuleDeliverList.Views;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -19,13 +17,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
-using System.Windows.Xps.Packaging;
-using Windows.ApplicationModel.DataTransfer;
 
 
 namespace ModuleDeliverList.ViewModels

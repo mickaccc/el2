@@ -1,5 +1,6 @@
 ﻿using El2Core.Constants;
 using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
@@ -130,7 +131,7 @@ namespace ModuleMeasuring.ViewModels
             {
                 string jump;
                 var dialog = new Microsoft.Win32.OpenFileDialog();
-
+                var setting = new UserSettingsService();
                 switch (target.Name)
                 {
                     case "first":
@@ -142,7 +143,8 @@ namespace ModuleMeasuring.ViewModels
                             case "DOKUMENTE":
                                 jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
                             default:
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
+                                jump = string.IsNullOrEmpty(setting.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+                                    : setting.PersonalFolder; break;
                         }
    
                         dialog.InitialDirectory = jump;
@@ -165,7 +167,8 @@ namespace ModuleMeasuring.ViewModels
                             case "DOKUMENTE":
                                 jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
                             default:
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
+                                jump = string.IsNullOrEmpty(setting.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+                                    : setting.PersonalFolder; break;
                         }
                         dialog.InitialDirectory = jump;
                         bool? Vresult = dialog.ShowDialog();
@@ -187,7 +190,8 @@ namespace ModuleMeasuring.ViewModels
                             case "DOKUMENTE":
                                 jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
                             default:
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
+                                jump = string.IsNullOrEmpty(setting.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+                                    : setting.PersonalFolder; break;
                         }
                         dialog.InitialDirectory = jump;
                         bool? Mresult = dialog.ShowDialog();
@@ -245,8 +249,9 @@ namespace ModuleMeasuring.ViewModels
         private void onPruefExecuted(object obj)
         {
             var mes = _orders.First(x => x.Aid == _SelectedValue);  
-            var docu = FirstPartInfo.CreateDocumentInfos([mes.Material]);
+            var docu = FirstPartInfo.CreateDocumentInfos([mes.Material, mes.Aid]);
             FirstPartInfo.Collect();
+            Directory.CreateDirectory(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], docu[DocumentPart.Folder]));
             FileInfo Firstfile = new FileInfo(docu[DocumentPart.Template]);
             var Firsttarg = new FileInfo(docu[DocumentPart.File]);
             if (!Firsttarg.Exists)
@@ -257,7 +262,6 @@ namespace ModuleMeasuring.ViewModels
             {
                 _FirstDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
             }
-
         }
         private bool onVmpbCanExecute(object arg)
         {
