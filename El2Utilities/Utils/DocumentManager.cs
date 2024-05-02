@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 
 namespace El2Core.Utils
 {
-
     public interface IDocument
     {
     }
@@ -123,7 +122,6 @@ namespace El2Core.Utils
                     f.Name.Replace("Messblatt", folders[0]));
                 document[DocumentPart.Folder] = folders[1];
             }
-
             return document;
         }
 
@@ -252,8 +250,11 @@ namespace El2Core.Utils
                         nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
                     }
                 }
-                document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar)
-                    .Append(folders[2]).Append(Path.DirectorySeparatorChar).ToString(); 
+                foreach(var s in folders.Skip(1))
+                {
+                    if(!string.IsNullOrEmpty(s)) nsb.Append(s).Append(Path.DirectorySeparatorChar);
+                }
+                document[DocumentPart.SavePath] = nsb.ToString();
             }
 
             return document;

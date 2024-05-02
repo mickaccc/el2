@@ -124,7 +124,7 @@
 				  IsSynchronizedWithCurrentItem="True"
 				  ItemsSource="{Binding ProcessesCV}"
 				  x:Name="Planed" VirtualizingPanel.IsVirtualizing="False"
-				  RowDetailsVisibilityMode="VisibleWhenSelected" IsReadOnly="True">
+				  RowDetailsVisibilityMode="VisibleWhenSelected" IsReadOnly="True" >
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <ContextMenu.Resources>
@@ -168,9 +168,8 @@
                 
 				<DataGridTemplateColumn x:Name="dataGridTemplateColumn">
 					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-
-							<wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
+                        <DataTemplate>
+                            <wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
 													   BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
 													   HorizontalAlignment="Left"
 													   VerticalAlignment="Top"

@@ -18,8 +18,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Printing;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -226,9 +224,7 @@ namespace Lieferliste_WPF.ViewModels
             var par = new DialogParameters();
             par.Add("projectNo", param);
             _dialogService.Show("Projects", par, null);
-
         }
-
 
         private bool OnOpenMeasuringCanExecute(object arg)
         {
@@ -258,7 +254,6 @@ namespace Lieferliste_WPF.ViewModels
         {
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Archive", UriKind.Relative));
         }
-
         private void OnArchivateExecuted(object obj)
         {
             if (obj is object[] onr)
@@ -369,8 +364,6 @@ namespace Lieferliste_WPF.ViewModels
                         .Where(x => x.Aid == aid)
                         .ToList();
 
-
-
                     if (vrgs != null)
                     {
                         var par = new DialogParameters();
@@ -397,7 +390,6 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenRoleMgmtCanExecute(object arg)
         {
-
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.RoleEdit);
         }
 
@@ -411,12 +403,9 @@ namespace Lieferliste_WPF.ViewModels
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenUserEdit);
         }
 
-
         private void OnOpenSettingsExecuted(object obj)
         {
-
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("UserSettings", UriKind.Relative));
-
         }
 
         private bool OnOpenSettingsCanExecute(object arg)
@@ -449,20 +438,22 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenExplorerExecuted(object obj)
         {
-            Document? docu = null;
-
-            Dictionary<string, object>? dic;
+            Document? docu;
             if (obj is OrderViewModel o)
             {
-                docu = _workareaDocumentInfo.CreateDocumentInfos([o.Material, o.Aid]);
+                docu = _workareaDocumentInfo.CreateDocumentInfos([o.Material, o.Aid, string.Empty]);
             }
             else if (obj is Vorgang v)
             {
-                docu = _workareaDocumentInfo.CreateDocumentInfos([v.AidNavigation.Material, v.Aid]);
+                docu = _workareaDocumentInfo.CreateDocumentInfos([v.AidNavigation.Material, v.Aid, string.Empty]);
+            }
+            else 
+            { 
+                var dic = obj as Dictionary<string, object>;
+                docu = _workareaDocumentInfo.CreateDocumentInfos([(string)dic["ttnr"], (string)dic["aid"], string.Empty]);
             }
             if (docu != null)
             {
-
                 if (!Directory.Exists(docu[DocumentPart.RootPath]))
                 {
                     MessageBox.Show($"Der Hauptpfad '{docu[DocumentPart.RootPath]}'\nwurde nicht gefunden!"
