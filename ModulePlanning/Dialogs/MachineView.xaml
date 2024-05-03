@@ -230,7 +230,22 @@
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <StackPanel ToolTip="Bemerkung Teamleiter" Width="150" >
+                            <GroupBox Grid.Column="1"  MinWidth="30"  MaxWidth="380"  
+                          Header="{Binding BemT, NotifyOnSourceUpdated=True,
+            Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}">
+                                <TextBox x:Name="txtT" Text="{Binding BemT, Mode=TwoWay,
+            Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
+                                  TextWrapping="Wrap"  AcceptsReturn="True" MaxWidth="380">
+                                    <TextBox.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource Relpermiss}">
+                                            <Binding Source="{x:Static const:Permissions.CommentTe}"/>
+                                            <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                        </MultiBinding>
+                                    </TextBox.IsEnabled>
+                                </TextBox>
+                            </GroupBox>
+
+                            <!--<StackPanel ToolTip="Bemerkung Teamleiter" Width="150" >
                                 <TextBlock x:Name="BemTInfo" Text="{Binding BemT, NotifyOnSourceUpdated=True,
                            Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}" Background="Gold"/>
 
@@ -245,7 +260,7 @@
                                         </MultiBinding>
                                     </TextBox.IsEnabled>
                                 </TextBox>
-                            </StackPanel>
+                            </StackPanel>-->
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
