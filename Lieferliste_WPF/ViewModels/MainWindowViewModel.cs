@@ -568,14 +568,12 @@ namespace Lieferliste_WPF.ViewModels
                                     var mn = matchNew.SingleOrDefault(x => x.Index == match.Index).Value;
                                     if (mn != null && match.Value != mn)
                                         sb.Append(match.Value).Append('\t').Append(mn).Append('\n');
-                                    else if (mn == null) 
-                                    {
-                                        var s = sb;
-                                    }
                                 }
                             }
-                            if(sb.Length > 0)
+                            if (sb.Length > 0)
                                 msgListV.Add([item.PrimaryKey, sb.ToString()]);
+                            else if(item.OldValue != item.NewValue)
+                                db.Database.ExecuteSqlRaw("@INSERT INTO InMemoryMsg SET OldValue={0}, NewValue={1}", item.OldValue, item.NewValue);
                         }
                         msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
 
