@@ -93,6 +93,8 @@
                             <TextBox Text="{Binding Fdocu[2]}"/>
                             <TextBlock Text="Sprungziel"/>
                             <TextBox Text="{Binding Fdocu[9]}"/>
+                            <TextBlock Text="Raster Folder"/>
+                            <TextBox Text="{Binding Fdocu[11]}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="Vormuster">

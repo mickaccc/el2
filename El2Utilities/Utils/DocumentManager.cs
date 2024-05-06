@@ -90,6 +90,7 @@ namespace El2Core.Utils
             document[DocumentPart.Template] = string.Empty;
             document[DocumentPart.RegularEx] = string.Empty;
             document[DocumentPart.JumpTarget] = string.Empty;
+            document[DocumentPart.RasterFolder1] = string.Empty;
             if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
             var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
@@ -372,7 +373,10 @@ namespace El2Core.Utils
         File,
         Type,
         JumpTarget,
-        Folder
+        Folder,
+        RasterFolder1,
+        RasterFolder2,
+        RasterFolder3
     }
     public enum DocumentType
     {

@@ -441,7 +441,7 @@ namespace ModuleDeliverList.ViewModels
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteOrder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void MessageVorgangReceived(List<string?> vrgIdList)
+        private void MessageVorgangReceived(List<string[]?> vrgIdList)
         {
             try
             {
@@ -451,7 +451,7 @@ namespace ModuleDeliverList.ViewModels
             {
                 foreach (var vrg in vrgIdList.Where(x => x != null))
                 {
-                    var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
+                    var v = _orders.FirstOrDefault(x => x.VorgangId == vrg[0]);
                     if (v != null)
                     {
                         DBctx.Entry<Vorgang>(v).Reload();
@@ -462,7 +462,7 @@ namespace ModuleDeliverList.ViewModels
                             DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
                         }
                     }
-                    else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg).Aktuell)
+                    else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg[0]).Aktuell)
                     {
                         if (vrg != null)
                             Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);

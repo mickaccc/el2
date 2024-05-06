@@ -47,14 +47,14 @@ namespace Lieferliste_WPF.ViewModels
             }           
         }
 
-        private void OnMessageReceived(List<string?> vorgangIdList)
+        private void OnMessageReceived(List<string[]?> vorgangIdList)
         {
             try
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 foreach (var vid in vorgangIdList)
                 {
-                    var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vid);
+                    var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vid[0]);
 
                     if (vo != null)
                     {

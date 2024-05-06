@@ -18,6 +18,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Printing;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -539,7 +541,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private async void OnMsgDBTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            List<string?> msgListV = [];
+            List<string[]?> msgListV = [];
             List<string?> msgListO = [];
             try
             {
@@ -551,8 +553,30 @@ namespace Lieferliste_WPF.ViewModels
                         .ToListAsync();
                     if (m.Count > 0)
                     {
-                        var mv = m.Where(x => x.TableName == "Vorgang").Select(x => x.PrimaryKey).ToList();
-                        msgListV.AddRange(mv);
+                        Regex regex = new Regex("\\w+=\"(\\s*\\w+\\s*)*\"|\\w+=\"\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\"|\\w+=\"\\d.\\d+e\\+\\d+\"");
+                        var mv = m.Where(x => x.TableName == "Vorgang");
+                        foreach (var item in mv)
+                        {
+                            StringBuilder sb = new StringBuilder();
+          
+                            var matchNew = regex.Matches(item.NewValue);
+                            var matchOld = regex.Matches(item.OldValue);
+                            if (matchNew.Count > 0 && matchOld.Count > 0)
+                            { 
+                                foreach (Match match in matchOld)
+                                {
+                                    var mn = matchNew.SingleOrDefault(x => x.Index == match.Index).Value;
+                                    if (mn != null && match.Value != mn)
+                                        sb.Append(match.Value).Append('\t').Append(mn).Append('\n');
+                                    else if (mn == null) 
+                                    {
+                                        var s = sb;
+                                    }
+                                }
+                            }
+                            if(sb.Length > 0)
+                                msgListV.Add([item.PrimaryKey, sb.ToString()]);
+                        }
                         msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
 
                         foreach (var msg in m)

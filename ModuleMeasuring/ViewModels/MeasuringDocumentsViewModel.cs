@@ -31,6 +31,7 @@ namespace ModuleMeasuring.ViewModels
             OpenFileCommand = new ActionCommand(onOpenFileExecuted, onOpenFileCanExecute);
             DeleteFileCommand = new ActionCommand(onDeleteFileExecuted, onDeleteFileCanExecute);
             AddFileCommand = new ActionCommand(onAddFileExecuted, onAddFileCanExecute);
+            AddZngCommand = new ActionCommand(onAddZngExecuted, onAddZngCanExecute);
             LoadData();
             FirstPartInfo = new MeasureFirstPartInfo(_container);
             VmpbInfo = new VmpbDocumentInfo(_container);
@@ -43,6 +44,7 @@ namespace ModuleMeasuring.ViewModels
         public ICommand? OpenFileCommand { get; private set; }
         public ICommand? DeleteFileCommand { get; private set; }
         public ICommand? AddFileCommand { get; private set; }
+        public ICommand? AddZngCommand { get; private set; }
         private List<OrderRb> _orders;
         public ICollectionView OrderList { get { return orderViewSource.View; } }
         private CollectionViewSource orderViewSource { get; } = new();
@@ -103,7 +105,40 @@ namespace ModuleMeasuring.ViewModels
             VmpbDocumentItems = CollectionViewSource.GetDefaultView(_VmpbDocumentItems);
             PartDocumentItems = CollectionViewSource.GetDefaultView(_PartDocumentItems);
         }
+        private bool onAddZngCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc) &&
+                SelectedItem != null;
+        }
 
+        private void onAddZngExecuted(object obj)
+        {
+            try
+            {
+                var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                string source = Path.Combine(docu[DocumentPart.RasterFolder1], docu[DocumentPart.SavePath]);
+                source = source.TrimEnd(Path.DirectorySeparatorChar);
+                string target = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], docu[DocumentPart.TTNR]);
+                int i = 0;
+                do
+                {
+                    var so = source + i.ToString() + ".pdf";
+                    if (File.Exists(so))
+                    {
+                        var ta = target + "-" + i.ToString() + ".pdf";
+                        File.Copy(so, ta, true);
+                        _FirstDocumentItems.Add(new DocumentDisplay() { Display = docu[DocumentPart.TTNR], FullName = ta });
+                    }
+                    else { MessageBox.Show(string.Format("Datei {0} wurde nicht gefunden", source), "Raster Copy", MessageBoxButton.OK); }
+                    i++;
+                } while (File.Exists(source + i.ToString() + ".pdf"));
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Raster Copy", MessageBoxButton.OK);
+            }
+        }
         private bool onAddFileCanExecute(object arg)
         {
             var target = arg as ItemsControl;
@@ -135,7 +170,7 @@ namespace ModuleMeasuring.ViewModels
                 switch (target.Name)
                 {
                     case "first":
-                        var Fdocu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material]);
+                        var Fdocu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
                         switch (Fdocu[DocumentPart.JumpTarget].ToUpperInvariant())
                         {
                             case "DESKTOP":
@@ -320,7 +355,7 @@ namespace ModuleMeasuring.ViewModels
             _PartDocumentItems.Clear();
             if (SelectedItem != null)
             {             
-                var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material]);
+                var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
                 string path = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]);
                 if (Directory.Exists(path))
                 {
@@ -389,7 +424,7 @@ namespace ModuleMeasuring.ViewModels
                     var t = (ItemsControl)dropInfo.VisualTarget;
                     if (t.Name == "first")
                     {
-                        var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material]);
+                        var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
                         FirstPartInfo.Collect();
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
