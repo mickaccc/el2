@@ -511,6 +511,9 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_LOST) accepted = ProjectsLost(ord.AidNavigation.Pro) == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.ORDERS_RED) accepted = ord.AidNavigation.Prio?.Length > 0 == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_RED) accepted = ord.AidNavigation.Pro?.ProjectPrio == !FilterInvers;
+
+            var b = new PersonalFilter("^F", PropertyNames.Material);
+            var bo = b.TestValue(ord);
             return accepted;
         }
 

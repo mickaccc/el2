@@ -624,6 +624,11 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void DbOperations()
         {
+            var pcont = new PersonalFilterContainer();
+            var filt = new PersonalFilter("^F", PropertyNames.Auftragsnummer);
+            pcont.Add("name", filt);
+            var res = filt.TestValue(new Vorgang() { Aid = "f2100", BemM = "V" });
+            
 
            
         }
