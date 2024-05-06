@@ -149,6 +149,8 @@
     <None Remove="Images\user-profiles.png" />
     <None Remove="Images\waste.jpg" />
     <None Remove="Images\waste2.jpg" />
+    <None Remove="VersionAutoIncrementer.tt" />
+    <None Remove="VersionAutoIncrementer.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -282,19 +284,7 @@
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="VersionAutoIncrementer.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>VersionAutoIncrementer.txt</LastGenOutput>
-    </None>
-    <None Update="VersionAutoIncrementer.txt">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>VersionAutoIncrementer.tt</DependentUpon>
-    </None>
-  </ItemGroup>
-	
+<!---->	
 	<PropertyGroup>
 		<Authors>Michael Schatzl (SCM2HL)</Authors>
 		<AssemblyName>Lieferliste-WPF</AssemblyName>
@@ -303,10 +293,10 @@
 		<Title>Lieferliste-WPF</Title>
 		<Company>Bosch-HlP/TEF2</Company>
 		<DelaySign>True</DelaySign>
-		<AssemblyVersion>1.0.1.*</AssemblyVersion>
+		<AssemblyVersion>1.0.*</AssemblyVersion>
 		<FileVersion>1.0.*</FileVersion>
 	</PropertyGroup>
   
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\TextTemplating\Microsoft.TextTemplating.targets" />
+  <!--<Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\TextTemplating\Microsoft.TextTemplating.targets" />-->
   
 </Project>

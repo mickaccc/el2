@@ -1,4 +1,5 @@
 ﻿using CompositeCommands.Core;
+using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
 using ModulePlanning.Planning;
 using Prism.Services.Dialogs;
@@ -11,6 +12,7 @@ namespace ModulePlanning.Dialogs.ViewModels
     public class MachineViewVM : IDialogAware, IDropTarget
     {
         public string Title => "Maschinen Details";
+        public string UserIdent => UserInfo.User.UserIdent;
         public PlanMachine? PlanMachine { get; private set; }
         public event Action<IDialogResult>? RequestClose;
         private IApplicationCommands _applicationCommands;

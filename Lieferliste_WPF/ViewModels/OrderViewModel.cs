@@ -143,6 +143,7 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         public event Action<IDialogResult> RequestClose;
+        public string UserIdent { get; } = UserInfo.User.UserIdent;
         private string _aid;
         public string Aid
         {

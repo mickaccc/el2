@@ -40,11 +40,7 @@ namespace WpfCustomControlLibrary
     {
 
 
-
-        private void OnTextChanged(object sender, TextChangedEventArgs e) { ChangeText(); }
-
         private TextBox _textBox;
-        private TextBlock _infoHeader;
         internal string _headerText;
         internal string _commentText;
 
@@ -56,7 +52,7 @@ namespace WpfCustomControlLibrary
         }
 
 
-                   public string CommentString
+        public string CommentString
         {
             get => (string)GetValue(CommentStringProperty);
             set => SetValue(CommentStringProperty, value);
@@ -146,7 +142,7 @@ namespace WpfCustomControlLibrary
         {
             base.OnApplyTemplate();
             _textBox = Template.FindName("PART_TextBox", this) as TextBox;
-            _infoHeader = Template.FindName("PART_CommentInfo", this) as TextBlock;
+            
             _textBox.LostFocus += LostFocus;
         }
         private static void OnCommentStringChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -170,13 +166,8 @@ namespace WpfCustomControlLibrary
             var txt = sender as TextBox;
             if (txt.Text.Length != 0)
             {
-                CommentString = string.Format("[{0} - {1}]{2}{3}", User, DateTime.Now, (char)29, txt.Text);
+                CommentString = string.Format("[{0} - {1}]{2}{3}", User, DateTime.Now.ToShortDateString(), (char)29, txt.Text);
             }
-        }
-
-        private void ChangeText()
-        {
-
         }
 
     }

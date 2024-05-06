@@ -9,13 +9,17 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
 
-                            <StackPanel>
-                            <TextBlock  x:Name="PART_CommentInfo" Text="{TemplateBinding HeaderText}"
+                        <Grid MinHeight="70">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock  x:Name="PART_CommentInfo" Grid.Row="0" Text="{TemplateBinding HeaderText}" Background="Bisque"
                                     VerticalAlignment="Center" Padding="5" FontSize="{TemplateBinding FontSize}"/>
-                            <TextBox  x:Name="PART_TextBox" Text="{TemplateBinding CommentText}"
-                                     Background="Transparent" Padding="5" FontSize="{TemplateBinding FontSize}"/>
-   
-                            </StackPanel>
+                            <TextBox  x:Name="PART_TextBox" Grid.Row="1" Text="{TemplateBinding CommentText}"
+                                     Background="Transparent" Padding="5" FontSize="{TemplateBinding FontSize}"
+                                      TextWrapping="Wrap" AcceptsReturn="True" TextAlignment="Left" />
+                        </Grid>
  
                     </Border>
                 </ControlTemplate>
