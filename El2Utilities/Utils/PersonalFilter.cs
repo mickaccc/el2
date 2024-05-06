@@ -1,4 +1,5 @@
 ﻿using El2Core.Models;
+using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,6 +13,7 @@ namespace El2Core.Utils
 {
     public class PersonalFilterContainer
     {
+
         Dictionary<string, PersonalFilter> _filters = [];
         public void Add(string name, PersonalFilter filter)
         {
@@ -20,6 +22,7 @@ namespace El2Core.Utils
     }
     public class PersonalFilter
     {
+        private IContainerProvider _container;
         private string _RuleCommand;
         private string _Property;
         private PropertyNames _Prop;
@@ -27,7 +30,7 @@ namespace El2Core.Utils
         public PropertyNames Prop => _Prop;
         public string RuleCommand => _RuleCommand;
         public string Property => _Property;
-        public PersonalFilter(string rule, string prop) { _RuleCommand = rule; _Property = prop; }
+        public PersonalFilter(string rule, string prop, IContainerProvider container) { _RuleCommand = rule; _Property = prop; _container = container; }
         public bool TestValue(Vorgang vorgang)
         {
             Regex regex = new Regex(_RuleCommand);
@@ -38,6 +41,10 @@ namespace El2Core.Utils
                 
                 return regex.Match(get.ToString()).Success;
             }
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var modelData = db.Model.GetEntityTypes()
+                .FirstOrDefault(x => x.ClrType.Name == "Vorgang").GetNavigations();
+
             return false;
         }
 

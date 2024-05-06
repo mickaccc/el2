@@ -19,9 +19,7 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
 using Prism.Unity;
-using System;
 using System.IO;
-using System.Reflection;
 using System.Windows;
 using Unity;
 
