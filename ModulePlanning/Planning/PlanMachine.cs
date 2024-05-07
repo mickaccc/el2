@@ -248,7 +248,7 @@ namespace ModulePlanning.Planning
             if (ind != null) ScrollItem = ind;
         }
 
-        private void MessageReceived(List<string[]?> vorgangIdList)
+        private void MessageReceived(List<string?> vorgangIdList)
         {
             try
             { 
@@ -257,7 +257,7 @@ namespace ModulePlanning.Planning
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     lock (_lock)
                     {
-                        foreach (string? id in vorgangIdList[0].Where(x => x != null))
+                        foreach (string? id in vorgangIdList.Where(x => x != null))
                         {
                             if (id != null)
                             {

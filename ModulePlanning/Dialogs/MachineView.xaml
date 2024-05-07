@@ -230,11 +230,11 @@
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">
                     <DataGridTemplateColumn.CellTemplate >
                         <DataTemplate>
-                            <wpfControl:CommentControl CommentString="{Binding BemT, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Focusable="True"
+                            <!--<wpfControl:CommentControl CommentString="{Binding BemT, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Focusable="True"
                                                        User="{Binding Path=DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                       Height="Auto" />
+                                                       Height="Auto" />-->
 
-                            <!--<StackPanel ToolTip="Bemerkung Teamleiter" Width="150" >
+                            <StackPanel ToolTip="Bemerkung Teamleiter" Width="150" >
                                 <TextBlock x:Name="BemTInfo" Text="{Binding BemT, NotifyOnSourceUpdated=True,
                            Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}" Background="Gold"/>
 
@@ -249,7 +249,7 @@
                                         </MultiBinding>
                                     </TextBox.IsEnabled>
                                 </TextBox>
-                            </StackPanel>-->
+                            </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

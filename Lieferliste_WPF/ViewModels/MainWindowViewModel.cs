@@ -541,7 +541,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private async void OnMsgDBTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            List<string[]?> msgListV = [];
+            List<string?> msgListV = [];
             List<string?> msgListO = [];
             try
             {
@@ -552,28 +552,15 @@ namespace Lieferliste_WPF.ViewModels
                         .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.Userid == UserInfo.User.UserIdent)
                         .ToListAsync();
                     if (m.Count > 0)
-                    {
-                        Regex regex = new Regex("\\w+=\"(\\s*\\w+\\s*)*\"|\\w+=\"\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\"|\\w+=\"\\d.\\d+e\\+\\d+\"");
+                    {                     
                         var mv = m.Where(x => x.TableName == "Vorgang");
                         foreach (var item in mv)
                         {
-                            StringBuilder sb = new StringBuilder();
-          
-                            var matchNew = regex.Matches(item.NewValue);
-                            var matchOld = regex.Matches(item.OldValue);
-                            if (matchNew.Count > 0 && matchOld.Count > 0)
-                            { 
-                                foreach (Match match in matchOld)
-                                {
-                                    var mn = matchNew.SingleOrDefault(x => x.Index == match.Index).Value;
-                                    if (mn != null && match.Value != mn)
-                                        sb.Append(match.Value).Append('\t').Append(mn).Append('\n');
-                                }
-                            }
-                            if (sb.Length > 0)
-                                msgListV.Add([item.PrimaryKey, sb.ToString()]);
-                            else if(item.OldValue != item.NewValue)
-                                db.Database.ExecuteSqlRaw("@INSERT INTO InMemoryMsg SET OldValue={0}, NewValue={1}", item.OldValue, item.NewValue);
+                            if (item != null)
+                            {
+                                if(item.OldValue != item.NewValue)
+                                    msgListV.Add(item.PrimaryKey);
+                            }                        
                         }
                         msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
 
