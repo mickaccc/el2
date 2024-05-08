@@ -33,17 +33,37 @@ namespace El2Core.Utils
         public PersonalFilter(string rule, string prop, IContainerProvider container) { _RuleCommand = rule; _Property = prop; _container = container; }
         public bool TestValue(Vorgang vorgang)
         {
-            Regex regex = new Regex(_RuleCommand);
-            PropertyInfo info = vorgang.GetType().GetProperty(_Property);
-            if (info != null)
+            var navi = _Property.Split('.');
+            if (navi.Length > 0)
             {
-                var get = info.GetValue(vorgang, null);
-                
-                return regex.Match(get.ToString()).Success;
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var modelData = db.Vorgangs.EntityType;
+                foreach (var prop in navi)
+                {
+                    var nav = modelData.FindDeclaredNavigation(prop);
+                    if(nav != null)
+                    {
+                        modelData = nav.TargetEntityType;
+                    }
+                    else
+                    {
+                        var result = modelData.FindDeclaredProperty(prop);
+                        var r = result.PropertyInfo.GetValue(vorgang, null);
+                    }
+                }
             }
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var modelData = db.Model.GetEntityTypes()
-                .FirstOrDefault(x => x.ClrType.Name == "Vorgang").GetNavigations();
+            else
+            {
+
+                Regex regex = new Regex(_RuleCommand);
+                PropertyInfo info = vorgang.GetType().GetProperty(_Property);
+                if (info != null)
+                {
+                    var get = info.GetValue(vorgang, null);
+
+                    return regex.Match(get.ToString()).Success;
+                }
+            }
 
             return false;
         }
