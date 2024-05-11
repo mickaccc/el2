@@ -67,6 +67,7 @@ namespace ModuleDeliverList.ViewModels
         private static List<Ressource> _ressources = [];
         private static SortedDictionary<int, string> _sections = [];
         public SortedDictionary<int, string> Sections => _sections;
+        public List<string> PersonalFilterKeys { get; } = [.. PersonalFilterContainer.GetInstance().Keys];
         private ObservableCollection<ProjectStruct> _projects = new();
         public ObservableCollection<ProjectStruct> Projects
         {
@@ -178,6 +179,25 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
+        private string _selectedPersonalFilter;
+
+        public string? SelectedPersonalFilter
+        {
+            get
+            {
+                return _selectedPersonalFilter;
+            }
+            set
+            {
+                if (value != _selectedPersonalFilter)
+                {
+                    _selectedPersonalFilter = value;
+                    NotifyPropertyChanged(() => SelectedPersonalFilter);
+                    OrdersView.Refresh();
+                }
+            }
+        }
+
         public string SelectedProjectFilter
         {
             get => _selectedProjectFilter;
@@ -512,8 +532,11 @@ namespace ModuleDeliverList.ViewModels
             if (accepted && _selectedDefaultFilter == CmbFilter.ORDERS_RED) accepted = ord.AidNavigation.Prio?.Length > 0 == !FilterInvers;
             if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_RED) accepted = ord.AidNavigation.Pro?.ProjectPrio == !FilterInvers;
 
-            var b = new PersonalFilter("^F", PropertyNames.Material, _container);
-            var bo = b.TestValue(ord);
+            if (accepted && _selectedPersonalFilter != null)
+            {
+                var b = PersonalFilterContainer.GetInstance();
+                accepted = b[_selectedPersonalFilter].TestValue(ord, _container);
+            }
             return accepted;
         }
 
@@ -573,6 +596,7 @@ namespace ModuleDeliverList.ViewModels
             SelectedDefaultFilter = CmbFilter.NOT_SET;
             SelectedProjectFilter = string.Empty;
             SelectedSectionFilter = string.Empty;
+            SelectedPersonalFilter = null;
             MarkerCode = string.Empty;
             FilterInvers = false;
         }

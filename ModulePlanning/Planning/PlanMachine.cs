@@ -143,7 +143,7 @@ namespace ModulePlanning.Planning
 
         public ObservableCollection<Vorgang>? Processes { get; set; }
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
-
+        public bool EnableRowDetails { get; private set; }
         private IContainerProvider _container;
         private IEventAggregator _eventAggregator;
         private IApplicationCommands? _applicationCommands;
@@ -179,7 +179,6 @@ namespace ModulePlanning.Planning
             }
         }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
-
         private void LoadData(Ressource res)
         { 
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
@@ -223,8 +222,8 @@ namespace ModulePlanning.Planning
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
+            EnableRowDetails = _settingsService.IsRowDetails;
         }
-
 
         private void CalculateEndTime()
         {

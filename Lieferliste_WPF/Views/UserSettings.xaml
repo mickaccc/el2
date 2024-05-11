@@ -8,7 +8,8 @@
       prism:ViewModelLocator.AutoWireViewModel="True"
       Height="600" Width="1000" Tag="{Binding Title}" >
 
-    <Grid Background="{DynamicResource MahApps.Brushes.Control.Background}">
+ 
+    <Grid Background="{DynamicResource MahApps.Brushes.Control.Background}" >
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>
@@ -69,6 +70,13 @@
 
                                 </StackPanel>
                             </materialDesign:Chip>
+                            <materialDesign:Chip>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="RowDetails"/>
+                                    <ToggleButton IsChecked="{Binding RowDetails}" ToolTip="Details anzeigen" />
+
+                                </StackPanel>
+                            </materialDesign:Chip>
                         </StackPanel>
                         <ComboBox x:Name="AccentSelector" Grid.Column="4" Grid.Row="1"
                               Margin="0 0 2 0"
@@ -78,6 +86,43 @@
                               DisplayMemberPath="Name"
                               SelectedValue="{Binding DataContext.SelectedTheme, RelativeSource={RelativeSource AncestorType=UserControl}}"
                               ItemsSource="{Binding Source={StaticResource Themes}}" />
+                    </Grid>
+                    <Grid ShowGridLines="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="200*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.ColumnSpan="2" Content="Personal Special Filter" Background="Aquamarine" HorizontalContentAlignment="Center"/>
+                        <ListBox Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding PersonalFilterView}" Margin="10" MinWidth="80" IsSynchronizedWithCurrentItem="True">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
+                            
+                            
+                            <TextBox Text="{Binding PersonalFilterName}" Margin="10,0,10,0" MinWidth="60"/>
+                            <TextBox x:Name="RegExBox" Text="{Binding PersonalFilterRegex}" Margin="10,0,10,0" MinWidth="60" TextChanged="TestBox_TextChanged"/>
+                            <TextBox x:Name="TestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60"/>
+                            <ComboBox ItemsSource="{Binding PropertyNames}" SelectedValue="{Binding PersonalFilterField}"
+                                      DisplayMemberPath="Item1">
+
+                            </ComboBox>
+                            <Button Content="Neu" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                                    Command="{Binding PersonalFilterNewCommand}"/>
+                            <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                                    Command="{Binding PersonalFilterAddCommand}"/>
+                            <Button Content="Entfernen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                                    Command="{Binding PersonalFilterRemoveCommand}"/>
+                        </StackPanel>
+                        
                     </Grid>
                 </StackPanel>
             </TabItem>

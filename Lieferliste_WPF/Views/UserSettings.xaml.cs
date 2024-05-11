@@ -1,8 +1,10 @@
 ﻿using ControlzEx.Theming;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 
 namespace Lieferliste_WPF.Views
 {
@@ -25,6 +27,36 @@ namespace Lieferliste_WPF.Views
             {
                 ThemeManager.Current.ChangeTheme(Application.Current, selectedTheme);
                 Application.Current?.MainWindow?.Activate();
+            }
+        }
+
+        private void TestBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                RegExBox.Foreground = Brushes.Black;
+                if (TestBox != null)
+                {
+                    if (string.IsNullOrEmpty(RegExBox.Text) == false)
+                    {
+                        var regex = new Regex(RegExBox.Text);
+                        if (regex.IsMatch(TestBox.Text))
+                        {
+                            TestBox.Background = Brushes.LightGreen;
+                        }
+                        else
+                        {
+                            TestBox.Background = Brushes.White;
+                        }
+                    }
+                    else TestBox.Background = Brushes.White;
+                }
+            }
+            catch (RegexParseException) { RegExBox.Foreground = Brushes.Red; TestBox.Background = Brushes.White; }
+            catch (System.Exception)
+            {
+
+                throw;
             }
         }
     }

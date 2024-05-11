@@ -24,7 +24,7 @@
 		<conv:BullettShapeConverter x:Key="BulletShape"/>
         <conv:PermissionConverter x:Key="permiss"/>
         <conv:ScrollIntoViewConverter x:Key="scrollInto"/>
-
+        <conv:BoolRowDetail x:Key="rowDetail"/>
     </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"
@@ -124,7 +124,7 @@
 				  IsSynchronizedWithCurrentItem="True"
 				  ItemsSource="{Binding ProcessesCV}"
 				  x:Name="Planed" VirtualizingPanel.IsVirtualizing="False"
-				  RowDetailsVisibilityMode="VisibleWhenSelected" IsReadOnly="True" >
+				  RowDetailsVisibilityMode="{Binding EnableRowDetails, Converter={StaticResource rowDetail}}"  IsReadOnly="True" >
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <ContextMenu.Resources>

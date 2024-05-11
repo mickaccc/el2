@@ -93,9 +93,7 @@
                 <materialDesign:PackIcon Kind="DeleteEmpty" Width="30" />
             </Button>
 
-            <Button Command="{Binding FilterSaveCommand}" ToolTip="Customfilter speichern" Margin="5" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
-                <materialDesign:PackIcon Kind="ContentSaveCog"/>
-            </Button>
+ 
 
 
             <materialDesign:ColorZone DockPanel.Dock="Right"
@@ -152,14 +150,20 @@
                           SelectedValuePath="Value" VirtualizingPanel.IsVirtualizing="True"
                           ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
 
-
-                    <ComboBox x:Name="FilterComboBox" materialDesign:HintAssist.Hint="Filters"
+                    <ComboBox x:Name="PersonalComboBox" materialDesign:HintAssist.Hint="Spezial"
+                      ItemsSource="{Binding PersonalFilterKeys}" 
+                      SelectedValue="{Binding SelectedPersonalFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
+                    
+                    <ComboBox x:Name="FilterComboBox" materialDesign:HintAssist.Hint="Standard"
                          Background="{Binding FilterInvers, Converter={StaticResource boolalert}}"                                       
                          ItemsSource="{Binding Path=SelectedDefaultFilter, Converter={conv:EnumToCollectionConverter},Mode=OneTime}"
                          SelectedValue="{Binding Path=SelectedDefaultFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          DisplayMemberPath="Description"
                          SelectedValuePath="Value"
                          ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}">
+                        
                     <ComboBox.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Filter umkehren" Command="{Binding ToggleFilterCommand}"/>

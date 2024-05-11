@@ -39,8 +39,8 @@
     <Grid x:Name="MainGrid"  >
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="80"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="100*"/>
 
         </Grid.RowDefinitions>
 
@@ -113,7 +113,7 @@
             <Label Grid.Column="5" Content="{Binding Items.Count, ConverterParameter=Vorgang;Vorgänge, Converter={StaticResource CountConverter1}, ElementName=listBox1, Mode=OneWay}"
                    HorizontalAlignment="Right" Margin="5" x:Name="Count" VerticalAlignment="Top"
                    Background="#FFEBEB73" Width="71" />
-            <Button Grid.Column="5" Grid.Row="1" Content="Ablegen" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
+            <Button Grid.Column="5" Grid.Row="1" Content="Ablegen" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
                     VerticalAlignment="Top"  SnapsToDevicePixels="True" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
                     Command="{Binding Path=ApplicationCommands.ArchivateCommand}">
                 <Button.CommandParameter>
@@ -123,7 +123,7 @@
                     </MultiBinding>
                 </Button.CommandParameter>
             </Button> 
-            <Button Grid.Column="5" Grid.Row="1" Content="Explorer" Height="23" HorizontalAlignment="left" Margin="5" x:Name="btnExplorer"
+            <Button Grid.Column="5" Grid.Row="1" Content="Explorer" HorizontalAlignment="left" Margin="5" x:Name="btnExplorer"
                     VerticalAlignment="Top" SnapsToDevicePixels="True" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
                     Command="{Binding Path=ApplicationCommands.ExplorerCommand}" CommandParameter="{Binding}"/>
         </Grid>

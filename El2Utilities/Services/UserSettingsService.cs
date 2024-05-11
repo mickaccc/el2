@@ -12,6 +12,7 @@ namespace El2Core.Services
         string PersonalFolder { get; set; }
         bool IsAutoSave { get; set; }
         bool IsSaveMessage { get; set; }
+        bool IsRowDetails { get; set; }
         string Theme { get; set; }
         double FontSize { get; set; }
         bool IsDefaults();
@@ -43,6 +44,11 @@ namespace El2Core.Services
             get { return Properties.Settings.Default.IsSaveMessage; }
             set { Properties.Settings.Default[nameof(IsSaveMessage)] = value; _isChanged = true; }
         }
+        public bool IsRowDetails
+        {
+            get { return Properties.Settings.Default.IsRowDetails;  }
+            set { Properties.Settings.Default[nameof(IsRowDetails)] = value; _isChanged = true; }
+        }
         public double FontSize
         {
             get { return Properties.Settings.Default.FontSize; }
@@ -67,6 +73,7 @@ namespace El2Core.Services
         private bool _isChanged;
         public bool IsChanged { get { return _isChanged; } }
 
+        
 
         public void Save()
         {
