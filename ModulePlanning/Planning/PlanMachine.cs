@@ -140,7 +140,6 @@ namespace ModulePlanning.Planning
         public List<int> CostUnits { get; set; } = [];
         private ObservableCollection<ShiftStruct> _shifts = [];
         public ICollectionView ShiftsView { get; private set; }
-
         public ObservableCollection<Vorgang>? Processes { get; set; }
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         public bool EnableRowDetails { get; private set; }
