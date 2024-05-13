@@ -143,6 +143,7 @@ namespace Lieferliste_WPF.ViewModels
             PropertyNames.Add(PropertyPair.Material.ToTuple());
             PropertyNames.Add(PropertyPair.MaterialDescription.ToTuple());
             PropertyNames.Add(PropertyPair.LieferTermin.ToTuple());
+            PropertyNames.Add(PropertyPair.PrioText.ToTuple());
             PropertyNames.Add(PropertyPair.RessourceName.ToTuple());
             PropertyNames.Add(PropertyPair.Project.ToTuple());
             PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());

@@ -169,6 +169,7 @@ namespace El2Core.Utils
     [XmlInclude(typeof (PersonalFilterOrderRb))]
     [XmlInclude(typeof(PersonalFilterMaterial))]
     [XmlInclude(typeof(PersonalFilterRessource))]
+    [XmlInclude(typeof(PersonalFilterProject))]
     [Serializable]
     public abstract class PersonalFilter
     {
@@ -261,7 +262,8 @@ namespace El2Core.Utils
             if (nav != null)
             {
                 modelData = nav.TargetEntityType;
-                return modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation, null).ToString();
+                var value = modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation, null);
+                return (value != null) ? value.ToString() : string.Empty;
             }
                      
             return string.Empty;
@@ -311,7 +313,11 @@ namespace El2Core.Utils
             {
 
                 modelData = nav.TargetEntityType;
-                return modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation.MaterialNavigation, null).ToString();
+                if (vorgang.AidNavigation.MaterialNavigation != null)
+                {
+                    var value = modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation.MaterialNavigation, null);
+                    return (value != null) ? value.ToString() : string.Empty;
+                }
             }
 
             return string.Empty;
@@ -360,7 +366,11 @@ namespace El2Core.Utils
             if (nav != null)
             {
                 modelData = nav.TargetEntityType;
-                return modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.RidNavigation, null).ToString();
+                if (vorgang.RidNavigation != null)
+                {
+                    var value = modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.RidNavigation, null);
+                    return (value != null) ? value.ToString() : string.Empty;
+                }
             }
 
             return string.Empty;
@@ -411,7 +421,11 @@ namespace El2Core.Utils
             if (nav != null)
             {
                 modelData = nav.TargetEntityType;
-                return modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation.Pro, null).ToString();
+                if (vorgang.AidNavigation.Pro != null)
+                {
+                    var value = modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation.Pro, null);
+                    return (value != null) ? value.ToString() : string.Empty;
+                }
             }
 
             return string.Empty;
@@ -430,7 +444,8 @@ namespace El2Core.Utils
         public static ValueTuple<string, string, int> MaterialDescription = ValueTuple.Create("MaterialBezeichnung", "Bezeichng", 3);
         public static ValueTuple<string, string, int> RessourceName = ValueTuple.Create("Maschinenname", "RessName", 4);
         public static ValueTuple<string, string, int> LieferTermin = ValueTuple.Create("Liefertermin", "Liefertermin", 2);
-        public static ValueTuple<string, string, int> Project = ValueTuple.Create("Projekt", "P", 5);
+        public static ValueTuple<string, string, int> PrioText = ValueTuple.Create("PrioText", "Prio", 2);
+        public static ValueTuple<string, string, int> Project = ValueTuple.Create("Projekt", "ProId", 2);
         public static ValueTuple<string, string, int> ProjectInfo = ValueTuple.Create("Projekt Info", "RessName", 5);
 
     }
