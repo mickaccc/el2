@@ -108,11 +108,12 @@
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
                             
                             
-                            <TextBox Text="{Binding PersonalFilterName}" Margin="10,0,10,0" MinWidth="60"/>
-                            <TextBox x:Name="RegExBox" Text="{Binding PersonalFilterRegex}" Margin="10,0,10,0" MinWidth="60" TextChanged="TestBox_TextChanged"/>
-                            <TextBox x:Name="TestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60"/>
+                            <TextBox Text="{Binding PersonalFilterName}" Margin="10,0,10,0" MinWidth="60" ToolTip="Name des Filters"/>
+                            <TextBox x:Name="RegExBox" Text="{Binding PersonalFilterRegex}" Margin="10,0,10,0" MinWidth="60"
+                                     TextChanged="TestBox_TextChanged" ToolTip="Regular Expression"/>
+                            <TextBox x:Name="TestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
                             <ComboBox ItemsSource="{Binding PropertyNames}" SelectedValue="{Binding PersonalFilterField}"
-                                      DisplayMemberPath="Item1">
+                                      DisplayMemberPath="Item1" ToolTip="Feld in dem gesucht werden soll">
 
                             </ComboBox>
                             <Button Content="Neu" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"

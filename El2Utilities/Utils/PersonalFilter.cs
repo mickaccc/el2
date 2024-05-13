@@ -1,26 +1,12 @@
 ﻿using El2Core.Models;
-using El2Core.Properties;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json.Linq;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Xml;
-using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace El2Core.Utils
@@ -380,13 +366,72 @@ namespace El2Core.Utils
             return string.Empty;
         }
     }
+    [Serializable]
+    public class PersonalFilterProject : PersonalFilter
+    {
+        public override string Name { get; set; }
+        private Regex RegEx;
+        private string Navigation;
+        private string Property;
+        private (string, string, int) _Field;
+        public PersonalFilterProject() { }
+        public PersonalFilterProject(string name, string regex, (string, string, int) field)
+        {
+            Name = name;
+            RegEx = new Regex(regex);
+            _Field = field;
+        }
+        public override string Pattern
+        {
+            get { return RegEx.ToString(); }
+            set { RegEx = new Regex(value); }
+        }
+
+        public override (string, string, int) Field
+        {
+            get { return _Field; }
+            set { _Field = value; }
+        }
+
+        public override Regex GetRegEx()
+        {
+            return RegEx;
+        }
+
+        public override string GetTestString(Vorgang vorgang, IContainerProvider container)
+        {
+
+            using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+
+            var modelData = db.Vorgangs.EntityType;
+
+            var nav = modelData.FindDeclaredNavigation("AidNavigation");
+            modelData = nav.TargetEntityType;
+            nav = modelData.FindDeclaredNavigation("Pro");
+            if (nav != null)
+            {
+                modelData = nav.TargetEntityType;
+                return modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation.Pro, null).ToString();
+            }
+
+            return string.Empty;
+        }
+    }
     public readonly struct PropertyPair
     {
+        //Type 1 == Vorgang
+        //Type 2 == OrderRb
+        //Type 3 == Material
+        //Type 4 == Ressource
+        //Type 5 == Project
         public static ValueTuple<string, string, int> OrderNumber = ValueTuple.Create("Auftragsnummer", "Aid", 1);
         public static ValueTuple<string, string, int> ProcessDescription = ValueTuple.Create("KurzText", "Text", 1);
         public static ValueTuple<string, string, int> Material = ValueTuple.Create("Material", "Material", 2);
         public static ValueTuple<string, string, int> MaterialDescription = ValueTuple.Create("MaterialBezeichnung", "Bezeichng", 3);
         public static ValueTuple<string, string, int> RessourceName = ValueTuple.Create("Maschinenname", "RessName", 4);
+        public static ValueTuple<string, string, int> LieferTermin = ValueTuple.Create("Liefertermin", "Liefertermin", 2);
+        public static ValueTuple<string, string, int> Project = ValueTuple.Create("Projekt", "P", 5);
+        public static ValueTuple<string, string, int> ProjectInfo = ValueTuple.Create("Projekt Info", "RessName", 5);
 
     }
 

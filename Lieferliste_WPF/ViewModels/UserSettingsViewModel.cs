@@ -2,14 +2,11 @@
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using MahApps.Metro.Controls;
-using MaterialDesignColors;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -145,7 +142,10 @@ namespace Lieferliste_WPF.ViewModels
             PropertyNames.Add(PropertyPair.ProcessDescription.ToTuple());
             PropertyNames.Add(PropertyPair.Material.ToTuple());
             PropertyNames.Add(PropertyPair.MaterialDescription.ToTuple());
+            PropertyNames.Add(PropertyPair.LieferTermin.ToTuple());
             PropertyNames.Add(PropertyPair.RessourceName.ToTuple());
+            PropertyNames.Add(PropertyPair.Project.ToTuple());
+            PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
         }
 
         private void OnPersonalFilterChanged(object? sender, EventArgs e)
@@ -268,6 +268,10 @@ namespace Lieferliste_WPF.ViewModels
                     break;
                 case 4:
                     pf = new PersonalFilterRessource(
+                        PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
+                    break;
+                case 5:
+                    pf = new PersonalFilterProject(
                         PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
                     break;
             }
