@@ -51,7 +51,7 @@ namespace ModulePlanning.UserControls
             var pl = this.DataContext as PlanMachine;
             pl.PropertyChanged += Pl_PropertyChanged;
 
-            var sett = new UserSettingsService().TLColumns;
+            var sett = new UserSettingsService().TlColumns;
             bool f = false;
             foreach (var col in sett)
             {

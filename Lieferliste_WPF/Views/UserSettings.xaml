@@ -19,20 +19,47 @@
             <Button Content="Reset" Command="{Binding ResetCommand}" Margin="3" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}" />
         </StackPanel>
         <TabControl Grid.Row="1">
-            <TabItem Header="Individual">
+            <TabItem Header="General">
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <ResourceDictionary>
+                            <CollectionViewSource x:Key="Themes"
+                             Source="{Binding Source={x:Static controlzex:ThemeManager.Current}, Path=Themes}">
+                                <CollectionViewSource.SortDescriptions>
+                                    <componentModel:SortDescription PropertyName="Name" />
+                                </CollectionViewSource.SortDescriptions>
+
+                            </CollectionViewSource>
+                        </ResourceDictionary>
+                    </StackPanel.Resources>
+                    <materialDesign:Chip >
+                        <StackPanel Orientation="Horizontal" >
+                            <Label Content="AutoSave"/>
+                            <ToggleButton IsChecked="{Binding AutoSave}" ToolTip="automatisch speichern" />
+                        </StackPanel>
+                    </materialDesign:Chip>
+                    <materialDesign:Chip>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Save Message"/>
+                            <ToggleButton IsChecked="{Binding SaveMessage}" ToolTip="beim schliessen nachfragen" />
+
+                        </StackPanel>
+                    </materialDesign:Chip>
+                    <ComboBox x:Name="AccentSelector"
+                          Margin="0 0 2 0"
+                          VerticalAlignment="Center"
+                          IsSynchronizedWithCurrentItem="False"
+                          SelectionChanged="AccentSelectionChanged"
+                          DisplayMemberPath="Name"
+                          SelectedValue="{Binding DataContext.SelectedTheme, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          ItemsSource="{Binding Source={StaticResource Themes}}" />
+                    <Label Content="Personal Path"/>
+                    <TextBox x:Name="ExpRoot" Text="{Binding Path=PersonalFolder}"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Teamleiter">
                 <StackPanel>
                     <Grid>
-                        <Grid.Resources>
-                            <ResourceDictionary>
-                                <CollectionViewSource x:Key="Themes"
-                                Source="{Binding Source={x:Static controlzex:ThemeManager.Current}, Path=Themes}">
-                                    <CollectionViewSource.SortDescriptions>
-                                        <componentModel:SortDescription PropertyName="Name" />
-                                    </CollectionViewSource.SortDescriptions>
-
-                                </CollectionViewSource>
-                            </ResourceDictionary>
-                        </Grid.Resources>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="10*"/>
@@ -44,32 +71,20 @@
                             <ColumnDefinition Width="5"/>
                             <ColumnDefinition Width="5*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="EXPLORER" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
+                        <TextBlock Text="Angezeigte Spalten" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
                         <TextBlock Grid.Column="2" Text="STEUERUNG" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
                         <TextBlock Grid.Column="4" Text="THEMES" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
                         <StackPanel Grid.Row="1">
-                            <Label Content="Personal Path"/>
-                            <TextBox x:Name="ExpRoot" Text="{Binding Path=PersonalFolder}"/>
-
-                            <Label Content="Muster für Ordnerpfad:"/>
-                            <TextBox x:Name="OrderPath" Text="{Binding Path=ExplorerPathPattern}"/>
+     
+                            <Label Content="Haupt:"/>
+                            <ListBox ItemsSource="{Binding Path=TlColumns}"/>
+                            <Label Content="Details:"/>
+                            <ListBox ItemsSource="{Binding Path=TlColumns}"/>
                         </StackPanel>
                         <Rectangle Grid.Column="1" Grid.RowSpan="2" Fill="{DynamicResource MahApps.Brushes.Accent}"/>
                         <Rectangle Grid.Column="3" Grid.RowSpan="2" Fill="{DynamicResource MahApps.Brushes.Accent}"/>
                         <StackPanel Grid.Row="1" Grid.Column="2" >
-                            <materialDesign:Chip >
-                                <StackPanel Orientation="Horizontal" >
-                                    <Label Content="AutoSave"/>
-                                    <ToggleButton IsChecked="{Binding AutoSave}" ToolTip="automatisch speichern" />
-                                </StackPanel>
-                            </materialDesign:Chip>
-                            <materialDesign:Chip>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Save Message"/>
-                                    <ToggleButton IsChecked="{Binding SaveMessage}" ToolTip="beim schliessen nachfragen" />
-
-                                </StackPanel>
-                            </materialDesign:Chip>
+ 
                             <materialDesign:Chip>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="RowDetails"/>
@@ -78,56 +93,56 @@
                                 </StackPanel>
                             </materialDesign:Chip>
                         </StackPanel>
-                        <ComboBox x:Name="AccentSelector" Grid.Column="4" Grid.Row="1"
-                              Margin="0 0 2 0"
-                              VerticalAlignment="Center"
-                              IsSynchronizedWithCurrentItem="False"
-                              SelectionChanged="AccentSelectionChanged"
-                              DisplayMemberPath="Name"
-                              SelectedValue="{Binding DataContext.SelectedTheme, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                              ItemsSource="{Binding Source={StaticResource Themes}}" />
+    
                     </Grid>
-                    <Grid ShowGridLines="True">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition Height="40"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20*"/>
-                            <ColumnDefinition Width="200*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.ColumnSpan="2" Content="Personal Special Filter" Background="Aquamarine" HorizontalContentAlignment="Center"/>
-                        <ListBox Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding PersonalFilterView}" Margin="10" MinWidth="80" IsSynchronizedWithCurrentItem="True">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}"/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
-                            
-                            
-                            <TextBox Text="{Binding PersonalFilterName}" Margin="10,0,10,0" MinWidth="60" ToolTip="Name des Filters"/>
-                            <TextBox x:Name="RegExBox" Text="{Binding PersonalFilterRegex}" Margin="10,0,10,0" MinWidth="60"
-                                     TextChanged="TestBox_TextChanged" ToolTip="Regular Expression"/>
-                            <TextBox x:Name="TestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
-                            <ComboBox ItemsSource="{Binding PropertyNames}" SelectedValue="{Binding PersonalFilterField}"
-                                      DisplayMemberPath="Item1" ToolTip="Feld in dem gesucht werden soll">
 
-                            </ComboBox>
-                            <Button Content="Neu" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
-                                    Command="{Binding PersonalFilterNewCommand}"/>
-                            <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
-                                    Command="{Binding PersonalFilterAddCommand}"/>
-                            <Button Content="Entfernen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
-                                    Command="{Binding PersonalFilterRemoveCommand}"/>
-                        </StackPanel>
-                        
-                    </Grid>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Global">
+            <TabItem Header="Lieferliste">
+     
+   
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20*"/>
+                                <ColumnDefinition Width="200*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.ColumnSpan="2" Content="Personal Special Filter" Background="Aquamarine" HorizontalContentAlignment="Center"/>
+                            <ListBox Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding PersonalFilterView}" Margin="10" MinWidth="80" IsSynchronizedWithCurrentItem="True">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
+
+
+                                <TextBox Text="{Binding PersonalFilterName}" Margin="10,0,10,0" MinWidth="60" ToolTip="Name des Filters"/>
+                                <TextBox x:Name="RegExBox" Text="{Binding PersonalFilterRegex}" Margin="10,0,10,0" MinWidth="60"
+                                     TextChanged="TestBox_TextChanged" ToolTip="Regular Expression"/>
+                                <TextBox x:Name="TestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
+                                <ComboBox ItemsSource="{Binding PropertyNames}" SelectedValue="{Binding PersonalFilterField}"
+                                      DisplayMemberPath="Item1" ToolTip="Feld in dem gesucht werden soll">
+
+                                </ComboBox>
+                                <Button Content="Neu" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                                    Command="{Binding PersonalFilterNewCommand}"/>
+                                <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                                    Command="{Binding PersonalFilterAddCommand}"/>
+                                <Button Content="Entfernen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                                    Command="{Binding PersonalFilterRemoveCommand}"/>
+                            </StackPanel>
+
+                        </Grid>
+       
+     
+            </TabItem>
+            <TabItem Header="Messraum">
                 <TabControl TabStripPlacement="Left">
                     <TabItem Header="Prüfdatenblatt">
                         <StackPanel>

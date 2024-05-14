@@ -6,6 +6,7 @@ using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -310,6 +311,11 @@ namespace Lieferliste_WPF.ViewModels
         {
             get { return _settingsService.IsRowDetails; }
             set { _settingsService.IsRowDetails = value; }
+        }
+        public StringCollection TlColumns
+        {
+            get { return _settingsService.TlColumns; }
+            set { _settingsService.TlColumns = value; }
         }
     }
 }

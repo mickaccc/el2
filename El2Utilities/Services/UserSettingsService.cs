@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
-using System.Reflection;
 using System.Windows;
 
 namespace El2Core.Services
@@ -16,6 +15,7 @@ namespace El2Core.Services
         bool IsRowDetails { get; set; }
         string Theme { get; set; }
         double FontSize { get; set; }
+        StringCollection TlColumns { get; set; }
         bool IsDefaults();
         bool IsChanged { get; }
         void Save();
@@ -66,14 +66,14 @@ namespace El2Core.Services
                 }
             }
         }
-        public StringCollection TLColumns
+        public StringCollection TlColumns
         {
-            get { return Properties.Settings.Default.TLColumns; }
+            get { return Properties.Settings.Default.TlColumns; }
             set
             {
-                if (TLColumns != value)
+                if (TlColumns != value)
                 {
-                    Properties.Settings.Default[nameof(TLColumns)] = value;
+                    Properties.Settings.Default[nameof(TlColumns)] = value;
                 }
             }
         }
@@ -132,7 +132,6 @@ namespace El2Core.Services
             {
                 try
                 {
-
                     Properties.Settings.Default.Upgrade();
                     Properties.Settings.Default.Reload();
    
@@ -144,7 +143,6 @@ namespace El2Core.Services
 
                     MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "Upgrade", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
             }
         }
 
