@@ -2,7 +2,6 @@
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Prism.Ioc;

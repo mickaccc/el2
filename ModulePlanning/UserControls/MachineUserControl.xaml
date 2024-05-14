@@ -11,7 +11,6 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
 			 MinWidth="0"
-			 Unloaded="UserControl_Unloaded"
 			 xmlns:wpfcontrol="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"  Loaded="UserControl_Loaded">
@@ -180,11 +179,11 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 
-				<DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" x:Name="txtAid" 
+                <DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" x:Name="txtAid" 
 									Header="Auftrag"
 									Width="Auto">
-					<DataGridTextColumn.ElementStyle>
-						<Style TargetType="TextBlock">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
                             <Setter Property="Background">
                                 <Setter.Value>
                                     <MultiBinding Converter="{StaticResource txtColor}">
@@ -194,15 +193,11 @@
                                     </MultiBinding>
                                 </Setter.Value>
                             </Setter>
-  
-                        </Style>
-					</DataGridTextColumn.ElementStyle>
-                    
-				</DataGridTextColumn>
 
-                <DataGridTextColumn Binding="{Binding Vnr, Mode=OneTime, StringFormat=\{0:D4\}}"
-									Header="Vorg"
-									Width="Auto"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+
+                </DataGridTextColumn>
             </DataGrid.Columns>
 		</DataGrid>
 	</Grid>

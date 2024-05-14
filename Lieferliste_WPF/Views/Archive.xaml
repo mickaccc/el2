@@ -60,8 +60,8 @@
                 <DataGridTextColumn Header="Bez. Dummy" Binding="{Binding DummyMatNavigation.Mattext}"/>
                 <DataGridTextColumn Header="Stückzahl" Binding="{Binding Quantity}"/>
                 <DataGridTextColumn Header="Projekt" Binding="{Binding Pro.ProjectPsp}"/>
+                <DataGridTextColumn Header="Projekt Info" Binding="{Binding Pro.ProjectInfo}"/>
                 <DataGridTextColumn Header="SysStatus" Binding="{Binding SysStatus}"/>
-
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

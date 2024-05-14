@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Reflection;
@@ -62,6 +63,17 @@ namespace El2Core.Services
                 if (Theme != value)
                 {
                     Properties.Settings.Default[nameof(Theme)] = value; _isChanged = true;
+                }
+            }
+        }
+        public StringCollection TLColumns
+        {
+            get { return Properties.Settings.Default.TLColumns; }
+            set
+            {
+                if (TLColumns != value)
+                {
+                    Properties.Settings.Default[nameof(TLColumns)] = value;
                 }
             }
         }
