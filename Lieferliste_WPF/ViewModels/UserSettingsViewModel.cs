@@ -2,12 +2,14 @@
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using ModulePlanning.Specials;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -22,10 +24,14 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand ResetCommand { get; }
         public ICommand ReloadCommand { get; }
-        public ICommand ChangeThemeCommand { get; }
         public ICommand PersonalFilterAddCommand { get; }
         public ICommand PersonalFilterRemoveCommand { get; }
         public ICommand PersonalFilterNewCommand { get; }
+        public ICommand TlColumnAddCommand { get; }
+        public ICommand TlColumnRemoveCommand { get; }
+        private RelayCommand? _ColumnsChangedCommand;
+        public ICommand ColumnsChangedCommand => _ColumnsChangedCommand ??= new RelayCommand(OnColumnChanged);
+
         public string Title { get; } = "Einstellungen";
         private bool _isDarkTheme;
         public bool IsDarkTheme
@@ -63,6 +69,9 @@ namespace Lieferliste_WPF.ViewModels
         public Document Wdocu { get; private set; }
         public Document Mdocu { get; private set; }
         public List<Tuple<string, string, int>> PropertyNames { get; } = [];
+        public IEnumerable<string> ColumnKeys { get; } = Constances.TLColumn.ColumnNames.Keys;
+        public CollectionView TlColumnsView { get; private set; }
+        public string TlColumnCurrent { get; set; }
         private PersonalFilterContainer _filterContainer;
         private ObservableCollection<string> _filterContainerKeys;
         private string _personalFilterName;
@@ -113,10 +122,11 @@ namespace Lieferliste_WPF.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             ResetCommand = new ActionCommand(OnResetExecuted, OnResetCanExecute);
             ReloadCommand = new ActionCommand(OnReloadExecuted, OnReloadCanExecute);
-            ChangeThemeCommand = new ActionCommand(OnChangeThemeExecuted, OnChangeThemeCanExecute);
             PersonalFilterAddCommand = new ActionCommand(OnPersonalFilterAddExecuted, OnPersonalFilterAddCanExecute);
             PersonalFilterNewCommand = new ActionCommand(OnPersonalFilterNewExecuted, OnPersonalFilterNewCanExecute);
             PersonalFilterRemoveCommand = new ActionCommand(OnPersonalFilterRemoveExecuted, OnPersonalFilterRemoveCanExecute);
+            TlColumnAddCommand = new ActionCommand(OnTlColumnAddExecuted, OnTlColumnAddCanExecute);
+            TlColumnRemoveCommand = new ActionCommand(OnTlColumnRemoveExecuted, OnTlColumnRemoveCanExecute);
             ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
             SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
             FirstPartInfo = new MeasureFirstPartInfo(container);
@@ -128,7 +138,10 @@ namespace Lieferliste_WPF.ViewModels
             MeasureDocumentInfo = new MeasureDocumentInfo(container);
             Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
             LoadFilters();
+            TlColumnsView = (CollectionView?)CollectionViewSource.GetDefaultView(TlColumns);
         }
+
+
 
         private void LoadFilters()
         {
@@ -149,7 +162,11 @@ namespace Lieferliste_WPF.ViewModels
             PropertyNames.Add(PropertyPair.Project.ToTuple());
             PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
         }
-
+        private void OnColumnChanged(object obj)
+        {
+            var curr = TlColumnsView.CurrentItem;
+            TlColumns = TlColumns; //UserSettingsService must Check Changes
+        }
         private void OnPersonalFilterChanged(object? sender, EventArgs e)
         {
 
@@ -161,15 +178,31 @@ namespace Lieferliste_WPF.ViewModels
                 PersonalFilterRegex = _filterContainer[pf].Pattern;
             }
         }
-
-        private bool OnChangeThemeCanExecute(object arg)
+        private bool OnTlColumnRemoveCanExecute(object arg)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
-        private void OnChangeThemeExecuted(object obj)
+        private void OnTlColumnRemoveExecuted(object obj)
         {
+            var tl = TlColumns;
+            tl.RemoveAt(TlColumns.Count-1);
+            TlColumns = tl;     //because UserSettingsService should be changed
+            TlColumnsView.Refresh();
+        }
 
+        private bool OnTlColumnAddCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnTlColumnAddExecuted(object obj)
+        {
+            var t = Constances.TLColumn.ColumnNames.First();
+            var tl = TlColumns;
+            tl.Add(t.Key);
+            TlColumns = tl;           //because UserSettingsService should be changed
+            TlColumnsView.Refresh();
         }
 
         private bool OnReloadCanExecute(object arg)
@@ -315,7 +348,11 @@ namespace Lieferliste_WPF.ViewModels
         public StringCollection TlColumns
         {
             get { return _settingsService.TlColumns; }
-            set { _settingsService.TlColumns = value; }
+            set
+            {
+                _settingsService.TlColumns = value;
+                
+            }
         }
     }
 }

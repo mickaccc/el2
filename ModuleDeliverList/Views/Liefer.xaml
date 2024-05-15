@@ -236,10 +236,8 @@
                             PrioText="{Binding AidNavigation.Prio, Mode=TwoWay}"
                             SysStatus="{Binding AidNavigation.SysStatus}"
                             MarkCode="{Binding AidNavigation.MarkCode, Mode=TwoWay}"
-                            Visibility="{Binding Visability, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
                             Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}" >
-
 
                     </userControls:LieferlisteControl>
             </DataTemplate>

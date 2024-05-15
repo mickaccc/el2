@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace ModulePlanning.Specials
 {
-    internal class Constances
+    public class Constances
     {
         public static class TLColumn
         {

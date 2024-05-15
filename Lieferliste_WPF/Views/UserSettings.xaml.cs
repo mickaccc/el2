@@ -59,5 +59,11 @@ namespace Lieferliste_WPF.Views
                 throw;
             }
         }
+
+        private void tl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox send = sender as ListBox;
+            send.SelectedItem = e.AddedItems[0];
+        }
     }
 }

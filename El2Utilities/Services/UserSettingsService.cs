@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
@@ -71,10 +72,9 @@ namespace El2Core.Services
             get { return Properties.Settings.Default.TlColumns; }
             set
             {
-                if (TlColumns != value)
-                {
-                    Properties.Settings.Default[nameof(TlColumns)] = value;
-                }
+                Properties.Settings.Default[nameof(TlColumns)] = value;
+                _isChanged = true;
+                
             }
         }
         public bool UpgradeFlag
