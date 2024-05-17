@@ -31,6 +31,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="250*"/>
+            <RowDefinition Height="5"/>
             <RowDefinition Height="200*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -142,7 +143,8 @@
 
         <Slider x:Name="slider" Width="200" Minimum="30" Maximum="340" Margin="10"
                     Value="200" HorizontalAlignment="Right" />
-        <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
+        <GridSplitter Grid.Row="2" VerticalAlignment="Stretch"/>
+        <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
                   CanUserAddRows="False" CanUserDeleteRows="False" HorizontalContentAlignment="Center" ColumnWidth="Auto"
                   IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" SelectionMode="Extended" RowStyle="{StaticResource RowCustomStyle}" >

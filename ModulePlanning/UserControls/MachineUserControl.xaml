@@ -213,50 +213,50 @@
 			<RowDefinition Height="60"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
-		<Border Background="{DynamicResource MahApps.Brushes.AccentBase}"
+        <Border Background="{DynamicResource MahApps.Brushes.AccentBase}"
 				ClipToBounds="True"
 				CornerRadius="5">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition/>
-					<RowDefinition/>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1*"/>
-					<ColumnDefinition Width="3*"/>
-				</Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
                 <Canvas>
                     <Button Click="HideDetails_Click"
 						HorizontalAlignment="Left"
 						x:Name="HideDetails"
 						Padding="2"
 						Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
-					<iconpack:BootstrapIcons Height="25"
+                        <iconpack:BootstrapIcons Height="25"
 											 Kind="ArrowUpCircle"
 											 Width="25"/>
-				</Button>
+                    </Button>
 
-					<Button Canvas.Top="30"
+                    <Button Canvas.Top="30"
                         Command="{Binding OpenMachineCommand, Mode=OneWay}"
 							CommandParameter="{Binding InventNo}"
 							HorizontalAlignment="Left"
 							Padding="2"
 							Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
 							ToolTip="Alternativ: Strg + LMB oder Strg + M">
-						<iconpack:MaterialDesign Height="25"
+                        <iconpack:MaterialDesign Height="25"
 												 Kind="Details"
 												 Width="25"/>
-					</Button>
-					<Button Canvas.Left="35" Canvas.Top="30"
+                    </Button>
+                    <Button Canvas.Left="35" Canvas.Top="30"
 							Command="{Binding ApplicationCommands.MachinePrintCommand}"
 							CommandParameter="{Binding}"
 							Padding="2"
 							Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent }"
 							ToolTip="Drucken">
-						<iconpack:BootstrapIcons Height="25"
+                        <iconpack:BootstrapIcons Height="25"
 												 Kind="Printer"
 												 Width="25"/>
-					</Button>
+                    </Button>
                     <ToggleButton Canvas.Left="70" Canvas.Top="30" x:Name="shiftOpen"
                                   Style="{DynamicResource MahApps.Styles.ToggleButton.ExpanderHeader.Down}"
                                   IsEnabled="{Binding Converter={StaticResource permiss},
@@ -266,30 +266,30 @@
                     <Border>
                         <StackPanel>
                             <DataGrid ItemsSource="{Binding ShiftsView}" AutoGenerateColumns="False" Background="LemonChiffon">
-                            <DataGrid.Columns>
+                                <DataGrid.Columns>
                                     <DataGridTextColumn Header="Name" Binding="{Binding Path=Shift.ShiftName}" IsReadOnly="True"/>
                                     <DataGridCheckBoxColumn Header="" Binding="{Binding Path=IsCheck, Mode=TwoWay}"/>
-                            </DataGrid.Columns>
+                                </DataGrid.Columns>
                             </DataGrid>
-                        <Button Content="schliessen" Click="Button_Click"/>
+                            <Button Content="schliessen" Click="Button_Click"/>
                         </StackPanel>
                     </Border>
                 </Popup>
- 
-				<TextBlock Grid.Column="1"
+
+                <TextBlock Grid.Column="1"
 						   Grid.Row="0"
 						   Height="Auto"
 						   HorizontalAlignment="Left"
 						   Text="{Binding Name}"
 						   TextWrapping="Wrap"/>
-				<TextBlock Grid.Column="1"
+                <TextBlock Grid.Column="1"
 						   Grid.Row="1"
 						   Height="Auto"
 						   HorizontalAlignment="Right"
 						   Text="{Binding InventNo}"/>
 
-			</Grid>
-		</Border>
+            </Grid>
+        </Border>
         <ContentControl x:Name="Planed" Grid.Row="1" Content="{DynamicResource Setup}" />
     </Grid>
 
