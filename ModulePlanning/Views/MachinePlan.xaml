@@ -140,7 +140,7 @@
 
         </Border>
 
-        <Slider x:Name="slider" Width="200" Minimum="30" Maximum="240" Margin="10"
+        <Slider x:Name="slider" Width="200" Minimum="30" Maximum="340" Margin="10"
                     Value="200" HorizontalAlignment="Right" />
         <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 

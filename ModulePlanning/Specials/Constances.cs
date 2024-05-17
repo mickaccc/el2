@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace ModulePlanning.Specials
 {
-    public class Constances
+    public static class Constances
     {
         public static class TLColumn
         {
@@ -16,9 +16,11 @@ namespace ModulePlanning.Specials
                 { "Materialbezeichnung", ("Bezeichnung", "AidNavigation.MaterialNavigation.Bezeichng","","") },
                 { "Kurztext", ("Kurztext", "Text","","") }
             }.ToImmutableDictionary();
-            
-            
+
+
         }
+        
 
     }
+    
 }

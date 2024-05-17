@@ -16,7 +16,7 @@ namespace El2Core.Services
         bool IsRowDetails { get; set; }
         string Theme { get; set; }
         double FontSize { get; set; }
-        StringCollection TlColumns { get; set; }
+        string PlanedSetup { get; set; }
         bool IsDefaults();
         bool IsChanged { get; }
         void Save();
@@ -67,16 +67,7 @@ namespace El2Core.Services
                 }
             }
         }
-        public StringCollection TlColumns
-        {
-            get { return Properties.Settings.Default.TlColumns; }
-            set
-            {
-                Properties.Settings.Default[nameof(TlColumns)] = value;
-                _isChanged = true;
-                
-            }
-        }
+
         public bool UpgradeFlag
         {
             get => Properties.Settings.Default.UpgradeFlag;
@@ -85,7 +76,11 @@ namespace El2Core.Services
         private bool _isChanged;
         public bool IsChanged { get { return _isChanged; } }
 
-        
+        public string PlanedSetup
+        {
+            get => Properties.Settings.Default.PlanedSetup;
+            set { Properties.Settings.Default[nameof(PlanedSetup)] = value; _isChanged = true; }
+        }
 
         public void Save()
         {

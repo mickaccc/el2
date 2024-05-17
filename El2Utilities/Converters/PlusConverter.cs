@@ -12,7 +12,8 @@ namespace El2Core.Converters
             Single d = 0;
             foreach (var item in value)
             {
-                d += (item == null) ? 0 : (Single)item;
+
+                d += (item is null) ? 0 : (Single)item;
             }
 
             return string.Format("{0:F2}h", d / 60);

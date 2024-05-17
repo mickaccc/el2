@@ -171,6 +171,7 @@ namespace ModuleMeasuring.ViewModels
                 {
                     case "first":
                         var Fdocu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        FirstPartInfo.Collect();
                         switch (Fdocu[DocumentPart.JumpTarget].ToUpperInvariant())
                         {
                             case "DESKTOP":
@@ -195,6 +196,7 @@ namespace ModuleMeasuring.ViewModels
                         break;
                     case "vmpb":
                         var VMdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        VmpbInfo.Collect();
                         switch (VMdocu[DocumentPart.JumpTarget].ToUpperInvariant())
                         {
                             case "DESKTOP":
@@ -218,6 +220,7 @@ namespace ModuleMeasuring.ViewModels
                     break;
                     case "part":
                         var Mdocu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        MeasureInfo.Collect();
                         switch (Mdocu[DocumentPart.JumpTarget].ToUpperInvariant())
                         {
                             case "DESKTOP":

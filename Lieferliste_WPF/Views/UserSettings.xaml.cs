@@ -1,4 +1,5 @@
 ﻿using ControlzEx.Theming;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -18,7 +19,6 @@ namespace Lieferliste_WPF.Views
             InitializeComponent();
 
         }
-
 
         private void AccentSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -55,15 +55,9 @@ namespace Lieferliste_WPF.Views
             catch (RegexParseException) { RegExBox.Foreground = Brushes.Red; TestBox.Background = Brushes.White; }
             catch (System.Exception)
             {
-
                 throw;
             }
         }
 
-        private void tl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ListBox send = sender as ListBox;
-            send.SelectedItem = e.AddedItems[0];
-        }
     }
 }

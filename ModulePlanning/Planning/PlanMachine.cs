@@ -81,6 +81,7 @@ namespace ModulePlanning.Planning
             _eventAggregator = eventAggregator;
             _settingsService = settingsService;
             _dialogService = dialogService;
+            Setup = settingsService.PlanedSetup;
             Initialize();
             LoadData(ressource);
             CalculateEndTime();
@@ -102,6 +103,7 @@ namespace ModulePlanning.Planning
         private readonly int _rId;
         private string _title;
         public string Title => _title;
+        public string Setup { get; }
         public bool HasChange => _shifts.Any(x => x.IsChanged);
         public int Rid => _rId;
         private string? _name;
@@ -377,13 +379,17 @@ namespace ModulePlanning.Planning
                     .Where(x => x.Material == vrg.AidNavigation.Material && x.Aid != vrg.Aid)
                     .ToList();
 
-                if (matInfo != null)
+                if (matInfo != null && matInfo.Count > 0)
                 {
                     var par = new DialogParameters();
                     par.Add("orderList", matInfo);
                     par.Add("VNR", vrg.Vnr);
                     par.Add("VID", vrg.VorgangId);
                     _dialogService.Show("HistoryDialog", par, HistoryCallBack);
+                }
+                else
+                {
+                    MessageBox.Show("Keine Einträge vorhanden!","Information",MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
         }
