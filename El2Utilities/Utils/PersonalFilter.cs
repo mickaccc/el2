@@ -54,7 +54,6 @@ namespace El2Core.Utils
                 try
                 {
                     DeserializeObject(fileInfo.FullName);
-
                 }
                 catch (Exception ex)
                 {
@@ -102,75 +101,92 @@ namespace El2Core.Utils
 
         public void SerializeObject(string filename)
         {
-            // Each overridden field, property, or type requires
-            // an XmlAttributes instance.  
-            XmlAttributes attrs = new XmlAttributes(); 
-            XmlElementAttribute attr = new XmlElementAttribute();
-            attr.ElementName = "Filter";
-            attr.Type = typeof(PersonalFilterVorgang);
-
-            // Adds the element to the collection of elements.  
-            attrs.XmlElements.Add(attr);
-            attr.Type = typeof(PersonalFilterOrderRb);
-
-            // Adds the element to the collection of elements.  
-            attrs.XmlElements.Add(attr);
-            // Creates the XmlAttributeOverrides instance.  
-            XmlAttributeOverrides attrOverrides = new XmlAttributeOverrides();
-
-            // Adds the type of the class that contains the overridden
-            // member, as well as the XmlAttributes instance to override it
-            // with, to the XmlAttributeOverrides.  
-            attrOverrides.Add(typeof(PersonalFilter), "Filters", attrs);
-
-            // Creates the XmlSerializer using the XmlAttributeOverrides.  
-            XmlSerializer s =
-            new XmlSerializer(typeof(List<PersonalFilter>), attrOverrides);
-
-            // Writing the file requires a TextWriter instance.  
-            TextWriter writer = new StreamWriter(filename);
-
-            // Creates the object to be serialized.  
-            List<PersonalFilter> filters = new List<PersonalFilter>();
-            foreach (var filter in _filters)
+            try
             {
-                filters.Add(filter.Value);
-            }
+                // Each overridden field, property, or type requires
+                // an XmlAttributes instance.  
+                XmlAttributes attrs = new XmlAttributes();
+                XmlElementAttribute attr = new XmlElementAttribute();
+                attr.ElementName = "Filter";
+                attr.Type = typeof(PersonalFilterVorgang);
 
-            // Serializes the object.  
-            s.Serialize(writer, filters);
-            writer.Close();
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
+                attr.Type = typeof(PersonalFilterOrderRb);
+
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
+                // Creates the XmlAttributeOverrides instance.  
+                XmlAttributeOverrides attrOverrides = new XmlAttributeOverrides();
+
+                // Adds the type of the class that contains the overridden
+                // member, as well as the XmlAttributes instance to override it
+                // with, to the XmlAttributeOverrides.  
+                attrOverrides.Add(typeof(PersonalFilter), "Filters", attrs);
+
+                // Creates the XmlSerializer using the XmlAttributeOverrides.  
+                XmlSerializer s =
+                new XmlSerializer(typeof(List<PersonalFilter>), attrOverrides);
+
+                // Writing the file requires a TextWriter instance.
+                var f = new FileInfo(filename);
+                TextWriter writer = new StreamWriter(filename);
+
+                // Creates the object to be serialized.  
+                List<PersonalFilter> filters = new List<PersonalFilter>();
+                foreach (var filter in _filters)
+                {
+                    filters.Add(filter.Value);
+                }
+
+                // Serializes the object.  
+                s.Serialize(writer, filters);
+                writer.Close();
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.Message, "Serialize", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public void DeserializeObject(string filename)
         {
-            XmlAttributeOverrides attrOverrides =
-                new XmlAttributeOverrides();
-            XmlAttributes attrs = new XmlAttributes();
-
-            XmlElementAttribute attr = new XmlElementAttribute();
-            attr.ElementName = "Filter";
-            attr.Type = typeof(PersonalFilterVorgang);
-
-            // Adds the XmlElementAttribute to the collection of objects.  
-            attrs.XmlElements.Add(attr);
-            attr.Type = typeof(PersonalFilterOrderRb);
-
-            // Adds the element to the collection of elements.  
-            attrs.XmlElements.Add(attr);
-            attrOverrides.Add(typeof(PersonalFilter), "Filters", attrs);
-
-            // Creates the XmlSerializer using the XmlAttributeOverrides.  
-            XmlSerializer s =
-            new XmlSerializer(typeof(PersonalFilter[]), attrOverrides);
-
-            FileStream fs = new FileStream(filename, FileMode.Open);
-            var filters = (PersonalFilter[])s.Deserialize(fs);
-
-            foreach(var filter in filters)
+            try
             {
-                _filters.Add(filter.Name, filter);
-                filter.PropertyChanged += OnFilterPropertyChanged;
+                XmlAttributeOverrides attrOverrides =
+              new XmlAttributeOverrides();
+                XmlAttributes attrs = new XmlAttributes();
+
+                XmlElementAttribute attr = new XmlElementAttribute();
+                attr.ElementName = "Filter";
+                attr.Type = typeof(PersonalFilterVorgang);
+
+                // Adds the XmlElementAttribute to the collection of objects.  
+                attrs.XmlElements.Add(attr);
+                attr.Type = typeof(PersonalFilterOrderRb);
+
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
+                attrOverrides.Add(typeof(PersonalFilter), "Filters", attrs);
+
+                // Creates the XmlSerializer using the XmlAttributeOverrides.  
+                XmlSerializer s =
+                new XmlSerializer(typeof(PersonalFilter[]), attrOverrides);
+
+                FileStream fs = new FileStream(filename, FileMode.Open);
+                var filters = (PersonalFilter[])s.Deserialize(fs);
+
+                foreach (var filter in filters)
+                {
+                    _filters.Add(filter.Name, filter);
+                    filter.PropertyChanged += OnFilterPropertyChanged;
+                }
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.Message, "Deserialize", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
