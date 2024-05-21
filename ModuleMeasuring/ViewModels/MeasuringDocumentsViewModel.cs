@@ -172,17 +172,19 @@ namespace ModuleMeasuring.ViewModels
                     case "first":
                         var Fdocu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
                         FirstPartInfo.Collect();
-                        switch (Fdocu[DocumentPart.JumpTarget].ToUpperInvariant())
+                        if (string.IsNullOrEmpty(setting.PersonalFolder))
                         {
-                            case "DESKTOP":
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
-                            case "DOKUMENTE":
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
-                            default:
-                                jump = string.IsNullOrEmpty(setting.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-                                    : setting.PersonalFolder; break;
-                        }
-   
+                            switch (Fdocu[DocumentPart.JumpTarget].ToUpperInvariant())
+                            {
+                                case "DESKTOP":
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
+                                case "DOKUMENTE":
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
+                                default:
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
+                            }
+                        } else { jump = setting.PersonalFolder; }
+
                         dialog.InitialDirectory = jump;
                         bool? Fresult = dialog.ShowDialog();
                         if (Fresult == true)
@@ -197,17 +199,19 @@ namespace ModuleMeasuring.ViewModels
                     case "vmpb":
                         var VMdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
                         VmpbInfo.Collect();
-                        switch (VMdocu[DocumentPart.JumpTarget].ToUpperInvariant())
+                        if (string.IsNullOrEmpty(setting.PersonalFolder))
                         {
-                            case "DESKTOP":
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
-                            case "DOKUMENTE":
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
-                            default:
-                                jump = string.IsNullOrEmpty(setting.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-                                    : setting.PersonalFolder; break;
-                        }
-                        dialog.InitialDirectory = jump;
+                            switch (VMdocu[DocumentPart.JumpTarget].ToUpperInvariant())
+                            {
+                                case "DESKTOP":
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
+                                case "DOKUMENTE":
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
+                                default:
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
+                            }
+                        } else { jump = setting.PersonalFolder; }
+                            dialog.InitialDirectory = jump;
                         bool? Vresult = dialog.ShowDialog();
                         if (Vresult == true)
                         {
@@ -221,16 +225,18 @@ namespace ModuleMeasuring.ViewModels
                     case "part":
                         var Mdocu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
                         MeasureInfo.Collect();
-                        switch (Mdocu[DocumentPart.JumpTarget].ToUpperInvariant())
+                        if (string.IsNullOrEmpty(setting.PersonalFolder))
                         {
-                            case "DESKTOP":
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
-                            case "DOKUMENTE":
-                                jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
-                            default:
-                                jump = string.IsNullOrEmpty(setting.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-                                    : setting.PersonalFolder; break;
-                        }
+                            switch (Mdocu[DocumentPart.JumpTarget].ToUpperInvariant())
+                            {
+                                case "DESKTOP":
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.Desktop); break;
+                                case "DOKUMENTE":
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.Personal); break;
+                                default:
+                                    jump = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); break;
+                            }
+                        } else { jump = setting.PersonalFolder; }
                         dialog.InitialDirectory = jump;
                         bool? Mresult = dialog.ShowDialog();
                         if (Mresult == true)

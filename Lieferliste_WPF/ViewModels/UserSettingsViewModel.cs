@@ -77,7 +77,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_personalFilterName != value)
                 {
                     _personalFilterName = value;
-                    NotifyPropertyChanged(() => PersonalFilterName);
+                                      
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_personalFilterRegex != value)
                 {
                     _personalFilterRegex = value;
-                    NotifyPropertyChanged(() => PersonalFilterRegex);
+                    _filterContainer[_personalFilterName].Pattern = _personalFilterRegex;
                 }
             }
         }
@@ -103,7 +103,8 @@ namespace Lieferliste_WPF.ViewModels
                 if (_personalFilterField != value)
                 {
                     _personalFilterField = value;
-                    NotifyPropertyChanged(() => PersonalFilterField);
+                    if (_personalFilterField != null)
+                        _filterContainer[_personalFilterName].Field = _personalFilterField.ToValueTuple();
                 }
             }
         }
@@ -171,8 +172,6 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
  
-
-
         private bool OnReloadCanExecute(object arg)
         {
             return true;
@@ -221,8 +220,7 @@ namespace Lieferliste_WPF.ViewModels
                 _filterContainer.Remove(curr);
                 _filterContainerKeys.Remove(curr);
                 PersonalFilterName = (string)PersonalFilterView.CurrentItem;
-            }
-            
+            }           
         }
 
         private bool OnPersonalFilterNewCanExecute(object arg)

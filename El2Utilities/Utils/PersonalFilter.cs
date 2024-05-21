@@ -2,9 +2,11 @@
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Serialization;
@@ -73,8 +75,15 @@ namespace El2Core.Utils
         public void Add(string name, PersonalFilter filter)
         {
             _filters.Add(name, filter);
+            filter.PropertyChanged += OnFilterPropertyChanged;
             IsChanged = true;
         }
+
+        private void OnFilterPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            IsChanged = true;
+        }
+
         public void Save()
         {
             if (IsChanged)
@@ -161,6 +170,7 @@ namespace El2Core.Utils
             foreach(var filter in filters)
             {
                 _filters.Add(filter.Name, filter);
+                filter.PropertyChanged += OnFilterPropertyChanged;
             }
         }
     }
@@ -171,11 +181,14 @@ namespace El2Core.Utils
     [XmlInclude(typeof(PersonalFilterRessource))]
     [XmlInclude(typeof(PersonalFilterProject))]
     [Serializable]
-    public abstract class PersonalFilter
+    public abstract class PersonalFilter : INotifyPropertyChanged
     {
         public abstract string Name {get; set;}
         public abstract string Pattern { get; set; }
         public abstract (string, string, int) Field { get; set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         public abstract Regex GetRegEx();
 
         public abstract string GetTestString(Vorgang vorgang, IContainerProvider container);
@@ -187,24 +200,38 @@ namespace El2Core.Utils
             var test = GetTestString(vorgang, container);
             return Reg.Match(test).Success;
         }
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
     }
     [Serializable]
     public class PersonalFilterVorgang : PersonalFilter
     {
         public PersonalFilterVorgang() { }
-        public PersonalFilterVorgang(string name, string regex, (string, string, int) field) { Name = name; RegEx = new Regex(regex); _Field = field; }
+        public PersonalFilterVorgang(string name, string regex, (string, string, int) field) { _name = name; RegEx = new Regex(regex); _Field = field; }
         private Regex RegEx;
-        public override string Name { get; set; }
+        private string _name;
+        public override string Name { get => _name; set => SetField(ref _name, value); }
         private (string, string, int) _Field;
         public override (string, string, int) Field
         {
-            get { return _Field; }
-            set { _Field = value; }
+            get => _Field;
+            set => SetField(ref _Field, value);
         }
         public override string Pattern
         {
             get { return RegEx.ToString(); }
-            set { RegEx = new Regex(value);}
+            set
+            {
+                RegEx = new Regex(value);
+                OnPropertyChanged(nameof(Pattern));
+            }
         }
 
    
@@ -224,26 +251,33 @@ namespace El2Core.Utils
     [Serializable]
     public class PersonalFilterOrderRb : PersonalFilter
     {
-        public override string Name { get; set; }
+        private string _name;
+
+        public override string Name { get => _name; set => SetField(ref _name, value); }
         private Regex RegEx;
         private (string, string, int) _Field;
+ 
         public PersonalFilterOrderRb() { }
         public PersonalFilterOrderRb(string name, string regex, (string, string, int) field)
         {
-            Name = name;
+            _name = name;
             RegEx = new Regex(regex);
             _Field = field;
         }
         public override string Pattern
         {
             get { return RegEx.ToString(); }
-            set { RegEx = new Regex(value); }
+            set
+            {
+                RegEx = new Regex(value);
+                OnPropertyChanged(nameof(Pattern));
+            }
         }
 
         public override (string, string, int) Field
         {
-            get { return _Field; }
-            set { _Field = value; }
+            get => _Field;
+            set => SetField(ref _Field, value);
         }
 
         public override Regex GetRegEx()
@@ -272,26 +306,31 @@ namespace El2Core.Utils
     [Serializable]
     public class PersonalFilterMaterial : PersonalFilter
     {
-        public override string Name { get; set; }
+        private string _name; 
+        public override string Name { get => _name; set => SetField(ref _name, value); }
         private Regex RegEx;
         private (string, string, int) _Field;
         public PersonalFilterMaterial() { }
         public PersonalFilterMaterial(string name, string regex, (string, string, int) field)
         {
-            Name = name;
+            _name = name;
             RegEx = new Regex(regex);
             _Field = field;
         }
         public override string Pattern
         {
             get { return RegEx.ToString(); }
-            set { RegEx = new Regex(value); }
+            set
+            {
+                RegEx = new Regex(value);
+                OnPropertyChanged(nameof(Pattern));
+            }
         }
 
         public override (string, string, int) Field
         {
-            get { return _Field; }
-            set { _Field = value; }
+            get => _Field;
+            set => SetField(ref _Field, value);
         }
 
         public override Regex GetRegEx()
@@ -326,7 +365,8 @@ namespace El2Core.Utils
     [Serializable]
     public class PersonalFilterRessource : PersonalFilter
     {
-        public override string Name { get; set; }
+        private string _name;
+        public override string Name { get => _name; set => SetField(ref _name, value); }
         private Regex RegEx;
         private string Navigation;
         private string Property;
@@ -334,20 +374,24 @@ namespace El2Core.Utils
         public PersonalFilterRessource() { }
         public PersonalFilterRessource(string name, string regex, (string, string, int) field)
         {
-            Name = name;
+            _name = name;
             RegEx = new Regex(regex);
             _Field = field;
         }
         public override string Pattern
         {
             get { return RegEx.ToString(); }
-            set { RegEx = new Regex(value); }
+            set
+            {
+                RegEx = new Regex(value);
+                OnPropertyChanged(nameof(Pattern));
+            }
         }
 
         public override (string, string, int) Field
         {
-            get { return _Field; }
-            set { _Field = value; }
+            get => _Field;
+            set => SetField(ref _Field, value);
         }
 
         public override Regex GetRegEx()
@@ -379,7 +423,8 @@ namespace El2Core.Utils
     [Serializable]
     public class PersonalFilterProject : PersonalFilter
     {
-        public override string Name { get; set; }
+        private string _name;
+        public override string Name { get => _name; set => SetField(ref _name, value); }
         private Regex RegEx;
         private string Navigation;
         private string Property;
@@ -387,20 +432,24 @@ namespace El2Core.Utils
         public PersonalFilterProject() { }
         public PersonalFilterProject(string name, string regex, (string, string, int) field)
         {
-            Name = name;
+            _name = name;
             RegEx = new Regex(regex);
             _Field = field;
         }
         public override string Pattern
         {
             get { return RegEx.ToString(); }
-            set { RegEx = new Regex(value); }
+            set
+            {
+                RegEx = new Regex(value);
+                OnPropertyChanged(nameof(Pattern));
+            }
         }
 
         public override (string, string, int) Field
         {
-            get { return _Field; }
-            set { _Field = value; }
+            get => _Field;
+            set => SetField(ref _Field, value);
         }
 
         public override Regex GetRegEx()
