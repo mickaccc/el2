@@ -194,12 +194,7 @@ namespace ModulePlanning.Planning
             ProcessesCVSource.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             ProcessesCVSource.IsLiveSortingRequested = true;
             ProcessesCVSource.LiveSortingProperties.Add("SortPos");
-            //foreach(var vrg in res.Vorgangs.Where(x => x.SysStatus?.Contains("RÜCK") == false).OrderBy(x => x.SortPos))
-            //{
-            //    Processes.Add(vrg);
-            //    vrg.PropertyChanged += OnProcessPropertyChanged;
-            //}
-            Processes.CollectionChanged += OnProcessesChanged;
+ 
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var sh = db.WorkShifts
                 .Include(x => x.RessourceWorkshifts)
@@ -317,21 +312,6 @@ namespace ModulePlanning.Planning
             local.Termin = remote.Termin;
 
             local.RunPropertyChanged();
-        }
-        private void OnProcessesChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            
-        }
-
-        private void OnProcessPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            var send = sender as Vorgang;
-            if (send != null)
-            {
-                var thisVrg = Processes.FirstOrDefault(x => x.VorgangId == send.VorgangId);
-                if(send.Equals(thisVrg))
-                    _eventAggregator.GetEvent<MessagePlanmachineChanged>().Publish(send);
-            }
         }
 
         private bool OnCorrectionCanExecute(object arg)
