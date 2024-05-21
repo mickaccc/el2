@@ -27,7 +27,6 @@
  
     <Grid x:Name="Main" >
  
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="250*"/>
@@ -153,7 +152,7 @@
                               Command="{Binding ApplicationCommands.OpenOrderCommand}"
                               CommandParameter="{Binding ElementName=UnPlaned, Path=SelectedItem}"/>
             </DataGrid.InputBindings>
-   
+
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Auftrag" Binding="{Binding Path=Aid}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True" />
@@ -175,6 +174,5 @@
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-
     </Grid>
 </UserControl>
