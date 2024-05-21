@@ -50,7 +50,6 @@ namespace El2Core.Utils
             FileInfo fileInfo = new FileInfo(Path.Combine(env.ToString(), companyName, "Perfilter.xml"));
             if (fileInfo.Exists)
             {
-
                 try
                 {
                     DeserializeObject(fileInfo.FullName);
