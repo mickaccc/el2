@@ -110,7 +110,7 @@ namespace ModulePlanning.ViewModels
             }
         }
 
-        private void MessageVorgangReceived(List<string?> list)
+        private void MessageVorgangReceived(List<(string, string)?> list)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace ModulePlanning.ViewModels
                     {
                         if ((item != null))
                         {
-                            var vo = Priv_processes?.FirstOrDefault(x => x.VorgangId == item);
+                            var vo = Priv_processes?.FirstOrDefault(x => x.VorgangId == item.Value.Item2);
 
                             if (vo != null)
                             {

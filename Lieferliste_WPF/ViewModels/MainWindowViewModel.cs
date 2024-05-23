@@ -541,8 +541,8 @@ namespace Lieferliste_WPF.ViewModels
         }
         private async void OnMsgDBTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            List<string?> msgListV = [];
-            List<string?> msgListO = [];
+            List<(string, string)?> msgListV = [];
+            List<(string, string)?> msgListO = [];
             try
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -553,17 +553,20 @@ namespace Lieferliste_WPF.ViewModels
                         .ToListAsync();
                     if (m.Count > 0)
                     {                     
-                        var mv = m.Where(x => x.TableName == "Vorgang");
-                        foreach (var item in mv)
+                        foreach (var item in m)
                         {
-                            if (item != null)
+                            if (item != null && item.TableName == "Vorgang")
                             {
                                 if(item.OldValue != item.NewValue)
-                                    msgListV.Add(item.PrimaryKey);
-                            }                        
+                                    msgListV.Add((item.Invoker, item.PrimaryKey));
+                            }
+                            if (item != null && item.TableName == "OrderRB")
+                            {
+                                if (item.OldValue != item.NewValue)
+                                    msgListO.Add((item.Invoker, item.PrimaryKey));
+                            }
                         }
-                        msgListO.AddRange(m.Where(x => x.TableName == "OrderRB").Select(x => x.PrimaryKey).ToList());
-
+                        
                         foreach (var msg in m)
                         {
                             await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);

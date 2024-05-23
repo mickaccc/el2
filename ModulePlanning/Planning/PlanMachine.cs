@@ -243,7 +243,7 @@ namespace ModulePlanning.Planning
             if (ind != null) ScrollItem = ind;
         }
 
-        private void MessageReceived(List<string?> vorgangIdList)
+        private void MessageReceived(List<(string, string)?> vorgangIdList)
         {
             try
             { 
@@ -252,30 +252,30 @@ namespace ModulePlanning.Planning
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     lock (_lock)
                     {
-                        foreach (string? id in vorgangIdList.Where(x => x != null))
+                        foreach ((string, string)? idTuple in vorgangIdList)
                         {
-                            if (id != null)
+                            if(idTuple != null)
                             {
-                                var pr = Processes?.FirstOrDefault(x => x.VorgangId == id);
+                                var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                                 if (pr != null)
                                 {
-                                    var proc = db.Vorgangs.Single(x => x.VorgangId == id);
+                                    var proc = db.Vorgangs.Single(x => x.VorgangId == idTuple.Value.Item2);
                                     var v = db.Vorgangs.Local;
                                     if ((proc.SysStatus?.Contains("RÜCK") ?? false) || proc.Rid == null)
                                     {
                                         proc.SortPos = "Z";
                                         Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
                                     }
-                                    if (pr.Equals(proc) == false) { ChangedValues(pr, proc); }
+                                    if (pr.Equals(proc) == false) { ChangedValues(idTuple.Value.Item1, pr, proc); }
                                 }
-                                else if (db.Vorgangs.Find(id)?.Rid == Rid)
+                                else if (db.Vorgangs.Find(idTuple)?.Rid == Rid)
                                 {
                                     var vo = db.Vorgangs.AsNoTracking()
                                         .Include(x => x.AidNavigation)
                                         .ThenInclude(x => x.MaterialNavigation)
                                         .Include(x => x.AidNavigation.DummyMatNavigation)
                                         .Include(x => x.RidNavigation)
-                                        .First(x => x.VorgangId == id);
+                                        .First(x => x.VorgangId == idTuple.Value.Item2);
 
                                     if (vo?.SysStatus?.Contains("RÜCK") == false)
                                     {
@@ -292,25 +292,30 @@ namespace ModulePlanning.Planning
                 MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void ChangedValues(Vorgang local, Vorgang remote)
+        private void ChangedValues(string invoker, Vorgang local, Vorgang remote)
         {
-            local.SpaetEnd = remote.SpaetEnd;
-            local.SpaetStart = remote.SpaetStart;
-            local.SortPos = remote.SortPos;
-            local.QuantityScrap = remote.QuantityScrap;
-            local.QuantityMiss = remote.QuantityMiss;
-            local.QuantityMissNeo = remote.QuantityMissNeo;
-            local.Rid = remote.Rid;
-            local.Aktuell = remote.Aktuell;
-            local.BemM = remote.BemM;
-            local.BemMa = remote.BemMa;
-            local.CommentMach = remote.CommentMach;
-            local.BemT = remote.BemT;
-            local.Bullet = remote.Bullet;
-            local.Correction = remote.Correction;
-            local.QuantityYield = remote.QuantityYield;
-            local.Termin = remote.Termin;
-
+            if (invoker == "EL2")
+            {
+                if (local.BemM != remote.BemM) local.BemM = remote.BemM;
+                if (local.BemMa != remote.BemMa) local.BemMa = remote.BemMa;
+                if (local.CommentMach != remote.CommentMach) local.CommentMach = remote.CommentMach;
+                if (local.BemT != remote.BemT) local.BemT = remote.BemT;
+                if (local.Bullet != remote.Bullet) local.Bullet = remote.Bullet;
+                if (local.Correction != remote.Correction) local.Correction = remote.Correction;
+                if (local.Rid != remote.Rid) local.Rid = remote.Rid;
+                if (local.SortPos != remote.SortPos) local.SortPos = remote.SortPos;
+                if (local.Termin != remote.Termin) local.Termin = remote.Termin;
+            }
+            else
+            { 
+                local.SpaetEnd = remote.SpaetEnd;
+                local.SpaetStart = remote.SpaetStart; 
+                local.QuantityScrap = remote.QuantityScrap;
+                local.QuantityMiss = remote.QuantityMiss;
+                local.QuantityMissNeo = remote.QuantityMissNeo;
+                local.Aktuell = remote.Aktuell;
+                local.QuantityYield = remote.QuantityYield;
+            }
             local.RunPropertyChanged();
         }
 

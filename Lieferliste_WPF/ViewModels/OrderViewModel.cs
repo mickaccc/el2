@@ -47,28 +47,33 @@ namespace Lieferliste_WPF.ViewModels
             }           
         }
 
-        private void OnMessageReceived(List<string?> vorgangIdList)
+        private void OnMessageReceived(List<(string, string)?> vorgangIdList)
         {
             try
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 foreach (var vid in vorgangIdList)
                 {
-                    var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vid);
+                    var vo = Vorgangs.FirstOrDefault(x => x.VorgangId == vid.Value.Item2);
 
                     if (vo != null)
                     {
                         var v = db.Vorgangs.First(x => x.VorgangId == vo.VorgangId);
 
-                        vo.SysStatus = v.SysStatus;
-                        vo.BemM = v.BemM;
-                        vo.BemMa = v.BemMa;
-                        vo.BemT = v.BemT;
-                        vo.QuantityMiss = v.QuantityMiss;
-                        vo.QuantityRework = v.QuantityRework;
-                        vo.QuantityScrap = v.QuantityScrap;
-                        vo.QuantityYield = v.QuantityYield;
-
+                        if (vid.Value.Item1 == "EL2")
+                        {
+                            vo.BemM = v.BemM;
+                            vo.BemMa = v.BemMa;
+                            vo.BemT = v.BemT;
+                        }
+                        else
+                        {
+                            vo.SysStatus = v.SysStatus;
+                            vo.QuantityMiss = v.QuantityMiss;
+                            vo.QuantityRework = v.QuantityRework;
+                            vo.QuantityScrap = v.QuantityScrap;
+                            vo.QuantityYield = v.QuantityYield;
+                        }
                     }
                 }
             }

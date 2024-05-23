@@ -251,7 +251,6 @@ namespace ModuleDeliverList.ViewModels
             _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
 
             if (_settingsService.IsAutoSave) SetAutoSave();
-
         }
 
         private bool OnCreateRtfCanExecute(object arg)
@@ -426,7 +425,7 @@ namespace ModuleDeliverList.ViewModels
                 MessageBox.Show(ex.Message, "MsgReceivedArchivated", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void MessageOrderReceived(List<string?> rb)
+        private void MessageOrderReceived(List<(string, string)?> rb)
         {
             try
             {
@@ -434,9 +433,9 @@ namespace ModuleDeliverList.ViewModels
                 {
                     lock (_lock)
                     {
-                        foreach (string rbId in rb.Where(x => x != null))
+                        foreach ((string, string) rbId in rb.Where(x => x != null))
                         {
-                            var o = _orders.FirstOrDefault(x => x.Aid == rbId);
+                            var o = _orders.FirstOrDefault(x => x.Aid == rbId.Item2);
                             if (o != null)
                             {
                     
@@ -447,7 +446,7 @@ namespace ModuleDeliverList.ViewModels
                             }
                             else
                             {
-                                foreach (var v in DBctx.Vorgangs.Where(x => x.Aid == rbId))
+                                foreach (var v in DBctx.Vorgangs.Where(x => x.Aid == rbId.Item2))
                                 {
                                     Application.Current.Dispatcher.Invoke(AddRelevantProcess, v.VorgangId);
                                 }
@@ -461,7 +460,7 @@ namespace ModuleDeliverList.ViewModels
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteOrder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void MessageVorgangReceived(List<string?> vrgIdList)
+        private void MessageVorgangReceived(List<(string, string)?> vrgIdList)
         {
             try
             {
@@ -471,7 +470,7 @@ namespace ModuleDeliverList.ViewModels
             {
                 foreach (var vrg in vrgIdList.Where(x => x != null))
                 {
-                    var v = _orders.FirstOrDefault(x => x.VorgangId == vrg);
+                    var v = _orders.FirstOrDefault(x => x.VorgangId == vrg.Value.Item2);
                     if (v != null)
                     {
                         DBctx.Entry<Vorgang>(v).Reload();
@@ -482,10 +481,10 @@ namespace ModuleDeliverList.ViewModels
                             DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
                         }
                     }
-                    else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg).Aktuell)
+                    else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg.Value.Item2).Aktuell)
                     {
                         if (vrg != null)
-                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
+                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg.Value.Item2);
                     }
                 }
             }
