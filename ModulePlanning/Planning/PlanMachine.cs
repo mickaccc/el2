@@ -296,15 +296,18 @@ namespace ModulePlanning.Planning
         {
             if (invoker == "EL2")
             {
-                if (local.BemM != remote.BemM) local.BemM = remote.BemM;
-                if (local.BemMa != remote.BemMa) local.BemMa = remote.BemMa;
-                if (local.CommentMach != remote.CommentMach) local.CommentMach = remote.CommentMach;
-                if (local.BemT != remote.BemT) local.BemT = remote.BemT;
-                if (local.Bullet != remote.Bullet) local.Bullet = remote.Bullet;
-                if (local.Correction != remote.Correction) local.Correction = remote.Correction;
-                if (local.Rid != remote.Rid) local.Rid = remote.Rid;
-                if (local.SortPos != remote.SortPos) local.SortPos = remote.SortPos;
-                if (local.Termin != remote.Termin) local.Termin = remote.Termin;
+                bool changed = false;
+                if (local.BemM != remote.BemM) { local.BemM = remote.BemM; changed = true; }
+                if (local.BemMa != remote.BemMa) { local.BemMa = remote.BemMa; changed = true; }
+                if (local.CommentMach != remote.CommentMach) { local.CommentMach = remote.CommentMach; changed = true; }
+                if (local.BemT != remote.BemT) { local.BemT = remote.BemT; changed = true; }
+                if (local.Bullet != remote.Bullet) { local.Bullet = remote.Bullet; changed = true; }
+                if (local.Correction != remote.Correction) { local.Correction = remote.Correction; changed = true; }
+                if (local.Rid != remote.Rid) { local.Rid = remote.Rid; changed = true; }
+                if (local.SortPos != remote.SortPos) { local.SortPos = remote.SortPos; changed = true; }
+                if (local.Termin != remote.Termin) { local.Termin = remote.Termin; changed = true; }
+
+                if (changed) local.RunPropertyChanged();
             }
             else
             { 
@@ -315,8 +318,10 @@ namespace ModulePlanning.Planning
                 local.QuantityMissNeo = remote.QuantityMissNeo;
                 local.Aktuell = remote.Aktuell;
                 local.QuantityYield = remote.QuantityYield;
+
+                local.RunPropertyChanged();
             }
-            local.RunPropertyChanged();
+            
         }
 
         private bool OnCorrectionCanExecute(object arg)
