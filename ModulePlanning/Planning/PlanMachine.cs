@@ -12,7 +12,6 @@ using Prism.Services.Dialogs;
 using System.Collections;
 using System.Collections.Frozen;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
