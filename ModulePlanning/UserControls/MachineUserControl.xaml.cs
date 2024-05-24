@@ -57,11 +57,5 @@ namespace ModulePlanning.UserControls
     
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            shiftOpen.IsChecked = false;
-        }
-
-
     }
 }

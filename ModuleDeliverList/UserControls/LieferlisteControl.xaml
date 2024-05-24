@@ -170,7 +170,8 @@
                      Text="{Binding QuantityScrap, ElementName=luc}" HorizontalAlignment="Right"  />
                     <Controls:SelectableTextBlock Canvas.Left="120"  x:Name="txtRework"  ToolTip="Nacharbeitsmenge" 
                      Text="{Binding QuantityRework, ElementName=luc}" HorizontalAlignment="Right"  />
-                    <TextBox Text="{Binding MarkCode, ElementName=luc}" Canvas.Left="170" Margin="5" ToolTip="Reihung"/>
+                    <TextBox Text="{Binding MarkCode, ElementName=luc}" Canvas.Left="170" Margin="5" ToolTip="Reihung"
+                             IsReadOnly="{Binding Converter={StaticResource Permission}, ConverterParameter={x:Static const:Permissions.MysticCodeInvers}}"/>
                 </Canvas>
             <Controls:SelectableTextBlock Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="3" x:Name="txtVrgText" ToolTip="Vorgang Kurztext"  
                      Text="{Binding VgText, ElementName=luc}"  Focusable="True"  />

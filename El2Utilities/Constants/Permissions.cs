@@ -78,5 +78,7 @@
         public const string OpenMeaOper = "MEA03";
         public const string CopyClip = "COPYCLIP01";
         public const string DelMeasureDocu = "DELMEADOCU";
+        public const string MysticCode = "MYSTICCODE";
+        public const string MysticCodeInvers = "!MYSTICCODE";
     }
 }

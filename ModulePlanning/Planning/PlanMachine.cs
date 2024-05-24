@@ -508,7 +508,7 @@ namespace ModulePlanning.Planning
  
         private void InsertItems(Vorgang Item, ListCollectionView Source, ListCollectionView Target, int Index, bool sorting)
         {
- 
+
             Item.Rid = _rId;
             List<Vorgang> lst = [];
             var p = Target.SourceCollection as Collection<Vorgang>;
@@ -526,6 +526,7 @@ namespace ModulePlanning.Planning
                     ((IList)Target.SourceCollection).Insert(Index, Item);
                     lst.Insert(Index, Item);
                 }
+                Source.Remove(Item);
             }
 
             if(oldIndex != -1) //sorting inside

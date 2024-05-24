@@ -25,7 +25,7 @@
         <conv:ScrollIntoViewConverter x:Key="scrollInto"/>
         <conv:BoolRowDetail x:Key="rowDetail"/>
 
-        <DataGrid x:Key="Setup1" x:Name="Planed1" AutoGenerateColumns="False" 
+        <DataGrid x:Key="Setup1"  AutoGenerateColumns="False" 
 		  CanUserAddRows="False"
 		  CanUserDeleteRows="False"
 		  CanUserSortColumns="False"
@@ -114,7 +114,7 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <DataGrid x:Key="Setup2" x:Name="Planed2" AutoGenerateColumns="False" 
+        <DataGrid x:Key="Setup2"  AutoGenerateColumns="False" 
           CanUserAddRows="False"
           CanUserDeleteRows="False"
           CanUserSortColumns="False"
@@ -271,7 +271,7 @@
                                     <DataGridCheckBoxColumn Header="" Binding="{Binding Path=IsCheck, Mode=TwoWay}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <Button Content="schliessen" Click="Button_Click"/>
+                            
                         </StackPanel>
                     </Border>
                 </Popup>

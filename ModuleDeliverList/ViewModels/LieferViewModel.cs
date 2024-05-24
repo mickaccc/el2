@@ -499,44 +499,53 @@ namespace ModuleDeliverList.ViewModels
         private bool OrdersView_FilterPredicate(object value)
         {
 
-            var ord = (Vorgang)value;
-
-            var accepted = ord.Aktuell;
-
-            if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = ord.Visability ??= false;
-
-            if (!string.IsNullOrWhiteSpace(_searchFilterText))
+            try
             {
-                if (!(accepted = ord.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
-                    if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
-                        accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
+                var ord = (Vorgang)value;
+
+                var accepted = ord.Aktuell;
+
+                if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = ord.Visability ??= false;
+
+                if (!string.IsNullOrWhiteSpace(_searchFilterText))
+                {
+                    if (!(accepted = ord.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
+                        if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
+                            accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
+                }
+
+                if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.START)
+                    accepted = (ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false) == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = (ord.AidNavigation.Pro?.ProjectType ==
+                        (int)ProjectTypes.ProjectType.SaleSpecimen) == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = (ord.AidNavigation.Pro?.ProjectType ==
+                        (int)ProjectTypes.ProjectType.DevelopeSpecimen) == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.EXERTN) accepted = (ord.ArbPlSap == "_EXTERN_") == !FilterInvers;
+                if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
+                if (accepted && !string.IsNullOrEmpty(_selectedProjectFilter)) accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
+                if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
+                        .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
+                        .WorkArea?.Bereich == _selectedSectionFilter;
+                if (accepted && _markerCode != string.Empty) accepted = ord.AidNavigation.MarkCode?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
+                if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_LOST) accepted = ProjectsLost(ord.AidNavigation.Pro) == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.ORDERS_RED) accepted = ord.AidNavigation.Prio?.Length > 0 == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_RED) accepted = ord.AidNavigation.Pro?.ProjectPrio == !FilterInvers;
+
+                if (accepted && _selectedPersonalFilter != null)
+                {
+                    var b = PersonalFilterContainer.GetInstance();
+                    accepted = b[_selectedPersonalFilter].TestValue(ord, _container);
+                }
+                return accepted;
             }
-
-            if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.START)
-                accepted = (ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false) == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = (ord.AidNavigation.Pro?.ProjectType ==
-                    (int)ProjectTypes.ProjectType.SaleSpecimen) == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = (ord.AidNavigation.Pro?.ProjectType ==
-                    (int)ProjectTypes.ProjectType.DevelopeSpecimen) == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.EXERTN) accepted = (ord.ArbPlSap == "_EXTERN_") == !FilterInvers;
-            if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
-            if (accepted && !string.IsNullOrEmpty(_selectedProjectFilter)) accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
-            if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
-                    .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
-                    .WorkArea?.Bereich == _selectedSectionFilter;
-            if (accepted && _markerCode != string.Empty) accepted = ord.AidNavigation.MarkCode?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
-            if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_LOST) accepted = ProjectsLost(ord.AidNavigation.Pro) == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.ORDERS_RED) accepted = ord.AidNavigation.Prio?.Length > 0 == !FilterInvers;
-            if (accepted && _selectedDefaultFilter == CmbFilter.PROJECTS_RED) accepted = ord.AidNavigation.Pro?.ProjectPrio == !FilterInvers;
-
-            if (accepted && _selectedPersonalFilter != null)
+            catch (Exception ex)
             {
-                var b = PersonalFilterContainer.GetInstance();
-                accepted = b[_selectedPersonalFilter].TestValue(ord, _container);
+
+                MessageBox.Show(ex.ToString(), "Filter Lieferliste", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
-            return accepted;
         }
 
         private bool ProjectsLost(Project? pro)

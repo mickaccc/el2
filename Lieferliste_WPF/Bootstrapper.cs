@@ -9,6 +9,9 @@ using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
+using log4net;
+using Microsoft.Extensions.Logging;
 using ModuleDeliverList.Views;
 using ModuleMeasuring.Views;
 using ModulePlanning.Dialogs;
@@ -43,13 +46,18 @@ namespace Lieferliste_WPF
         }
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            
+            var loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
+            
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
             var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
-            var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>().UseSqlServer(defaultconnection)
+            var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
+                .UseSqlServer(defaultconnection)            
                 .EnableThreadSafetyChecks(true);
           
             containerRegistry.RegisterInstance(builderopt.Options);
