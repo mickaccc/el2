@@ -170,6 +170,7 @@
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="MiniFileAssociation" Version="1.0.1" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
   </ItemGroup>

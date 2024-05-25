@@ -6,6 +6,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using ModulePlanning.Planning;
 using Prism.Events;
@@ -18,8 +19,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Printing;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -103,6 +102,7 @@ namespace Lieferliste_WPF.ViewModels
         private readonly IDialogService _dialogService;
         private readonly IEventAggregator _ea;
         private readonly IUserSettingsService _settingsService;
+        private readonly ILogger _Logger;
         public MainWindowViewModel(IRegionManager regionManager,
             IContainerExtension container,
             IApplicationCommands applicationCommands,
@@ -116,8 +116,12 @@ namespace Lieferliste_WPF.ViewModels
             _dialogService = dialogService;
             _ea = ea;
             _settingsService = settingsService;
-
-            RegisterMe();
+            var factory = _container.Resolve<ILoggerFactory>();
+            factory.AddLog4Net();
+            
+            _Logger = factory.CreateLogger<MainWindowViewModel>();
+            
+            _ = RegisterMe();
             SetTimer();
             SetMsgDBTimer();
             TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
@@ -587,7 +591,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private async void RegisterMe()
+        private async System.Threading.Tasks.Task RegisterMe()
         {
             try
             {
@@ -608,6 +612,7 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "RegisterMe", MessageBoxButton.OK, MessageBoxImage.Error);
+                _Logger.LogCritical(e.ToString());
             }
         }
         private void DbOperations()

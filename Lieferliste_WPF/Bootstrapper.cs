@@ -9,9 +9,6 @@ using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
-using log4net;
-using Microsoft.Extensions.Logging;
 using ModuleDeliverList.Views;
 using ModuleMeasuring.Views;
 using ModulePlanning.Dialogs;
@@ -66,6 +63,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterSingleton<IProcessStripeService, ProcessStripeService>();
             containerRegistry.RegisterScoped<IRegionManager, RegionManager>();
             containerRegistry.RegisterSingleton<IUserSettingsService, UserSettingsService>();
+            containerRegistry.RegisterSingleton<ILoggerFactory, LoggerFactory>();
             containerRegistry.RegisterForNavigation<UserSettings>();
             containerRegistry.RegisterForNavigation<RoleEdit>();
             containerRegistry.RegisterForNavigation<MachinePlan>();
