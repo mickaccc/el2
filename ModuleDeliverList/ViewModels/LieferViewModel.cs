@@ -580,7 +580,10 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
+                if (OrderTask != null && OrderTask.IsSuccessfullyCompleted)
+                {
+                    if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
+                }
             }
             catch (Exception ex)
             {
