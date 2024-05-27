@@ -116,10 +116,10 @@ namespace Lieferliste_WPF.ViewModels
             _dialogService = dialogService;
             _ea = ea;
             _settingsService = settingsService;
-            var factory = _container.Resolve<ILoggerFactory>();
+            //var factory = _container.Resolve<ILoggerFactory>();
                       
-            _Logger = factory.CreateLogger<MainWindowViewModel>();
-            _Logger.LogDebug("value=");
+            //_Logger = factory.CreateLogger<MainWindowViewModel>();
+            //_Logger.LogDebug("value=");
 
             _ = RegisterMe();
             SetTimer();
@@ -587,7 +587,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception ex)
             {
-                _Logger.LogError(ex.ToString());
+                //_Logger.LogError(ex.ToString());
                 MessageBox.Show(string.Format("{0}\nAuftrag:{1} -- Vorgang:{2}",ex.Message, msgListO.Count, msgListV.Count), "MsgDBTimer", MessageBoxButton.OK, MessageBoxImage.Error);               
             }
         }
@@ -596,7 +596,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             try
             {
-                throw new NotImplementedException();
+
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 await using var transaction = await db.Database.BeginTransactionAsync();
                 var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserIdent && x.PcId == UserInfo.PC);
@@ -614,7 +614,7 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "RegisterMe", MessageBoxButton.OK, MessageBoxImage.Error);
-                _Logger.LogCritical(e, e.ToString());
+                //_Logger.LogCritical(e, e.ToString());
             }
         }
         private void DbOperations()

@@ -267,7 +267,7 @@ namespace ModulePlanning.Planning
                                     }
                                     if (pr.Equals(proc) == false) { ChangedValues(idTuple.Value.Item1, pr, proc); }
                                 }
-                                else if (db.Vorgangs.Find(idTuple)?.Rid == Rid)
+                                else if (db.Vorgangs.Find(idTuple.Value.Item2)?.Rid == Rid)
                                 {
                                     var vo = db.Vorgangs.AsNoTracking()
                                         .Include(x => x.AidNavigation)

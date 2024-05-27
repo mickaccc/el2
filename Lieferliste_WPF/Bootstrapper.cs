@@ -45,17 +45,17 @@ namespace Lieferliste_WPF
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             
-            var loggerFactory = new LoggerFactory();
-            loggerFactory.AddLog4Net("Log4Net.config");
+            //var loggerFactory = new LoggerFactory();
+            //loggerFactory.AddLog4Net("Log4Net.config");
             
-            log4net.Config.XmlConfigurator.Configure();
+            //log4net.Config.XmlConfigurator.Configure();
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
                 .UseSqlServer(defaultconnection)            
                 .EnableThreadSafetyChecks(true);
@@ -66,7 +66,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterSingleton<IProcessStripeService, ProcessStripeService>();
             containerRegistry.RegisterScoped<IRegionManager, RegionManager>();
             containerRegistry.RegisterSingleton<IUserSettingsService, UserSettingsService>();
-            containerRegistry.RegisterSingleton<ILoggerFactory, LoggerFactory>();
+            //containerRegistry.RegisterSingleton<ILoggerFactory, LoggerFactory>();
             containerRegistry.RegisterForNavigation<UserSettings>();
             containerRegistry.RegisterForNavigation<RoleEdit>();
             containerRegistry.RegisterForNavigation<MachinePlan>();
