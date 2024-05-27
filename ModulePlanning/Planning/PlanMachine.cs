@@ -6,6 +6,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
@@ -75,6 +76,9 @@ namespace ModulePlanning.Planning
             IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
         {
             _container = container;
+            var factory = container.Resolve<ILoggerFactory>();
+            _logger = factory.CreateLogger<PlanMachine>();
+
             _rId = ressource.RessourceId;
             _applicationCommands = applicationCommands;
             _eventAggregator = eventAggregator;
@@ -97,6 +101,7 @@ namespace ModulePlanning.Planning
         public ICommand? HistoryCommand { get; private set; }
         public ICommand? FastCopyCommand { get; private set; }
         public ICommand? CorrectionCommand { get; private set; }
+        private ILogger _logger;
         private static readonly object _lock = new();
         private HashSet<string> ImChanged = [];
         private readonly int _rId;
@@ -288,6 +293,7 @@ namespace ModulePlanning.Planning
             }
             catch (Exception ex)
             {
+                _logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(string.Format("{0}\n{1}", ex.Message, ex.InnerException), "MsgReceivedPlanMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -433,6 +439,7 @@ namespace ModulePlanning.Planning
             }
             catch (Exception e)
             {
+                _logger.LogError("{message}", e.ToString());
                 MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "FastCopy", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -470,6 +477,7 @@ namespace ModulePlanning.Planning
             }
             catch (System.Exception e)
             {
+                _logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "SetMarker", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -491,6 +499,7 @@ namespace ModulePlanning.Planning
             }
             catch (Exception e)
             {
+                _logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "Error OpenMachine", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -585,6 +594,7 @@ namespace ModulePlanning.Planning
             }
             catch (Exception e)
             {
+                _logger.LogError("{message}", e.ToString());
                 string str = string.Format(e.Message + "\n" + e.InnerException);
                 MessageBox.Show(str, "ERROR", MessageBoxButton.OK);
             }

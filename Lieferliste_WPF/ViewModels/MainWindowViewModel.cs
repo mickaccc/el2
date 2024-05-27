@@ -5,6 +5,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
+using log4net.Repository.Hierarchy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -116,10 +117,11 @@ namespace Lieferliste_WPF.ViewModels
             _dialogService = dialogService;
             _ea = ea;
             _settingsService = settingsService;
-            //var factory = _container.Resolve<ILoggerFactory>();
-                      
-            //_Logger = factory.CreateLogger<MainWindowViewModel>();
-            //_Logger.LogDebug("value=");
+            var loggerFactory = _container.Resolve<Microsoft.Extensions.Logging.ILoggerFactory>();
+            loggerFactory.AddLog4Net("Log4Net.config");
+            log4net.Config.XmlConfigurator.Configure();
+
+            _Logger = loggerFactory.CreateLogger<MainWindowViewModel>();
 
             _ = RegisterMe();
             SetTimer();
@@ -587,8 +589,8 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception ex)
             {
-                //_Logger.LogError(ex.ToString());
-                MessageBox.Show(string.Format("{0}\nAuftrag:{1} -- Vorgang:{2}",ex.Message, msgListO.Count, msgListV.Count), "MsgDBTimer", MessageBoxButton.OK, MessageBoxImage.Error);               
+                _Logger.LogError("Auftrag:{msgo} -- Vorgang:{msgv}", [ msgListO.Count, msgListV.Count]);
+                _Logger.LogCritical("{message}", ex.ToString());               
             }
         }
 
@@ -596,7 +598,6 @@ namespace Lieferliste_WPF.ViewModels
         {
             try
             {
-
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 await using var transaction = await db.Database.BeginTransactionAsync();
                 var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserIdent && x.PcId == UserInfo.PC);
@@ -613,8 +614,8 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "RegisterMe", MessageBoxButton.OK, MessageBoxImage.Error);
-                //_Logger.LogCritical(e, e.ToString());
+                
+                _Logger.LogError(e.ToString());
             }
         }
         private void DbOperations()

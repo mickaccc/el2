@@ -5,6 +5,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -46,7 +47,7 @@ namespace ModuleDeliverList.ViewModels
         public ActionCommand InvisibilityCommand { get; private set; }
         public string Title { get; } = "Lieferliste";
         public bool HasChange => DBctx.ChangeTracker.HasChanges();
-
+        private ILogger _logger;
         private readonly Dictionary<string, string> _filterCriterias = new();
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
@@ -235,6 +236,8 @@ namespace ModuleDeliverList.ViewModels
             _applicationCommands = applicationCommands;
             DBctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _container = container;
+            var factory = _container.Resolve<ILoggerFactory>();
+            _logger = factory.CreateLogger<LieferViewModel>();
             _ea = ea;
             _settingsService = settingsService;
 
@@ -328,6 +331,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
+                _logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "MsgReceivedArchivated", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -398,6 +402,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
+                _logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteVorgang", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -448,7 +453,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
-
+                _logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.ToString(), "Filter Lieferliste", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -493,6 +498,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
+                _logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "AutoSave", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -624,6 +630,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception e)
             {
+                _logger.LogError("{message}", e.ToString());
                 MessageBox.Show(string.Format("{0}\nInnerEx\n{1}",e.Message,e.InnerException), "OnSave Liefer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -635,6 +642,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (InvalidOperationException e)
             {
+                _logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "CanSave Liefer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;

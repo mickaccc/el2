@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Lieferliste_WPF
 {
@@ -29,7 +30,7 @@ namespace Lieferliste_WPF
             //ThemeManager.Current.AddLibraryTheme(new LibraryTheme(
             //    new Uri("pack://application:,,,/MahAppsMetroThemesSample;component/CustomAccents/Light.Accent2.xaml"),
             //    MahAppsLibraryThemeProvider.DefaultInstance));
- 
+
             base.OnStartup(e);
 
             //var theme = ThemeManager.Current.AddLibraryTheme(new LibraryTheme(
@@ -62,8 +63,11 @@ namespace Lieferliste_WPF
             //ThemeManager.Current.AddTheme(new Theme("DarkBlue", "DarkBlue", "Dark", "Blue", Colors.Blue, Brushes.Blue, true, false));
             //ThemeManager.Current.AddTheme(new Theme("DarkOrange", "DarkOrange", "Dark", "Orange", Colors.Orange, Brushes.Orange, true, false));
             //ThemeManager.Current.AddTheme(new Theme("DarkSeaGreen", "DarkSeaGreen", "Dark", "SeaGreen", Colors.SeaGreen, Brushes.SeaGreen, true, false));
+
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();
         }
     }
+    
 }
+
