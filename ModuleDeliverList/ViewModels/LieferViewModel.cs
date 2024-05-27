@@ -253,69 +253,6 @@ namespace ModuleDeliverList.ViewModels
             if (_settingsService.IsAutoSave) SetAutoSave();
         }
 
-        private bool OnCreateRtfCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CopyClipboard);
-        }
-
-        private void OnCreateRtfExecuted(object obj)
-        {
-            AbstracatBuilder Tbuilder = CreateTableBuilder();
-
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            var sett = new UserSettingsService();
-            dlg.InitialDirectory = string.IsNullOrEmpty(sett.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.Personal) :
-                sett.PersonalFolder;
-            dlg.FileName = "Document"; // Default file name
-            dlg.DefaultExt = ".rtf"; // Default file extension
-
-            // Show save file dialog box
-            Nullable<bool> result = dlg.ShowDialog();
-
-            // Process save file dialog box results
-            if (result == true)
-            {
-                // Save document
-                string filename = dlg.FileName;
-                using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                {
-                    FlowDocument flow = Tbuilder.GetDoc() as FlowDocument;
-                    TextRange tr = new TextRange(flow.ContentStart, flow.ContentEnd);
-                    tr.Save(fs, DataFormats.Rtf);
-                    
-                }
-            }
-        }
-        private bool OnCreateHtmlCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CopyClipboard);
-        }
-
-        private void OnCreateHtmlExecuted(object obj)
-        {
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            var sett = new UserSettingsService();
-            dlg.InitialDirectory = string.IsNullOrEmpty(sett.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.Personal) :
-                sett.PersonalFolder;
-            dlg.FileName = "Document"; // Default file name
-            dlg.DefaultExt = ".html"; // Default file extension
-            dlg.Filter = "Web documents (.html)|*.htm"; // Filter files by extension
-
-            // Show save file dialog box
-            Nullable<bool> result = dlg.ShowDialog();
-
-            // Process save file dialog box results
-            if (result == true)
-            {
-                // Save document
-                string filename = dlg.FileName;
-
-                AbstracatBuilder Tbuilder = CreateTableBuilder();
-                string content = Tbuilder.GetHtml();
-                File.WriteAllText(filename, content);
-            }
-        }
-
         private AbstracatBuilder CreateTableBuilder()
         {
             TableBuilder t = new TableBuilder();
@@ -368,37 +305,6 @@ namespace ModuleDeliverList.ViewModels
                 selection.Save(outputStream, dataFormat);
 
             return outputStream;
-        }
-
-        private bool OnSetProjectPrioCanExecute(object arg)
-        {
-            if(arg is Vorgang v)
-                if(v.AidNavigation.Pro != null)
-                    return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectPrio);
-            return false;
-        }
-
-        private void OnSetProjectPrioExecuted(object obj)
-        {
-            if (obj is Vorgang v)
-            {
-                if (v.AidNavigation.Pro != null)
-                    v.AidNavigation.Pro.ProjectPrio = !v.AidNavigation.Pro.ProjectPrio;
-            }
-        }
-
-        private bool OnInvisibilityCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.LieferVrgInvis);
-        }
-
-        private void OnInvisibilityExecuted(object obj)
-        {
-            if (obj is Vorgang v)
-            {
-                v.Visability = !v.Visability;
-                OrdersView.Refresh();
-            }
         }
 
         private void MessageOrderArchivated(OrderRb rb)
@@ -592,6 +498,99 @@ namespace ModuleDeliverList.ViewModels
         }
 
         #region Commands
+
+        private bool OnCreateRtfCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CopyClipboard);
+        }
+
+        private void OnCreateRtfExecuted(object obj)
+        {
+            AbstracatBuilder Tbuilder = CreateTableBuilder();
+
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            var sett = new UserSettingsService();
+            dlg.InitialDirectory = string.IsNullOrEmpty(sett.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.Personal) :
+                sett.PersonalFolder;
+            dlg.FileName = "Document"; // Default file name
+            dlg.DefaultExt = ".rtf"; // Default file extension
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                string filename = dlg.FileName;
+                using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                {
+                    FlowDocument flow = Tbuilder.GetDoc() as FlowDocument;
+                    TextRange tr = new TextRange(flow.ContentStart, flow.ContentEnd);
+                    tr.Save(fs, DataFormats.Rtf);
+
+                }
+            }
+        }
+        private bool OnCreateHtmlCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CopyClipboard);
+        }
+
+        private void OnCreateHtmlExecuted(object obj)
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            var sett = new UserSettingsService();
+            dlg.InitialDirectory = string.IsNullOrEmpty(sett.PersonalFolder) ? Environment.GetFolderPath(Environment.SpecialFolder.Personal) :
+                sett.PersonalFolder;
+            dlg.FileName = "Document"; // Default file name
+            dlg.DefaultExt = ".html"; // Default file extension
+            dlg.Filter = "Web documents (.html)|*.htm"; // Filter files by extension
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                string filename = dlg.FileName;
+
+                AbstracatBuilder Tbuilder = CreateTableBuilder();
+                string content = Tbuilder.GetHtml();
+                File.WriteAllText(filename, content);
+            }
+        }
+        private bool OnSetProjectPrioCanExecute(object arg)
+        {
+            if (arg is Vorgang v)
+                if (v.AidNavigation.Pro != null)
+                    return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectPrio);
+            return false;
+        }
+
+        private void OnSetProjectPrioExecuted(object obj)
+        {
+            if (obj is Vorgang v)
+            {
+                if (v.AidNavigation.Pro != null)
+                    v.AidNavigation.Pro.ProjectPrio = !v.AidNavigation.Pro.ProjectPrio;
+            }
+        }
+
+        private bool OnInvisibilityCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.LieferVrgInvis);
+        }
+
+        private void OnInvisibilityExecuted(object obj)
+        {
+            if (obj is Vorgang v)
+            {
+                v.Visability = !v.Visability;
+                OrdersView.Refresh();
+            }
+        }
         private bool OnFilterSaveCanExecute(object arg)
         {
             return false;
@@ -730,7 +729,6 @@ namespace ModuleDeliverList.ViewModels
                         }
                         else
                         {
-
                             foreach (var vorg in group)
                             {
 
@@ -763,7 +761,7 @@ namespace ModuleDeliverList.ViewModels
                                         var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
                                         if (z != null)
                                         {
-                                            if (!_sections.Keys.Contains(z.Sort))
+                                            if (!_sections.Keys.Contains(z.Sort) && z.Bereich != null)
                                                 _sections.Add(z.Sort, z.Bereich);
                                         }
                                     }

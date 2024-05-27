@@ -1,19 +1,25 @@
-﻿using El2Core.Constants;
+﻿using DocumentFormat.OpenXml.Packaging;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using OpenXmlPowerTools;
 using Prism.Ioc;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.Drawing.Printing;
 using System.IO;
+using System.IO.Packaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace ModuleMeasuring.ViewModels
 {
@@ -32,10 +38,12 @@ namespace ModuleMeasuring.ViewModels
             DeleteFileCommand = new ActionCommand(onDeleteFileExecuted, onDeleteFileCanExecute);
             AddFileCommand = new ActionCommand(onAddFileExecuted, onAddFileCanExecute);
             AddZngCommand = new ActionCommand(onAddZngExecuted, onAddZngCanExecute);
+            ConvertToPdfCommand = new ActionCommand(onConvertToPdfExecuted, onConvertToPdfCanExecute);
             LoadData();
             FirstPartInfo = new MeasureFirstPartInfo(_container);
             VmpbInfo = new VmpbDocumentInfo(_container);
             MeasureInfo = new MeasureDocumentInfo(_container);
+
         }
 
         IContainerExtension _container;
@@ -45,6 +53,7 @@ namespace ModuleMeasuring.ViewModels
         public ICommand? DeleteFileCommand { get; private set; }
         public ICommand? AddFileCommand { get; private set; }
         public ICommand? AddZngCommand { get; private set; }
+        public ICommand? ConvertToPdfCommand { get; private set; }
         private List<OrderRb> _orders;
         public ICollectionView OrderList { get { return orderViewSource.View; } }
         private CollectionViewSource orderViewSource { get; } = new();
@@ -138,6 +147,42 @@ namespace ModuleMeasuring.ViewModels
             {
                 MessageBox.Show(ex.Message, "Raster Copy", MessageBoxButton.OK);
             }
+        }
+        private bool onConvertToPdfCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void onConvertToPdfExecuted(object obj)
+        {
+            var source = Package.Open(@"test.docx");
+            var document = WordprocessingDocument.Open(source);
+            HtmlConverterSettings settings = new HtmlConverterSettings();
+            XElement html = HtmlConverter.ConvertToHtml(document, settings);
+
+            Console.WriteLine(html.ToString());
+            var writer = File.CreateText("test.html");
+            writer.WriteLine(html.ToString());
+            writer.Dispose();
+            Console.ReadLine();
+
+            //var doc = new HtmlToPdfDocument()
+            //{
+            //            GlobalSettings = {
+            //    ColorMode = ColorMode.Color,
+            //    Orientation = Orientation.Landscape,
+            //    PaperSize = PaperKind.A4,
+            //    },
+            //            Objects = {
+            //    new ObjectSettings() {
+            //        PagesCount = true,
+            //        HtmlContent = File.ReadAllText(@"C:\TFS\Sandbox\Open-Xml-PowerTools-abfbaac510d0d60e2f492503c60ef897247716cf\ToolsTest\test1.html"),
+            //        WebSettings = { DefaultEncoding = "utf-8" },
+            //        HeaderSettings = { FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
+            //        FooterSettings = { FontSize = 9, Right = "Page [page] of [toPage]" }
+            //    }
+            //}
+            //};
         }
         private bool onAddFileCanExecute(object arg)
         {

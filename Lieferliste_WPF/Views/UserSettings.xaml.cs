@@ -34,25 +34,32 @@ namespace Lieferliste_WPF.Views
         {
             try
             {
+                TextBox testbox = (TextBox)FindName("TestBox");
+                TextBox RegExBox = (TextBox)FindName("RegExBox");
                 RegExBox.Foreground = Brushes.Black;
-                if (TestBox != null)
+                if (testbox != null)
                 {
                     if (string.IsNullOrEmpty(RegExBox.Text) == false)
                     {
                         var regex = new Regex(RegExBox.Text);
-                        if (regex.IsMatch(TestBox.Text))
+                        if (regex.IsMatch(testbox.Text))
                         {
-                            TestBox.Background = Brushes.LightGreen;
+                            testbox.Background = Brushes.LightGreen;
                         }
                         else
                         {
-                            TestBox.Background = Brushes.White;
+                            testbox.Background = Brushes.White;
                         }
                     }
-                    else TestBox.Background = Brushes.White;
+                    else testbox.Background = Brushes.White;
                 }
             }
-            catch (RegexParseException) { RegExBox.Foreground = Brushes.Red; TestBox.Background = Brushes.White; }
+            catch (RegexParseException)
+            {
+                TextBox testbox = (TextBox)FindName("TestBox");
+                TextBox RegExBox = (TextBox)FindName("RegExBox");
+                RegExBox.Foreground = Brushes.Red; testbox.Background = Brushes.White;
+            }
             catch (System.Exception)
             {
                 throw;
