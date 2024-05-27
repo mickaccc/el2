@@ -155,13 +155,22 @@ namespace ModuleMeasuring.ViewModels
 
         private void onConvertToPdfExecuted(object obj)
         {
-            var source = Package.Open(@"test.docx");
+            // Spire.doc
+
+            //Spire.Doc.Document document = new Spire.Doc.Document();
+            var doc = VmpbInfo.GetDocument();
+            //document.LoadFromFile(doc[DocumentPart.File]);
+            //var targ = doc[DocumentPart.File].Replace(".dotx", ".pdf");
+            //document.SaveToFile(targ, Spire.Doc.FileFormat.PDF);
+
+
+            var source = Package.Open(doc[DocumentPart.File]);
             var document = WordprocessingDocument.Open(source);
             HtmlConverterSettings settings = new HtmlConverterSettings();
             XElement html = HtmlConverter.ConvertToHtml(document, settings);
 
             Console.WriteLine(html.ToString());
-            var writer = File.CreateText("test.html");
+            var writer = File.CreateText(doc[DocumentPart.File].Replace(".dotx", ".html"));
             writer.WriteLine(html.ToString());
             writer.Dispose();
             Console.ReadLine();
