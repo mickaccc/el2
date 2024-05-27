@@ -611,6 +611,7 @@ namespace Lieferliste_WPF.ViewModels
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 await transaction.CommitAsync();
+                _Logger.LogInformation("Startup {user}-{pc}", [UserInfo.User.UserIdent, UserInfo.PC]);
             }
             catch (Exception e)
             {
