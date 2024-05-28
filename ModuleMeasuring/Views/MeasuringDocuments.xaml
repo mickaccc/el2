@@ -39,8 +39,6 @@
             <Button Content="Vmpb_406" Command="{Binding VmpbCommand}"
                     CommandParameter="size3"
                     Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-            <Button Content="Pdf erzeugen" Command="{Binding  ConvertToPdfCommand}"
-                    Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
 
         <dotnetkit:AutoCompleteComboBox Grid.Column="1"

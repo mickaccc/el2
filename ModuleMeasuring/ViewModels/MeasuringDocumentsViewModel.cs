@@ -6,6 +6,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using OpenXmlPowerTools;
 using Prism.Ioc;
 using System.Collections.ObjectModel;
@@ -32,6 +33,9 @@ namespace ModuleMeasuring.ViewModels
         public MeasuringDocumentsViewModel(IContainerExtension container)
         {
             _container = container;
+            var factory = container.Resolve<ILoggerFactory>();
+            _logger = factory.CreateLogger<MeasuringDocumentsViewModel>();
+
             VmpbCommand = new ActionCommand(onVmpbExecuted, onVmpbCanExecute);
             PruefDataCommand = new ActionCommand(onPruefExecuted, onPruefCanExecute);
             OpenFileCommand = new ActionCommand(onOpenFileExecuted, onOpenFileCanExecute);
@@ -47,6 +51,8 @@ namespace ModuleMeasuring.ViewModels
         }
 
         IContainerExtension _container;
+        private ILogger _logger;
+
         public ICommand? VmpbCommand { get; private set; }
         public ICommand? PruefDataCommand { get; private set; }
         public ICommand? OpenFileCommand { get; private set; }
@@ -145,6 +151,7 @@ namespace ModuleMeasuring.ViewModels
             }
             catch (Exception ex)
             {
+                _logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "Raster Copy", MessageBoxButton.OK);
             }
         }
@@ -170,7 +177,7 @@ namespace ModuleMeasuring.ViewModels
             XElement html = HtmlConverter.ConvertToHtml(document, settings);
 
             Console.WriteLine(html.ToString());
-            var writer = File.CreateText(doc[DocumentPart.File].Replace(".dotx", ".html"));
+            var writer = File.CreateText(doc[DocumentPart.File].Replace(".docx", ".html"));
             writer.WriteLine(html.ToString());
             writer.Dispose();
             Console.ReadLine();
@@ -326,6 +333,7 @@ namespace ModuleMeasuring.ViewModels
             }
             catch (Exception ex)
             {
+                _logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "Delete File", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -403,10 +411,12 @@ namespace ModuleMeasuring.ViewModels
             }
             catch (NotImplementedException)
             {
+                _logger.LogWarning("{message}", "No Template definition");
                 MessageBox.Show("Keine Vorlage definiert", "Vormusterprüfbericht", MessageBoxButton.OK);
             }
             catch (Exception ex)
             {
+                _logger.LogWarning("{message}", ex);
                 MessageBox.Show(ex.Message, "Error Vmpb", MessageBoxButton.OK, MessageBoxImage.Error);
             }
  

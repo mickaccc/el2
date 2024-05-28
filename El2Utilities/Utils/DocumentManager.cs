@@ -188,7 +188,7 @@ namespace El2Core.Utils
                 document[DocumentPart.File] = Path.Combine(
                     document[DocumentPart.RootPath],
                     document[DocumentPart.SavePath],
-                    folders[0] + "_VMPB.dotx"); 
+                    folders[0] + "_VMPB.docx"); 
             }
 
             return document;

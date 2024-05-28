@@ -7,6 +7,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
@@ -76,7 +77,7 @@ namespace ModulePlanning.ViewModels
                 }
             }
         }
-
+        private ILogger _Logger;
         private int _currentWorkArea;
         private string? _searchFilterText;
         private readonly object _lock = new();
@@ -87,6 +88,9 @@ namespace ModulePlanning.ViewModels
         public MachinePlanViewModel(IContainerExtension container, IApplicationCommands applicationCommands, IEventAggregator ea, IUserSettingsService settingsService)
         {
             _container = container;
+            var loggerFactory = _container.Resolve<ILoggerFactory>();
+            _Logger = loggerFactory.CreateLogger<MachinePlanViewModel>();
+
             _applicationCommands = applicationCommands;
             _ea = ea;
             _settingsService = settingsService;

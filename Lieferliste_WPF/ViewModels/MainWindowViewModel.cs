@@ -9,6 +9,7 @@ using log4net.Repository.Hierarchy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic.Logging;
 using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
@@ -111,53 +112,63 @@ namespace Lieferliste_WPF.ViewModels
             IEventAggregator ea,
             IUserSettingsService settingsService)
         {
-            _regionmanager = regionManager;
-            _container = container;
-            _applicationCommands = applicationCommands;
-            _dialogService = dialogService;
-            _ea = ea;
-            _settingsService = settingsService;
-            var loggerFactory = _container.Resolve<Microsoft.Extensions.Logging.ILoggerFactory>();
-            loggerFactory.AddLog4Net("Log4Net.config");
-            log4net.Config.XmlConfigurator.Configure();
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnloadApp;
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+            try
+            {
+                _regionmanager = regionManager;
+                _container = container;
+                _applicationCommands = applicationCommands;
+                _dialogService = dialogService;
+                _ea = ea;
+                _settingsService = settingsService;
+                var loggerFactory = _container.Resolve<Microsoft.Extensions.Logging.ILoggerFactory>();
+                loggerFactory.AddLog4Net();
+                log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config"));
 
-            _Logger = loggerFactory.CreateLogger<MainWindowViewModel>();
+                _Logger = loggerFactory.CreateLogger<MainWindowViewModel>();
 
-            _ = RegisterMe();
-            SetTimer();
-            SetMsgDBTimer();
-            TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
-            CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
-            _applicationCommands.CloseCommand.RegisterCommand(CloseCommand);
-            ExplorerCommand = new ActionCommand(OnOpenExplorerExecuted, OnOpenExplorerCanExecute);
-            _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
-            OpenOrderCommand = new ActionCommand(OnOpenOrderExecuted, OnOpenOrderCanExecute);
-            _applicationCommands.OpenOrderCommand.RegisterCommand(OpenOrderCommand);
-            ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
-            _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
-            OpenProjectOverViewCommand = new ActionCommand(OnOpenProjectOverViewExecuted, OnOpenProjectOverViewCanExecute);
-            _applicationCommands.OpenProjectOverViewCommand.RegisterCommand(OpenProjectOverViewCommand);
-            MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
-            _applicationCommands.MachinePrintCommand.RegisterCommand(MachinePrintCommand);
+                _ = RegisterMe();
+                SetTimer();
+                SetMsgDBTimer();
+                TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
+                CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
+                _applicationCommands.CloseCommand.RegisterCommand(CloseCommand);
+                ExplorerCommand = new ActionCommand(OnOpenExplorerExecuted, OnOpenExplorerCanExecute);
+                _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
+                OpenOrderCommand = new ActionCommand(OnOpenOrderExecuted, OnOpenOrderCanExecute);
+                _applicationCommands.OpenOrderCommand.RegisterCommand(OpenOrderCommand);
+                ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
+                _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
+                OpenProjectOverViewCommand = new ActionCommand(OnOpenProjectOverViewExecuted, OnOpenProjectOverViewCanExecute);
+                _applicationCommands.OpenProjectOverViewCommand.RegisterCommand(OpenProjectOverViewCommand);
+                MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
+                _applicationCommands.MachinePrintCommand.RegisterCommand(MachinePrintCommand);
 
-            OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
-            OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
-            OpenUserMgmtCommand = new ActionCommand(OnOpenUserMgmtExecuted, OnOpenUserMgmtCanExecute);
-            OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
-            OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
-            OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
-            OpenArchiveCommand = new ActionCommand(OnOpenArchiveExecuted, OnOpenArchiveCanExecute);
-            OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
-            OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
-            OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
-            OpenHolidayCommand = new ActionCommand(OnOpenHolidayExecuted, OnOpenHolidayCanExecute);
-            OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
-            OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
+                OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
+                OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
+                OpenUserMgmtCommand = new ActionCommand(OnOpenUserMgmtExecuted, OnOpenUserMgmtCanExecute);
+                OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
+                OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
+                OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
+                OpenArchiveCommand = new ActionCommand(OnOpenArchiveExecuted, OnOpenArchiveCanExecute);
+                OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
+                OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
+                OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
+                OpenHolidayCommand = new ActionCommand(OnOpenHolidayExecuted, OnOpenHolidayCanExecute);
+                OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
+                OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
 
-            _workareaDocumentInfo = new WorkareaDocumentInfo(container);
-            //DbOperations();
+                _workareaDocumentInfo = new WorkareaDocumentInfo(container);
+                //DbOperations();
+            }
+            catch (Exception ex)
+            {
+                _Logger?.LogError("{message}", ex);
+                MessageBox.Show(ex.ToString());
+            }
         }
-
 
         #region Commands
         private bool OnOpenMeasureOperCanExecute(object arg)
@@ -619,15 +630,33 @@ namespace Lieferliste_WPF.ViewModels
                 _Logger.LogError(e.ToString());
             }
         }
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            // Log unhandled exceptions
+            if (e.ExceptionObject is Exception ex)
+            {
+                _Logger.LogCritical("Unhandled exception: {message}", ex);
+            }
+            else
+            {
+                _Logger.LogCritical("Unhandled non-exception object: {message}", e.ExceptionObject);
+            }
+        }
+        private void CurrentDomain_DomainUnloadApp(object? sender, EventArgs e)
+        {
+            _Logger.LogInformation("DomainUnLoad");
+        }
+        private void CurrentDomain_ProcessExit(object? sender, EventArgs e)
+        {
+            _Logger.LogInformation("ProcessExit");
+        }
         private void DbOperations()
         {
                 //var pcont = new PersonalFilterContainer();
                 //var filt = new PersonalFilter("^F", PropertyNames.Auftragsnummer);
                 //pcont.Add("name", filt);
                 //var res = filt.TestValue(new Vorgang() { Aid = "f2100", BemM = "V" });
-            
-
-           
+                     
         }
 
     }
