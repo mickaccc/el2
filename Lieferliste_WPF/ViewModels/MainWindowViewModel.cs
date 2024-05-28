@@ -5,11 +5,9 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
-using log4net.Repository.Hierarchy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualBasic.Logging;
 using ModulePlanning.Planning;
 using Prism.Events;
 using Prism.Ioc;
@@ -21,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Printing;
+using System.Reflection;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,7 +33,6 @@ namespace Lieferliste_WPF.ViewModels
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public class MainWindowViewModel : ViewModelBase
     {
-
         public ICommand OpenMachinePlanCommand { get; private set; }
         public ICommand OpenLieferlisteCommand { get; private set; }
         public ICommand OpenSettingsCommand { get; private set; }
@@ -622,11 +620,10 @@ namespace Lieferliste_WPF.ViewModels
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 await transaction.CommitAsync();
-                _Logger.LogInformation("Startup {user}-{pc}", [UserInfo.User.UserIdent, UserInfo.PC]);
+                _Logger.LogInformation("Startup {user}-{pc}--{version}", [UserInfo.User.UserIdent, UserInfo.PC, Assembly.GetExecutingAssembly().GetName().Version]);
             }
             catch (Exception e)
-            {
-                
+            {              
                 _Logger.LogError(e.ToString());
             }
         }
@@ -648,7 +645,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void CurrentDomain_ProcessExit(object? sender, EventArgs e)
         {
-            _Logger.LogInformation("ProcessExit");
+            _Logger.LogInformation("ProcessExit: {pc}", UserInfo.PC);
         }
         private void DbOperations()
         {
