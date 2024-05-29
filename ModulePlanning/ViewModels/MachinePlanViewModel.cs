@@ -249,14 +249,18 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                lock (_lock)
+                if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
                 {
-                    if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
+                    lock (_lock)
+                    {
+                        if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "AutoSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
+                _Logger.LogError("{message}", ex.ToString());
             }
         }
 

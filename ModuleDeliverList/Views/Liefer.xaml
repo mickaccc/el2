@@ -42,6 +42,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="true">
                                 <Setter TargetName="_Border" Property="Background" Value="LightBlue"/>
+                                
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

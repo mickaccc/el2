@@ -1,10 +1,4 @@
-﻿using ControlzEx.Theming;
-using MahApps.Metro.Theming;
-using System;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Threading;
+﻿using System.Windows;
 
 namespace Lieferliste_WPF
 {
@@ -64,6 +58,7 @@ namespace Lieferliste_WPF
             //ThemeManager.Current.AddTheme(new Theme("DarkOrange", "DarkOrange", "Dark", "Orange", Colors.Orange, Brushes.Orange, true, false));
             //ThemeManager.Current.AddTheme(new Theme("DarkSeaGreen", "DarkSeaGreen", "Dark", "SeaGreen", Colors.SeaGreen, Brushes.SeaGreen, true, false));
 
+            
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();
         }

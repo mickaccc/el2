@@ -140,14 +140,17 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <DataTemplate.Resources>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Background" Value="{StaticResource ValueBackground}"/>
-                                <Setter Property="Margin" Value="1"/>
-    
-                            </Style>
+
                         <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource MahApps.Styles.GroupBox}">
                             <Setter Property="Width" Value="150"/>
                         </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Background" Value="Bisque"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Padding" Value="2"/>
+                            <Setter Property="Margin" Value="1"/>
+                        </Style>
+ 
                         </DataTemplate.Resources>
                     <Border BorderThickness="4" CornerRadius="10" Name="ItemBorder" BorderBrush="{Binding Aktuell, 
                             Converter={StaticResource active}}">

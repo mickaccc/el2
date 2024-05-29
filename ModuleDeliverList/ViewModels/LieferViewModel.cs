@@ -751,31 +751,32 @@ namespace ModuleDeliverList.ViewModels
                                 }
 
                             }
-                            if (relev)
+                        }
+                        if (relev)
+                        {
+                            foreach (var vorg in group)
                             {
-                                foreach (var vorg in group)
+                                if (vorg.AidNavigation.ProId != null)
                                 {
-                                    if (vorg.AidNavigation.ProId != null)
-                                    {
-                                        var p = vorg.AidNavigation.Pro;
-                                        if (p != null)
-                                            pl.Add(new(p.ProjectPsp.Trim(), (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
-                                    }
+                                    var p = vorg.AidNavigation.Pro;
+                                    if (p != null)
+                                        pl.Add(new(p.ProjectPsp.Trim(), (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
+                                }
 
-                                    if (vorg.Aktuell)
+                                if (vorg.Aktuell)
+                                {
+                                    result.Add(vorg);
+                                    var inv = (vorg.ArbPlSap != null) ? vorg.ArbPlSap[3..] : string.Empty;
+                                    var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
+                                    if (z != null)
                                     {
-                                        result.Add(vorg);
-                                        var inv = (vorg.ArbPlSap != null) ? vorg.ArbPlSap[3..] : string.Empty;
-                                        var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
-                                        if (z != null)
-                                        {
-                                            if (!_sections.Keys.Contains(z.Sort) && z.Bereich != null)
-                                                _sections.Add(z.Sort, z.Bereich);
-                                        }
+                                        if (!_sections.Keys.Contains(z.Sort) && z.Bereich != null)
+                                            _sections.Add(z.Sort, z.Bereich);
                                     }
                                 }
                             }
                         }
+                        
                         relev = false;
                                                
                     }

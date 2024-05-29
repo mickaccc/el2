@@ -47,8 +47,6 @@ namespace Lieferliste_WPF
         }
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-
-
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
