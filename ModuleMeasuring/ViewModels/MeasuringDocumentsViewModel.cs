@@ -48,7 +48,17 @@ namespace ModuleMeasuring.ViewModels
             VmpbInfo = new VmpbDocumentInfo(_container);
             MeasureInfo = new MeasureDocumentInfo(_container);
 
+            _watcherFirst.Filter = "*.*";
+            _watcherFirst.NotifyFilter = NotifyFilters.LastWrite;
+            _watcherFirst.Changed += OnChanged;
+            _watcherVmpb.Filter = "*.*";
+            _watcherVmpb.NotifyFilter = NotifyFilters.LastWrite;
+            _watcherVmpb.Changed += OnChanged;
+            _watcherPart.Filter = "*.*";
+            _watcherPart.NotifyFilter = NotifyFilters.LastWrite;
+            _watcherPart.Changed += OnChanged;
         }
+
 
         IContainerExtension _container;
         private ILogger _logger;
@@ -69,6 +79,9 @@ namespace ModuleMeasuring.ViewModels
         public ICollectionView VmpbDocumentItems { get; private set; }
         private ObservableCollection<DocumentDisplay> _PartDocumentItems = [];
         public ICollectionView PartDocumentItems { get; private set; }
+        private FileSystemWatcher _watcherPart = new();
+        private FileSystemWatcher _watcherVmpb = new();
+        private FileSystemWatcher _watcherFirst = new();
         private OrderRb _SelectedItem;
 
         public OrderRb SelectedItem
@@ -119,6 +132,10 @@ namespace ModuleMeasuring.ViewModels
             FirstDocumentItems = CollectionViewSource.GetDefaultView(_FirstDocumentItems);
             VmpbDocumentItems = CollectionViewSource.GetDefaultView(_VmpbDocumentItems);
             PartDocumentItems = CollectionViewSource.GetDefaultView(_PartDocumentItems);
+        }
+        private void OnChanged(object sender, FileSystemEventArgs e)
+        {
+
         }
         private bool onAddZngCanExecute(object arg)
         {

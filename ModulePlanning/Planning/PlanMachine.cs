@@ -7,6 +7,7 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ModulePlanning.Specials;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
@@ -89,6 +90,7 @@ namespace ModulePlanning.Planning
             LoadData(ressource);
             CalculateEndTime();
             ProcessesCV.Refresh();
+
         }
 
         #endregion
@@ -228,18 +230,38 @@ namespace ModulePlanning.Planning
         private void CalculateEndTime()
         {
             using var processService = _container.Resolve<ProcessStripeService>();
+            var s = new ShiftPlan(Rid, _container);
             DateTime start = DateTime.Now;
             foreach(var p in Processes)
             {
-                TimeSpan length;
-                var end = processService.GetProcessLength(p, start, out length);
-                if (length.TotalMinutes == 0) p.Extends = "---";
-                    else p.Extends = string.Format("({0}){1:N2}h \n{2}",p.QuantityMissNeo, length.TotalHours, end.ToString("dd.MM.yy - HH:mm"));
-                start = end;
+                var dur = GetProcessDuration(p);
+
+                var l = s.GetEndDateTime(dur, start);
+                var diff = l.Subtract(start);
+
+                //var end = processService.GetProcessLength(p, start, out length);
+                if (diff.TotalMinutes == 0) p.Extends = "---";
+                    else p.Extends = string.Format("({0}){1:N2}h \n{2}",p.QuantityMissNeo, diff.TotalHours, l.ToString("dd.MM.yy - HH:mm"));
+                start = l;
             }
         }
+        private double GetProcessDuration(Vorgang vorgang)
+        {
+            double duration = 0.0;
+            var r = vorgang.Rstze == null ? 0.0 : (short)vorgang.Rstze; //Setup time
+            var c = vorgang.Correction == null ? 0.0 : (short)vorgang.Correction; //correction time
+            if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0.0) //if have Total quantity
+            {
+                //calculation of the currently required time
+                var procT = vorgang.Beaze == null ? 0.0 : (short)vorgang.Beaze;
+                var quant = (short)vorgang.AidNavigation.Quantity;
+                var miss = vorgang.QuantityMissNeo == null ? 0.0 : (short)vorgang.QuantityMissNeo;
+                duration = procT / quant * miss + r + c;
 
-        private void MessageSearchFilterReceived(string obj)
+            }
+            return duration;
+        }
+                private void MessageSearchFilterReceived(string obj)
         {
             var ind = Processes?.LastOrDefault(x => x.Aid.Equals(obj));
             if (ind == null) ind = Processes?.LastOrDefault(x => x.AidNavigation?.Material?.Equals(obj) ?? false);

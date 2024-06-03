@@ -43,6 +43,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<Rule> Rules { get; set; }
 
+    public virtual DbSet<ShiftPlanDb> ShiftPlanDbs { get; set; }
+
     public virtual DbSet<TblDummy> TblDummies { get; set; }
 
     public virtual DbSet<TblMaterial> TblMaterials { get; set; }
@@ -282,6 +284,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .IsRequired()
                 .HasDefaultValueSql("((1))");
 
+            entity.HasOne(d => d.ShiftPlan).WithMany(p => p.Ressources)
+                .HasForeignKey(d => d.ShiftPlanId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Ressource_ShiftPlanDb");
+
             entity.HasOne(d => d.WorkArea).WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.WorkAreaId)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -365,6 +372,20 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.RuleValue)
                 .HasMaxLength(50)
                 .IsFixedLength();
+        });
+
+        modelBuilder.Entity<ShiftPlanDb>(entity =>
+        {
+            entity.HasKey(e => e.Planid);
+
+            entity.ToTable("ShiftPlanDb");
+
+            entity.HasIndex(e => e.ShiftName, "NonClusteredIndex-20240603-193252").IsUnique();
+
+            entity.Property(e => e.Planid).HasColumnName("planid");
+            entity.Property(e => e.ShiftName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<TblDummy>(entity =>
