@@ -624,7 +624,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception e)
             {              
-                _Logger.LogError(e.ToString());
+                _Logger.LogError("{message}", e.ToString());
             }
         }
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
