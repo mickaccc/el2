@@ -97,7 +97,7 @@
             </Label>
             <Grid DockPanel.Dock="Left">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40*" MaxWidth="60"/>
+                    <ColumnDefinition Width="90*" MaxWidth="150"/>
                     <ColumnDefinition Width="100*"/>
                     <ColumnDefinition Width="80*"/>
                 </Grid.ColumnDefinitions>
@@ -105,14 +105,21 @@
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="40"/>
                 </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.RowSpan="2">
             <Button
-                ToolTip="Drucken" Grid.RowSpan="2"
+                ToolTip="Drucken" 
                 Command="{Binding ApplicationCommands.MachinePrintCommand}"
                 CommandParameter="{Binding PlanMachine}"
                 Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
                     <iconpack:BootstrapIcons Kind="Printer"  Width="30" Height="30"/>
             </Button>
-
+                <Button
+                ToolTip="neu berechnen"  Margin="10"
+                Command="{Binding PlanMachine.NewCalculateCommand}"
+                Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
+                    <iconpack:BootstrapIcons Kind="CalculatorFill" Width="30" Height="30" />
+            </Button>
+                </StackPanel>
                 <TextBox Text="{Binding PlanMachine.Name}" Grid.Column="1" FontSize="30" FontWeight="SemiBold" Background="Transparent"
                          IsReadOnly="{Binding Converter={StaticResource permiss},ConverterParameter={x:Static const:Permissions.MachRenameInvers}}"/>
 

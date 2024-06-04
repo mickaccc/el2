@@ -105,6 +105,7 @@ namespace ModulePlanning.Planning
         public ICommand? HistoryCommand { get; private set; }
         public ICommand? FastCopyCommand { get; private set; }
         public ICommand? CorrectionCommand { get; private set; }
+        public ICommand? NewCalculateCommand { get; private set; }
         private ILogger _logger;
         private static readonly object _lock = new();
         private HashSet<string> ImChanged = [];
@@ -250,6 +251,7 @@ namespace ModulePlanning.Planning
             HistoryCommand = new ActionCommand(OnHistoryExecuted, OnHistoryCanExecute);
             FastCopyCommand = new ActionCommand(OnFastCopyExecuted, OnFastCopyCanExecute);
             CorrectionCommand = new ActionCommand(OnCorrectionExecuted, OnCorrectionCanExecute);
+            NewCalculateCommand = new ActionCommand(OnCalculateExecuted, OnCalculateCanExecute);
             
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
@@ -257,8 +259,10 @@ namespace ModulePlanning.Planning
             EnableRowDetails = _settingsService.IsRowDetails;
         }
 
+
         private void CalculateEndTime()
         {
+            if (_SelectedRadioButton == 0) return;
             var s = new ShiftPlan(Rid, _container);
             DateTime start = DateTime.Now;
             foreach(var p in Processes.OrderBy(x => x.SortPos))
@@ -271,6 +275,7 @@ namespace ModulePlanning.Planning
                 if (diff.TotalMinutes == 0) p.Extends = "---";
                     else p.Extends = string.Format("({0}){1:N2}h \n{2}",p.QuantityMissNeo, diff.TotalHours, l.ToString("dd.MM.yy - HH:mm"));
                 start = l;
+                p.RunPropertyChanged();
             }
         }
         private double GetProcessDuration(Vorgang vorgang)
@@ -378,7 +383,15 @@ namespace ModulePlanning.Planning
             }
             
         }
+        private bool OnCalculateCanExecute(object arg)
+        {
+            return _SelectedRadioButton != 0;
+        }
 
+        private void OnCalculateExecuted(object obj)
+        {
+            CalculateEndTime();
+        }
         private bool OnCorrectionCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Correction);

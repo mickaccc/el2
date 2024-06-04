@@ -101,11 +101,11 @@ namespace El2Core.Utils
     public class HolidayLogic : IHolidayLogic 
     {
         IContainerExtension _container;
-        private Dictionary<DateOnly, Holiday> holydays;
+        private FrozenDictionary<DateOnly, Holiday> holydays;
         private int year;
         private String? locale;
 
-        internal Dictionary<DateOnly, Holiday> Holidays { get { return holydays; } }
+        internal FrozenDictionary<DateOnly, Holiday> Holidays { get { return holydays; } }
         /// <summary>
         /// Beschreibung: 
         /// </summary>
@@ -122,7 +122,7 @@ namespace El2Core.Utils
 
         public bool IsHolyday(DateTime value)
         {
-            return holydays.Keys.Any(x => x.Equals(value.Date));
+            return holydays.Keys.Contains(DateOnly.FromDateTime(value));
         }
 
         public string? GetHolydayName(DateTime Datevalue)
@@ -171,7 +171,7 @@ namespace El2Core.Utils
                     }
                 }
             }
-            holydays = dict;
+            holydays = dict.ToFrozenDictionary();
 
             #endregion
         }

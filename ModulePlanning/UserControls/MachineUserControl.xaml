@@ -267,19 +267,18 @@
                     <Border>
                         <ListBox ItemsSource="{Binding ShiftPlans}"
                                  SelectedValuePath="Key"
-                                 SelectedValue="{Binding SelectedRadioButton, Mode=TwoWay}"
-                                 >
+                                 SelectedValue="{Binding SelectedRadioButton, Mode=TwoWay}">
                             <ListBox.Resources>
                                 <Style TargetType="{x:Type ListBoxItem}">
-                                    
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate>
-                                                <RadioButton
-                                Content="{TemplateBinding ContentPresenter.Content}"
-                                IsChecked="{Binding Path=IsSelected,
-                                RelativeSource={RelativeSource TemplatedParent},
-                                Mode=TwoWay}" Background="Cyan" />
+                                                <RadioButton                              
+                                                        IsChecked="{Binding Path=IsSelected,
+                                                        RelativeSource={RelativeSource TemplatedParent},
+                                                        Mode=TwoWay}" Background="Cyan">
+                                                    <ContentPresenter Content="{Binding Value}" />
+                                                </RadioButton>
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>
