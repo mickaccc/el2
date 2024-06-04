@@ -27,11 +27,15 @@ public partial class Ressource
 
     public bool? ProcessAddable { get; set; }
 
+    public int? ShiftPlanId { get; set; }
+
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
     public virtual ICollection<RessourceUser> RessourceUsers { get; set; } = new List<RessourceUser>();
 
     public virtual ICollection<RessourceWorkshift> RessourceWorkshifts { get; set; } = new List<RessourceWorkshift>();
+
+    public virtual ShiftPlanDb? ShiftPlan { get; set; }
 
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 
