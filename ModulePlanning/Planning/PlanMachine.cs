@@ -6,15 +6,15 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using ModulePlanning.Specials;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Services.Dialogs;
 using System.Collections;
-using System.Collections.Frozen;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Microsoft.Extensions.Logging;
+using System.IO;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -85,10 +85,12 @@ namespace ModulePlanning.Planning
             _eventAggregator = eventAggregator;
             _settingsService = settingsService;
             _dialogService = dialogService;
+  
             Setup = settingsService.PlanedSetup;
             Initialize();
             LoadData(ressource);
-            CalculateEndTime();
+            if(SelectedRadioButton != 0)
+                CalculateEndTime();
             ProcessesCV.Refresh();
 
         }
@@ -114,7 +116,7 @@ namespace ModulePlanning.Planning
         public int Rid => _rId;
         private string? _name;
         public string? Name { get { return _name; }
-            set { if(_name != value)
+            set { if (_name != value)
                 {
                     _name = value;
                     NotifyPropertyChanged(() => Name);
@@ -123,7 +125,7 @@ namespace ModulePlanning.Planning
         }
         private string? _description;
         public string? Description { get { return _description; }
-            set { if(_description != value)
+            set { if (_description != value)
                 {
                     _description = value;
                     NotifyPropertyChanged(() => Description);
@@ -136,10 +138,40 @@ namespace ModulePlanning.Planning
             get { return _isAdmin; }
             set
             {
-                if(_isAdmin != value)
+                if (_isAdmin != value)
                 {
                     _isAdmin = value;
                     NotifyPropertyChanged(() => IsAdmin);
+                }
+            }
+        }
+        public enum ShiftButtons
+        {
+            [Description("1 Schicht (5:00-13:309")]
+            Shift1 = 1,
+            [Description("1 Schicht (6:00-14:30)")]
+            Shift2 = 2,
+            [Description("2 Schicht")]
+            Shift3 = 4,
+            [Description("3 Schicht")]
+            Shift4 = 6,
+            [Description("keine")]
+            None = 0
+        }
+        private Dictionary<int, string> _ShiftPlans = [];
+        public Dictionary<int, string> ShiftPlans => _ShiftPlans;
+        private int _SelectedRadioButton;
+        public int SelectedRadioButton
+        {
+            get { return _SelectedRadioButton; }
+            set
+            {
+                if (value != _SelectedRadioButton)
+                {
+                    _SelectedRadioButton = value;
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    db.Ressources.First(x => x.RessourceId == _rId).ShiftPlanId = _SelectedRadioButton;
+                    db.SaveChanges();
                 }
             }
         }
@@ -191,6 +223,7 @@ namespace ModulePlanning.Planning
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
             WorkArea = res.WorkArea;
             Name = res.RessName;
+            _SelectedRadioButton = res.ShiftPlanId ??=0;
             _title = res.Inventarnummer ?? string.Empty;
             Vis = res.Visability ??= false;
             Description = res.Info;
@@ -202,14 +235,11 @@ namespace ModulePlanning.Planning
             ProcessesCVSource.LiveSortingProperties.Add("SortPos");
  
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var sh = db.WorkShifts
-                .Include(x => x.RessourceWorkshifts)
-                .ToFrozenSet();
-            foreach(var e in sh)
+
+            foreach(var s in db.ShiftPlanDbs.OrderBy(x => x.Planid))
             {
-                _shifts.Add(new ShiftStruct(e, e.RessourceWorkshifts?.Any(x => x.Rid == Rid) ?? false));
+                _ShiftPlans.Add(s.Planid, s.ShiftName);
             }
-            ShiftsView = CollectionViewSource.GetDefaultView(_shifts);
         }
 
         private void Initialize()
@@ -229,17 +259,15 @@ namespace ModulePlanning.Planning
 
         private void CalculateEndTime()
         {
-            using var processService = _container.Resolve<ProcessStripeService>();
             var s = new ShiftPlan(Rid, _container);
             DateTime start = DateTime.Now;
-            foreach(var p in Processes)
+            foreach(var p in Processes.OrderBy(x => x.SortPos))
             {
                 var dur = GetProcessDuration(p);
 
                 var l = s.GetEndDateTime(dur, start);
                 var diff = l.Subtract(start);
 
-                //var end = processService.GetProcessLength(p, start, out length);
                 if (diff.TotalMinutes == 0) p.Extends = "---";
                     else p.Extends = string.Format("({0}){1:N2}h \n{2}",p.QuantityMissNeo, diff.TotalHours, l.ToString("dd.MM.yy - HH:mm"));
                 start = l;

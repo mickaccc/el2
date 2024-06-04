@@ -24,6 +24,7 @@
         <conv:PermissionConverter x:Key="permiss"/>
         <conv:ScrollIntoViewConverter x:Key="scrollInto"/>
         <conv:BoolRowDetail x:Key="rowDetail"/>
+        <conv:EnumToCollectionConverter x:Key="EnumConv"/>
 
         <DataGrid x:Key="Setup1"  AutoGenerateColumns="False" 
 		  CanUserAddRows="False"
@@ -57,7 +58,7 @@
             </DataGrid.ContextMenu>
             <DataGrid.InputBindings>
                 <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
-					  CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"
+					  CommandParameter="{Binding Path=SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
 					  MouseAction="LeftDoubleClick"/>
             </DataGrid.InputBindings>
 
@@ -146,7 +147,7 @@
             </DataGrid.ContextMenu>
             <DataGrid.InputBindings>
                 <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
-			  CommandParameter="{Binding ElementName=Planed, Path=SelectedItem}"
+			  CommandParameter="{Binding Path=SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
 			  MouseAction="LeftDoubleClick"/>
             </DataGrid.InputBindings>
 
@@ -264,15 +265,27 @@
                 </Canvas>
                 <Popup IsOpen="{Binding Path=IsChecked, ElementName=shiftOpen}" Placement="Mouse" >
                     <Border>
-                        <StackPanel>
-                            <DataGrid ItemsSource="{Binding ShiftsView}" AutoGenerateColumns="False" Background="LemonChiffon">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Path=Shift.ShiftName}" IsReadOnly="True"/>
-                                    <DataGridCheckBoxColumn Header="" Binding="{Binding Path=IsCheck, Mode=TwoWay}"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                            
-                        </StackPanel>
+                        <ListBox ItemsSource="{Binding ShiftPlans}"
+                                 SelectedValuePath="Key"
+                                 SelectedValue="{Binding SelectedRadioButton, Mode=TwoWay}"
+                                 >
+                            <ListBox.Resources>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <RadioButton
+                                Content="{TemplateBinding ContentPresenter.Content}"
+                                IsChecked="{Binding Path=IsSelected,
+                                RelativeSource={RelativeSource TemplatedParent},
+                                Mode=TwoWay}" Background="Cyan" />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Resources>
+                        </ListBox>
                     </Border>
                 </Popup>
 

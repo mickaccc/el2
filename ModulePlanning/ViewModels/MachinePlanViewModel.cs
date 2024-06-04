@@ -198,7 +198,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "OnSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.ToString(), "OnSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

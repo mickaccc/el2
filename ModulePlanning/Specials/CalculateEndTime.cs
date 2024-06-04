@@ -21,6 +21,7 @@ namespace ModulePlanning.Specials
         public ImmutableArray<bool[]> WeekPlan => weekPlan;
         IContainerProvider container;
         private readonly int rid;
+        private HolidayLogic holidayLogic;
 
         public ShiftPlan(int rid, IContainerProvider container)
         {
@@ -52,6 +53,7 @@ namespace ModulePlanning.Specials
 
                 weekPlan = days.ToImmutableArray();
             }
+            holidayLogic = container.Resolve<HolidayLogic>();
         }
         bool[] GetBools(string[] minutes)
         {
@@ -76,23 +78,21 @@ namespace ModulePlanning.Specials
             
             if(weekPlan.IsDefaultOrEmpty || processLength == 0) return start;
             bool[] tmpWeekPlan;
-            var holi = container.Resolve<HolidayLogic>();
             int resultMinute = 0;
             double length = processLength;
             int startDay = (int)start.DayOfWeek;
             TimeSpan time = start.TimeOfDay;
-            if (holi.IsHolyday(start)) { tmpWeekPlan = weekPlan[0]; } else tmpWeekPlan = weekPlan[startDay]; //set the start of the week
+            if (holidayLogic.IsHolyday(start)) { tmpWeekPlan = weekPlan[0]; } else tmpWeekPlan = weekPlan[startDay]; //set the start of the week
  
                 for(int j = (int)time.TotalMinutes; j < tmpWeekPlan.Length; j++)
                 {
                     if (tmpWeekPlan[j]) length--;
                     if (length <= 0) { resultMinute = j; break; }
                 }
-
-            while (holi.IsHolyday(start.AddDays(1))) { start = start.AddDays(1); } //move the start to => tomorrow is not holiday
+            start = start.Date;
+            while (holidayLogic.IsHolyday(start.AddDays(1))) { start = start.AddDays(1); } //move the start to => tomorrow is not holiday
             if (length > 0)
-            {
-                start = start.Date;
+            {               
                 start = GetEndDateTime(length, start.AddDays(1));
             }
             else

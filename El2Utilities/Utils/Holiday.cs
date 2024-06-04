@@ -6,6 +6,7 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -100,11 +101,11 @@ namespace El2Core.Utils
     public class HolidayLogic : IHolidayLogic 
     {
         IContainerExtension _container;
-        private FrozenDictionary<DateOnly, Holiday> holydays;
+        private Dictionary<DateOnly, Holiday> holydays;
         private int year;
         private String? locale;
 
-        internal FrozenDictionary<DateOnly, Holiday> Holidays { get { return holydays; } }
+        internal Dictionary<DateOnly, Holiday> Holidays { get { return holydays; } }
         /// <summary>
         /// Beschreibung: 
         /// </summary>
@@ -121,7 +122,7 @@ namespace El2Core.Utils
 
         public bool IsHolyday(DateTime value)
         {
-            return holydays.ContainsKey(DateOnly.FromDateTime(value));
+            return holydays.Keys.Any(x => x.Equals(value.Date));
         }
 
         public string? GetHolydayName(DateTime Datevalue)
@@ -170,7 +171,7 @@ namespace El2Core.Utils
                     }
                 }
             }
-            holydays = dict.ToFrozenDictionary();
+            holydays = dict;
 
             #endregion
         }
