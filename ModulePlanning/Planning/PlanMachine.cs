@@ -472,7 +472,7 @@ namespace ModulePlanning.Planning
                     if (name == "Bullet3") desc.Bullet = Brushes.Yellow.ToString();
                     if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
-                    ProcessesCV.Refresh();
+                    desc.RunPropertyChanged();
                 }
             }
             catch (System.Exception e)
