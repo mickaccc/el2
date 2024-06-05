@@ -30,7 +30,6 @@ namespace Lieferliste_WPF.ViewModels
     /// <summary>
     /// Class for the main window's view-model.
     /// </summary>
-        [assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config")]
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public class MainWindowViewModel : ViewModelBase
     {
@@ -124,8 +123,7 @@ namespace Lieferliste_WPF.ViewModels
                 _settingsService = settingsService;
                 var loggerFactory = _container.Resolve<Microsoft.Extensions.Logging.ILoggerFactory>();
                 loggerFactory.AddLog4Net();
-                log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config"));
-
+               
                 _Logger = loggerFactory.CreateLogger<MainWindowViewModel>();
 
                 _ = RegisterMe();

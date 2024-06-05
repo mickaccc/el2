@@ -47,7 +47,7 @@ namespace ModuleDeliverList.ViewModels
         public ActionCommand InvisibilityCommand { get; private set; }
         public string Title { get; } = "Lieferliste";
         public bool HasChange => DBctx.ChangeTracker.HasChanges();
-        private ILogger _logger;
+        private readonly ILogger _Logger;
         private readonly Dictionary<string, string> _filterCriterias = new();
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
@@ -237,7 +237,7 @@ namespace ModuleDeliverList.ViewModels
             DBctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _container = container;
             var factory = _container.Resolve<ILoggerFactory>();
-            _logger = factory.CreateLogger<LieferViewModel>();
+            _Logger = factory.CreateLogger<LieferViewModel>();
             _ea = ea;
             _settingsService = settingsService;
 
@@ -331,7 +331,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError("{message}", ex.ToString());
+                _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "MsgReceivedArchivated", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -367,6 +367,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
+                _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteOrder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -405,7 +406,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError("{message}", ex.ToString());
+                _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "MsgReceivedLieferlisteVorgang", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -456,7 +457,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError("{message}", ex.ToString());
+                _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.ToString(), "Filter Lieferliste", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -501,7 +502,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError("{message}", ex.ToString());
+                _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "AutoSave", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -633,7 +634,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (Exception e)
             {
-                _logger.LogError("{message}", e.ToString());
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(string.Format("{0}\nInnerEx\n{1}",e.Message,e.InnerException), "OnSave Liefer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -645,7 +646,7 @@ namespace ModuleDeliverList.ViewModels
             }
             catch (InvalidOperationException e)
             {
-                _logger.LogError("{message}", e.ToString());
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "CanSave Liefer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;
@@ -805,25 +806,33 @@ namespace ModuleDeliverList.ViewModels
         private bool AddRelevantProcess(string vid)
         {
 
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var vrgAdd = db.Vorgangs
-                .Include(x => x.AidNavigation)
-                .ThenInclude(x => x.MaterialNavigation)
-                .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Include(x => x.RidNavigation)
-                .First(x => x.VorgangId.Trim() == vid);
-
-            if (vrgAdd.ArbPlSap?.Length >= 3)
+            try
             {
-                if (int.TryParse(vrgAdd.ArbPlSap[..3], out int c))
-                    if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
-                    {
-                        _orders.Add(vrgAdd);
-                        return true;
-                    }
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var vrgAdd = db.Vorgangs
+                    .Include(x => x.AidNavigation)
+                    .ThenInclude(x => x.MaterialNavigation)
+                    .Include(x => x.AidNavigation.DummyMatNavigation)
+                    .Include(x => x.RidNavigation)
+                    .First(x => x.VorgangId.Trim() == vid);
+
+                if (vrgAdd.ArbPlSap?.Length >= 3)
+                {
+                    if (int.TryParse(vrgAdd.ArbPlSap[..3], out int c))
+                        if (UserInfo.User.UserCosts.Any(y => y.CostId == c))
+                        {
+                            _orders.Add(vrgAdd);
+                            return true;
+                        }
+                }
+
+                return false;
             }
-            
-            return false;
+            catch (Exception ex)
+            {
+                _Logger.LogError("{message}", ex.ToString());
+                return false;
+            }
         }
         public void Closing()
         {

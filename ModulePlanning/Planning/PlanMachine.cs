@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Text;
 
 
 
@@ -262,44 +263,66 @@ namespace ModulePlanning.Planning
 
         private void CalculateEndTime()
         {
-            if (_SelectedRadioButton == 0) return;
-            var s = new ShiftPlan(Rid, _container);
-            DateTime start = DateTime.Now;
-            foreach(var p in Processes.OrderBy(x => x.SortPos))
+            try
             {
-                var dur = GetProcessDuration(p);
+                if (_SelectedRadioButton == 0) return;
+                var s = new ShiftPlan(Rid, _container);
+                DateTime start = DateTime.Now;
+                foreach (var p in Processes.OrderBy(x => x.SortPos))
+                {
+                    var dur = GetProcessDuration(p);
 
-                var l = s.GetEndDateTime(dur, start);
-                var diff = l.Subtract(start);
+                    var l = s.GetEndDateTime(dur, start);
+                    var diff = l.Subtract(start);
 
-                if (diff.TotalMinutes == 0) p.Extends = "---";
-                    else p.Extends = string.Format("({0}){1:N2}h \n{2}",p.QuantityMissNeo, diff.TotalHours, l.ToString("dd.MM.yy - HH:mm"));
-                start = l;
-                p.RunPropertyChanged();
+                    if (diff.TotalMinutes == 0) p.Extends = "---";
+                    else p.Extends = string.Format("({0}){1:N2}h \n{2}", p.QuantityMissNeo, diff.TotalHours, l.ToString("dd.MM.yy - HH:mm"));
+                    start = l;
+                    p.RunPropertyChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{message}", ex.ToString());
             }
         }
         private double GetProcessDuration(Vorgang vorgang)
         {
-            double duration = 0.0;
-            var r = vorgang.Rstze == null ? 0.0 : (short)vorgang.Rstze; //Setup time
-            var c = vorgang.Correction == null ? 0.0 : (short)vorgang.Correction; //correction time
-            if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0.0) //if have Total quantity
+            try
             {
-                //calculation of the currently required time
-                var procT = vorgang.Beaze == null ? 0.0 : (short)vorgang.Beaze;
-                var quant = (short)vorgang.AidNavigation.Quantity;
-                var miss = vorgang.QuantityMissNeo == null ? 0.0 : (short)vorgang.QuantityMissNeo;
-                duration = procT / quant * miss + r + c;
+                double duration = 0.0;
+                var r = vorgang.Rstze == null ? 0.0 : (short)vorgang.Rstze; //Setup time
+                var c = vorgang.Correction == null ? 0.0 : (short)vorgang.Correction; //correction time
+                if (vorgang.AidNavigation.Quantity != null && vorgang.AidNavigation.Quantity != 0.0) //if have Total quantity
+                {
+                    //calculation of the currently required time
+                    var procT = vorgang.Beaze == null ? 0.0 : (short)vorgang.Beaze;
+                    var quant = (short)vorgang.AidNavigation.Quantity;
+                    var miss = vorgang.QuantityMissNeo == null ? 0.0 : (short)vorgang.QuantityMissNeo;
+                    duration = procT / quant * miss + r + c;
 
+                }
+                return duration;
             }
-            return duration;
+            catch (Exception ex)
+            {
+                _logger.LogError("{message}", ex.ToString());
+                return 0.0;
+            }
         }
-                private void MessageSearchFilterReceived(string obj)
+        private void MessageSearchFilterReceived(string obj)
         {
-            var ind = Processes?.LastOrDefault(x => x.Aid.Equals(obj));
-            if (ind == null) ind = Processes?.LastOrDefault(x => x.AidNavigation?.Material?.Equals(obj) ?? false);
-            if (ind == null) ind = Processes?.LastOrDefault(x => x.AidNavigation?.MaterialNavigation?.Bezeichng?.Equals(obj) ?? false);
-            if (ind != null) ScrollItem = ind;
+            try
+            {
+                var ind = Processes?.LastOrDefault(x => x.Aid.Equals(obj));
+                if (ind == null) ind = Processes?.LastOrDefault(x => x.AidNavigation?.Material?.Equals(obj) ?? false);
+                if (ind == null) ind = Processes?.LastOrDefault(x => x.AidNavigation?.MaterialNavigation?.Bezeichng?.Equals(obj) ?? false);
+                if (ind != null) ScrollItem = ind;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{message}", ex.ToString());
+            }
         }
 
         private void MessageReceived(List<(string, string)?> vorgangIdList)
@@ -427,48 +450,62 @@ namespace ModulePlanning.Planning
 
         private void OnHistoryExecuted(object obj)
         {
-            if(obj is Vorgang vrg)
+            try
             {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var matInfo = db.OrderRbs.AsNoTracking()
-                    .Include(x => x.MaterialNavigation)
-                    .Include(x => x.DummyMatNavigation)
-                    .Include(x => x.Vorgangs)
-                    .Where(x => x.Material == vrg.AidNavigation.Material && x.Aid != vrg.Aid)
-                    .ToList();
+                if (obj is Vorgang vrg)
+                {
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    var matInfo = db.OrderRbs.AsNoTracking()
+                        .Include(x => x.MaterialNavigation)
+                        .Include(x => x.DummyMatNavigation)
+                        .Include(x => x.Vorgangs)
+                        .Where(x => x.Material == vrg.AidNavigation.Material && x.Aid != vrg.Aid)
+                        .ToList();
 
-                if (matInfo != null && matInfo.Count > 0)
-                {
-                    var par = new DialogParameters();
-                    par.Add("orderList", matInfo);
-                    par.Add("VNR", vrg.Vnr);
-                    par.Add("VID", vrg.VorgangId);
-                    _dialogService.Show("HistoryDialog", par, HistoryCallBack);
+                    if (matInfo != null && matInfo.Count > 0)
+                    {
+                        var par = new DialogParameters();
+                        par.Add("orderList", matInfo);
+                        par.Add("VNR", vrg.Vnr);
+                        par.Add("VID", vrg.VorgangId);
+                        _dialogService.Show("HistoryDialog", par, HistoryCallBack);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Keine Einträge vorhanden!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
-                else
-                {
-                    MessageBox.Show("Keine Einträge vorhanden!","Information",MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{message}", ex.ToString());
             }
         }
 
         private void HistoryCallBack(IDialogResult result)
         {
-            if (result.Result == ButtonResult.Yes)
+            try
             {
-                string[] bemt = [];
-                var vid = result.Parameters.GetValue<string>("VID");
-                var bem = result.Parameters.GetValue<string>("Comment");
-                if(bem != null) bemt = bem.Split((char)29);
-                if (bemt.Length > 1)
+                if (result.Result == ButtonResult.Yes)
                 {
-                    var pr = Processes?.First(x => x.VorgangId == vid);
+                    string[] bemt = [];
+                    var vid = result.Parameters.GetValue<string>("VID");
+                    var bem = result.Parameters.GetValue<string>("Comment");
+                    if (bem != null) bemt = bem.Split((char)29);
+                    if (bemt.Length > 1)
                     {
-                        pr.BemT = String.Format("[{0}-{1}]{2}{3}",
-                        UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
-                        pr.RunPropertyChanged();
+                        var pr = Processes?.First(x => x.VorgangId == vid);
+                        {
+                            pr.BemT = String.Format("[{0}-{1}]{2}{3}",
+                            UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
+                            pr.RunPropertyChanged();
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{message}", ex.ToString());
             }
         }
         private bool OnFastCopyCanExecute(object arg)
@@ -581,48 +618,55 @@ namespace ModulePlanning.Planning
         private void InsertItems(Vorgang Item, ListCollectionView Source, ListCollectionView Target, int Index, bool sorting)
         {
 
-            Item.Rid = _rId;
-            List<Vorgang> lst = [];
-            var p = Target.SourceCollection as Collection<Vorgang>;
-            lst.AddRange(p.OrderBy(x => x.SortPos));
-            int oldIndex = Target.IndexOf(Item);
-            if (oldIndex == -1) // commes from outside
+            try
             {
-                if (Index >= Target.Count)
+                Item.Rid = _rId;
+                List<Vorgang> lst = [];
+                var p = Target.SourceCollection as Collection<Vorgang>;
+                lst.AddRange(p.OrderBy(x => x.SortPos));
+                int oldIndex = Target.IndexOf(Item);
+                if (oldIndex == -1) // commes from outside
                 {
-                    ((IList)Target.SourceCollection).Add(Item);
-                    lst.Add(Item);
+                    if (Index >= Target.Count)
+                    {
+                        ((IList)Target.SourceCollection).Add(Item);
+                        lst.Add(Item);
+                    }
+                    else
+                    {
+                        ((IList)Target.SourceCollection).Insert(Index, Item);
+                        lst.Insert(Index, Item);
+                    }
+                    Source.Remove(Item);
                 }
-                else
+
+                if (oldIndex != -1) //sorting inside
                 {
-                    ((IList)Target.SourceCollection).Insert(Index, Item);
+                    lst.RemoveAt(oldIndex);
+
+                    if (Index > oldIndex) Index--;
+                    // the actual index could have shifted due to the removal
+
                     lst.Insert(Index, Item);
                 }
-                Source.Remove(Item);
+
+                for (int i = 0; i < lst.Count; i++)
+                {
+                    var vrg = p.First(x => x.Equals(lst[i]));
+                    vrg.SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
+                }
+                Target.MoveCurrentTo(Item);
+                if (Item.AidNavigation.Material != null && WorkArea.CreateFolder)
+                {
+                    string[] oa = new[] { Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich };
+                    var work = _container.Resolve<WorkareaDocumentInfo>();
+                    work.CreateDocumentInfos(oa);
+                    work.Collect();
+                }
             }
-
-            if(oldIndex != -1) //sorting inside
+            catch (Exception ex)
             {
-                lst.RemoveAt(oldIndex);
-
-                if (Index > oldIndex) Index--;
-                // the actual index could have shifted due to the removal
-
-                lst.Insert(Index, Item);
-            }
-
-            for (int i=0; i < lst.Count; i++)
-            {
-                var vrg = p.First(x => x.Equals(lst[i]));
-                vrg.SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
-            }
-            Target.MoveCurrentTo(Item);
-            if (Item.AidNavigation.Material != null && WorkArea.CreateFolder)
-            {
-                string[] oa = new[] {Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich}; 
-                var work = _container.Resolve<WorkareaDocumentInfo>();
-                work.CreateDocumentInfos(oa);
-                work.Collect();
+                _logger.LogError("{message}", ex.ToString());
             }
         }
         public void Drop(IDropInfo dropInfo)
@@ -644,15 +688,19 @@ namespace ModulePlanning.Planning
                         foreach (var vrg in vrgList)
                         {
                             InsertItems(vrg, s, t, v, false);
+ 
                         }
+                        _logger.LogInformation("{message} {id}", "Drops", vrgList.ToString());
                     }
                     else if (dropInfo.Data is Vorgang vrg)
                     {
                         InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
+                        _logger.LogInformation("{message} {id}", "Drops", vrg.VorgangId);
                     }
  
                     ProcessesCV.Refresh();
                     _eventAggregator.GetEvent<ContextPlanMachineChanged>().Publish(Rid);
+                    
                 }               
             }
             catch (Exception e)

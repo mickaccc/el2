@@ -39,7 +39,7 @@ namespace Lieferliste_WPF
             settingsService.Upgrade();
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
             App.GlobalFontSize = settingsService.FontSize;
-            
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config"));
             return Container.Resolve<MainWindow>();
         }
         protected override void OnInitialized()
@@ -53,7 +53,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
                 .UseSqlServer(defaultconnection)            
                 .EnableThreadSafetyChecks(true);

@@ -77,7 +77,7 @@ namespace ModulePlanning.ViewModels
                 }
             }
         }
-        private ILogger _Logger;
+        private readonly ILogger _Logger;
         private int _currentWorkArea;
         private string? _searchFilterText;
         private readonly object _lock = new();
@@ -146,6 +146,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception ex)
             {
+                _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "MessageVorgangReceved MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -168,6 +169,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception ex)
             {
+                _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "MessageOrderReceived MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -180,10 +182,12 @@ namespace ModulePlanning.ViewModels
             }
             catch (InvalidOperationException e)
             {
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "SaveCanExecute", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception e)
             {
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "SaveCanExecute", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;
@@ -198,6 +202,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception e)
             {
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.ToString(), "OnSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -359,6 +364,7 @@ namespace ModulePlanning.ViewModels
 
             catch (Exception e)
             {
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "SelectionChange", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -401,7 +407,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception ex)
             {
-
+                _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "ProcessCV Filter", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -442,6 +448,7 @@ namespace ModulePlanning.ViewModels
                             _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource ON");
                             _DbCtx.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
                             _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource OFF");
+                            _Logger.LogInformation("{message} {park} {id}", "Drop Parking", parkRid, vrg.VorgangId);
                         }
                         vrg.Rid = parkRid;
                         vrg.SortPos = null;
@@ -478,6 +485,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception e)
             {
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "Method Drop", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -515,6 +523,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception e)
             {
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "Closing", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
