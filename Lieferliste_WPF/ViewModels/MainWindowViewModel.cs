@@ -30,6 +30,7 @@ namespace Lieferliste_WPF.ViewModels
     /// <summary>
     /// Class for the main window's view-model.
     /// </summary>
+        [assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config")]
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public class MainWindowViewModel : ViewModelBase
     {

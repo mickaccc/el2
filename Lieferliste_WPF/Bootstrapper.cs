@@ -29,6 +29,7 @@ using Unity;
 
 namespace Lieferliste_WPF
 {
+
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class Bootstrapper : PrismBootstrapper
     {
