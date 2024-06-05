@@ -380,22 +380,25 @@ namespace ModuleDeliverList.ViewModels
             {
                 foreach (var vrg in vrgIdList.Where(x => x != null))
                 {
-                    var v = _orders.FirstOrDefault(x => x.VorgangId == vrg.Value.Item2);
-                    if (v != null)
-                    {
-                        DBctx.Entry<Vorgang>(v).Reload();
-                        v.RunPropertyChanged();
-                        if (v.Aktuell == false)
-                        {
-                            _orders.Remove(v);
-                            DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
-                        }
-                    }
-                    else if (DBctx.Vorgangs.First(x => x.VorgangId.Trim() == vrg.Value.Item2).Aktuell)
-                    {
-                        if (vrg != null)
-                            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg.Value.Item2);
-                    }
+                     if (vrg != null)
+                     {
+                         var v = _orders.FirstOrDefault(x => x.VorgangId == vrg.Value.Item2);
+                         if (v != null)
+                         {
+                             DBctx.Entry<Vorgang>(v).Reload();
+                             v.RunPropertyChanged();
+                             if (v.Aktuell == false)
+                             {
+                                 _orders.Remove(v);
+                                 DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
+                             }
+                         }
+                         else v = DBctx.Vorgangs.FirstOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
+                         {
+                             if (v != null && v.Aktuell)
+                                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg.Value.Item2);
+                         }
+                     }
                 }
             }
          });
