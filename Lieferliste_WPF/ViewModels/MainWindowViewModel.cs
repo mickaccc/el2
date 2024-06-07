@@ -110,9 +110,7 @@ namespace Lieferliste_WPF.ViewModels
             IEventAggregator ea,
             IUserSettingsService settingsService)
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnloadApp;
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+
             try
             {
                 _regionmanager = regionManager;
@@ -122,7 +120,6 @@ namespace Lieferliste_WPF.ViewModels
                 _ea = ea;
                 _settingsService = settingsService;
                 var loggerFactory = _container.Resolve<Microsoft.Extensions.Logging.ILoggerFactory>();
-                loggerFactory.AddLog4Net();
                
                 _Logger = loggerFactory.CreateLogger<MainWindowViewModel>();
 
@@ -626,26 +623,8 @@ namespace Lieferliste_WPF.ViewModels
                 _Logger.LogError("{message}", e.ToString());
             }
         }
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            // Log unhandled exceptions
-            if (e.ExceptionObject is Exception ex)
-            {
-                _Logger.LogCritical("Unhandled exception: {message}", ex);
-            }
-            else
-            {
-                _Logger.LogCritical("Unhandled non-exception object: {message}", e.ExceptionObject);
-            }
-        }
-        private void CurrentDomain_DomainUnloadApp(object? sender, EventArgs e)
-        {
-            _Logger.LogInformation("DomainUnLoad");
-        }
-        private void CurrentDomain_ProcessExit(object? sender, EventArgs e)
-        {
-            _Logger.LogInformation("ProcessExit: {pc}", UserInfo.PC);
-        }
+
+
         private void DbOperations()
         {
                 //var pcont = new PersonalFilterContainer();

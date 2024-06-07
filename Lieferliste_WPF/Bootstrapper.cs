@@ -22,6 +22,7 @@ using Prism.Regions;
 using Prism.Unity;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -33,15 +34,39 @@ namespace Lieferliste_WPF
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class Bootstrapper : PrismBootstrapper
     {
+        private ILogger? _Logger;
+
         protected override DependencyObject CreateShell()
         {
+            var loggerFactory = Container.Resolve<ILoggerFactory>();
+            loggerFactory.AddLog4Net();
+            _Logger = loggerFactory.CreateLogger<Bootstrapper>();
+            Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+            Application.Current.Exit += Current_Exit;
+
             var settingsService = Container.Resolve<UserSettingsService>();
             settingsService.Upgrade();
+
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
             App.GlobalFontSize = settingsService.FontSize;
+
+
             log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config"));
             return Container.Resolve<MainWindow>();
         }
+
+        private void Current_Exit(object sender, ExitEventArgs e)
+        {
+            _Logger?.LogInformation("Exit: {pc}", UserInfo.PC);
+        }
+
+
+        private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+              _Logger?.LogCritical("Unhandled exception: {message}", e.Exception.ToString());
+        }
+
+
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -53,7 +78,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
                 .UseSqlServer(defaultconnection)            
                 .EnableThreadSafetyChecks(true);

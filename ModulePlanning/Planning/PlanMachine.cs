@@ -242,6 +242,7 @@ namespace ModulePlanning.Planning
             {
                 _ShiftPlans.Add(s.Planid, s.ShiftName);
             }
+            
         }
 
         private void Initialize()
@@ -258,6 +259,7 @@ namespace ModulePlanning.Planning
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
             EnableRowDetails = _settingsService.IsRowDetails;
+            
         }
 
 
