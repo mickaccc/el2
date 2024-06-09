@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Lieferliste_WPF
+namespace Lieferliste_WPF.Views
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Interaction logic for ShiftPlanEdit.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class ShiftPlanEdit : UserControl
     {
-        public Window1()
+        public ShiftPlanEdit()
         {
             InitializeComponent();
         }
