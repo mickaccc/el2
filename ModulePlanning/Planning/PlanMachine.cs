@@ -429,6 +429,7 @@ namespace ModulePlanning.Planning
                 var par = new DialogParameters();
                 par.Add("correction", vrg);
                 _dialogService.ShowDialog("CorrectionDialog", par, CorrectionCallback);
+                
             }
         }
 
@@ -441,7 +442,7 @@ namespace ModulePlanning.Planning
                 var v = Processes.First(x => x.VorgangId == vrg.VorgangId);
                 v.Correction = (float?)corr;
                 v.RunPropertyChanged();
-                
+                _logger.LogInformation("{message} {1}", "Set Correction:", v.Correction);
             }          
         }
 
@@ -476,6 +477,7 @@ namespace ModulePlanning.Planning
                     {
                         MessageBox.Show("Keine Einträge vorhanden!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
+                    _logger.LogInformation("{message} {1}", "Call History:", vrg.VorgangId);
                 }
             }
             catch (Exception ex)
@@ -503,6 +505,7 @@ namespace ModulePlanning.Planning
                             pr.RunPropertyChanged();
                         }
                     }
+                    _logger.LogInformation("{message} {1}", "History Callback:", bemt.ToString());
                 }
             }
             catch (Exception ex)
@@ -575,6 +578,7 @@ namespace ModulePlanning.Planning
                     if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
                     desc.RunPropertyChanged();
+                    _logger.LogInformation("{message} {1}", "Set Bullet:", desc.Bullet);
                 }
             }
             catch (System.Exception e)

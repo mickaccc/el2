@@ -269,17 +269,24 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnArchivateExecuted(object obj)
         {
-            if (obj is object[] onr)
+            try
             {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var v = db.OrderRbs.First(x => x.Aid == (string)onr[0]);
-                v.Abgeschlossen = true;
-                foreach (var item in v.Vorgangs.Where(x => x.Visability == false))
+                if (obj is object[] onr)
                 {
-                    item.Visability = true;
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    var v = db.OrderRbs.First(x => x.Aid == (string)onr[0]);
+                    v.Abgeschlossen = true;
+                    foreach (var item in v.Vorgangs.Where(x => x.Visability == false))
+                    {
+                        item.Visability = true;
+                    }
+                    db.SaveChangesAsync();
+                    _ea.GetEvent<MessageOrderArchivated>().Publish(v);
                 }
-                db.SaveChangesAsync();
-                _ea.GetEvent<MessageOrderArchivated>().Publish(v);
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError("{message}", e.ToString());
             }
         }
 
@@ -299,33 +306,41 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception e)
             {
+                _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "ArchiveCan", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
         private void OnCloseExecuted(object obj)
         {
-            if (obj == null)
+            try
             {
-                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+                if (obj == null)
                 {
-                    Dbctx.ChangeTracker.DetectChanges();
-                    if (Dbctx.ChangeTracker.HasChanges())
+                    using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
                     {
-                        var r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
-                            "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                        if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
-                    }
+                        Dbctx.ChangeTracker.DetectChanges();
+                        if (Dbctx.ChangeTracker.HasChanges())
+                        {
+                            var r = MessageBox.Show("Sollen die Änderungen noch in\n die Datenbank gespeichert werden?",
+                                "MS SQL Datenbank", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                            if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
+                        }
 
-                    var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.User.UserIdent.Equals(x.Userid)
-                     && UserInfo.PC == x.PcId);
-                    if(Dbctx.InMemoryMsgs.Any()) Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().OnlId)).ExecuteDelete();
-                    del.ExecuteDelete();
+                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.User.UserIdent.Equals(x.Userid)
+                         && UserInfo.PC == x.PcId);
+                        if (Dbctx.InMemoryMsgs.Any()) Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().OnlId)).ExecuteDelete();
+                        del.ExecuteDelete();
+                    }
+                }
+                else
+                {
+                    _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
                 }
             }
-            else
+            catch (Exception e)
             {
-                _regionmanager.Regions[RegionNames.MainContentRegion].Remove(obj);
+                _Logger.LogError("{message}", e.ToString());
             }
         }
 

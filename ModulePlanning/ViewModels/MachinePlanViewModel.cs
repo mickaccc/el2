@@ -350,39 +350,61 @@ namespace ModulePlanning.ViewModels
 
             try
             {
-                if (commandParameter is SelectionChangedEventArgs sel)
+                if (commandParameter != null)
                 {
-                    if (sel.AddedItems[0] is WorkArea wa)
+                    if (commandParameter is SelectionChangedEventArgs sel)
                     {
-                        _currentWorkArea = wa.WorkAreaId;
-                        ProcessCV.Refresh();
-                        ParkingCV.Refresh();
-                        RessCV?.Refresh();
-                    }
+                        if (sel.AddedItems[0] is WorkArea wa)
+                        {
+                            _currentWorkArea = wa.WorkAreaId;
+                            ProcessCV.Refresh();
+                            ParkingCV.Refresh();
+                            RessCV?.Refresh();
+                        }
+                    } 
                 }
             }
 
             catch (Exception e)
             {
                 _Logger.LogError("{message}", e.ToString());
-                MessageBox.Show(e.Message, "SelectionChange", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void OnTextSearch(object commandParameter)
         {
-            if (commandParameter is string change)
+            try
             {
-                _searchFilterText = change;
-                ProcessCV.Refresh();
-                _ea.GetEvent<SearchTextFilter>().Publish(_searchFilterText);
+                if (commandParameter != null)
+                {
+                    if (commandParameter is string change)
+                    {
+                        _searchFilterText = change;
+                        ProcessCV.Refresh();
+                        _ea.GetEvent<SearchTextFilter>().Publish(_searchFilterText);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError("{message}", e.ToString());
             }
         }
         private void OnTextSearchArbPl(object obj)
         {
-            if (obj is string change)
+            try
             {
-                _searchFilterTextArbPl = change;
-                ProcessCV.Refresh();
+                if (obj != null)
+                {
+                    if (obj is string change)
+                    {
+                        _searchFilterTextArbPl = change;
+                        ProcessCV.Refresh();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError("{message}", e.ToString());
             }
         }
         private void ProcessCV_Filter(object sender, FilterEventArgs e)
