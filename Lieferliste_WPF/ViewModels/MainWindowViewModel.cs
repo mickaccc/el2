@@ -181,7 +181,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenShiftExecuted(object obj)
         {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ShiftEdit", UriKind.Relative));
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ShiftPlanEdit", UriKind.Relative));
         }
 
         private bool OnOpenHolidayCanExecute(object arg)

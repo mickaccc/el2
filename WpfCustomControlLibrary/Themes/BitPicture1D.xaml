@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:WpfCustomControlLibrary">
+    <Style TargetType="{x:Type local:BitPicture1D}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:BitPicture1D}">
+                    <ContentControl VerticalContentAlignment="Stretch" >
+                        <Grid Margin="4" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock x:Name="PART_WeekDay" Text="{TemplateBinding WeekDay}"/>
+                            <Canvas x:Name="PART_DayPicture" Grid.Column="1" Width="1152" Height="{TemplateBinding StripeHeight}"  VerticalAlignment="Stretch"/>
+                        
+                        </Grid>
+                    </ContentControl>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+</ResourceDictionary>

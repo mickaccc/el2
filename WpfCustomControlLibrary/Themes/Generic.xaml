@@ -6,6 +6,7 @@
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/LoadingSpinner.xaml"/>
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/BullettControl.xaml"/>
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/CommentControl.xaml"/>
+        <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/BitPicture1D.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
