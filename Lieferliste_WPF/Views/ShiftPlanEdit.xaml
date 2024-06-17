@@ -34,10 +34,10 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ShiftWeek}">
+        <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ShiftWeeks[1]}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <wpfCustom:BitPicture1D WorkRangePattern="{Binding Item2}" WeekDay="{Binding Item1}"
+                    <wpfCustom:BitPicture1D WorkRangePattern="{Binding Definition}" WeekDay="{Binding ShiftName}"
                                             StripeHeight="50" LowColor="AntiqueWhite" HighColor="{DynamicResource Theme.ShowcaseBrush}" Margin="5" Height="70"/>
 
                 </DataTemplate>

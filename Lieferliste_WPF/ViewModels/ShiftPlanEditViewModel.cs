@@ -1,4 +1,5 @@
-﻿using El2Core.Models;
+﻿using DocumentFormat.OpenXml.InkML;
+using El2Core.Models;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -28,42 +29,58 @@ namespace Lieferliste_WPF.ViewModels
     {
         private IContainerProvider _container;
         public string Title { get; } = "Schichtplan";
-        public List<Tuple<string, string>> ShiftWeek { get; set; }
+        public Dictionary<int, List<ShiftDay>> ShiftWeeks { get; set; }
         public List<ShiftPlanDb> ShiftPlans { get; set; }
         public List<string> Shifts { get; set; }
-        public bool[,] ShiftPlan { get; }
         public ShiftPlanEditViewModel(IContainerProvider container)
         {
             _container = container;
             LoadData();
-                  
+
         }
 
         private void LoadData()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var shift = db.ShiftPlanDbs.AsNoTracking();
+            var shift = db.ShiftPlanDbs.AsNoTracking().Where(x => x.ShiftName != "keine");
             ShiftPlans = shift.ToList();
-            ShiftWeek = [];
-            var item = shift.First();
+            ShiftWeeks = [];
+            foreach (var item in shift)
             {
-                string dt;
-                dt = DateTimeFormatInfo.CurrentInfo.GetDayName(0);
-                ShiftWeek.Add(Tuple.Create(dt, item.Su));
-                dt = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)1);
-                ShiftWeek.Add(Tuple.Create(dt, item.Mo));
-                dt = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)2);
-                ShiftWeek.Add(Tuple.Create(dt, item.Tu));
-                dt = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)3);
-                ShiftWeek.Add(Tuple.Create(dt, item.We));
-                dt = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)4);
-                ShiftWeek.Add(Tuple.Create(dt, item.Th));
-                dt = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)5);
-                ShiftWeek.Add(Tuple.Create(dt, item.Fr));
-                dt = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)6);
-                ShiftWeek.Add(Tuple.Create(dt, item.Sa));
+                List<ShiftDay> shiftDays = new();
+                for (int i = 0; i < 7; i++)
+                {
+                    shiftDays.Add(new ShiftDay(i, GetDefinition(item, i)));
+                }
+                ShiftWeeks.Add(item.Planid, shiftDays);
             }
         }
-
+        private string GetDefinition(ShiftPlanDb shiftPlanDb, int index)
+        {
+            switch (index)
+            {
+                case 0: return shiftPlanDb.Su;
+                case 1: return shiftPlanDb.Mo;
+                case 2: return shiftPlanDb.Tu;
+                case 3: return shiftPlanDb.We;
+                case 4: return shiftPlanDb.Th;
+                case 5: return shiftPlanDb.Fr;
+                case 6: return shiftPlanDb.Sa;
+            }
+            return "0,0";
+        }
     }
+    public class ShiftDay
+    {
+        public ShiftDay(int id, string definition)
+        {
+            Id = id;
+            Definition = definition;
+            ShiftName = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)id);
+        }
+        public readonly int Id;
+        public readonly string ShiftName;
+        public readonly string Definition;
+    }
+    
 }
