@@ -50,6 +50,21 @@ namespace El2Core.Utils
                 Rules = db.Rules.ToList(); 
             }
         }
+        public static void SaveRule(Rule rule)
+        {
+            //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            //if (db.Rules.All(x => x.RuleValue != rule.RuleValue))
+            //{
+            //    db.Rules.Add(rule);
+            //}
+            //else 
+            //{
+            //    var r = db.Rules.First(x => x.RuleValue == rule.RuleValue);
+            //    r.RuleName = rule.RuleName;
+            //    r.RuleData = rule.RuleData;
+            //}
+            //db.SaveChanges();
+        }
 
         public void Dispose()
         {
@@ -75,7 +90,7 @@ namespace El2Core.Utils
         public static ImmutableDictionary<string, Rule> Rules { get; private set; } = ImmutableDictionary<string, Rule>.Empty;
         public RuleInfo(List<Rule> rules)
         {
-            Rules = rules.ToImmutableDictionary(x => x.RuleName.Trim(), x => x);   
+            Rules = rules.ToImmutableDictionary(x => x.RuleValue.Trim(), x => x);   
         }
     }
 }
