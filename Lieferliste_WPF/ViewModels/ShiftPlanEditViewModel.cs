@@ -36,7 +36,6 @@ namespace Lieferliste_WPF.ViewModels
         {
             _container = container;
             LoadData();
-
         }
 
         private void LoadData()
