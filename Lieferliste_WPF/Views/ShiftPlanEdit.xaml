@@ -6,6 +6,9 @@
              xmlns:prism="http://prismlibrary.com/"
              xmlns:wpfCustom="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:drop="urn:gong-wpf-dragdrop"
+             xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
@@ -15,35 +18,67 @@
     
         </Grid.Resources>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="120"/>
             <ColumnDefinition/>
     
        
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="80"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <ToolBar>
-            <Button Content="rer"/>
+        <ToolBar Grid.ColumnSpan="2">
+            <Button Command="{Binding SaveAllCommand}" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
+                <icons:PackIconCoolicons Kind="Save"/>
+            </Button>
+            <Button Command="{Binding SaveNewCommand}" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
+                <icons:BootstrapIcons Kind="Save"/>
+            </Button>
+            <ToggleButton IsChecked="{Binding IsRubberChecked}">
+                <Image Source="\Images\eraser.png" Height="50"/>
+            </ToggleButton>
+            <ListBox ItemsSource="{Binding ShiftCovers}"
+                     drop:DragDrop.IsDragSource="True"
+                     drop:DragDrop.IsDropTarget="False"
+                     drop:DragDrop.DragHandler="{Binding}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding CoverName}" TextWrapping="WrapWithOverflow" Margin="10"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </ToolBar>
-        <ListBox Grid.Row="1" ItemsSource="{Binding ShiftPlans}" >
+        <ListBox Grid.Row="1" ItemsSource="{Binding ShiftPlans}" SelectedItem="{Binding SelectedPlan, Mode=OneWayToSource}" >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding ShiftPlanSelectionChangedCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding ShiftName}"/>
+                    <TextBlock Text="{Binding ShiftName}" TextWrapping="Wrap"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ShiftWeeks[1]}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <wpfCustom:BitPicture1D WorkRangePattern="{Binding Definition}" WeekDay="{Binding ShiftName}"
-                                            StripeHeight="50" LowColor="AntiqueWhite" HighColor="{DynamicResource Theme.ShowcaseBrush}" Margin="5" Height="70"/>
+    
+        <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ShiftWeek}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <wpfCustom:BitPicture1D WorkRangePattern="{Binding Definition}" WeekDay="{Binding WeekDayName}"
+                                                StripeHeight="50" LowColor="AntiqueWhite" HighColor="{DynamicResource Theme.ShowcaseBrush}"
+                                                Margin="5" Height="70"
+                                                drop:DragDrop.IsDragSource="False"
+                                                drop:DragDrop.IsDropTarget="True"
+                                                drop:DragDrop.DropHandler="{Binding}"/>
 
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
-
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+    
     </Grid>
 </UserControl>
