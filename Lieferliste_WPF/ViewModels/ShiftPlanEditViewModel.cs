@@ -27,6 +27,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.Graphics.DirectX;
+using WpfCustomControlLibrary;
 using Rule = El2Core.Models.Rule;
 
 
@@ -38,9 +39,9 @@ namespace Lieferliste_WPF.ViewModels
         public string Title { get; } = "Schichtplan";
         private RelayCommand? _ShiftPlanSelectionChangedCommand;
         public RelayCommand ShiftPlanSelectionChangedCommand => _ShiftPlanSelectionChangedCommand ??= new RelayCommand(OnPlanSelected);
-        public ICommand SaveAllCommand;
-        public ICommand DeleteCommand;
-        public ICommand SaveNewCommand;
+        public ICommand SaveAllCommand { get; private set; }
+        public ICommand DeleteCommand { get; private set;}
+        public ICommand SaveNewCommand { get; private set; }
         public Dictionary<int, List<ShiftDay>> ShiftWeeks { get; set; }
         private List<ShiftDay> _ShiftWeek;
         public List<ShiftDay> ShiftWeek
@@ -68,7 +69,7 @@ namespace Lieferliste_WPF.ViewModels
             LoadCovers();
         }
 
-        public bool IsRubberChecked;
+        public bool IsRubberChecked { get; set; }
         private List<ShiftCover> _ShiftCovers = [];
         public ICollectionView ShiftCovers { get; private set; }
         private void LoadCovers()
@@ -158,12 +159,22 @@ namespace Lieferliste_WPF.ViewModels
         }
         public void DragOver(IDropInfo dropInfo)
         {
-            
+            dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+            dropInfo.Effects = DragDropEffects.All;
         }
 
         public void Drop(IDropInfo dropInfo)
         {
-            
+            ShiftCover data = (ShiftCover)dropInfo.Data;
+            ShiftDay? item = dropInfo.TargetItem as ShiftDay;
+
+            var def = data.CoverDef.Split(',');
+            for (int i = 0; i < def.Length; i += 2 )
+            {
+                int start = int.Parse(def[i]);
+                int end = int.Parse(def[i+1]);
+                item.Bools.AsSpan(start, end-start).Fill(!IsRubberChecked);
+            }  
         }
         public struct ShiftCover
         {
@@ -188,6 +199,7 @@ namespace Lieferliste_WPF.ViewModels
             public readonly int Id;
             public string WeekDayName { get; }
             public string Definition { get; }
+            public bool[] Bools { get; set; }
         }
     }
 }

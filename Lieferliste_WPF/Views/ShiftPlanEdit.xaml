@@ -39,8 +39,7 @@
             </ToggleButton>
             <ListBox ItemsSource="{Binding ShiftCovers}"
                      drop:DragDrop.IsDragSource="True"
-                     drop:DragDrop.IsDropTarget="False"
-                     drop:DragDrop.DragHandler="{Binding}">
+                     drop:DragDrop.IsDropTarget="False">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"/>
@@ -66,15 +65,13 @@
             </ListBox.ItemTemplate>
         </ListBox>
     
-        <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ShiftWeek}">
+        <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ShiftWeek}"
+                      drop:DragDrop.IsDropTarget="True" drop:DragDrop.DropHandler="{Binding}" >
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <wpfCustom:BitPicture1D WorkRangePattern="{Binding Definition}" WeekDay="{Binding WeekDayName}"
+                        <wpfCustom:BitPicture1D WorkRangePattern="{Binding Definition}" WeekDay="{Binding WeekDayName}" 
                                                 StripeHeight="50" LowColor="AntiqueWhite" HighColor="{DynamicResource Theme.ShowcaseBrush}"
-                                                Margin="5" Height="70"
-                                                drop:DragDrop.IsDragSource="False"
-                                                drop:DragDrop.IsDropTarget="True"
-                                                drop:DragDrop.DropHandler="{Binding}"/>
+                                                Margin="5" Height="70"/>
 
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
