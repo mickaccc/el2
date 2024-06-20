@@ -75,6 +75,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ShiftCover]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[ShiftPlanDb]",
          "ObjectType": 0
       },

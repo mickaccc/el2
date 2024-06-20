@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -82,15 +83,15 @@ namespace WpfCustomControlLibrary
             DependencyProperty.Register("WorkRangePattern", typeof(string), typeof(BitPicture1D), new PropertyMetadata());
 
 
-        public bool[] BoolPattern
+        public BitArray BoolPattern
         {
-            get { return (bool[])GetValue(BoolPatternProperty); }
+            get { return (BitArray)GetValue(BoolPatternProperty); }
             set { SetValue(BoolPatternProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for BoolPattern.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BoolPatternProperty =
-            DependencyProperty.Register("BoolPattern", typeof(bool[]), typeof(BitPicture1D), new PropertyMetadata(new bool[1440]));
+            DependencyProperty.Register("BoolPattern", typeof(BitArray), typeof(BitPicture1D), new PropertyMetadata());
 
 
         public override void OnApplyTemplate()
@@ -107,20 +108,16 @@ namespace WpfCustomControlLibrary
         private void CreateBitPicture()
         {
             double scale = _Canvas.Width / 1440.0;
-            if (WorkRangePattern != null)
+            if (BoolPattern != null)
             {
 
-                string[] val = WorkRangePattern.Split(',');
-                BoolPattern.AsSpan().Slice(0, 1440).Fill(false);
-                for (int i = 0; i < val.Length; i += 2)
-                {
-                    int start = int.Parse(val[i]);
-                    int end = int.Parse(val[i + 1]);
-                    BoolPattern.AsSpan().Slice(start, end - start).Fill(true);
-                }
+
+                bool[] bo = new bool[1440];
+                BoolPattern.CopyTo(bo, 0);
+
                 double left = 0;
                 int index = 0;
-                foreach (var item in BoolPattern)
+                foreach (var item in bo)
                 {
                     if (index % 60 == 0)
                     {

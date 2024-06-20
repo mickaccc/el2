@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Prism.Ioc;
 using System;
+using System.Collections;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -82,6 +83,22 @@ namespace Lieferliste_WPF.ViewModels
             shc = new ShiftCover("lateshift", "Spätschicht", "810,990,1000,1150,1170,1320");
             _ShiftCovers.Add(shc);
             ShiftCovers = CollectionViewSource.GetDefaultView(_ShiftCovers);
+            bool[] bo = new bool[1440];
+            //bo.AsSpan().Slice(810, 180).Fill(true);
+            //bo.AsSpan().Slice(1000, 150).Fill(true);
+            //bo.AsSpan().Slice(1170, 150).Fill(true);
+            //var m = new MemoryStream();
+            //BitArray arr = new BitArray(bo);
+            //byte[] bytes = new byte[arr.Length];
+
+            //arr.CopyTo(bytes, 0);
+            //var sc = new El2Core.Models.ShiftCover() { CoverName = "lateshift", CoverDef = bytes };
+            //db.ShiftCovers.Add(sc);
+            var bit = db.ShiftCovers.First(x => x.CoverName == "lateshift");
+            byte[] by;
+            by = bit.CoverDef;
+            BitArray arr = new BitArray(by);
+            arr.CopyTo(bo, 0);
         }
         private void SaveShiftCover(ShiftCover shiftCover)
         {
@@ -96,16 +113,29 @@ namespace Lieferliste_WPF.ViewModels
             var shift = db.ShiftPlanDbs.AsNoTracking().Where(x => x.ShiftName != "keine").OrderBy(x => x.Planid);
             ShiftPlans = shift.ToList();
             ShiftWeeks = [];
-            foreach (var item in shift)
-            {
-                List<ShiftDay> shiftDays = new();
-                for (int i = 0; i < 7; i++)
-                {
-                    shiftDays.Add(new ShiftDay(i, GetDefinition(item, i)));
-                }
-                ShiftWeeks.Add(item.Planid, shiftDays);
+            //foreach (var item in shift)
+            //{
+            //    List<ShiftDay> shiftDays = new();
+            //    for (int i = 0; i < 7; i++)
+            //    {
+            //        shiftDays.Add(new ShiftDay(i, GetDefinition(item, i)));
+            //    }
+            //    ShiftWeeks.Add(item.Planid, shiftDays);
+            //}
+            //ShiftWeek = ShiftWeeks[ShiftPlans.First().Planid];
+            var shiftn = db.ShiftCovers.ToList();
+            List<ShiftDay> shiftdays = new List<ShiftDay>();
+            int index = 0;
+            foreach (var item in shiftn)
+            {               
+                byte[] by;
+                by = item.CoverDef;
+                BitArray bitArray = new BitArray(by);
+                shiftdays.Add(new ShiftDay(index, bitArray));
+                index++;
             }
-            ShiftWeek = ShiftWeeks[ShiftPlans.First().Planid];
+            ShiftWeeks.Add(1, shiftdays);
+            ShiftWeek = shiftdays;
 
         }
         private string GetDefinition(ShiftPlanDb shiftPlanDb, int index)
@@ -190,7 +220,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         public class ShiftDay
         {
-            public ShiftDay(int id, string definition)
+            public ShiftDay(int id, BitArray definition)
             {
                 Id = id;
                 Definition = definition;
@@ -198,7 +228,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             public readonly int Id;
             public string WeekDayName { get; }
-            public string Definition { get; }
+            public BitArray Definition { get; }
             public bool[] Bools { get; set; }
         }
     }

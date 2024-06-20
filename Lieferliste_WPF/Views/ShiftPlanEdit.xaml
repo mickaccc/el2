@@ -69,7 +69,7 @@
                       drop:DragDrop.IsDropTarget="True" drop:DragDrop.DropHandler="{Binding}" >
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <wpfCustom:BitPicture1D WorkRangePattern="{Binding Definition}" WeekDay="{Binding WeekDayName}" 
+                        <wpfCustom:BitPicture1D BoolPattern="{Binding Definition}" WeekDay="{Binding WeekDayName}" 
                                                 StripeHeight="50" LowColor="AntiqueWhite" HighColor="{DynamicResource Theme.ShowcaseBrush}"
                                                 Margin="5" Height="70"/>
 
