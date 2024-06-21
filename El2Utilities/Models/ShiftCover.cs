@@ -11,5 +11,5 @@ public partial class ShiftCover
 
     public string CoverName { get; set; } = null!;
 
-    public byte[]? CoverDef { get; set; }
+    public byte[]? CoverMask { get; set; }
 }

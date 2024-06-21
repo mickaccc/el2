@@ -2,6 +2,7 @@
 using El2Core.Utils;
 using Prism.Ioc;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -9,13 +10,14 @@ using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Appointments;
 
 namespace ModulePlanning.Specials
 {
     public interface IShiftPlan
     {
     }
-    public class ShiftPlan : IShiftPlan
+    public class ShiftPlanService : IShiftPlan
     {
         private ImmutableArray<bool[]> weekPlan;
         public ImmutableArray<bool[]> WeekPlan => weekPlan;
@@ -23,55 +25,65 @@ namespace ModulePlanning.Specials
         private readonly int rid;
         private HolidayLogic holidayLogic;
 
-        public ShiftPlan(int rid, IContainerProvider container)
+        public ShiftPlanService(int rid, IContainerProvider container)
         {
             this.rid = rid;
 
             this.container = container;
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            var w = db.ShiftPlanDbs.SingleOrDefault(x => x.Ressources.Any(x => x.RessourceId == rid));
-            if (w != null)
-            {
+            //var w = db.ShiftPlans.SingleOrDefault(x => x.Ressources.Any(x => x.RessourceId == rid));
+            var s = db.ShiftPlans.SingleOrDefault(x => x.Id == 7);
+            List<bool[]> days = new List<bool[]>();
+            Byte[] bytes;
+            bool[] sbools = new bool[1440];
+            bytes = s.Sun;
+            BitArray bitArray = new BitArray(bytes);
+            bitArray.CopyTo(sbools, 0);
+            days.Add(sbools);
+
+            bytes = s.Mon;
+            bitArray = new BitArray(bytes);
+            bool[] mbools = new bool[1440];
+            bitArray.CopyTo(mbools, 0);
+            days.Add(mbools);
+
+            bytes = s.Tue;
+            bitArray = new BitArray(bytes);
+            bool[] tubools = new bool[1440];
+            bitArray.CopyTo(tubools, 0);
+            days.Add(tubools);
+
+            bytes = s.Wed;
+            bitArray = new BitArray(bytes);
+            bool[] wbools = new bool[1440];
+            bitArray.CopyTo(wbools, 0);
+            days.Add(wbools);
+
+            bytes = s.Thu;
+            bitArray = new BitArray(bytes);
+            bool[] thbools = new bool[1440];
+            bitArray.CopyTo(thbools, 0);
+            days.Add(thbools);
+
+            bytes = s.Fre;
+            bitArray = new BitArray(bytes);
+            bool[] fbools = new bool[1440];
+            bitArray.CopyTo(fbools, 0);
+            days.Add(fbools);
+
+            bytes = s.Sat;
+            bitArray = new BitArray(bytes);
+            bool[] sabools = new bool[1440];
+            bitArray.CopyTo(sabools, 0);
+            days.Add(sabools);
 
 
-                List<bool[]> days = [];
-                var minutes = w.Su.Split(',');
-                days.Add(GetBools(minutes));
-                minutes = w.Mo.Split(',');
-                days.Add(GetBools(minutes));
-                minutes = w.Tu.Split(',');
-                days.Add(GetBools(minutes));
-                minutes = w.We.Split(',');
-                days.Add(GetBools(minutes));
-                minutes = w.Th.Split(',');
-                days.Add(GetBools(minutes));
-                minutes = w.Fr.Split(',');
-                days.Add(GetBools(minutes));
-                minutes = w.Sa.Split(',');
-                days.Add(GetBools(minutes));
-
-                weekPlan = days.ToImmutableArray();
-            }
+            weekPlan = days.ToImmutableArray();
+            //}
             holidayLogic = container.Resolve<HolidayLogic>();
         }
-        bool[] GetBools(string[] minutes)
-        {
-            bool[] bools = new bool[1440];
-            for (int i = 0; i < minutes.Length; i += 2)
-            {
-                BoolsFill(ref bools, int.Parse(minutes[i]), int.Parse(minutes[i + 1]), true);
-            }
-            return bools;
-        }
-
-        void BoolsFill(ref bool[] bools, int startIndex, int endIndex, bool value)
-        {
-            for(int i = startIndex; i < endIndex; i++)
-            {
-                bools[i] = value;
-            }
-        }
+ 
  
         public DateTime GetEndDateTime(double processLength, DateTime start)
         {

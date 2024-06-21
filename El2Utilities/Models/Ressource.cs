@@ -35,8 +35,6 @@ public partial class Ressource
 
     public virtual ICollection<RessourceWorkshift> RessourceWorkshifts { get; set; } = new List<RessourceWorkshift>();
 
-    public virtual ShiftPlanDb? ShiftPlan { get; set; }
-
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 
     public virtual WorkArea? WorkArea { get; set; }

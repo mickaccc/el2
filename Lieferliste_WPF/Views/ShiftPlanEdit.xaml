@@ -60,7 +60,7 @@
             </i:Interaction.Triggers>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding ShiftName}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding PlanName}" TextWrapping="Wrap"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

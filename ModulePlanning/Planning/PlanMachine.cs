@@ -238,9 +238,9 @@ namespace ModulePlanning.Planning
  
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            foreach(var s in db.ShiftPlanDbs.OrderBy(x => x.Planid))
+            foreach(var s in db.ShiftPlans.OrderBy(x => x.Id))
             {
-                _ShiftPlans.Add(s.Planid, s.ShiftName);
+                _ShiftPlans.Add(s.Id, s.PlanName);
             }
             
         }
@@ -268,7 +268,7 @@ namespace ModulePlanning.Planning
             try
             {
                 if (_SelectedRadioButton == 0) return;
-                var s = new ShiftPlan(Rid, _container);
+                var s = new Specials.ShiftPlanService(Rid, _container);
                 DateTime start = DateTime.Now;
                 foreach (var p in Processes.OrderBy(x => x.SortPos))
                 {
