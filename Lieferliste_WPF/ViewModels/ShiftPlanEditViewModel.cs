@@ -67,8 +67,7 @@ namespace Lieferliste_WPF.ViewModels
             SaveNewCommand = new ActionCommand(OnSaveNewExecuted, OnSaveNewCanExecute);
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecuted);
             LoadData();
-            LoadCovers();
-            
+            LoadCovers();           
         }
 
         public bool IsRubberChecked { get; set; }
@@ -77,57 +76,58 @@ namespace Lieferliste_WPF.ViewModels
         private void LoadCovers()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var sh = RuleInfo.Rules.Keys.Where(x => x.Contains(typeof(ShiftCover).Name)).ToList();
-
-            var shc = new ShiftCover("earlyshift", "Frühschicht", "300,500,510,690,710,810");
-            _ShiftCovers.Add(shc);
-            shc = new ShiftCover("lateshift", "Spätschicht", "810,990,1000,1150,1170,1320");
-            _ShiftCovers.Add(shc);
+            var shc = db.ShiftCovers;
+ 
+            _ShiftCovers.AddRange(shc);
             ShiftCovers = CollectionViewSource.GetDefaultView(_ShiftCovers);
 
         }
         private void SaveShiftCover(ShiftCover shiftCover)
         {
-            Rule r;
-            if (RuleInfo.Rules.Keys.Contains(shiftCover.CoverId)) { r = RuleInfo.Rules[shiftCover.CoverId]; }
-            else { r = new Rule() { RuleName = shiftCover.CoverName, RuleValue = shiftCover.CoverId }; }
-            //Globals.SaveRule(r);
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var shc = db.ShiftCovers;
+
+            if(shc.Contains(shiftCover))
+            {
+
+            }
+            else
+            {
+                shc.Add(shiftCover);
+            }
+            db.SaveChanges();
         }
         private void LoadData()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var shift = db.ShiftPlans.AsNoTracking().OrderBy(x => x.Id);
-            ShiftPlans = shift.ToList();
-            ShiftWeeks = [];
-            foreach (var item in shift)
+            if (shift.Any())
             {
-                List<ShiftDay> shiftDays = new();
-                Byte[] bytes;
-                bytes = item.Sun ??= new byte[1440];
-                BitArray bitArray = new BitArray(bytes);
-                shiftDays.Add(new ShiftDay(0, bitArray));
-                bytes = item.Mon ??= new byte[1440]; ;
-                bitArray = new BitArray(bytes);
-                shiftDays.Add(new ShiftDay(1, bitArray));
-                bytes = item.Tue ??= new byte[1440]; ;
-                bitArray = new BitArray(bytes);
-                shiftDays.Add(new ShiftDay(2, bitArray));
-                bytes = item.Wed ??= new byte[1440]; ;
-                bitArray = new BitArray(bytes);
-                shiftDays.Add(new ShiftDay(3, bitArray));
-                bytes = item.Thu ??= new byte[1440]; ;
-                bitArray = new BitArray(bytes);
-                shiftDays.Add(new ShiftDay(4, bitArray));
-                bytes = item.Fre ??= new byte[1440]; ;
-                bitArray = new BitArray(bytes);
-                shiftDays.Add(new ShiftDay(5, bitArray));
-                bytes = item.Sat ??= new byte[1440]; ;
-                bitArray = new BitArray(bytes);
-                shiftDays.Add(new ShiftDay(6, bitArray));
+                ShiftPlans = shift.ToList();
+                ShiftWeeks = [];
+                foreach (var item in shift)
+                {
+                    List<ShiftDay> shiftDays = new();
+                    Byte[] bytes;
+                    bytes = item.Sun;
+                    shiftDays.Add(new ShiftDay(0, new BitArray(bytes)));
+                    bytes = item.Mon;
+                    shiftDays.Add(new ShiftDay(1, new BitArray(bytes)));
+                    bytes = item.Tue;
+                    shiftDays.Add(new ShiftDay(2, new BitArray(bytes)));
+                    bytes = item.Wed;
+                    shiftDays.Add(new ShiftDay(3, new BitArray(bytes)));
+                    bytes = item.Thu;
+                    shiftDays.Add(new ShiftDay(4, new BitArray(bytes)));
+                    bytes = item.Fre;
+                    shiftDays.Add(new ShiftDay(5, new BitArray(bytes)));
+                    bytes = item.Sat;
+                    shiftDays.Add(new ShiftDay(6, new BitArray(bytes)));
 
-                ShiftWeeks.Add(item.Id, shiftDays);
+                    ShiftWeeks.Add(item.Id, shiftDays);
+                }
+                ShiftWeek = ShiftWeeks[ShiftPlans.First().Id];
             }
-            ShiftWeek = ShiftWeeks[ShiftPlans.First().Id];
         }
         private Byte[]? GetDefinition(ShiftPlan shiftPlanDb, int index)
         {
@@ -189,38 +189,36 @@ namespace Lieferliste_WPF.ViewModels
             ShiftCover data = (ShiftCover)dropInfo.Data;
             ShiftDay? item = dropInfo.TargetItem as ShiftDay;
 
-            var def = data.CoverDef.Split(',');
-            for (int i = 0; i < def.Length; i += 2 )
+            BitArray cover = new BitArray(data.CoverMask);
+            if (IsRubberChecked)
             {
-                int start = int.Parse(def[i]);
-                int end = int.Parse(def[i+1]);
-                item.Bools.AsSpan(start, end-start).Fill(!IsRubberChecked);
-            }  
-        }
-        public struct ShiftCover
-        {
-            public ShiftCover(string coverId, string coverName, string coverDef)
-            {
-                CoverId = coverId;
-                CoverName = coverName;
-                CoverDef = coverDef;
+                for(int i = 0;i < cover.Length;i++)
+                {
+                    if (cover[i]) item.Definition[i] = false;
+                }
             }
-            public string CoverId;
-            public string CoverName { get; }
-            public string CoverDef { get; }
+            else { item.Definition.Or(cover); }
+            item.DefinitionChanged();
+               
         }
-        public class ShiftDay
+        public class ShiftDay(int id, BitArray definition) : ViewModelBase
         {
-            public ShiftDay(int id, BitArray definition)
+            public readonly int Id = id;
+            public string WeekDayName { get; } = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)id);
+            private BitArray _Definition = definition;
+            public BitArray Definition
             {
-                Id = id;
-                Definition = definition;
-                WeekDayName = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)id);
+                get { return _Definition; }
+                set
+                {
+                    _Definition = value;
+                    NotifyPropertyChanged(() => Definition);
+                }
             }
-            public readonly int Id;
-            public string WeekDayName { get; }
-            public BitArray Definition { get; }
-            public bool[] Bools { get; set; }
+            public void DefinitionChanged()
+            {
+                NotifyPropertyChanged(() => Definition);
+            }
         }
         void addshift()
         {
@@ -235,25 +233,25 @@ namespace Lieferliste_WPF.ViewModels
             byte[] sunByte = new byte[sunBit.Length];
             sunBit.CopyTo(sunByte, 0);
 
-            bo.AsSpan().Slice(0, 120).Fill(true);
-            bo.AsSpan().Slice(130, 300 - 130).Fill(true);
-            bo.AsSpan().Slice(1320, 1440 - 1320).Fill(true);
+            //bo.AsSpan().Slice(0, 120).Fill(true);
+            //bo.AsSpan().Slice(130, 300 - 130).Fill(true);
+            //bo.AsSpan().Slice(1320, 1440 - 1320).Fill(true);
 
             bo.AsSpan().Slice(810, 990 - 810).Fill(true);
             bo.AsSpan().Slice(1000, 1150 - 1000).Fill(true);
             bo.AsSpan().Slice(1170, 1320 - 1170).Fill(true);
 
-            bo.AsSpan().Slice(300, 510 - 300).Fill(true);
-            bo.AsSpan().Slice(520, 690 - 520).Fill(true);
-            bo.AsSpan().Slice(710, 810 - 710).Fill(true);
+            //bo.AsSpan().Slice(300, 510 - 300).Fill(true);
+            //bo.AsSpan().Slice(520, 690 - 520).Fill(true);
+            //bo.AsSpan().Slice(710, 810 - 710).Fill(true);
             BitArray arr = new BitArray(bo);
             byte[] bytes = new byte[arr.Length];
 
             arr.CopyTo(bytes, 0);
-            var sc = new El2Core.Models.ShiftPlan()
+            var sc = new ShiftPlan()
             {
                 PlanName = "3 Schicht",
-                Sun = sunByte,
+                Sun = nulByte,
                 Mon = bytes,
                 Tue = bytes,
                 Wed = bytes,
@@ -261,8 +259,13 @@ namespace Lieferliste_WPF.ViewModels
                 Fre = bytes,
                 Sat = nulByte,
             };
+            var scc = new ShiftCover()
+            {
+                CoverName = "Spätschicht",
+                CoverMask = bytes
+            };
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            db.ShiftPlans.Add(sc);
+            db.ShiftCovers.Add(scc);
             db.SaveChanges();
         }
     }

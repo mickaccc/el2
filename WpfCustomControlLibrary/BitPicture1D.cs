@@ -91,8 +91,13 @@ namespace WpfCustomControlLibrary
 
         // Using a DependencyProperty as the backing store for BoolPattern.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BoolPatternProperty =
-            DependencyProperty.Register("BoolPattern", typeof(BitArray), typeof(BitPicture1D), new PropertyMetadata());
+            DependencyProperty.Register("BoolPattern", typeof(BitArray), typeof(BitPicture1D), new PropertyMetadata(null, OnBoolPatternChanged));
 
+        private static void OnBoolPatternChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            BitPicture1D bitPicture1D = (BitPicture1D)d;
+            if(bitPicture1D._Canvas != null) { bitPicture1D.CreateBitPicture(); }
+        }
 
         public override void OnApplyTemplate()
         {
@@ -110,11 +115,9 @@ namespace WpfCustomControlLibrary
             double scale = _Canvas.Width / 1440.0;
             if (BoolPattern != null)
             {
-
-
                 bool[] bo = new bool[1440];
                 BoolPattern.CopyTo(bo, 0);
-
+                _Canvas.Children.Clear();
                 double left = 0;
                 int index = 0;
                 foreach (var item in bo)

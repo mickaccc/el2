@@ -28,6 +28,13 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <ToolBar Grid.ColumnSpan="2">
+            <ToolBar.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Cover hinzufügen">
+                        
+                    </MenuItem>
+                </ContextMenu>
+            </ToolBar.ContextMenu>
             <Button Command="{Binding SaveAllCommand}" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
                 <icons:PackIconCoolicons Kind="Save"/>
             </Button>
@@ -60,7 +67,13 @@
             </i:Interaction.Triggers>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding PlanName}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding PlanName}" TextWrapping="Wrap">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Details"/>
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                    </TextBlock>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -69,7 +82,7 @@
                       drop:DragDrop.IsDropTarget="True" drop:DragDrop.DropHandler="{Binding}" >
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <wpfCustom:BitPicture1D BoolPattern="{Binding Definition}" WeekDay="{Binding WeekDayName}" 
+                        <wpfCustom:BitPicture1D BoolPattern="{Binding Definition, Mode=OneWay}" WeekDay="{Binding WeekDayName, Mode=OneTime}" 
                                                 StripeHeight="50" LowColor="AntiqueWhite" HighColor="{DynamicResource Theme.ShowcaseBrush}"
                                                 Margin="5" Height="70"/>
 

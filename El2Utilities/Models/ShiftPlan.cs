@@ -11,17 +11,17 @@ public partial class ShiftPlan
 
     public string PlanName { get; set; } = null!;
 
-    public byte[]? Sun { get; set; }
+    public byte[] Sun { get; set; } = null!;
 
-    public byte[]? Mon { get; set; }
+    public byte[] Mon { get; set; } = null!;
 
-    public byte[]? Tue { get; set; }
+    public byte[] Tue { get; set; } = null!;
 
-    public byte[]? Wed { get; set; }
+    public byte[] Wed { get; set; } = null!;
 
-    public byte[]? Thu { get; set; }
+    public byte[] Thu { get; set; } = null!;
 
-    public byte[]? Fre { get; set; }
+    public byte[] Fre { get; set; } = null!;
 
-    public byte[]? Sat { get; set; }
+    public byte[] Sat { get; set; } = null!;
 }
