@@ -41,8 +41,10 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand? _ShiftPlanSelectionChangedCommand;
         public RelayCommand ShiftPlanSelectionChangedCommand => _ShiftPlanSelectionChangedCommand ??= new RelayCommand(OnPlanSelected);
         public ICommand SaveAllCommand { get; private set; }
-        public ICommand DeleteCommand { get; private set;}
+        public ICommand DeleteCoverCommand { get; private set;}
         public ICommand SaveNewCommand { get; private set; }
+        public ICommand DetailCoverCommand { get; private set; }
+        public ICommand AddCoverCommand { get; private set; }
         public Dictionary<int, List<ShiftDay>> ShiftWeeks { get; set; }
         private List<ShiftDay> _ShiftWeek;
         public List<ShiftDay> ShiftWeek
@@ -65,10 +67,14 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             SaveAllCommand = new ActionCommand(OnSaveAllExecuted, OnSaveAllCanExecute);
             SaveNewCommand = new ActionCommand(OnSaveNewExecuted, OnSaveNewCanExecute);
-            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecuted);
+            DeleteCoverCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecuted);
+            AddCoverCommand = new ActionCommand(OnAddExecuted, OnAddCanExecuted);
+            DetailCoverCommand = new ActionCommand(OnDetailExecuted, OnDetailCanExecuted);
             LoadData();
             LoadCovers();           
         }
+
+
 
         public bool IsRubberChecked { get; set; }
         private List<ShiftCover> _ShiftCovers = [];
@@ -143,7 +149,25 @@ namespace Lieferliste_WPF.ViewModels
             }
             return null;
         }
+        private bool OnDetailCanExecuted(object arg)
+        {
+            return true;
+        }
 
+        private void OnDetailExecuted(object obj)
+        {
+            
+        }
+
+        private bool OnAddCanExecuted(object arg)
+        {
+            return false;
+        }
+
+        private void OnAddExecuted(object obj)
+        {
+            
+        }
         private void OnPlanSelected(object obj)
         {
             ShiftWeek = ShiftWeeks[SelectedPlan.Id];

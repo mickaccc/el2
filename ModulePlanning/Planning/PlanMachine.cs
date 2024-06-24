@@ -278,8 +278,11 @@ namespace ModulePlanning.Planning
                     var diff = l.Subtract(start);
 
                     if (diff.TotalMinutes == 0) p.Extends = "---";
-                    else p.Extends = string.Format("({0}){1:N2}h \n{2}", p.QuantityMissNeo, diff.TotalHours, l.ToString("dd.MM.yy - HH:mm"));
-                    start = l;
+                    else
+                    {
+                        p.Extends = string.Format("({0}){1:N2}h \n{2}", p.QuantityMissNeo, diff.TotalHours, l.ToString("dd.MM.yy - HH:mm"));
+                        p.Alert = (p.SpaetEnd != null) ? p.SpaetEnd.Value.Date < l.Date : false;
+                    }
                     p.RunPropertyChanged();
                 }
             }

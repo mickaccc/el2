@@ -10,6 +10,8 @@ namespace El2Core.Models;
 public partial class Vorgang : ModelBase
 {
     [NotMapped]
+    public bool? Alert { get; set; }
+    [NotMapped]
     public string? Extends { get; set; }
     public string VorgangId { get; set; } = null!;
 

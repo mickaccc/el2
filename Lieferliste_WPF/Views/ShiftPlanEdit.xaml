@@ -30,9 +30,7 @@
         <ToolBar Grid.ColumnSpan="2">
             <ToolBar.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Cover hinzufügen">
-                        
-                    </MenuItem>
+                    <MenuItem Header="Cover hinzufügen" Command="{Binding AddCoverCommand}"/>
                 </ContextMenu>
             </ToolBar.ContextMenu>
             <Button Command="{Binding SaveAllCommand}" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
@@ -54,7 +52,16 @@
                 </ListBox.ItemsPanel>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding CoverName}" TextWrapping="WrapWithOverflow" Margin="10"/>
+                        <TextBlock Text="{Binding CoverName}" TextWrapping="WrapWithOverflow" Margin="10">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Cover löschen" Command="{Binding DeleteCoverCommand}"
+                                        CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                                    <MenuItem Header="Cover Details" Command="{Binding DetailCoverCommand}"
+                                        CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
