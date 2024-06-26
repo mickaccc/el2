@@ -6,6 +6,7 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Prism.Ioc;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Frozen;
@@ -37,6 +38,7 @@ namespace Lieferliste_WPF.ViewModels
     internal class ShiftPlanEditViewModel : ViewModelBase, IDropTarget
     {
         private IContainerProvider _container;
+        private IDialogService _dialogService;
         public string Title { get; } = "Schichtplan";
         private RelayCommand? _ShiftPlanSelectionChangedCommand;
         public RelayCommand ShiftPlanSelectionChangedCommand => _ShiftPlanSelectionChangedCommand ??= new RelayCommand(OnPlanSelected);
@@ -46,25 +48,25 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand DetailCoverCommand { get; private set; }
         public ICommand AddCoverCommand { get; private set; }
         public Dictionary<int, List<ShiftDay>> ShiftWeeks { get; set; }
-        private List<ShiftDay> _ShiftWeek;
-        public List<ShiftDay> ShiftWeek
+        private ShiftWeek? _SelectedPlan;
+        public ShiftWeek? SelectedPlan
         {
-            get { return _ShiftWeek; }
+            get { return _SelectedPlan; }
             set
             {
-                if (_ShiftWeek != value)
+                if (_SelectedPlan != value)
                 {
-                    _ShiftWeek = value;
-                    NotifyPropertyChanged(() => ShiftWeek);
+                    _SelectedPlan = value;
+                    NotifyPropertyChanged(() => SelectedPlan);
                 }
             }
         }
-        public ShiftPlan? SelectedPlan { get; set; }
-        public List<ShiftPlan> ShiftPlans { get; set; }
+        public List<ShiftWeek> ShiftWeekPlans { get; set; }
         public List<string> Shifts { get; set; }
-        public ShiftPlanEditViewModel(IContainerProvider container)
+        public ShiftPlanEditViewModel(IContainerProvider container, IDialogService dialogService)
         {
             _container = container;
+            _dialogService = dialogService;
             SaveAllCommand = new ActionCommand(OnSaveAllExecuted, OnSaveAllCanExecute);
             SaveNewCommand = new ActionCommand(OnSaveNewExecuted, OnSaveNewCanExecute);
             DeleteCoverCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecuted);
@@ -110,30 +112,34 @@ namespace Lieferliste_WPF.ViewModels
             var shift = db.ShiftPlans.AsNoTracking().OrderBy(x => x.Id);
             if (shift.Any())
             {
-                ShiftPlans = shift.ToList();
+
                 ShiftWeeks = [];
+                ShiftWeekPlans = [];
                 foreach (var item in shift)
                 {
+                    var week = new ShiftWeek();
+                    week.Id = item.Id;
+                    week.ShiftPlanName = item.PlanName;
                     List<ShiftDay> shiftDays = new();
                     Byte[] bytes;
                     bytes = item.Sun;
-                    shiftDays.Add(new ShiftDay(0, new BitArray(bytes)));
+                    week.ShiftWeekDays.Add(new ShiftDay(0, new BitArray(bytes)));
                     bytes = item.Mon;
-                    shiftDays.Add(new ShiftDay(1, new BitArray(bytes)));
+                    week.ShiftWeekDays.Add(new ShiftDay(1, new BitArray(bytes)));
                     bytes = item.Tue;
-                    shiftDays.Add(new ShiftDay(2, new BitArray(bytes)));
+                    week.ShiftWeekDays.Add(new ShiftDay(2, new BitArray(bytes)));
                     bytes = item.Wed;
-                    shiftDays.Add(new ShiftDay(3, new BitArray(bytes)));
+                    week.ShiftWeekDays.Add(new ShiftDay(3, new BitArray(bytes)));
                     bytes = item.Thu;
-                    shiftDays.Add(new ShiftDay(4, new BitArray(bytes)));
+                    week.ShiftWeekDays.Add(new ShiftDay(4, new BitArray(bytes)));
                     bytes = item.Fre;
-                    shiftDays.Add(new ShiftDay(5, new BitArray(bytes)));
+                    week.ShiftWeekDays.Add(new ShiftDay(5, new BitArray(bytes)));
                     bytes = item.Sat;
-                    shiftDays.Add(new ShiftDay(6, new BitArray(bytes)));
+                    week.ShiftWeekDays.Add(new ShiftDay(6, new BitArray(bytes)));
 
-                    ShiftWeeks.Add(item.Id, shiftDays);
+                    ShiftWeekPlans.Add(week);
                 }
-                ShiftWeek = ShiftWeeks[ShiftPlans.First().Id];
+                SelectedPlan = ShiftWeekPlans.FirstOrDefault();
             }
         }
         private Byte[]? GetDefinition(ShiftPlan shiftPlanDb, int index)
@@ -157,6 +163,17 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnDetailExecuted(object obj)
         {
+            if (obj is ShiftCover cover)
+            {
+                var par = new DialogParameters();
+                par.Add("Cover", cover);
+
+                _dialogService.Show("DetailCoverDialog", par, OnDetailCallBack);
+            }
+        }
+
+        private void OnDetailCallBack(IDialogResult result)
+        {
             
         }
 
@@ -171,7 +188,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnPlanSelected(object obj)
         {
-            ShiftWeek = ShiftWeeks[SelectedPlan.Id];
+            
 
         }
         private bool OnDeleteCanExecuted(object arg)
@@ -201,20 +218,26 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveAllExecuted(object obj)
         {
-            if (obj is ShiftPlan shiftPlan)
+            if (obj is ShiftWeek shiftWeek)
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var planDb = db.ShiftPlans.SingleOrDefault(x => x.Id == shiftPlan.Id);
+                var planDb = db.ShiftPlans.SingleOrDefault(x => x.Id == shiftWeek.Id);
                 if (planDb != null)
                 {
-                    planDb.Sun = shiftPlan.Sun;
-                    planDb.Mon = shiftPlan.Mon;
-                    planDb.Tue = shiftPlan.Tue;
-                    planDb.Wed = shiftPlan.Wed;
-                    planDb.Thu = shiftPlan.Thu;
-                    planDb.Fre = shiftPlan.Fre;
-                    planDb.Sat = shiftPlan.Sat;
+                    planDb.Sun = shiftWeek.GetDayDefinition(0);
+                    planDb.Mon = shiftWeek.GetDayDefinition(1);
+                    planDb.Tue = shiftWeek.GetDayDefinition(2);
+                    planDb.Wed = shiftWeek.GetDayDefinition(3);
+                    planDb.Thu = shiftWeek.GetDayDefinition(4);
+                    planDb.Fre = shiftWeek.GetDayDefinition(5);
+                    planDb.Sat = shiftWeek.GetDayDefinition(6);
 
+                    db.SaveChanges();
+                }
+                else
+                {
+                    var plan = shiftWeek.GetNewShiftPlan();
+                    db.ShiftPlans.Add(plan);
                     db.SaveChanges();
                 }
             }
@@ -240,9 +263,9 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
             else { item.Definition.Or(cover); }
-            item.DefinitionChanged();
-            ShiftWeek.First(x => x.Id == item.Id).Definition = item.Definition;
-            ShiftWeeks[4][item.Id].Definition = item.Definition;
+            var s = SelectedPlan;
+            SelectedPlan = null;
+            SelectedPlan = s;
             
         }
         public class ShiftDay(int id, BitArray definition) : ViewModelBase
@@ -262,6 +285,29 @@ namespace Lieferliste_WPF.ViewModels
             public void DefinitionChanged()
             {
                 NotifyPropertyChanged(() => Definition);
+            }
+        }
+        public class ShiftWeek
+        {
+            public int Id { get; set; }
+            public string ShiftPlanName { get; set; }
+            public List<ShiftDay> ShiftWeekDays { get; set; } = [];
+
+            public ShiftPlan GetNewShiftPlan()
+            {
+                ShiftPlan shiftPlan = new ShiftPlan();
+
+                shiftPlan.PlanName = ShiftPlanName;
+                //shiftPlan.Sun = ShiftWeekDays[0].Definition.CopyTo;
+
+                return shiftPlan;
+            }
+            public Byte[] GetDayDefinition(int id)
+            {
+                byte[] bytes = new byte[1440];
+                ShiftWeekDays.First(x => x.Id == id).Definition.CopyTo(bytes, 0);
+
+                return bytes;
             }
         }
         void addshift()

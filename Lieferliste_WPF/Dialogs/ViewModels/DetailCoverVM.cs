@@ -1,6 +1,7 @@
 ﻿using El2Core.Models;
 using Prism.Services.Dialogs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
@@ -9,7 +10,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
     {
         public string Title => "Cover Details";
         public ShiftCover Cover { get; set; }
-        List<Tuple<TimeOnly,TimeOnly>> TimeList { get; set; }
+        public List<string[]> TimeList { get; set; }
         public event Action<IDialogResult> RequestClose;
 
         public bool CanCloseDialog()
@@ -27,7 +28,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             Cover = (ShiftCover)parameters.GetValue<ShiftCover>("Cover");
             if (TimeList == null) TimeList = [];
             bool[] bit = new bool[1440];
-            Cover.CoverMask?.CopyTo(bit, 0);
+            BitArray bitArray = new BitArray(Cover.CoverMask);
+            bitArray.CopyTo(bit, 0);
             int start = 0;
             bool high = false;
             for (int i = 0; i < bit.Length; i++)
@@ -47,16 +49,17 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 }
                 else if (i == bit.Length && high)
                 {
-                    TimeList.Add(Tuple.Create(
-                        new TimeOnly(0, start),
-                        new TimeOnly(0, i)));
+                    TimeList.Add([
+                        new TimeOnly(start/60, start%60).ToString(),
+                        new TimeOnly(i/60, i%60).ToString() ]);
                 }
                 else if (high && bit[i + 1] == false)
                 {
                     high = false;
-                    TimeList.Add(Tuple.Create(
-                       new TimeOnly(0, start),
-                       new TimeOnly(0, i)));
+      
+                    TimeList.Add([
+                       new TimeOnly(start/60, start%60).ToString(),
+                       new TimeOnly(i/60, i%60).ToString() ]);
                 }
             }
         }
