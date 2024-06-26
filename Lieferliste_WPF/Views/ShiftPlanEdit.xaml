@@ -33,7 +33,9 @@
                     <MenuItem Header="Cover hinzufügen" Command="{Binding AddCoverCommand}"/>
                 </ContextMenu>
             </ToolBar.ContextMenu>
-            <Button Command="{Binding SaveAllCommand}" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
+            <Button Command="{Binding SaveAllCommand}"
+                    CommandParameter="{Binding SelectedItem, ElementName=ShiftPlans}"
+                    Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
                 <icons:PackIconCoolicons Kind="Save"/>
             </Button>
             <Button Command="{Binding SaveNewCommand}" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
@@ -66,7 +68,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </ToolBar>
-        <ListBox Grid.Row="1" ItemsSource="{Binding ShiftPlans}" SelectedItem="{Binding SelectedPlan, Mode=OneWayToSource}" >
+        <ListBox Grid.Row="1" ItemsSource="{Binding ShiftPlans}" SelectedItem="{Binding SelectedPlan, Mode=OneWayToSource}" x:Name="ShiftPlans" >
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
                     <i:InvokeCommandAction Command="{Binding ShiftPlanSelectionChangedCommand}"/>

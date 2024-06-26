@@ -71,7 +71,8 @@ namespace Lieferliste_WPF.ViewModels
             AddCoverCommand = new ActionCommand(OnAddExecuted, OnAddCanExecuted);
             DetailCoverCommand = new ActionCommand(OnDetailExecuted, OnDetailCanExecuted);
             LoadData();
-            LoadCovers();           
+            LoadCovers();
+            
         }
 
 
@@ -200,6 +201,23 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveAllExecuted(object obj)
         {
+            if (obj is ShiftPlan shiftPlan)
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var planDb = db.ShiftPlans.SingleOrDefault(x => x.Id == shiftPlan.Id);
+                if (planDb != null)
+                {
+                    planDb.Sun = shiftPlan.Sun;
+                    planDb.Mon = shiftPlan.Mon;
+                    planDb.Tue = shiftPlan.Tue;
+                    planDb.Wed = shiftPlan.Wed;
+                    planDb.Thu = shiftPlan.Thu;
+                    planDb.Fre = shiftPlan.Fre;
+                    planDb.Sat = shiftPlan.Sat;
+
+                    db.SaveChanges();
+                }
+            }
             
         }
         public void DragOver(IDropInfo dropInfo)
@@ -223,7 +241,9 @@ namespace Lieferliste_WPF.ViewModels
             }
             else { item.Definition.Or(cover); }
             item.DefinitionChanged();
-               
+            ShiftWeek.First(x => x.Id == item.Id).Definition = item.Definition;
+            ShiftWeeks[4][item.Id].Definition = item.Definition;
+            
         }
         public class ShiftDay(int id, BitArray definition) : ViewModelBase
         {
@@ -261,9 +281,11 @@ namespace Lieferliste_WPF.ViewModels
             //bo.AsSpan().Slice(130, 300 - 130).Fill(true);
             //bo.AsSpan().Slice(1320, 1440 - 1320).Fill(true);
 
-            bo.AsSpan().Slice(810, 990 - 810).Fill(true);
-            bo.AsSpan().Slice(1000, 1150 - 1000).Fill(true);
-            bo.AsSpan().Slice(1170, 1320 - 1170).Fill(true);
+            //bo.AsSpan().Slice(810, 990 - 810).Fill(true);
+            //bo.AsSpan().Slice(1000, 1150 - 1000).Fill(true);
+            //bo.AsSpan().Slice(1170, 1320 - 1170).Fill(true);
+
+            bo.AsSpan().Slice(120, 15).Fill(true);
 
             //bo.AsSpan().Slice(300, 510 - 300).Fill(true);
             //bo.AsSpan().Slice(520, 690 - 520).Fill(true);
@@ -285,7 +307,7 @@ namespace Lieferliste_WPF.ViewModels
             };
             var scc = new ShiftCover()
             {
-                CoverName = "Spätschicht",
+                CoverName = "PausNacht",
                 CoverMask = bytes
             };
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
