@@ -110,7 +110,7 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50*"/>
+                                <ColumnDefinition Width="40*"/>
                                 <ColumnDefinition Width="200*"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.ColumnSpan="2" Content="Personal Special Filter" Background="Aquamarine" HorizontalContentAlignment="Center"/>
@@ -118,7 +118,7 @@
                                      Background="AntiqueWhite">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding}"/>
+                                        <TextBlock Text="{Binding}" TextWrapping="Wrap" MaxWidth="70"/>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
