@@ -4,18 +4,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Lieferliste_WPF.Dialogs" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:Lieferliste_WPF.Dialogs"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="300" Name="cover">
     <Grid>
-        <DataGrid ItemsSource="{Binding TimeList}" AutoGenerateColumns="False">
+        <Grid.Resources>
+            <Style TargetType="materialDesign:TimePicker">
+                <Setter Property="IsEnabled" Value="{Binding Path=DataContext.IsEditable, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+
+        </Grid.RowDefinitions>
+        <Label Content="{Binding Cover.CoverName}"/>
+        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeList}" AutoGenerateColumns="False" CanUserAddRows="True">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Startzeit">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding [0]}"/>
-                                <materialDesign:TimePicker SelectedTime="{Binding [0]}"  Is24Hours="True" IsHeaderVisible="True"/>
+                                <materialDesign:TimePicker SelectedTime="{Binding [0]}"  Is24Hours="True"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -33,5 +46,8 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+        <Button Grid.Row="2" Content="Schliessen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                Command="{Binding CloseDialogCommand}"/>
     </Grid>
+    
 </UserControl>

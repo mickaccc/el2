@@ -1,8 +1,10 @@
 ﻿using El2Core.Models;
+using Prism.Commands;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
@@ -10,8 +12,12 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
     {
         public string Title => "Cover Details";
         public ShiftCover Cover { get; set; }
+        public bool IsEditable { get; } = false;
         public List<string[]> TimeList { get; set; }
         public event Action<IDialogResult> RequestClose;
+        private DelegateCommand? _closeDialogCommand;
+        public DelegateCommand CloseDialogCommand =>
+            _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand (OnDialogClosed));
 
         public bool CanCloseDialog()
         {
@@ -20,9 +26,23 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void OnDialogClosed()
         {
-           
-        }
+            ButtonResult result = ButtonResult.None;
+            IDialogParameters param = new DialogParameters();
 
+            //if (parameter == null)
+            //    result = ButtonResult.Cancel;
+            //else if (parameter is Vorgang v)
+            //{
+            //    result = ButtonResult.Yes;
+            //    param.Add("Comment", v.BemT);
+            //    param.Add("VID", _vid);
+            //}
+            RaiseRequestClose(new DialogResult(result, param));
+        }
+        public virtual void RaiseRequestClose(IDialogResult dialogResult)
+        {
+            RequestClose?.Invoke(dialogResult);
+        }
         public void OnDialogOpened(IDialogParameters parameters)
         {
             Cover = (ShiftCover)parameters.GetValue<ShiftCover>("Cover");

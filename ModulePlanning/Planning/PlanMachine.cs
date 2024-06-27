@@ -172,7 +172,7 @@ namespace ModulePlanning.Planning
                 {
                     _SelectedRadioButton = value;
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    db.Ressources.First(x => x.RessourceId == _rId).ShiftPlanId = _SelectedRadioButton;
+                    db.Ressources.First(x => x.RessourceId == _rId).ShiftPlanId = (_SelectedRadioButton == 0) ? null : _SelectedRadioButton;
                     db.SaveChanges();
                 }
             }
@@ -237,7 +237,7 @@ namespace ModulePlanning.Planning
             ProcessesCVSource.LiveSortingProperties.Add("SortPos");
  
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-
+            _ShiftPlans.Add(0, "nicht berechnen");
             foreach(var s in db.ShiftPlans.OrderBy(x => x.Id))
             {
                 _ShiftPlans.Add(s.Id, s.PlanName);
