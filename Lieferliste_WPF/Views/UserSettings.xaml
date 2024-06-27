@@ -110,7 +110,7 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="20*"/>
+                                <ColumnDefinition Width="50*"/>
                                 <ColumnDefinition Width="200*"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.ColumnSpan="2" Content="Personal Special Filter" Background="Aquamarine" HorizontalContentAlignment="Center"/>

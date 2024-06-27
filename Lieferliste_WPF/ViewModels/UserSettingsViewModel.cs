@@ -77,7 +77,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_personalFilterName != value)
                 {
                     _personalFilterName = value;
-                                      
+                    NotifyPropertyChanged(() => PersonalFilterName);          
                 }
             }
         }
@@ -90,7 +90,9 @@ namespace Lieferliste_WPF.ViewModels
                 if (_personalFilterRegex != value)
                 {
                     _personalFilterRegex = value;
-                    _filterContainer[_personalFilterName].Pattern = _personalFilterRegex;
+                    NotifyPropertyChanged(() => PersonalFilterRegex);
+                    if(_filterContainer.Keys.Contains(_personalFilterName))
+                        _filterContainer[_personalFilterName].Pattern = _personalFilterRegex;
                 }
             }
         }
@@ -103,8 +105,10 @@ namespace Lieferliste_WPF.ViewModels
                 if (_personalFilterField != value)
                 {
                     _personalFilterField = value;
+                    NotifyPropertyChanged(() => PersonalFilterField);
                     if (_personalFilterField != null)
-                        _filterContainer[_personalFilterName].Field = _personalFilterField.ToValueTuple();
+                        if(_filterContainer.Keys.Contains(_personalFilterName))
+                            _filterContainer[_personalFilterName].Field = _personalFilterField.ToValueTuple();
                 }
             }
         }
@@ -166,9 +170,12 @@ namespace Lieferliste_WPF.ViewModels
             if (PersonalFilterView.CurrentItem != null)
             {
                 var pf = PersonalFilterView.CurrentItem.ToString();
-                PersonalFilterName = _filterContainer[pf].Name;
-                PersonalFilterField = _filterContainer[pf].Field.ToTuple();
-                PersonalFilterRegex = _filterContainer[pf].Pattern;
+                if (_filterContainer.Keys.Contains(pf))
+                {
+                    PersonalFilterName = _filterContainer[pf].Name;
+                    PersonalFilterField = _filterContainer[pf].Field.ToTuple();
+                    PersonalFilterRegex = _filterContainer[pf].Pattern;
+                }
             }
         }
  
@@ -230,9 +237,12 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnPersonalFilterNewExecuted(object obj)
         {
-            PersonalFilterName = string.Empty;
-            PersonalFilterField = null;
-            PersonalFilterRegex = string.Empty;           
+            if (string.IsNullOrEmpty(PersonalFilterName) == false)
+            {
+                PersonalFilterName = string.Empty;
+                PersonalFilterField = null;
+                PersonalFilterRegex = string.Empty;
+            }
         }
 
         private bool OnPersonalFilterAddCanExecute(object arg)
