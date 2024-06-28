@@ -174,17 +174,33 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnDetailCallBack(IDialogResult result)
         {
+            if (result.Result == ButtonResult.OK)
+            {
+                var c = result.Parameters.GetValue<ShiftCover>("Cover");
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+
+                if (c.Id == 0)
+                {
+                    db.ShiftCovers.Add(c);
+                }
+                else
+                {
+                    db.ShiftCovers.Update(c);
+                }
+                db.SaveChanges();
+                
+            }
             
         }
 
         private bool OnAddCanExecuted(object arg)
         {
-            return false;
+            return true;
         }
 
         private void OnAddExecuted(object obj)
         {
-            
+            _dialogService.Show("DetailCoverDialog", OnDetailCallBack);
         }
         private void OnPlanSelected(object obj)
         {

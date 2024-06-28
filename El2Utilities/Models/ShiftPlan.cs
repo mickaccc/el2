@@ -24,4 +24,8 @@ public partial class ShiftPlan
     public byte[] Fre { get; set; } = null!;
 
     public byte[] Sat { get; set; } = null!;
+
+    public bool Lock { get; set; }
+
+    public virtual ICollection<Ressource> Ressources { get; set; } = new List<Ressource>();
 }

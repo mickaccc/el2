@@ -6,12 +6,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Lieferliste_WPF.Dialogs"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="300" Name="cover">
     <Grid>
         <Grid.Resources>
+            <conv:BooleanInverter x:Key="boolInv"/>
+            <conv:TimeOnlyConverter x:Key="TimeOnly"/>
             <Style TargetType="materialDesign:TimePicker">
                 <Setter Property="IsEnabled" Value="{Binding Path=DataContext.IsEditable, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                <Setter Property="SelectedTimeFormat" Value="Short"/>
             </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -20,26 +25,23 @@
             <RowDefinition Height="50"/>
 
         </Grid.RowDefinitions>
-        <Label Content="{Binding Cover.CoverName}"/>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeList}" AutoGenerateColumns="False" CanUserAddRows="True">
+        <TextBox Text="{Binding Cover.CoverName}" IsReadOnly="{Binding IsEditable, Converter={StaticResource boolInv}}"/>
+        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" >
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Startzeit">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding [0]}"/>
-                                <materialDesign:TimePicker SelectedTime="{Binding [0]}"  Is24Hours="True"/>
-                            </StackPanel>
+                                     
+                                <mah:TimePicker SelectedDateTime="{Binding Path=Start, UpdateSourceTrigger=LostFocus}" SelectedTimeFormat="Short" />
+
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Endzeit"> 
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding [1]}"/>
-                                <materialDesign:TimePicker SelectedTime="{Binding [1]}" Is24Hours="True"/>
-                            </StackPanel>
+
+                            <mah:TimePicker SelectedDateTime="{Binding Path=End, UpdateSourceTrigger=LostFocus}" InputScope="Time" SelectedTimeFormat="Short" mah:ValidationHelper.ShowValidationErrorOnMouseOver="True" mah:ScrollViewerHelper.IsHorizontalScrollWheelEnabled="True" />
 
                         </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>

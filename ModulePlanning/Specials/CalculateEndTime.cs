@@ -32,8 +32,7 @@ namespace ModulePlanning.Specials
             this.container = container;
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            //var w = db.ShiftPlans.SingleOrDefault(x => x.Ressources.Any(x => x.RessourceId == rid));
-            var s = db.ShiftPlans.SingleOrDefault(x => x.Id == 1);
+            var s = db.ShiftPlans.SingleOrDefault(x => x.Ressources.Any(x => x.RessourceId == rid));
             List<bool[]> days = new List<bool[]>();
             Byte[] bytes;
             bool[] sbools = new bool[1440];
