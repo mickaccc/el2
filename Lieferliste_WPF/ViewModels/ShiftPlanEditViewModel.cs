@@ -77,8 +77,6 @@ namespace Lieferliste_WPF.ViewModels
             
         }
 
-
-
         public bool IsRubberChecked { get; set; }
         private List<ShiftCover> _ShiftCovers = [];
         public ICollectionView ShiftCovers { get; private set; }
@@ -189,8 +187,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 db.SaveChanges();
                 
-            }
-            
+            }          
         }
 
         private bool OnAddCanExecuted(object arg)

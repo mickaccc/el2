@@ -8,15 +8,16 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="300" Name="cover">
     <Grid>
         <Grid.Resources>
             <conv:BooleanInverter x:Key="boolInv"/>
-            <conv:TimeOnlyConverter x:Key="TimeOnly"/>
-            <Style TargetType="materialDesign:TimePicker">
-                <Setter Property="IsEnabled" Value="{Binding Path=DataContext.IsEditable, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <Style TargetType="mah:TimePicker">
+                <Setter Property="IsReadOnly" Value="{Binding Path=DataContext.IsLocked, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                 <Setter Property="SelectedTimeFormat" Value="Short"/>
+                <Setter Property="InputScope" Value="Time"/>
             </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -25,14 +26,19 @@
             <RowDefinition Height="50"/>
 
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding Cover.CoverName}" IsReadOnly="{Binding IsEditable, Converter={StaticResource boolInv}}"/>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" >
+        <TextBox Text="{Binding Cover.CoverName}" IsReadOnly="{Binding IsLocked}"/>
+        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" CanUserAddRows="False" >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="AddingNewItem">
+                    <i:InvokeCommandAction Command="{Binding AddNewCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Startzeit">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                                      
-                                <mah:TimePicker SelectedDateTime="{Binding Path=Start, UpdateSourceTrigger=LostFocus}" SelectedTimeFormat="Short" />
+                                <mah:TimePicker SelectedDateTime="{Binding Path=Start, UpdateSourceTrigger=LostFocus}"   />
 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -41,7 +47,9 @@
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
 
-                            <mah:TimePicker SelectedDateTime="{Binding Path=End, UpdateSourceTrigger=LostFocus}" InputScope="Time" SelectedTimeFormat="Short" mah:ValidationHelper.ShowValidationErrorOnMouseOver="True" mah:ScrollViewerHelper.IsHorizontalScrollWheelEnabled="True" />
+                            <mah:TimePicker SelectedDateTime="{Binding Path=End, UpdateSourceTrigger=LostFocus}" 
+                                            mah:ValidationHelper.ShowValidationErrorOnMouseOver="True"
+                                            mah:ScrollViewerHelper.IsHorizontalScrollWheelEnabled="True" />
 
                         </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>

@@ -19,7 +19,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
     {
         public string Title => "Cover Details";
         public ShiftCover Cover { get; set; }
-        public bool IsEditable { get; private set; }
+        public bool IsLocked { get; private set; }
         private List<TimeTuple> TimeList { get; set; } = [];
         public ICollectionView TimeListView { get; private set; }
         ButtonResult result;
@@ -30,6 +30,14 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         private DelegateCommand? _cancelDialogCommand;
         public DelegateCommand CancelDialogCommand =>
             _cancelDialogCommand ?? (_cancelDialogCommand = new DelegateCommand(OnCancelDialog));
+        private DelegateCommand? _addingNewCommand;
+        public DelegateCommand AddingNewCommand =>
+            _addingNewCommand ?? (_addingNewCommand = new DelegateCommand(OnAddingNew));
+
+        private void OnAddingNew()
+        {
+            
+        }
 
         private void OnOkDialog()
         {
@@ -75,12 +83,13 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             if (Cover == null)
             {
                 Cover = new ShiftCover();
-                IsEditable = true;
+                TimeList.Add(new TimeTuple());
+                IsLocked = true;
             }
             else
             {
                 LoadTimeList();
-                IsEditable = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
+                IsLocked = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
             }
             TimeListView = CollectionViewSource.GetDefaultView(TimeList);
             TimeListView.CollectionChanged += OnTimeListChanged;
