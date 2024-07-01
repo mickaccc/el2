@@ -172,6 +172,7 @@
                         </MultiBinding>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
+                <DataGridTextColumn IsReadOnly="True" Binding="{Binding VorgangId}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

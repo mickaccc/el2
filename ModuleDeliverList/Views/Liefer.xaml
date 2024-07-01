@@ -64,7 +64,7 @@
         <Menu>
             <MenuItem Style="{StaticResource MahApps.Styles.MenuItem}">
                 <MenuItem.Header>
-                    <icon:Coolicons Kind="Hamburger"/>
+                    <icon:Coolicons Kind="HamburgerLg"/>
                 </MenuItem.Header>
                 <!--<MenuItem Header="Erzeuge PDF" Command="{Binding CreatePdfCommand}"/>-->
                 <MenuItem Header="Erzeuge XPS" Command="{Binding CreateRtfCommand}"/>

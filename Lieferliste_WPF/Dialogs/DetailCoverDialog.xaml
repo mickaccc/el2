@@ -8,6 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+             xmlns:service="clr-namespace:El2Core.Services;assembly=El2Core"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="300" Name="cover">
@@ -19,6 +20,24 @@
                 <Setter Property="SelectedTimeFormat" Value="Short"/>
                 <Setter Property="InputScope" Value="Time"/>
             </Style>
+
+            <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="true">
+                        <Setter Property="ToolTip"
+        Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                        Path=(Validation.Errors)/ErrorContent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <ControlTemplate x:Key="validationTemplate">
+                <DockPanel>
+                    <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                    <AdornedElementPlaceholder/>
+                </DockPanel>
+            </ControlTemplate>
+
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -26,7 +45,17 @@
             <RowDefinition Height="50"/>
 
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding Cover.CoverName}" IsReadOnly="{Binding IsLocked}"/>
+        <TextBox IsReadOnly="{Binding IsLocked}"
+                 Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                 Style="{StaticResource textBoxInError}">
+            <TextBox.Text>
+                <Binding Path="Cover.CoverName" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <service:StringEmptyRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
         <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" CanUserAddRows="False" >
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="AddingNewItem">

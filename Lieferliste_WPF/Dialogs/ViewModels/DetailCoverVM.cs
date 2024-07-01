@@ -2,6 +2,7 @@
 using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
+using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Prism.Commands;
 using Prism.Services.Dialogs;
@@ -15,7 +16,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
-    internal class DetailCoverVM : IDialogAware
+    internal class DetailCoverVM : ViewModelBase, IDialogAware
     {
         public string Title => "Cover Details";
         public ShiftCover Cover { get; set; }
@@ -33,6 +34,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         private DelegateCommand? _addingNewCommand;
         public DelegateCommand AddingNewCommand =>
             _addingNewCommand ?? (_addingNewCommand = new DelegateCommand(OnAddingNew));
+
 
         private void OnAddingNew()
         {
@@ -84,7 +86,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             {
                 Cover = new ShiftCover();
                 TimeList.Add(new TimeTuple());
-                IsLocked = true;
+                IsLocked = false;
             }
             else
             {
@@ -170,6 +172,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 var dt = DateTime.Parse(timeOnly).TimeOfDay.ToString();
                 return (int)Math.Round(TimeSpan.Parse(dt).TotalMinutes);
             }
+ 
         }
 
     }

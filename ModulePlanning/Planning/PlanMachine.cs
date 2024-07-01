@@ -237,12 +237,11 @@ namespace ModulePlanning.Planning
             ProcessesCVSource.LiveSortingProperties.Add("SortPos");
  
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            _ShiftPlans.Add(0, "nicht berechnen");
-            foreach(var s in db.ShiftPlans.OrderBy(x => x.Id))
+
+            foreach(var s in db.ShiftPlans.OrderBy(x => x.Id).AsNoTracking())
             {
                 _ShiftPlans.Add(s.Id, s.PlanName);
-            }
-            
+            }            
         }
 
         private void Initialize()
@@ -284,6 +283,7 @@ namespace ModulePlanning.Planning
                         p.Alert = (p.SpaetEnd != null) ? p.SpaetEnd.Value.Date < l.Date : false;
                     }
                     p.RunPropertyChanged();
+                    start = l;
                 }
             }
             catch (Exception ex)
