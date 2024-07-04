@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Lieferliste_WPF.Dialogs"
+             xmlns:vm="clr-namespace:Lieferliste_WPF.Dialogs.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
@@ -39,23 +40,25 @@
             </ControlTemplate>
 
         </Grid.Resources>
+        <Grid.BindingGroup>
+            <BindingGroup>
+                <BindingGroup.ValidationRules>
+                    <vm:CoverValidationRule/>
+                </BindingGroup.ValidationRules>
+            </BindingGroup>
+        </Grid.BindingGroup>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="100"/>
             <RowDefinition/>
             <RowDefinition Height="50"/>
 
         </Grid.RowDefinitions>
-        <TextBox IsReadOnly="{Binding IsLocked}"
-                 Validation.ErrorTemplate="{StaticResource validationTemplate}"
-                 Style="{StaticResource textBoxInError}">
-            <TextBox.Text>
-                <Binding Path="Cover.CoverName" UpdateSourceTrigger="PropertyChanged">
-                    <Binding.ValidationRules>
-                        <service:StringEmptyRule/>
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+        <StackPanel>
+            <TextBox IsReadOnly="{Binding IsLocked}" Text="{Binding Path=Cover.CoverName, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label x:Name="LblErrors" Content="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}" 
+                 Foreground="Red" />
+        </StackPanel>
+
         <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" CanUserAddRows="False" >
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="AddingNewItem">

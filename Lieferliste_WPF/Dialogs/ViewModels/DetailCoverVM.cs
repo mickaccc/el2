@@ -11,8 +11,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using static Lieferliste_WPF.Dialogs.ViewModels.DetailCoverVM;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
@@ -176,4 +179,23 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         }
 
     }
+    public class CoverValidationRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            BindingGroup bindingGroup = (BindingGroup)value;
+            if(bindingGroup.Items.Count == 2)
+            {
+                ShiftCover shiftCover = (ShiftCover)bindingGroup.Items[1];
+                string coverName = (string)bindingGroup.GetValue(shiftCover, "CoverName");
+                DetailCoverVM timeTuple = (DetailCoverVM)bindingGroup.Items[0];
+                //string startTime = (string)bindingGroup.GetValue(timeTuple, "Start");
+                //string endTime = (string)bindingGroup.GetValue(timeTuple, "End");
+
+                if(string.IsNullOrWhiteSpace(coverName)) return new ValidationResult(false, "Name ist Pflichtfeld");
+            }
+            return ValidationResult.ValidResult;
+        }
+    }
+
 }
