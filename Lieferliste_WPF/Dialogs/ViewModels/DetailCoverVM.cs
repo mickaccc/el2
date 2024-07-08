@@ -50,8 +50,11 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             foreach (var t in TimeList)
             {
                 bool[] bools = new bool[1440];
+                if(string.IsNullOrWhiteSpace(t.Start) || string.IsNullOrWhiteSpace(t.End) || string.IsNullOrWhiteSpace(Cover.CoverName) ) { break; }
                 int start = t.TotalMinute(t.Start);
                 int end = t.TotalMinute(t.End);
+                if(end == 0) { end = 1440; }
+                if(start > end) { break; }
                 bools.AsSpan().Slice(start, end - start).Fill(true);
                 BitArray bit = new BitArray(bools);
                 byte[] bytes = new byte[bools.Length];

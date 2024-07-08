@@ -54,7 +54,8 @@
 
         </Grid.RowDefinitions>
         <StackPanel>
-            <TextBox IsReadOnly="{Binding IsLocked}" Text="{Binding Path=Cover.CoverName, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox IsReadOnly="{Binding IsLocked}" Text="{Binding Path=Cover.CoverName, UpdateSourceTrigger=PropertyChanged}"
+                     materialDesign:HintAssist.Hint="Bitte Name eingeben"/>
             <Label x:Name="LblErrors" Content="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}" 
                  Foreground="Red" />
         </StackPanel>

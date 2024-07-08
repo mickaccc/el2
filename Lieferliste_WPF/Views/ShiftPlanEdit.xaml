@@ -58,8 +58,8 @@
                         <TextBlock Text="{Binding CoverName}" TextWrapping="WrapWithOverflow" Margin="10" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Cover löschen" Command="{Binding DeleteCoverCommand}"
-                                        CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                                    <MenuItem Header="Cover löschen" Command="{Binding PlacementTarget.Tag.DeleteCoverCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                        CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <MenuItem Header="Cover Details" Command="{Binding PlacementTarget.Tag.DetailCoverCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                         CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                 </ContextMenu>

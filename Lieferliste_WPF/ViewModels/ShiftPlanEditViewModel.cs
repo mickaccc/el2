@@ -176,17 +176,27 @@ namespace Lieferliste_WPF.ViewModels
             {
                 var c = result.Parameters.GetValue<ShiftCover>("Cover");
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-
-                if (c.Id == 0)
+                if (string.IsNullOrEmpty(c.CoverName) == false &&
+                        c.CoverMask != null)
                 {
-                    db.ShiftCovers.Add(c);
+                    
+                    if (c.Id == 0 )
+                    {
+                        db.ShiftCovers.Add(c);
+                        _ShiftCovers.Add(c);
+                    }
+                    else
+                    {
+                        db.ShiftCovers.Update(c);
+                        var cc = _ShiftCovers.Find(x => x.Id == c.Id);
+                        if (cc != null)
+                        {
+                            cc.CoverMask = c.CoverMask;
+                            cc.CoverName = c.CoverName;
+                        }
+                    }
+                    db.SaveChanges();
                 }
-                else
-                {
-                    db.ShiftCovers.Update(c);
-                }
-                db.SaveChanges();
-                
             }          
         }
 
@@ -206,12 +216,33 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnDeleteCanExecuted(object arg)
         {
-            return true;
+            if (arg is ShiftCover cover)
+            {
+                return !cover.Lock;
+            }
+            if(arg is ShiftPlan plan)
+            {
+                return !plan.Lock;
+            }
+            return false;
         }
 
         private void OnDeleteExecuted(object obj)
         {
-            
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            if (obj is ShiftCover cover)
+            {
+                _ShiftCovers.Remove(cover);
+                
+                db.Remove(cover);
+                db.SaveChanges();
+            }
+            if(obj is ShiftWeek plan)
+            {
+                ShiftWeekPlans.Remove(plan);
+                db.Remove(plan);
+                db.SaveChanges();
+            }
         }
 
         private bool OnSaveNewCanExecute(object arg)
