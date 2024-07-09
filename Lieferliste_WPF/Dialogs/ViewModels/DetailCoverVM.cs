@@ -57,7 +57,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 if(start > end) { break; }
                 bools.AsSpan().Slice(start, end - start).Fill(true);
                 BitArray bit = new BitArray(bools);
-                byte[] bytes = new byte[bools.Length];
+                byte[] bytes = new byte[180];
                 bit.CopyTo(bytes, 0);
                 Cover.CoverMask = bytes;
             }
@@ -119,6 +119,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             
             bool[] bit = new bool[1440];
             BitArray bitArray = new BitArray(Cover.CoverMask);
+            var count = bitArray.Count;
             bitArray.CopyTo(bit, 0);
             int start = 0;
             bool high = false;
@@ -141,7 +142,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
                 {
                     TimeList.Add(new TimeTuple(start/60, start%60, i/60, i%60));
                 }
-                else if (high && bit[i + 1] == false)
+                else if (high)
                 {
                     high = false;
 

@@ -118,6 +118,7 @@ namespace Lieferliste_WPF.ViewModels
                     var week = new ShiftWeek();
                     week.Id = item.Id;
                     week.ShiftPlanName = item.PlanName;
+                    week.Lock = item.Lock;
                     List<ShiftDay> shiftDays = new();
                     Byte[] bytes;
                     bytes = item.Sun;
@@ -184,6 +185,7 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         db.ShiftCovers.Add(c);
                         _ShiftCovers.Add(c);
+                        ShiftCovers.Refresh();
                     }
                     else
                     {
@@ -236,6 +238,7 @@ namespace Lieferliste_WPF.ViewModels
                 
                 db.Remove(cover);
                 db.SaveChanges();
+                ShiftCovers.Refresh();
             }
             if(obj is ShiftWeek plan)
             {
@@ -252,12 +255,14 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveNewExecuted(object obj)
         {
-            
+            var name = 
         }
 
         private bool OnSaveAllCanExecute(object arg)
         {
-            return true;
+            if(SelectedPlan != null)
+                return !SelectedPlan.Lock;
+            return false;
         }
 
         private void OnSaveAllExecuted(object obj)
@@ -275,7 +280,7 @@ namespace Lieferliste_WPF.ViewModels
                     planDb.Thu = shiftWeek.GetDayDefinition(4);
                     planDb.Fre = shiftWeek.GetDayDefinition(5);
                     planDb.Sat = shiftWeek.GetDayDefinition(6);
-
+                    
                     db.SaveChanges();
                 }
                 else
@@ -335,6 +340,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             public int Id { get; set; }
             public string ShiftPlanName { get; set; }
+            public bool Lock { get; set; } = false;
             public List<ShiftDay> ShiftWeekDays { get; set; } = [];
 
             public ShiftPlan GetNewShiftPlan()
