@@ -255,6 +255,11 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveNewExecuted(object obj)
         {
+            _dialogService.ShowDialog("InputDialog", OnInputCallback);
+        }
+
+        private void OnInputCallback(IDialogResult result)
+        {
             
         }
 
