@@ -347,7 +347,7 @@ namespace ModulePlanning.ViewModels
         }
         private void SelectionChange(object commandParameter)
         {
-
+            int work = 0;
             try
             {
                 if (commandParameter != null)
@@ -356,6 +356,7 @@ namespace ModulePlanning.ViewModels
                     {
                         if (sel.AddedItems[0] is WorkArea wa)
                         {
+                            work = wa.WorkAreaId;
                             _currentWorkArea = wa.WorkAreaId;
                             ProcessCV.Refresh();
                             ParkingCV.Refresh();
@@ -367,7 +368,8 @@ namespace ModulePlanning.ViewModels
 
             catch (Exception e)
             {
-                _Logger.LogError("{message}", e.ToString());
+                _Logger.LogError("{message} CommandParameter: {par} WorkArea: {work}",
+                    e.ToString(), commandParameter.ToString(), work.ToString());
             }
         }
         private void OnTextSearch(object commandParameter)

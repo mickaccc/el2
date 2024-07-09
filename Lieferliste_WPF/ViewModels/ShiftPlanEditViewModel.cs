@@ -255,7 +255,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveNewExecuted(object obj)
         {
-            var name = 
+            
         }
 
         private bool OnSaveAllCanExecute(object arg)
