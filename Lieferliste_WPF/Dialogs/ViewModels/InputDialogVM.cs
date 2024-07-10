@@ -1,4 +1,5 @@
-﻿using Prism.Commands;
+﻿using ControlzEx.Standard;
+using Prism.Commands;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,21 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public event Action<IDialogResult> RequestClose;
         private void OnOkDialog()
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(InputText))
+            { return; }
+            else
+            {
+                IDialogParameters param = new DialogParameters();
+
+                param.Add("InputText", InputText);
+
+                RaiseRequestClose(new DialogResult(ButtonResult.OK, param));
+            }
+
         }
         private void OnCancelDialog()
         {
-            throw new NotImplementedException();
+           RaiseRequestClose(new DialogResult(ButtonResult.Cancel, null)); 
         }
         public bool CanCloseDialog()
         {
@@ -37,6 +48,10 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public void OnDialogClosed()
         {
             
+        }
+        public virtual void RaiseRequestClose(IDialogResult dialogResult)
+        {
+            RequestClose?.Invoke(dialogResult);
         }
 
         public void OnDialogOpened(IDialogParameters parameters)

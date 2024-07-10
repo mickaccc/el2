@@ -246,6 +246,21 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private int? _orderGroup;
+
+        public int? OrderGroup
+        {
+            get { return _orderGroup; }
+            set
+            {
+                if (_orderGroup != value)
+                {
+                    _orderGroup = value;
+                    NotifyPropertyChanged(() => OrderGroup);
+                }
+            }
+        }
+        public List<OrderGroup> OrderGroups { get; private set; }
         private string? _sysStatus;
 
         public string? SysStatus
@@ -332,8 +347,11 @@ namespace Lieferliste_WPF.ViewModels
                 SysStatus = v.AidNavigation.SysStatus;
                 Ready = v.AidNavigation.Fertig;
                 EckEnde = v.AidNavigation.Eckende;
-
+                this.OrderGroup = v.AidNavigation.OrderGroup;
                 VorgangCV.Refresh(); 
+
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                OrderGroups = db.OrderGroups.ToList();
             }
             else
                 MessageBox.Show("keine Vorgänge vorhanden", Title,MessageBoxButton.OK, MessageBoxImage.Error);

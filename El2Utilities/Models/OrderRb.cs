@@ -60,9 +60,13 @@ public partial class OrderRb : ModelBase
 
     public string? Wbselement { get; set; }
 
+    public int? OrderGroup { get; set; }
+
     public virtual TblDummy? DummyMatNavigation { get; set; }
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
+
+    public virtual OrderGroup? OrderGroupNavigation { get; set; }
 
     public virtual Project? Pro { get; set; }
 

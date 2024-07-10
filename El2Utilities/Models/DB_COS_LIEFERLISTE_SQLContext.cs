@@ -19,6 +19,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<InMemoryOnline> InMemoryOnlines { get; set; }
 
+    public virtual DbSet<OrderGroup> OrderGroups { get; set; }
+
     public virtual DbSet<OrderRb> OrderRbs { get; set; }
 
     public virtual DbSet<Permission> Permissions { get; set; }
@@ -124,6 +126,17 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .IsFixedLength();
         });
 
+        modelBuilder.Entity<OrderGroup>(entity =>
+        {
+            entity.ToTable("OrderGroup");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Description).HasMaxLength(100);
+            entity.Property(e => e.Key)
+                .HasMaxLength(10)
+                .IsFixedLength();
+        });
+
         modelBuilder.Entity<OrderRb>(entity =>
         {
             entity.HasKey(e => e.Aid).HasName("PK_Order");
@@ -186,6 +199,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.Material)
                 .HasConstraintName("FK_Order_tblMaterial");
+
+            entity.HasOne(d => d.OrderGroupNavigation).WithMany(p => p.OrderRbs)
+                .HasForeignKey(d => d.OrderGroup)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_OrderRB_OrderGroup");
 
             entity.HasOne(d => d.Pro).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.ProId)
