@@ -642,6 +642,14 @@ namespace Lieferliste_WPF.ViewModels
 
         private void DbOperations()
         {
+            var gl = new Globals(_container);
+
+            List<ProjectScheme> schemes = new List<ProjectScheme>();
+            schemes.Add(new ProjectScheme("DS", "(DS-[0-9]{6})(-[0-9]{2})*"));
+            schemes.Add(new ProjectScheme("SC-PR", "(SC-PR-[0-9]{9})([0-9]{2})*"));
+            schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(-[0-9]{3})(-[0-9]{8})*"));
+
+            gl.SaveProjectSchemes(schemes);
                 //var pcont = new PersonalFilterContainer();
                 //var filt = new PersonalFilter("^F", PropertyNames.Auftragsnummer);
                 //pcont.Add("name", filt);

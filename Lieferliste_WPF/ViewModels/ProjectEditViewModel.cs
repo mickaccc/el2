@@ -224,6 +224,20 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
                     var p = item.ProjectPsp.Trim();
+                    Regex regex = new Regex("");
+                    foreach(var scheme in RuleInfo.ProjectSchemes)
+                    {
+                        if(p.StartsWith(scheme.Key, StringComparison.OrdinalIgnoreCase))
+                            regex = new Regex(scheme.Value.Regex);
+                    }
+                    Match match = regex.Match(p);
+                    if (match.Success)
+                    {
+                        foreach(var m in match.Groups.Values.Skip(1))
+                        {
+                            var s = m.Value;
+                        }
+                    }
                     typeLength = p.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
                     var root = taskTree.Nodes.FirstOrDefault(y => p[..typeLength] == y.Value);
                     if (root == null)
@@ -354,5 +368,7 @@ namespace Lieferliste_WPF.ViewModels
 
             return psp;
         }
+
+
     }
 }

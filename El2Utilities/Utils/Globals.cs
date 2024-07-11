@@ -4,6 +4,7 @@ using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 
 namespace El2Core.Utils
@@ -50,22 +51,35 @@ namespace El2Core.Utils
                 Rules = db.Rules.ToList(); 
             }
         }
-        public static void SaveRule(Rule rule)
+        public void SaveRule(Rule rule)
         {
-            //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            //if (db.Rules.All(x => x.RuleValue != rule.RuleValue))
-            //{
-            //    db.Rules.Add(rule);
-            //}
-            //else 
-            //{
-            //    var r = db.Rules.First(x => x.RuleValue == rule.RuleValue);
-            //    r.RuleName = rule.RuleName;
-            //    r.RuleData = rule.RuleData;
-            //}
-            //db.SaveChanges();
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            if (db.Rules.All(x => x.RuleValue != rule.RuleValue))
+            {
+                db.Rules.Add(rule);
+            }
+            else
+            {
+                var r = db.Rules.First(x => x.RuleValue == rule.RuleValue);
+                r.RuleName = rule.RuleName;
+                r.RuleData = rule.RuleData;
+            }
+            db.SaveChanges();
         }
+        public void SaveProjectSchemes(List<ProjectScheme> projectSchemes)
+        {
 
+            var serializer = XmlSerializerHelper.GetSerializer(typeof(List<ProjectScheme>));
+            StringWriter sw = new StringWriter();
+            serializer.Serialize(sw, projectSchemes);
+
+                Rule rule = new Rule();
+                rule.RuleName = "ProjectSchema";
+                rule.RuleValue = "ProjStruct";
+                rule.RuleData = sw.ToString();
+            SaveRule(rule);
+
+        }
         public void Dispose()
         {
 
@@ -88,9 +102,31 @@ namespace El2Core.Utils
     public readonly struct RuleInfo
     {
         public static ImmutableDictionary<string, Rule> Rules { get; private set; } = ImmutableDictionary<string, Rule>.Empty;
+        public static ImmutableDictionary<string, ProjectScheme> ProjectSchemes { get; private set; } = ImmutableDictionary<string, ProjectScheme>.Empty;
         public RuleInfo(List<Rule> rules)
         {
-            Rules = rules.ToImmutableDictionary(x => x.RuleValue.Trim(), x => x);   
+            Rules = rules.ToImmutableDictionary(x => x.RuleValue.Trim(), x => x);
+            Dictionary<string, ProjectScheme> sc = new Dictionary<string, ProjectScheme>();
+            var scheme = rules.SingleOrDefault(x => x.RuleValue.Trim() == "ProjStruct");
+            if (scheme != null)
+            {
+                var serializer = XmlSerializerHelper.GetSerializer(typeof(List<ProjectScheme>));
+                TextReader xmlData = new StringReader(scheme.RuleData);
+                List<ProjectScheme> projectSchemes = (List<ProjectScheme>)serializer.Deserialize(xmlData);
+
+                foreach(var item in projectSchemes)
+                {
+                    sc.Add(item.Key, item);
+                }
+                ProjectSchemes = sc.ToImmutableDictionary();
+            }
         }
+    }
+    public class ProjectScheme
+    {
+        public string Key { get; set; }
+        public string Regex { get; set; }
+        public ProjectScheme() { }
+        public ProjectScheme(string key, string regex) { Key = key; Regex = regex; }
     }
 }

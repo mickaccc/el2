@@ -348,7 +348,8 @@ namespace Lieferliste_WPF.ViewModels
             }
             else 
             {
-                var s = new ShiftWeek() { ShiftWeekDays = _SelectedPlan.ShiftWeekDays };
+                
+                var s = _SelectedPlan.Clone();
                 var d = s.ShiftWeekDays.Single(x => x.Id == item.Id);
                 d.Definition.Or(cover);
                 SelectedPlan = null;
@@ -399,6 +400,10 @@ namespace Lieferliste_WPF.ViewModels
                 ShiftWeekDays.First(x => x.Id == id).Definition.CopyTo(bytes, 0);
 
                 return bytes;
+            }
+            public ShiftWeek Clone()
+            {
+                return (ShiftWeek)this.MemberwiseClone();
             }
         }
         void addshift()
