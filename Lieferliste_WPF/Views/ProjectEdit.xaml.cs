@@ -16,10 +16,10 @@ namespace Lieferliste_WPF.Views
 
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var txtbx = (TextBox)FindName("searchOrder");
-            var txt = (e.AddedItems.Count > 0) ? e.AddedItems[0] as OrderRb : null;
-            if (txt != null)
-                txtbx.Text = txt.Aid;
+            //var txtbx = (TextBox)FindName("searchOrder");
+            //var txt = (e.AddedItems.Count > 0) ? e.AddedItems[0] as OrderRb : null;
+            //if (txt != null)
+            //    txtbx.Text = txt.Aid;
         }
 
 
@@ -32,14 +32,20 @@ namespace Lieferliste_WPF.Views
 
         private void pspTree_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var txtbx = (TextBox)FindName("searchPsp");
-            var tree = (TextBlock)sender;
-            var txt = tree.Text;
+            //var txtbx = (TextBox)FindName("searchPsp");
+            //var tree = (TextBlock)sender;
+            //var txt = tree.Text;
 
-            if (txt != null)
-                txtbx.Text = txt;
+            //if (txt != null)
+            //    txtbx.Text = txt;
 
-            e.Handled = true;
+            //e.Handled = true;
+        }
+
+        private void ProjectType_Initialized(object sender, System.EventArgs e)
+        {
+            var s = sender as ComboBox;
+            if (s != null) { s.IsSynchronizedWithCurrentItem = true; }
         }
     }
 }

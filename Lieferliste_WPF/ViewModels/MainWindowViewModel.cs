@@ -647,7 +647,7 @@ namespace Lieferliste_WPF.ViewModels
             List<ProjectScheme> schemes = new List<ProjectScheme>();
             schemes.Add(new ProjectScheme("DS", "(DS-[0-9]{6})(-[0-9]{2})*"));
             schemes.Add(new ProjectScheme("SC-PR", "(SC-PR-[0-9]{9})([0-9]{2})*"));
-            schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(-[0-9]{3})(-[0-9]{8})*"));
+            schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(_[0-9]{3})(_[0-9]{8})*"));
 
             gl.SaveProjectSchemes(schemes);
                 //var pcont = new PersonalFilterContainer();

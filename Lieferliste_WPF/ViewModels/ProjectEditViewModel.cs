@@ -38,10 +38,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand DeleteCommand { get; private set; }
         private ObservableCollection<OrderRb> _ordersList = [];
         public ICollectionView? OrdersCollectionView { get; private set; }
-        private Tree<string>? tree;
-        private PspTree? PspTree;
         private PspNode<Shape> Projects = new PspNode<Shape> { Node = new ("Projekte")};
-        public ProjectTypes.ProjectType ProjectTypes { get; }
         public ICollectionView? PSP_NodeCollectionView { get; private set; }
         private List<Tree<string>> treeList = new();
         private string _orderSearchText = string.Empty;
@@ -84,7 +81,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnDeleteCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDel);
+            return false;
         }
 
         private void OnDeleteExecuted(object obj)
@@ -97,7 +94,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (psp != null)
                 {
                     db.Projects.Remove(psp);
-                    tree?.Nodes.Remove(t);
+                    //tree?.Nodes.Remove(t);
                     PSP_NodeCollectionView?.Refresh();
                 }
             }
@@ -107,7 +104,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (ord != null)
                 {
                     ord.ProId = null;
-                    tree?.Nodes.Remove(t);
+                    //tree?.Nodes.Remove(t);
                     PSP_NodeCollectionView?.Refresh();
                 }
             }
@@ -134,65 +131,65 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnConcatCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ConcatProject);
+            return false;
         }
 
         private void OnConcatExecuted(object obj)
         {
-            if (obj == null) return;
-            var values = (object[])obj;
-            var psp = (string)values[0];
-            var aid = (string)values[1];
+            //if (obj == null) return;
+            //var values = (object[])obj;
+            //var psp = (string)values[0];
+            //var aid = (string)values[1];
 
-            if (!IsValidPsp(psp))
-            {
-                MessageBox.Show("PSP-Element ist ungültig!\nBitte korrigieren.", "Eingabefehler",
-                MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
-            }
-            if (aid == null)
-            {
-                MessageBox.Show("Auftragsnummer fehlt!\nBitte eintragen", "Eingabefehler",
-                MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
-            }
-            if (_ordersList.All(x => x.Aid != aid))
-            {
-                MessageBox.Show("Auftragsnummer ist nicht vorhanden!", "Eingabefehler",
-                MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
-            }
+            //if (!IsValidPsp(psp))
+            //{
+            //    MessageBox.Show("PSP-Element ist ungültig!\nBitte korrigieren.", "Eingabefehler",
+            //    MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
+            //}
+            //if (aid == null)
+            //{
+            //    MessageBox.Show("Auftragsnummer fehlt!\nBitte eintragen", "Eingabefehler",
+            //    MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
+            //}
+            //if (_ordersList.All(x => x.Aid != aid))
+            //{
+            //    MessageBox.Show("Auftragsnummer ist nicht vorhanden!", "Eingabefehler",
+            //    MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
+            //}
 
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            int rootLength = psp.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
-            var root = tree?.Nodes.FirstOrDefault(x => psp[..rootLength] == x.Value);
-            if (root == null)
-            {
-                var t = tree?.Begin(psp[..rootLength]);
-                root = t.Nodes.Last();
-            }
-            for (int i = rootLength+3; i <= psp.Length; i += 3)
-            {
-                var pre = root.Children.FirstOrDefault(x => psp[..i] == x.Value);
-                if (pre == null)
-                {
-                    pre = root.Add(psp[..i]);
-                }
+            //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            //int rootLength = psp.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
+            //var root = tree?.Nodes.FirstOrDefault(x => psp[..rootLength] == x.Value);
+            //if (root == null)
+            //{
+            //    var t = tree?.Begin(psp[..rootLength]);
+            //    root = t.Nodes.Last();
+            //}
+            //for (int i = rootLength+3; i <= psp.Length; i += 3)
+            //{
+            //    var pre = root.Children.FirstOrDefault(x => psp[..i] == x.Value);
+            //    if (pre == null)
+            //    {
+            //        pre = root.Add(psp[..i]);
+            //    }
 
 
-                root = pre;
-            }
-            if (root.Value.Length == psp.Length)
-            {
-                if (root.Children.All(x => x.Value != aid))
-                {
-                    root.Add(aid);
-                }
-            }
-            while (tree?.level > 0) { tree.End(); }
+            //    root = pre;
+            //}
+            //if (root.Value.Length == psp.Length)
+            //{
+            //    if (root.Children.All(x => x.Value != aid))
+            //    {
+            //        root.Add(aid);
+            //    }
+            //}
+            //while (tree?.level > 0) { tree.End(); }
 
-            if (db.Projects.All(x => x.ProjectPsp != psp)) db.Database.ExecuteSqlRaw("INSERT INTO DBO.Project(ProjectPsp) VALUES({0})", psp);
+            //if (db.Projects.All(x => x.ProjectPsp != psp)) db.Database.ExecuteSqlRaw("INSERT INTO DBO.Project(ProjectPsp) VALUES({0})", psp);
 
-            db.OrderRbs.First(x => x.Aid == aid).ProId = psp;
-            db.SaveChanges();
-            PSP_NodeCollectionView?.Refresh();
+            //db.OrderRbs.First(x => x.Aid == aid).ProId = psp;
+            //db.SaveChanges();
+            //PSP_NodeCollectionView?.Refresh();
         }
         private async Task<ICollectionView> LoadOrderDataAsync()
         {
@@ -212,16 +209,13 @@ namespace Lieferliste_WPF.ViewModels
             var proj = await db.Projects
                 .Include(x => x.OrderRbs)
                 .ThenInclude(x => x.MaterialNavigation)
+                .Where(x => x.OrderRbs.Any(x => x.Abgeschlossen == false))
                 .ToListAsync();
 
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
-            int typeLength;
-
-            Tree<string> taskTree = new();
 
             await Task.Factory.StartNew(() =>
             {
-                Tree<string> preTree = new();
 
                 foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
@@ -233,7 +227,7 @@ namespace Lieferliste_WPF.ViewModels
                             regex = new Regex(scheme.Value.Regex);
                     }
                     Match match = regex.Match(p);
-                    if (match.Success)
+                    if (match.Success && match.Groups.Count > 1)
                     {
                         string psp = string.Empty;
                         PspNode<Shape> stepNode = new PspNode<Shape>();
@@ -244,7 +238,10 @@ namespace Lieferliste_WPF.ViewModels
                             var node = Projects.Children.FirstOrDefault(x => psp.StartsWith(x.Node.ToString()));
                             if (node == null)
                             {                                
-                                stepNode = Projects.Add(new Shape(psp), "Psp-Type");
+                                stepNode = Projects.Add(new Shape(m.Value), "Psp-Type");
+                                stepNode.Node.Description = item.ProjectInfo;
+                                stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
+                                stepNode.Node.PropertyChanged += OnProjectPropertyChanged;
                             }
                             else if(node.Node.ToString() == psp)
                             {
@@ -252,12 +249,14 @@ namespace Lieferliste_WPF.ViewModels
                             }
                             else
                             {
-                                stepNode = node.Add(new Shape(psp), "Psp-Type");
+                                stepNode = node.Add(new Shape(m.Value), "Psp-Type");
+                                stepNode.Node.Description = item.ProjectInfo;
+                                stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
+                                stepNode.Node.PropertyChanged += OnProjectPropertyChanged;
                             }
 
                         }
-                        stepNode.Node.Description = item.ProjectInfo;
-                        stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
+ 
                         foreach (var o in item.OrderRbs)
                         {
                             var sh = new Shape(o.Aid);
@@ -265,65 +264,30 @@ namespace Lieferliste_WPF.ViewModels
                             stepNode.Add(sh, "Order-Type");
                         }
                     }
-                    //typeLength = p.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
-                    //var root = taskTree.Nodes.FirstOrDefault(y => p[..typeLength] == y.Value);
-                    //if (root == null)
-                    //{
-                    //    var tr = taskTree.Begin(p[..typeLength]);
-                    //    root = tr.Nodes.Last();
-
-                    //}
-                    //for (int i = typeLength+3; i <= p.Length; i += 3)
-                    //{
-                    //    var pre = root.Children.FirstOrDefault(x => x.Value == p[..i]);
-                    //    if (pre == null)
-                    //    {
-                    //        pre = root.Add(p[..i]);
-                    //    }
-
-                    //    root = pre;
-                    //}
-                    //if (item.ProjectPsp.Trim().Length == p.Length)
-                    //{
-                    //    foreach (var o in item.OrderRbs)
-                    //    {
-                    //        if (root.Children.All(x => x.Value != o.Aid))
-                    //        {
-                    //            var n = new TreeNode<string>(o.Aid, root);
-                    //            n.Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng);
-                    //            root.Children.Add(n);
-                    //        }
-                    //    }
-                    //    root.Description = item.ProjectInfo ?? string.Empty;
-                    //    root.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
-                    //    root.PropertyChanged += OnPspPropertyChanged;
-                    //}
-                    //while (taskTree.level > 0)
-                    //    taskTree.End();
                 }
 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
-            tree = taskTree;
+            
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(Projects.Children);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;
         }
 
-        private void OnPspPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void OnProjectPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            var tn = sender as PspNode<Shape>;
+            var tn = sender as Shape;
             if (tn != null)
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var pr = db.Projects.Single(x => x.ProjectPsp == tn.Node.ToString());
+                var pr = db.Projects.Single(x => x.ProjectPsp == tn.ToString());
                 if (e.PropertyName == "ProjectType" &&
-                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectTypeChange)) pr.ProjectType = (int)tn.Node.ProjectType;
+                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectTypeChange)) pr.ProjectType = (int)tn.ProjectType;
                 if (e.PropertyName == "Description" &&
-                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDesript)) pr.ProjectInfo = tn.Node.Description;
+                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDesript)) pr.ProjectInfo = tn.Description;
 
                 db.SaveChanges();
             }
-            
+
         }
 
         private bool FilterPredicatePsp(object obj)

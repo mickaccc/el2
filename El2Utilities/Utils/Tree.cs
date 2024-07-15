@@ -306,8 +306,8 @@ namespace El2Core.Utils
     /// </summary>
     public class Shape(string name) : ViewModelBase.ViewModelBase, IComparable<Shape>
     {
-        private string _description = string.Empty;
-        public string Description
+        private string? _description = string.Empty;
+        public string? Description
         {
             get { return _description; }
             set

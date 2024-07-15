@@ -31,6 +31,7 @@
             <Setter Property="MaxWidth" Value="16"/>
             <Setter Property="MaxHeight" Value="16"/>
             <Setter Property="Margin" Value="1"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
         </Style>
         
         <HierarchicalDataTemplate x:Key="Branch" ItemsSource="{Binding Children}">
@@ -44,7 +45,7 @@
                                 <Style BasedOn="{StaticResource IconImageStyleSmall}" TargetType="Image">
                                     <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=NodeType}"  Value="PSP-Type">
+                                        <DataTrigger Binding="{Binding Path=NodeType}"  Value="Psp-Type">
                                             <Setter Property="Source" Value="{Binding Source={StaticResource PSP-Type}, Mode=OneTime}"/>
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding Path=NodeType}"  Value="Order-Type">
@@ -67,33 +68,33 @@
                             </TextBlock.ContextMenu>
                         </TextBlock>
                             <Grid>
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Path=HasOrder}" Value="False">
-                                                <Setter Property="Visibility" Value="Hidden"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
+                            <DockPanel>
+                                <DockPanel.Style>
+                                    <Style TargetType="DockPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=HasOrder}" Value="False">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                </DockPanel.Style>
                                 <TextBox Text="{Binding Node.Description}"
                             IsReadOnly="{Binding Converter={StaticResource permiss},
                             ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
                             HorizontalAlignment="Right" Background="Azure" MinWidth="40"/>
 
-                                <ComboBox Margin="15,0,0,0"
-                            ItemsSource="{Binding Path=Node.ProjectType, Converter={conv:EnumToCollectionConverter}}"
+                                <ComboBox Margin="15,0,0,0"  Name="ProjectType"
+                            ItemsSource="{Binding Path=Node.ProjectType, Converter={conv:EnumToCollectionConverter}, Mode=TwoWay}"
                             SelectedValuePath="Value"
                             SelectedValue="{Binding Path=Node.ProjectType, Mode=TwoWay}"
-                            DisplayMemberPath="Description" />
+                            DisplayMemberPath="Description" Initialized="ProjectType_Initialized"/>
 
-                            </StackPanel>
+                            </DockPanel>
                             <Label Content="{Binding Path=Node.Description}">
                                 <Label.Style>
                                     <Style TargetType="Label">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Path=NodeType}"  Value="PSP-Type">
+                                            <DataTrigger Binding="{Binding Path=NodeType}"  Value="Psp-Type">
                                                 <Setter Property="Visibility" Value="Hidden"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -178,9 +179,9 @@
                     </ContextMenu>
                 </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                    <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding Aid}" />
-                    <DataGridTextColumn Header="Material" Binding="{Binding Material, Converter={StaticResource ttnr}}" />
-                <DataGridTextColumn Header="Bezeichnung" Binding="{Binding MaterialNavigation.Bezeichng}"/>
+                    <DataGridTextColumn Binding="{Binding Aid}" />
+                    <DataGridTextColumn Binding="{Binding Material, Converter={StaticResource ttnr}}" />
+                <DataGridTextColumn  Binding="{Binding MaterialNavigation.Bezeichng}"/>
             </DataGrid.Columns>
             
         </DataGrid>
