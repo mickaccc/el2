@@ -110,6 +110,7 @@ namespace El2Core.Utils
             var scheme = rules.SingleOrDefault(x => x.RuleValue.Trim() == "ProjStruct");
             if (scheme != null)
             {
+                if (scheme.RuleData == null) return;
                 var serializer = XmlSerializerHelper.GetSerializer(typeof(List<ProjectScheme>));
                 TextReader xmlData = new StringReader(scheme.RuleData);
                 List<ProjectScheme> projectSchemes = (List<ProjectScheme>)serializer.Deserialize(xmlData);
