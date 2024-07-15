@@ -385,54 +385,54 @@ namespace El2Core.Utils
     }
 
 
-    /// <summary>
-    /// Generic tree node class
-    /// </summary>
-    /// <typeparam name="T">Node type</typeparam>
-    public class CompositeNode<T> where T : IComparable<T>
-    {
-        // Add a child tree node
-        public CompositeNode<T> Add(T child)
-        {
-            var newNode = new CompositeNode<T> { Node = child };
-            Children.Add(newNode);
-            return newNode;
-        }
-        // Remove a child tree node
-        public void Remove(T child)
-        {
-            foreach (var compositeNode in Children)
-            {
-                if (compositeNode.Node.CompareTo(child) == 0)
-                {
-                    Children.Remove(compositeNode);
-                    return;
-                }
-            }
-        }
-        // Gets or sets the node
-        public T Node { get; set; } = default!;
-        // Gets treenode children
-        public List<CompositeNode<T>> Children { get; } = [];
-        // Recursively displays node and its children 
-        public static void Display(CompositeNode<T> node, int indentation)
-        {
-            var line = new string('-', indentation);
-            //WriteLine(line + " " + node.Node);
-            node.Children.ForEach(n => Display(n, indentation + 1));
-        }
-    }
-    /// <summary>
-    /// Shape class
-    /// <remarks>
-    /// Implements generic IComparable interface
-    /// </remarks>
-    /// </summary>
-    public class Shape(string name) : IComparable<Shape>
-    {
-        public override string ToString() => name;
-        // IComparable<Shape> Member
-        public int CompareTo(Shape? other) => (this == other) ? 0 : -1;
-    }
+    ///// <summary>
+    ///// Generic tree node class
+    ///// </summary>
+    ///// <typeparam name="T">Node type</typeparam>
+    //public class CompositeNode<T> where T : IComparable<T>
+    //{
+    //    // Add a child tree node
+    //    public CompositeNode<T> Add(T child)
+    //    {
+    //        var newNode = new CompositeNode<T> { Node = child };
+    //        Children.Add(newNode);
+    //        return newNode;
+    //    }
+    //    // Remove a child tree node
+    //    public void Remove(T child)
+    //    {
+    //        foreach (var compositeNode in Children)
+    //        {
+    //            if (compositeNode.Node.CompareTo(child) == 0)
+    //            {
+    //                Children.Remove(compositeNode);
+    //                return;
+    //            }
+    //        }
+    //    }
+    //    // Gets or sets the node
+    //    public T Node { get; set; } = default!;
+    //    // Gets treenode children
+    //    public List<CompositeNode<T>> Children { get; } = [];
+    //    // Recursively displays node and its children 
+    //    public static void Display(CompositeNode<T> node, int indentation)
+    //    {
+    //        var line = new string('-', indentation);
+    //        //WriteLine(line + " " + node.Node);
+    //        node.Children.ForEach(n => Display(n, indentation + 1));
+    //    }
+    //}
+    ///// <summary>
+    ///// Shape class
+    ///// <remarks>
+    ///// Implements generic IComparable interface
+    ///// </remarks>
+    ///// </summary>
+    //public class Shape(string name) : IComparable<Shape>
+    //{
+    //    public override string ToString() => name;
+    //    // IComparable<Shape> Member
+    //    public int CompareTo(Shape? other) => (this == other) ? 0 : -1;
+    //}
 
 }

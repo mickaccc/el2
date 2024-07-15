@@ -54,18 +54,16 @@
                                 </Style>
                             </Image.Style>
                         </Image>
-                        <TextBlock Text="{Binding Path=Value}" Margin="3,0,30,0" MouseLeftButtonDown="pspTree_MouseLeftButtonDown" >
+                        <TextBlock Text="{Binding Path=Node}" Margin="3,0,30,0" MouseLeftButtonDown="pspTree_MouseLeftButtonDown" >
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Auftrag öffnen"
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenOrderCommand}"
                                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Value}"/>
-                                    <MenuItem Header="Project öffnen" Command="{Binding Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenProjectOverViewCommand, 
+                                        <MenuItem Header="Project öffnen" Command="{Binding Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenProjectOverViewCommand, 
                                         RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Value}"/>
-                                    <MenuItem Header="löschen" Command="{Binding Path=PlacementTarget.Parent.Tag.DeleteCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext}"/>
-                                </ContextMenu>
+                                    </ContextMenu>
                             </TextBlock.ContextMenu>
                         </TextBlock>
                             <Grid>
@@ -79,19 +77,19 @@
                                         </Style.Triggers>
                                     </Style>
                                 </StackPanel.Style>
-                                <TextBox Text="{Binding Description}"
+                                <TextBox Text="{Binding Node.Description}"
                             IsReadOnly="{Binding Converter={StaticResource permiss},
                             ConverterParameter={x:Static const:Permissions.ProjectDescriptInvers}}"
                             HorizontalAlignment="Right" Background="Azure" MinWidth="40"/>
 
                                 <ComboBox Margin="15,0,0,0"
-                            ItemsSource="{Binding Path=ProjectType, Converter={conv:EnumToCollectionConverter}, Mode=TwoWay}"
+                            ItemsSource="{Binding Path=Node.ProjectType, Converter={conv:EnumToCollectionConverter}}"
                             SelectedValuePath="Value"
-                            SelectedValue="{Binding Path=ProjectType}"
+                            SelectedValue="{Binding Path=Node.ProjectType, Mode=TwoWay}"
                             DisplayMemberPath="Description" />
 
                             </StackPanel>
-                            <Label Content="{Binding Path=Description}">
+                            <Label Content="{Binding Path=Node.Description}">
                                 <Label.Style>
                                     <Style TargetType="Label">
                                         <Style.Triggers>

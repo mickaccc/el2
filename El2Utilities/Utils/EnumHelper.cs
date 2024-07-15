@@ -25,7 +25,8 @@ namespace El2Core.Utils
             if (!t.IsEnum)
                 throw new ArgumentException($"{nameof(t)} must be an enum type");
 
-            return Enum.GetValues(t).Cast<Enum>().Select((e) => new ValueDescription() { Value = e, Description = e.Description() }).ToList();
+            var r = Enum.GetValues(t).Cast<Enum>().Select((e) => new ValueDescription() { Value = e, Description = e.Description() }).ToList();
+            return r;
         }
     }
 }

@@ -40,6 +40,8 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView? OrdersCollectionView { get; private set; }
         private Tree<string>? tree;
         private PspTree? PspTree;
+        private PspNode<Shape> Projects = new PspNode<Shape> { Node = new ("Projekte")};
+        public ProjectTypes.ProjectType ProjectTypes { get; }
         public ICollectionView? PSP_NodeCollectionView { get; private set; }
         private List<Tree<string>> treeList = new();
         private string _orderSearchText = string.Empty;
@@ -233,66 +235,91 @@ namespace Lieferliste_WPF.ViewModels
                     Match match = regex.Match(p);
                     if (match.Success)
                     {
+                        string psp = string.Empty;
+                        PspNode<Shape> stepNode = new PspNode<Shape>();
                         foreach(var m in match.Groups.Values.Skip(1))
                         {
-                            var s = m.Value;
-                        }
-                    }
-                    typeLength = p.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
-                    var root = taskTree.Nodes.FirstOrDefault(y => p[..typeLength] == y.Value);
-                    if (root == null)
-                    {
-                        var tr = taskTree.Begin(p[..typeLength]);
-                        root = tr.Nodes.Last();
+                            if (m.Value == "") break;
+                            psp += m.Value;
+                            var node = Projects.Children.FirstOrDefault(x => psp.StartsWith(x.Node.ToString()));
+                            if (node == null)
+                            {                                
+                                stepNode = Projects.Add(new Shape(psp), "Psp-Type");
+                            }
+                            else if(node.Node.ToString() == psp)
+                            {
+                                stepNode = node;
+                            }
+                            else
+                            {
+                                stepNode = node.Add(new Shape(psp), "Psp-Type");
+                            }
 
-                    }
-                    for (int i = typeLength+3; i <= p.Length; i += 3)
-                    {
-                        var pre = root.Children.FirstOrDefault(x => x.Value == p[..i]);
-                        if (pre == null)
-                        {
-                            pre = root.Add(p[..i]);
                         }
-
-                        root = pre;
-                    }
-                    if (item.ProjectPsp.Trim().Length == p.Length)
-                    {
+                        stepNode.Node.Description = item.ProjectInfo;
+                        stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
                         foreach (var o in item.OrderRbs)
                         {
-                            if (root.Children.All(x => x.Value != o.Aid))
-                            {
-                                var n = new TreeNode<string>(o.Aid, root);
-                                n.Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng);
-                                root.Children.Add(n);
-                            }
+                            var sh = new Shape(o.Aid);
+                            sh.Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng);
+                            stepNode.Add(sh, "Order-Type");
                         }
-                        root.Description = item.ProjectInfo ?? string.Empty;
-                        root.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
-                        root.PropertyChanged += OnPspPropertyChanged;
                     }
-                    while (taskTree.level > 0)
-                        taskTree.End();
+                    //typeLength = p.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
+                    //var root = taskTree.Nodes.FirstOrDefault(y => p[..typeLength] == y.Value);
+                    //if (root == null)
+                    //{
+                    //    var tr = taskTree.Begin(p[..typeLength]);
+                    //    root = tr.Nodes.Last();
+
+                    //}
+                    //for (int i = typeLength+3; i <= p.Length; i += 3)
+                    //{
+                    //    var pre = root.Children.FirstOrDefault(x => x.Value == p[..i]);
+                    //    if (pre == null)
+                    //    {
+                    //        pre = root.Add(p[..i]);
+                    //    }
+
+                    //    root = pre;
+                    //}
+                    //if (item.ProjectPsp.Trim().Length == p.Length)
+                    //{
+                    //    foreach (var o in item.OrderRbs)
+                    //    {
+                    //        if (root.Children.All(x => x.Value != o.Aid))
+                    //        {
+                    //            var n = new TreeNode<string>(o.Aid, root);
+                    //            n.Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng);
+                    //            root.Children.Add(n);
+                    //        }
+                    //    }
+                    //    root.Description = item.ProjectInfo ?? string.Empty;
+                    //    root.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
+                    //    root.PropertyChanged += OnPspPropertyChanged;
+                    //}
+                    //while (taskTree.level > 0)
+                    //    taskTree.End();
                 }
 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
             tree = taskTree;
-            PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(tree.Nodes);
+            PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(Projects.Children);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;
         }
 
         private void OnPspPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            var tn = sender as TreeNode<string>;
+            var tn = sender as PspNode<Shape>;
             if (tn != null)
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var pr = db.Projects.Single(x => x.ProjectPsp == tn.Value);
+                var pr = db.Projects.Single(x => x.ProjectPsp == tn.Node.ToString());
                 if (e.PropertyName == "ProjectType" &&
-                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectTypeChange)) pr.ProjectType = (int)tn.ProjectType;
+                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectTypeChange)) pr.ProjectType = (int)tn.Node.ProjectType;
                 if (e.PropertyName == "Description" &&
-                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDesript)) pr.ProjectInfo = tn.Description;
+                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDesript)) pr.ProjectInfo = tn.Node.Description;
 
                 db.SaveChanges();
             }
@@ -301,19 +328,15 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool FilterPredicatePsp(object obj)
         {
-            var psp = (TreeNode<string>)obj;
+            var psp = (PspNode<Shape>)obj;
             var search = ClearPsp(_projectSearchText);
 
-            bool accepted = ClearPsp(psp.Value).Contains(search, StringComparison.CurrentCultureIgnoreCase);
+            bool accepted = ClearPsp(psp.Node.ToString()).Contains(search, StringComparison.CurrentCultureIgnoreCase);
             if (!accepted)
             {
                 if (psp.Children != null && search != string.Empty)
                 {
-                    foreach (var tree in psp.Children)
-                    {
-                        accepted = ClearPsp(tree.Value).Contains(search, StringComparison.CurrentCultureIgnoreCase);
-                        if (accepted) break;
-                    }
+                    accepted = psp.Children.Any(x => x.Node.ToString().Contains(search, StringComparison.CurrentCultureIgnoreCase));
                 }
             }
             return accepted;
