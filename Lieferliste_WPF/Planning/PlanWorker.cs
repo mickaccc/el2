@@ -313,8 +313,10 @@ namespace Lieferliste_WPF.Planning
                     p[i].SortPos = (p[i].SysStatus?.Contains("RÜCK") == true) ? "Z" :
                         string.Format("{0}_{1,3:0}", UserId[..4], i.ToString("D3"));
                 }
-                vrg.UserVorgangs.Add(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
-                
+                if (vrg.UserVorgangs.All(x => x.UserId != UserId && x.Vid != vrg.VorgangId))
+                {
+                    vrg.UserVorgangs.Add(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
+                }
                 t.Refresh();
 
             }
