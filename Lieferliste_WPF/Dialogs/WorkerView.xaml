@@ -34,12 +34,9 @@
             <Setter Property="Background" Value="LightYellow"/>
             <Setter Property="Padding" Value="2"/>
             <Setter Property="AcceptsReturn" Value="True"/>
-            <Setter Property="IsEnabled">
+            <Setter Property="IsReadOnly">
                 <Setter.Value>
-                    <MultiBinding Converter="{StaticResource Relpermiss}">
-                        <Binding Source="{x:Static const:Permissions.CommentTe}"/>
-                        <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
-                    </MultiBinding>
+                    <Binding Converter="{StaticResource permiss}" ConverterParameter="{x:Static const:Permissions.CommentTeInvers}"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -48,7 +45,7 @@
             <Setter Property="Margin" Value="1"/>
             <Setter Property="Padding" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="IsHitTestVisible" Value="true"/>
+            <Setter Property="IsHitTestVisible" Value="True"/>
 
         </Style>
 
@@ -148,7 +145,7 @@
                     </ContextMenu.Resources>
                     <ContextMenu.ItemsSource>
                         <CompositeCollection>
-                            <CollectionContainer Collection="{StaticResource MachineCm}"/>
+                            <CollectionContainer Collection="{StaticResource MeasureCm}"/>
                             <CollectionContainer Collection="{StaticResource AppCommandsCm}"/>
                         </CompositeCollection>
 
@@ -203,13 +200,8 @@
                             <DatePicker FirstDayOfWeek="Monday" ToolTip="voraussichtlicher Termin lt. Teamleiter" VerticalAlignment="Top" SnapsToDevicePixels="True"
                                       SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}"
                                       DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
-                                       SelectedDateChanged="DatePicker_SelectedDateChanged">
-                                <DatePicker.IsEnabled>
-                                    <MultiBinding Converter="{StaticResource Relpermiss}">
-                                        <Binding Source="{x:Static const:Permissions.TLTermin}"/>
-                                        <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
-                                    </MultiBinding>
-                                </DatePicker.IsEnabled>
+                                       SelectedDateChanged="DatePicker_SelectedDateChanged"
+                                        IsEnabled="{Binding Converter={StaticResource permiss}, ConverterParameter={x:Static const:Permissions.TLTermin}}">
                             </DatePicker>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -233,15 +225,8 @@
 
                                 <TextBox x:Name="BemTText" Text="{Binding BemT, UpdateSourceTrigger=LostFocus,
                             Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"
-
-                                                  TextWrapping="Wrap" AcceptsReturn="True" >
-                                    <TextBox.IsEnabled>
-                                        <MultiBinding Converter="{StaticResource Relpermiss}">
-                                            <Binding Source="{x:Static const:Permissions.CommentTe}"/>
-                                            <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
-                                        </MultiBinding>
-                                    </TextBox.IsEnabled>
-                                </TextBox>
+                                         TextWrapping="Wrap" AcceptsReturn="True" 
+                                         IsEnabled="{Binding Converter={StaticResource permiss}, ConverterParameter={x:Static const:Permissions.CommentTe}}"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

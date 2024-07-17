@@ -60,10 +60,10 @@
                                 <ContextMenu>
                                     <MenuItem Header="Auftrag öffnen"
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenOrderCommand}"
-                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Value}"/>
+                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Node}"/>
                                         <MenuItem Header="Project öffnen" Command="{Binding Path=PlacementTarget.Parent.Tag.ApplicationCommands.OpenProjectOverViewCommand, 
                                         RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.Value}"/>
+                                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext}"/>
                                     </ContextMenu>
                             </TextBlock.ContextMenu>
                         </TextBlock>

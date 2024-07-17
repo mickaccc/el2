@@ -238,7 +238,7 @@ namespace Lieferliste_WPF.ViewModels
                             var node = Projects.Children.FirstOrDefault(x => psp.StartsWith(x.Node.ToString()));
                             if (node == null)
                             {                                
-                                stepNode = Projects.Add(new Shape(m.Value), "Psp-Type");
+                                stepNode = Projects.Add(new Shape(psp), "Psp-Type");
                                 stepNode.Node.Description = item.ProjectInfo;
                                 stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
                                 stepNode.Node.PropertyChanged += OnProjectPropertyChanged;
@@ -249,7 +249,7 @@ namespace Lieferliste_WPF.ViewModels
                             }
                             else
                             {
-                                stepNode = node.Add(new Shape(m.Value), "Psp-Type");
+                                stepNode = node.Add(new Shape(psp), "Psp-Type");
                                 stepNode.Node.Description = item.ProjectInfo;
                                 stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
                                 stepNode.Node.PropertyChanged += OnProjectPropertyChanged;

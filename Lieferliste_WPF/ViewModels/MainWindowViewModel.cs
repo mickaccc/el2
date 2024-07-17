@@ -207,14 +207,8 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnOpenProjectOverViewCanExecute(object arg)
         {
             bool accept = false;
-            if (arg is Vorgang)
-            {
-                accept = true;
-            }
-            else if (arg is string s)
-            {
-                if (s.StartsWith("DS") || s.StartsWith("SC-PR")) accept = true;
-            }
+            if (arg is Vorgang) { accept = true; }
+            else if (arg is PspNode<Shape> shape) { accept = shape.HasOrder; }
             
             return accept && PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
         }
@@ -225,13 +219,8 @@ namespace Lieferliste_WPF.ViewModels
             {
                 param = vrg.AidNavigation.ProId ??= string.Empty;
             }
-            else
-            {
-                if (obj is string s)
-                {
-                    param = s;
-                }
-            }
+            else if (obj is string s) { param = s; }
+            else if (obj is PspNode<Shape> shape) { param = shape.Node.ToString(); }
             if (param.IsNullOrEmpty()) { return; }
 
             var par = new DialogParameters();
@@ -375,7 +364,7 @@ namespace Lieferliste_WPF.ViewModels
             var aid = string.Empty;
             if (parameter is Vorgang y) aid = y.Aid;
             else if (parameter is string) aid = (string)parameter;
-
+            else if (parameter is Shape shape) { aid = shape.ToString(); }
             if (string.IsNullOrEmpty(aid) == false)
             {
                 using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
