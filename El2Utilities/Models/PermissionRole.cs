@@ -14,6 +14,4 @@ public partial class PermissionRole
     public string PermissionKey { get; set; } = null!;
 
     public virtual Permission PermissionKeyNavigation { get; set; } = null!;
-
-    public virtual Role RoleKeyNavigation { get; set; } = null!;
 }

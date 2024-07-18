@@ -13,9 +13,9 @@ public partial class Costunit
 
     public bool PlanRelevance { get; set; }
 
-    public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
+    public virtual ICollection<AccountCost> AccountCosts { get; set; } = new List<AccountCost>();
 
-    public virtual ICollection<UserCost> UserCosts { get; set; } = new List<UserCost>();
+    public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
     public virtual ICollection<WorkSap> WorkSaps { get; set; } = new List<WorkSap>();
 }

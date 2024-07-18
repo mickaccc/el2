@@ -61,15 +61,13 @@ public partial class Vorgang : ModelBase
 
     public int? QuantityMiss { get; set; }
 
-    public string? MarkCode { get; set; }
-
     public string? ProcessingUom { get; set; }
 
     public float? ProcessTime { get; set; }
 
     public int? QuantityRework { get; set; }
 
-    public bool? Visability { get; set; }
+    public bool Visability { get; set; }
 
     public DateTime? ActualStartDate { get; set; }
 
@@ -79,11 +77,13 @@ public partial class Vorgang : ModelBase
 
     public int? Spos { get; set; }
 
-    public string? CommentMach { get; set; }
-
     public int? Rid { get; set; }
 
+    public string? CommentMach { get; set; }
+
     public string? BulletTwo { get; set; }
+
+    public string? MarkCode { get; set; }
 
     public DateTime? KlimaPrint { get; set; }
 
@@ -93,11 +93,11 @@ public partial class Vorgang : ModelBase
 
     public string? SortPos { get; set; }
 
+    public virtual ICollection<AccountVorgang> AccountVorgangs { get; set; } = new List<AccountVorgang>();
+
     public virtual OrderRb AidNavigation { get; set; } = null!;
 
     public virtual WorkSap? ArbPlSapNavigation { get; set; }
 
     public virtual Ressource? RidNavigation { get; set; }
-
-    public virtual ICollection<UserVorgang> UserVorgangs { get; set; } = new List<UserVorgang>();
 }

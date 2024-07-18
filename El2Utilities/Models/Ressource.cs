@@ -23,9 +23,9 @@ public partial class Ressource
 
     public int? WorkAreaId { get; set; }
 
-    public bool? Visability { get; set; }
+    public bool Visability { get; set; }
 
-    public bool? ProcessAddable { get; set; }
+    public bool ProcessAddable { get; set; }
 
     public int? ShiftPlanId { get; set; }
 

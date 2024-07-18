@@ -5,17 +5,19 @@ using System.Collections.Generic;
 
 namespace El2Core.Models;
 
-public partial class UserWorkArea
+public partial class AccountWorkArea
 {
+    public string AccountId { get; set; } = null!;
+
     public int WorkAreaId { get; set; }
 
-    public string UserId { get; set; } = null!;
+    public DateTime Created { get; set; }
 
     public bool FullAccess { get; set; }
 
     public bool Standard { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual IdmAccount Account { get; set; } = null!;
 
     public virtual WorkArea WorkArea { get; set; } = null!;
 }

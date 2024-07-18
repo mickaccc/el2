@@ -31,7 +31,7 @@ namespace Lieferliste_WPF.ViewModels
         private static ICollectionView _roleCV;
         private static bool _hasChanges = false;
         private readonly IContainerExtension _container;
-        public static ObservableCollection<Role>? Roles { get; } = new();
+        public static ObservableCollection<IdmRole>? Roles { get; } = new();
 
         public static ObservableCollection<Permission> PermissionsAvail { get; } = new();
         public static ObservableCollection<PermissionRole> PermissionsInter { get; } = new();
@@ -66,12 +66,12 @@ namespace Lieferliste_WPF.ViewModels
         {
             get
             {
-                User us = (User)_roleCV.CurrentItem;
+                //IdmAccount us = (IdmAccount)_roleCV.CurrentItem;
                 string? result = null;
-                if (columnName == nameof(User.UsrName))
-                {
-                    if (us.UsrName.IsNullOrEmpty()) return "Der Eintrag darf nicht leer sein";
-                }
+                //if (columnName == nameof(IdmAccount.Firstname))
+                //{
+                //    if (us.UsrName.IsNullOrEmpty()) return "Der Eintrag darf nicht leer sein";
+                //}
                 return result ??= string.Empty;
             }
         }
@@ -101,19 +101,19 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            if (_roleCV.CurrentItem is Role role)
-            {
-                using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-                {
-                    var inserts = PermissionsInter.ExceptBy(role.PermissionRoles.Select(x => x.PermissionKey), y => y.PermissionKey);
-                    var removes = role.PermissionRoles.ExceptBy(PermissionsInter.Select(x => x.PermissionKey), y => y.PermissionKey);
-                    if (inserts.Any()) Dbctx.PermissionRoles.AddRange(inserts);
-                    if (removes.Any()) Dbctx.PermissionRoles.RemoveRange(removes);
+            //if (_roleCV.CurrentItem is Role role)
+            //{
+            //    using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            //    {
+            //        var inserts = PermissionsInter.ExceptBy(role.PermissionRoles.Select(x => x.PermissionKey), y => y.PermissionKey);
+            //        var removes = role.PermissionRoles.ExceptBy(PermissionsInter.Select(x => x.PermissionKey), y => y.PermissionKey);
+            //        if (inserts.Any()) Dbctx.PermissionRoles.AddRange(inserts);
+            //        if (removes.Any()) Dbctx.PermissionRoles.RemoveRange(removes);
 
-                    Dbctx.SaveChanges();
-                    _hasChanges = false;
-                }
-            }
+            //        Dbctx.SaveChanges();
+            //        _hasChanges = false;
+            //    }
+            //}
         }
 
         private bool OnSaveCanExecute(object arg)
@@ -129,41 +129,41 @@ namespace Lieferliste_WPF.ViewModels
         private static void OnSelectionChangeExecuted(object obj)
         {
 
-            if (obj is Role us)
-            {
-                PermissionsInter.Clear();
-                foreach (var p in us.PermissionRoles)
-                {
-                    PermissionsInter.Add(new PermissionRole()
-                    {
-                        Created = p.Created,
-                        PermissionKey = p.PermissionKey,
-                        RoleKey = p.RoleKey,
-                    });
-                }
-                PermissionsAvail.Clear();
+            //if (obj is Role us)
+            //{
+            //    PermissionsInter.Clear();
+            //    foreach (var p in us.PermissionRoles)
+            //    {
+            //        PermissionsInter.Add(new PermissionRole()
+            //        {
+            //            Created = p.Created,
+            //            PermissionKey = p.PermissionKey,
+            //            RoleKey = p.RoleKey,
+            //        });
+            //    }
+            //    PermissionsAvail.Clear();
 
-                foreach (var p in _permissionsAll.ExceptBy(PermissionsInter.Select(o => o.PermissionKey), o => o.PKey))
-                {
+            //    foreach (var p in _permissionsAll.ExceptBy(PermissionsInter.Select(o => o.PermissionKey), o => o.PKey))
+            //    {
 
-                    PermissionsAvail.Add(new Permission()
-                    {
-                        PKey = p.PKey,
-                        Description = p.Description,
-                        Categorie = p.Categorie
-                    });
-                }
-                _hasChanges = false;
+            //        PermissionsAvail.Add(new Permission()
+            //        {
+            //            PKey = p.PKey,
+            //            Description = p.Description,
+            //            Categorie = p.Categorie
+            //        });
+            //    }
+            //    _hasChanges = false;
 
-            }
+            //}
         }
 
         private void LoadData()
         {
             using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                var r = Dbctx.Roles
-                 .Include(x => x.PermissionRoles)
+                var r = Dbctx.IdmRoles
+                 .Include(x => x.PermissionsRole)
                  .ThenInclude(x => x.PermissionKeyNavigation)
                  .ToList();
 
@@ -191,13 +191,13 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            Role? r = _roleCV.CurrentItem as Role;
+            IdmRole? r = _roleCV.CurrentItem as IdmRole;
             if (dropInfo.Data is Permission p)
             {
 
                 if (r != null)
                 {
-                    PermissionsInter.Add(new PermissionRole() { Created = DateTime.Now, PermissionKey = p.PKey, RoleKey = r.Id });
+                    PermissionsInter.Add(new PermissionRole() { Created = DateTime.Now, PermissionKey = p.PKey, RoleKey = r.RoleId });
                     PermissionsAvail.Remove(p);
                 }
             }

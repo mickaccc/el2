@@ -209,7 +209,7 @@ namespace ModulePlanning.ViewModels
 
         private void LoadWorkAreas()
         {
-            var w = UserInfo.User.UserWorkAreas.OrderByDescending(x => x.Standard);
+            var w = UserInfo.User.AccountWorkAreas.OrderByDescending(x => x.Standard);
             foreach (var workArea in w)
             {
                 WorkAreas.Add(workArea.WorkArea);
@@ -280,7 +280,7 @@ namespace ModulePlanning.ViewModels
                 .Include(x => x.RessourceCostUnits)
                 .ToListAsync();
             var mach2 = new List<Ressource>();
-            foreach (var uc in UserInfo.User.UserWorkAreas)
+            foreach (var uc in UserInfo.User.AccountWorkAreas)
             {
                 mach2.AddRange(mach.Where(x => uc.WorkAreaId == x.WorkAreaId));
             }
@@ -316,7 +316,7 @@ namespace ModulePlanning.ViewModels
                 List<Vorgang> list = new();
                 foreach (PlanMachine m in _machines)
                 {
-                    foreach (var c in UserInfo.User.UserCosts)
+                    foreach (var c in UserInfo.User.AccountCosts)
                     {
                         list.AddRange(proc.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.Rid &&
                             x.ArbPlSapNavigation.CostId == c.CostId));
@@ -503,7 +503,7 @@ namespace ModulePlanning.ViewModels
                 for (var i = 0; i < _machines.Count; i++)
                 {
                     var vv = _DbCtx.Ressources.First(x => x.RessourceId == _machines[i].Rid);
-                    vv.Sort = (vv.Visability ??= false) ? i : 1000;
+                    vv.Sort = vv.Visability ? i : 1000;
                 }
                 _DbCtx.SaveChanges();
             }

@@ -39,9 +39,9 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView CostView { get { return costSource.View; } }
 
         private static bool _isNew = false;
-        public static BindingList<User>? Users { get; private set; }
+        public static BindingList<IdmAccount>? Users { get; private set; }
 
-        private static HashSet<Role> Roles { get; set; } = new();
+        private static HashSet<IdmRole> Roles { get; set; } = new();
         private static HashSet<WorkArea> WorkAreas { get; set; } = new();
         private static HashSet<Costunit> CostUnits { get; set; } = new();
         private IContainerExtension _container;

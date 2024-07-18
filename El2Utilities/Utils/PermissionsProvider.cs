@@ -18,7 +18,7 @@ namespace El2Core.Utils
             {
 
                 _instance = new PermissionsProvider();
-                User u = UserInfo.User;
+                IdmAccount u = UserInfo.User;
                 _instance.LoadPermissions(u);
                 return _instance;
             }
@@ -27,17 +27,17 @@ namespace El2Core.Utils
 
         private PermissionsProvider() { }
 
-        private void LoadPermissions(User user)
+        private void LoadPermissions(IdmAccount user)
         {
 
-            foreach (var item in user.UserRoles)
+            foreach (var item in user.IdmRelations)
             {
-                foreach (var permission in item.Role.PermissionRoles)
+                foreach (var permission in item.Role.PermissionsRole)
                 {
                     _permissions.Add(permission.PermissionKey.Trim());
                 }
             }
-            foreach (var access in user.UserWorkAreas)
+            foreach (var access in user.AccountWorkAreas)
             {
                 if (access.FullAccess) _fullAccesses.Add(access.WorkAreaId);
             }

@@ -13,7 +13,19 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     {
     }
 
+    public virtual DbSet<AccountCost> AccountCosts { get; set; }
+
+    public virtual DbSet<AccountVorgang> AccountVorgangs { get; set; }
+
+    public virtual DbSet<AccountWorkArea> AccountWorkAreas { get; set; }
+
     public virtual DbSet<Costunit> Costunits { get; set; }
+
+    public virtual DbSet<IdmAccount> IdmAccounts { get; set; }
+
+    public virtual DbSet<IdmRelation> IdmRelations { get; set; }
+
+    public virtual DbSet<IdmRole> IdmRoles { get; set; }
 
     public virtual DbSet<InMemoryMsg> InMemoryMsgs { get; set; }
 
@@ -41,8 +53,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<RessourceWorkshift> RessourceWorkshifts { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
-
     public virtual DbSet<Rule> Rules { get; set; }
 
     public virtual DbSet<ShiftCover> ShiftCovers { get; set; }
@@ -52,16 +62,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<TblDummy> TblDummies { get; set; }
 
     public virtual DbSet<TblMaterial> TblMaterials { get; set; }
-
-    public virtual DbSet<User> Users { get; set; }
-
-    public virtual DbSet<UserCost> UserCosts { get; set; }
-
-    public virtual DbSet<UserRole> UserRoles { get; set; }
-
-    public virtual DbSet<UserVorgang> UserVorgangs { get; set; }
-
-    public virtual DbSet<UserWorkArea> UserWorkAreas { get; set; }
 
     public virtual DbSet<Vorgang> Vorgangs { get; set; }
 
@@ -73,6 +73,80 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AccountCost>(entity =>
+        {
+            entity.HasKey(e => new { e.AccountId, e.CostId });
+
+            entity.ToTable("AccountCost");
+
+            entity.Property(e => e.AccountId)
+                .HasMaxLength(80)
+                .IsUnicode(false);
+            entity.Property(e => e.Created)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.AccountCosts)
+                .HasForeignKey(d => d.AccountId)
+                .HasConstraintName("FK_AccountCost_idm_accounts");
+
+            entity.HasOne(d => d.Cost).WithMany(p => p.AccountCosts)
+                .HasForeignKey(d => d.CostId)
+                .HasConstraintName("FK_AccountCost_Costunit");
+        });
+
+        modelBuilder.Entity<AccountVorgang>(entity =>
+        {
+            entity.HasKey(e => new { e.AccountId, e.VorgangId });
+
+            entity.ToTable("AccountVorgang");
+
+            entity.Property(e => e.AccountId)
+                .HasMaxLength(80)
+                .IsUnicode(false)
+                .HasColumnName("accountId");
+            entity.Property(e => e.VorgangId)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("vorgangId");
+            entity.Property(e => e.Created)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.AccountVorgangs)
+                .HasForeignKey(d => d.AccountId)
+                .HasConstraintName("FK_AccountVorgang_idm_accounts");
+
+            entity.HasOne(d => d.Vorgang).WithMany(p => p.AccountVorgangs)
+                .HasForeignKey(d => d.VorgangId)
+                .HasConstraintName("FK_AccountVorgang_Vorgang");
+        });
+
+        modelBuilder.Entity<AccountWorkArea>(entity =>
+        {
+            entity.HasKey(e => new { e.AccountId, e.WorkAreaId });
+
+            entity.ToTable("AccountWorkArea");
+
+            entity.Property(e => e.AccountId)
+                .HasMaxLength(80)
+                .IsUnicode(false);
+            entity.Property(e => e.Created)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.AccountWorkAreas)
+                .HasForeignKey(d => d.AccountId)
+                .HasConstraintName("FK_AccountWorkArea_idm_accounts");
+
+            entity.HasOne(d => d.WorkArea).WithMany(p => p.AccountWorkAreas)
+                .HasForeignKey(d => d.WorkAreaId)
+                .HasConstraintName("FK_AccountWorkArea_WorkArea");
+        });
+
         modelBuilder.Entity<Costunit>(entity =>
         {
             entity.ToTable("Costunit");
@@ -84,32 +158,119 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.PlanRelevance).HasColumnName("plan_relevance");
         });
 
+        modelBuilder.Entity<IdmAccount>(entity =>
+        {
+            entity.HasKey(e => e.AccountId).HasName("idm_accounts_pk");
+
+            entity.ToTable("idm_accounts", tb => tb.HasTrigger("idm_accounts_modify_trg"));
+
+            entity.Property(e => e.AccountId)
+                .HasMaxLength(80)
+                .IsUnicode(false)
+                .HasColumnName("account_id");
+            entity.Property(e => e.Department)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("department");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("email");
+            entity.Property(e => e.Firstname)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("firstname");
+            entity.Property(e => e.Lastmodified)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("lastmodified");
+            entity.Property(e => e.Lastname)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("lastname");
+        });
+
+        modelBuilder.Entity<IdmRelation>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("idm_relations", tb => tb.HasTrigger("idm_relations_modify_trg"));
+
+            entity.HasIndex(e => new { e.AccountId, e.RoleId }, "idm_relations_uq").IsUnique();
+
+            entity.Property(e => e.AccountId)
+                .HasMaxLength(80)
+                .IsUnicode(false)
+                .HasColumnName("account_id");
+            entity.Property(e => e.Lastmodified)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("lastmodified");
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+
+            entity.HasOne(d => d.Account).WithMany()
+                .HasForeignKey(d => d.AccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("idm_relations2accounts_fk");
+
+            entity.HasOne(d => d.Role).WithMany()
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("idm_relations2roles_fk");
+        });
+
+        modelBuilder.Entity<IdmRole>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("idm_roles_pk");
+
+            entity.ToTable("idm_roles", tb => tb.HasTrigger("idm_roles_modify_trg"));
+
+            entity.HasIndex(e => e.RoleName, "idm_roles_uq").IsUnique();
+
+            entity.Property(e => e.RoleId)
+                .ValueGeneratedNever()
+                .HasColumnName("role_id");
+            entity.Property(e => e.Lastmodified)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("lastmodified");
+            entity.Property(e => e.RoleName)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("role_name");
+        });
+
         modelBuilder.Entity<InMemoryMsg>(entity =>
         {
-            entity.HasKey(e => e.MsgId).IsClustered(false);
+            entity.HasKey(e => e.MsgId)
+                .HasName("PK__InMemory__662358934B319009")
+                .IsClustered(false);
 
             entity
                 .ToTable("InMemoryMsg")
                 .IsMemoryOptimized();
 
+            entity.Property(e => e.MsgId).HasColumnName("MsgID");
             entity.Property(e => e.Invoker).HasMaxLength(255);
+            entity.Property(e => e.Operation).HasMaxLength(50);
+            entity.Property(e => e.TableName).HasMaxLength(50);
 
             entity.HasOne(d => d.Onl).WithMany(p => p.InMemoryMsgs)
                 .HasForeignKey(d => d.OnlId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_InMemoryMsg_InMemoryOnline");
         });
 
         modelBuilder.Entity<InMemoryOnline>(entity =>
         {
             entity.HasKey(e => e.OnlId)
-                .HasName("PK__InMemory__A34E6143FC465DD4")
+                .HasName("PK__InMemory__A34E616341453DE5")
                 .IsClustered(false);
 
             entity
                 .ToTable("InMemoryOnline")
                 .IsMemoryOptimized();
 
+            entity.Property(e => e.OnlId).HasColumnName("OnlID");
             entity.Property(e => e.Login)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -134,7 +295,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<OrderRb>(entity =>
         {
-            entity.HasKey(e => e.Aid);
+            entity.HasKey(e => e.Aid).HasName("PK_Order");
 
             entity.ToTable("OrderRB", tb =>
                 {
@@ -174,7 +335,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Prio).HasMaxLength(255);
             entity.Property(e => e.ProId)
                 .HasMaxLength(50)
-                .IsFixedLength()
                 .HasColumnName("ProID");
             entity.Property(e => e.ProductionSupervisor)
                 .HasMaxLength(10)
@@ -185,17 +345,16 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("timestamp");
             entity.Property(e => e.Wbselement)
                 .HasMaxLength(50)
-                .IsFixedLength()
                 .HasColumnName("WBSElement");
 
             entity.HasOne(d => d.DummyMatNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.DummyMat)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_OrderRB_tblDummy1");
+                .HasConstraintName("FK_Order_tblDummy");
 
             entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.Material)
-                .HasConstraintName("FK_OrderRB_tblMaterial");
+                .HasConstraintName("FK_Order_tblMaterial");
 
             entity.HasOne(d => d.OrderGroupNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.OrderGroup)
@@ -205,7 +364,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.Pro).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.ProId)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK_OrderRB_Project");
+                .HasConstraintName("FK_Order_project");
         });
 
         modelBuilder.Entity<Permission>(entity =>
@@ -237,11 +396,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.PermissionKeyNavigation).WithMany(p => p.PermissionRoles)
                 .HasForeignKey(d => d.PermissionKey)
                 .HasConstraintName("FK_PermissionRoles_Permission");
-
-            entity.HasOne(d => d.RoleKeyNavigation).WithMany(p => p.PermissionRoles)
-                .HasForeignKey(d => d.RoleKey)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PermissionRoles_Roles");
         });
 
         modelBuilder.Entity<ProductionOrderFilter>(entity =>
@@ -257,15 +411,16 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<Project>(entity =>
         {
-            entity.HasKey(e => e.ProjectPsp).HasName("PK_tblProject");
+            entity.HasKey(e => e.ProjectPsp).HasName("PK_ProjectPSP");
 
             entity.ToTable("Project");
 
             entity.Property(e => e.ProjectPsp)
                 .HasMaxLength(50)
+                .HasColumnName("ProjectPSP");
+            entity.Property(e => e.ProjectColor)
+                .HasMaxLength(10)
                 .IsFixedLength();
-            entity.Property(e => e.ProjectColor).HasMaxLength(10);
-            entity.Property(e => e.ProjectPrio).HasDefaultValueSql("((0))");
         });
 
         modelBuilder.Entity<ProjectAttachment>(entity =>
@@ -274,14 +429,10 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.ToTable("ProjectAttachment");
 
-            entity.Property(e => e.AttachmentBin).HasDefaultValueSql("((0))");
-            entity.Property(e => e.AttachmentLink).HasMaxLength(255);
-            entity.Property(e => e.ProjectPsp)
-                .HasMaxLength(50)
-                .IsFixedLength();
+            entity.Property(e => e.ProjectPsp).HasMaxLength(50);
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
-                .HasColumnName("timestamp");
+                .HasColumnType("datetime");
 
             entity.HasOne(d => d.ProjectPspNavigation).WithMany(p => p.ProjectAttachments)
                 .HasForeignKey(d => d.ProjectPsp)
@@ -296,13 +447,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Abteilung).HasMaxLength(15);
             entity.Property(e => e.Info).HasMaxLength(255);
             entity.Property(e => e.Inventarnummer).HasMaxLength(255);
-            entity.Property(e => e.ProcessAddable)
-                .IsRequired()
-                .HasDefaultValueSql("((1))");
+            entity.Property(e => e.ProcessAddable).HasDefaultValue(true);
             entity.Property(e => e.RessName).HasMaxLength(30);
-            entity.Property(e => e.Visability)
-                .IsRequired()
-                .HasDefaultValueSql("((1))");
+            entity.Property(e => e.Visability).HasDefaultValue(true);
 
             entity.HasOne(d => d.ShiftPlan).WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.ShiftPlanId)
@@ -311,7 +458,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.HasOne(d => d.WorkArea).WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.WorkAreaId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Ressource_WorkArea");
         });
 
@@ -345,10 +492,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.RidNavigation).WithMany(p => p.RessourceUsers)
                 .HasForeignKey(d => d.Rid)
                 .HasConstraintName("FK_RessourceUser_Ressource");
-
-            entity.HasOne(d => d.Us).WithMany(p => p.RessourceUsers)
-                .HasForeignKey(d => d.UsId)
-                .HasConstraintName("FK_RessourceUser_User");
         });
 
         modelBuilder.Entity<RessourceWorkshift>(entity =>
@@ -367,20 +510,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.SidNavigation).WithMany(p => p.RessourceWorkshifts)
                 .HasForeignKey(d => d.Sid)
                 .HasConstraintName("FK_RessourceWorkshift_WorkShift");
-        });
-
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Created)
-                .HasDefaultValueSql("(getdate())")
-                .HasComment("Time of Create")
-                .HasColumnType("datetime")
-                .HasColumnName("created");
-            entity.Property(e => e.Description)
-                .HasMaxLength(30)
-                .IsFixedLength();
-            entity.Property(e => e.Rolelevel).HasColumnName("rolelevel");
         });
 
         modelBuilder.Entity<Rule>(entity =>
@@ -470,107 +599,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Bezeichng).HasMaxLength(256);
         });
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.UserIdent).HasName("PK__User__1C1A74760950743A");
-
-            entity.ToTable("User");
-
-            entity.Property(e => e.UserIdent).HasMaxLength(255);
-            entity.Property(e => e.Exited).HasDefaultValueSql("((0))");
-            entity.Property(e => e.UsrEmail).HasMaxLength(50);
-            entity.Property(e => e.UsrGroup).HasMaxLength(50);
-            entity.Property(e => e.UsrInfo).HasMaxLength(50);
-            entity.Property(e => e.UsrName).IsUnicode(false);
-            entity.Property(e => e.UsrRegion).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<UserCost>(entity =>
-        {
-            entity.HasKey(e => new { e.UsrIdent, e.CostId });
-
-            entity.ToTable("UserCost");
-
-            entity.Property(e => e.UsrIdent)
-                .HasMaxLength(255)
-                .HasColumnName("usrIdent");
-            entity.Property(e => e.CostId).HasColumnName("costId");
-
-            entity.HasOne(d => d.Cost).WithMany(p => p.UserCosts)
-                .HasForeignKey(d => d.CostId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_UserCost_Costunit");
-
-            entity.HasOne(d => d.UsrIdentNavigation).WithMany(p => p.UserCosts)
-                .HasForeignKey(d => d.UsrIdent)
-                .HasConstraintName("FK_User_UserCost");
-        });
-
-        modelBuilder.Entity<UserRole>(entity =>
-        {
-            entity.HasKey(e => new { e.UserIdent, e.RoleId });
-
-            entity.Property(e => e.UserIdent).HasMaxLength(255);
-            entity.Property(e => e.RoleId).HasColumnName("RoleID");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.UserRoles)
-                .HasForeignKey(d => d.RoleId)
-                .HasConstraintName("FK_UserRoles_Roles");
-
-            entity.HasOne(d => d.UserIdentNavigation).WithMany(p => p.UserRoles)
-                .HasForeignKey(d => d.UserIdent)
-                .HasConstraintName("FK_UserRoles_User");
-        });
-
-        modelBuilder.Entity<UserVorgang>(entity =>
-        {
-            entity.HasKey(e => new { e.UserId, e.Vid });
-
-            entity.ToTable("UserVorgang");
-
-            entity.Property(e => e.UserId).HasMaxLength(255);
-            entity.Property(e => e.Vid)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("VID");
-            entity.Property(e => e.Timestamp)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
-                .HasColumnName("timestamp");
-
-            entity.HasOne(d => d.User).WithMany(p => p.UserVorgangs)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK_UserVorgang_User");
-
-            entity.HasOne(d => d.VidNavigation).WithMany(p => p.UserVorgangs)
-                .HasForeignKey(d => d.Vid)
-                .HasConstraintName("FK_UserVorgang_Vorgang");
-        });
-
-        modelBuilder.Entity<UserWorkArea>(entity =>
-        {
-            entity.HasKey(e => new { e.WorkAreaId, e.UserId }).HasName("PK_UserUnion");
-
-            entity.ToTable("UserWorkArea");
-
-            entity.Property(e => e.WorkAreaId).HasColumnName("WorkAreaID");
-            entity.Property(e => e.UserId)
-                .HasMaxLength(255)
-                .HasColumnName("UserID");
-
-            entity.HasOne(d => d.User).WithMany(p => p.UserWorkAreas)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK_UserWorkArea_User");
-
-            entity.HasOne(d => d.WorkArea).WithMany(p => p.UserWorkAreas)
-                .HasForeignKey(d => d.WorkAreaId)
-                .HasConstraintName("FK_UserWorkArea_WorkArea");
-        });
-
         modelBuilder.Entity<Vorgang>(entity =>
         {
-            entity.HasKey(e => e.VorgangId).HasName("PK_tblVorgang");
-
             entity.ToTable("Vorgang", tb =>
                 {
                     tb.HasTrigger("AuditChangesVorgang");
@@ -606,10 +636,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.BemT)
                 .IsUnicode(false)
                 .HasColumnName("Bem_T");
-            entity.Property(e => e.Bullet).HasMaxLength(9);
+            entity.Property(e => e.Bullet)
+                .HasMaxLength(9)
+                .HasDefaultValue("#FFFFFFFF");
             entity.Property(e => e.BulletTwo).HasMaxLength(9);
             entity.Property(e => e.CommentMach).IsUnicode(false);
-            entity.Property(e => e.KlimaPrint).HasColumnType("datetime");
             entity.Property(e => e.MarkCode).HasMaxLength(50);
             entity.Property(e => e.ProcessingUom)
                 .HasMaxLength(16)
@@ -635,9 +666,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.SysStatus).HasMaxLength(255);
             entity.Property(e => e.Termin).HasColumnType("datetime");
             entity.Property(e => e.Text).HasMaxLength(150);
-            entity.Property(e => e.Visability)
-                .IsRequired()
-                .HasDefaultValueSql("((1))");
+            entity.Property(e => e.Visability).HasDefaultValue(true);
             entity.Property(e => e.Vnr).HasColumnName("VNR");
             entity.Property(e => e.Wrtze).HasColumnName("WRTZE");
             entity.Property(e => e.WrtzeEinheit)
@@ -654,6 +683,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.HasOne(d => d.RidNavigation).WithMany(p => p.Vorgangs)
                 .HasForeignKey(d => d.Rid)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Vorgang_Ressource");
         });
 
@@ -674,14 +704,14 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.WorkSapId)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+            entity.Property(e => e.CostId).HasColumnName("CostID");
             entity.Property(e => e.Created)
                 .HasDefaultValueSql("(getdate())")
-                .HasColumnType("date")
+                .HasColumnType("datetime")
                 .HasColumnName("created");
 
             entity.HasOne(d => d.Cost).WithMany(p => p.WorkSaps)
                 .HasForeignKey(d => d.CostId)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_WorkSap_Costunit");
 
             entity.HasOne(d => d.Ressource).WithMany(p => p.WorkSaps)

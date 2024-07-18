@@ -12,6 +12,4 @@ public partial class RessourceUser
     public int Rid { get; set; }
 
     public virtual Ressource RidNavigation { get; set; } = null!;
-
-    public virtual User Us { get; set; } = null!;
 }

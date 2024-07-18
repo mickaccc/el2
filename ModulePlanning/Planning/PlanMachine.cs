@@ -227,7 +227,7 @@ namespace ModulePlanning.Planning
             Name = res.RessName;
             _SelectedRadioButton = res.ShiftPlanId ??=0;
             _title = res.Inventarnummer ?? string.Empty;
-            Vis = res.Visability ??= false;
+            Vis = res.Visability;
             Description = res.Info;
             InventNo = res.Inventarnummer;
             Processes = res.Vorgangs.ToObservableCollection();
@@ -504,7 +504,7 @@ namespace ModulePlanning.Planning
                         var pr = Processes?.First(x => x.VorgangId == vid);
                         {
                             pr.BemT = String.Format("[{0}-{1}]{2}{3}",
-                            UserInfo.User.UserIdent, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
+                            UserInfo.User.AccountId, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
                             pr.RunPropertyChanged();
                         }
                     }

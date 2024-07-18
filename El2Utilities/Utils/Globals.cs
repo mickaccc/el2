@@ -13,11 +13,11 @@ namespace El2Core.Utils
     public interface IGlobals
     {
         static string PC { get; }
-        static User User { get; }
+        static IdmAccount User { get; }
     }
     public class Globals : IGlobals, IDisposable
     {
-        public User User { get; private set; }
+        public IdmAccount User { get; private set; }
         public string PC { get; private set; }
         public List<Rule> Rules { get; private set; }
         private IContainerProvider _container;
@@ -36,18 +36,17 @@ namespace El2Core.Utils
 
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                var u = db.Users
-                .Include(x => x.UserCosts)
+                var u = db.IdmAccounts 
+                .Include(x => x.AccountCosts)
                 .ThenInclude(x => x.Cost)
-                .Include(x => x.UserWorkAreas)
+                .Include(x => x.AccountWorkAreas)
                 .ThenInclude(x => x.WorkArea)
-                .Include(x => x.UserRoles)
-                .ThenInclude(x => x.Role)
-                .ThenInclude(x => x.PermissionRoles)
-                .ThenInclude(x => x.PermissionKeyNavigation)
-                .Single(x => x.UserIdent == us);
-
+                .Include(y => y.IdmRelations)
+                .ThenInclude(y => y.Role)
+                .Single(x => x.AccountId == us);
+                    
                 User = u;
+                    
                 Rules = db.Rules.ToList(); 
             }
         }
@@ -88,12 +87,12 @@ namespace El2Core.Utils
     public readonly struct UserInfo
     {
         public static string? PC => _PC ?? string.Empty;
-        public static User User => _User;
+        public static IdmAccount User => _User;
 
         private static string? _PC;
-        private static User _User;
+        private static IdmAccount _User;
 
-        public void Initialize(string PC, User Usr)
+        public void Initialize(string PC, IdmAccount Usr)
         {
             _PC = PC;
             _User = Usr;

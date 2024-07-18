@@ -41,7 +41,11 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
-  <ItemGroup>
+	<PropertyGroup>
+		<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
+	</PropertyGroup>
+
+	<ItemGroup>
     <Compile Remove="Converters\ActiveDocumentConverter.cs" />
     <Compile Remove="Utils\ConverterBindableParameter.cs" />
   </ItemGroup>

@@ -19,7 +19,7 @@ public partial class WorkArea
 
     public bool CreateFolder { get; set; }
 
-    public virtual ICollection<Ressource> Ressources { get; set; } = new List<Ressource>();
+    public virtual ICollection<AccountWorkArea> AccountWorkAreas { get; set; } = new List<AccountWorkArea>();
 
-    public virtual ICollection<UserWorkArea> UserWorkAreas { get; set; } = new List<UserWorkArea>();
+    public virtual ICollection<Ressource> Ressources { get; set; } = new List<Ressource>();
 }

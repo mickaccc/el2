@@ -1,5 +1,5 @@
 ﻿{
-   "CodeGenerationMode": 3,
+   "CodeGenerationMode": 4,
    "ContextClassName": "DB_COS_LIEFERLISTE_SQLContext",
    "ContextNamespace": null,
    "FilterSchemas": false,
@@ -15,7 +15,31 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "[dbo].[AccountCost]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AccountVorgang]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[AccountWorkArea]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Costunit]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[idm_accounts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[idm_relations]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[idm_roles]",
          "ObjectType": 0
       },
       {
@@ -71,10 +95,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Roles]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[Rules]",
          "ObjectType": 0
       },
@@ -92,26 +112,6 @@
       },
       {
          "Name": "[dbo].[tblMaterial]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[User]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[UserCost]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[UserRoles]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[UserVorgang]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[UserWorkArea]",
          "ObjectType": 0
       },
       {
@@ -133,6 +133,7 @@
    ],
    "UiHint": null,
    "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDateOnlyTimeOnly": false,
@@ -142,7 +143,7 @@
    "UseHandleBars": false,
    "UseHierarchyId": false,
    "UseInflector": true,
-   "UseLegacyPluralizer": true,
+   "UseLegacyPluralizer": false,
    "UseManyToManyEntity": true,
    "UseNoDefaultConstructor": false,
    "UseNoNavigations": false,
