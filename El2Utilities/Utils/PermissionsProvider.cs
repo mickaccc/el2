@@ -1,6 +1,7 @@
 ﻿using El2Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace El2Core.Utils
 {
@@ -18,8 +19,7 @@ namespace El2Core.Utils
             {
 
                 _instance = new PermissionsProvider();
-                IdmAccount u = UserInfo.User;
-                _instance.LoadPermissions(u);
+                _instance.LoadPermissions(UserInfo.User);
                 return _instance;
             }
             return _instance;
@@ -27,19 +27,22 @@ namespace El2Core.Utils
 
         private PermissionsProvider() { }
 
-        private void LoadPermissions(IdmAccount user)
+        private void LoadPermissions(User user)
         {
 
-            foreach (var item in user.IdmRelations)
+            foreach (var item in user.Roles)
             {
-                foreach (var permission in item.Role.PermissionsRole)
+                foreach (var permission in item.PermissionRoles)
                 {
                     _permissions.Add(permission.PermissionKey.Trim());
                 }
             }
-            foreach (var access in user.AccountWorkAreas)
+            foreach (var access in user.WorkAreas)
             {
-                if (access.FullAccess) _fullAccesses.Add(access.WorkAreaId);
+                foreach (var wo in access.AccountWorkAreas.Where(x => x.FullAccess))
+                {
+                     _fullAccesses.Add(wo.WorkAreaId);
+                }
             }
         }
 

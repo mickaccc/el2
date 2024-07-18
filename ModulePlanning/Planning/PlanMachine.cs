@@ -504,7 +504,7 @@ namespace ModulePlanning.Planning
                         var pr = Processes?.First(x => x.VorgangId == vid);
                         {
                             pr.BemT = String.Format("[{0}-{1}]{2}{3}",
-                            UserInfo.User.AccountId, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
+                            UserInfo.User.UserId, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
                             pr.RunPropertyChanged();
                         }
                     }

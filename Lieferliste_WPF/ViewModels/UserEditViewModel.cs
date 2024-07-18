@@ -26,8 +26,6 @@ namespace Lieferliste_WPF.ViewModels
         public string Title { get; } = "User Zuteilung";
         public ICommand SelectionChangedCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
-        public ICommand NewCommand { get; private set; }
-        public ICommand DeleteCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
         public ICommand LostFocusCommand => _LostFocusCommand ??= new RelayCommand(OnLostFocus);
 
@@ -39,7 +37,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView CostView { get { return costSource.View; } }
 
         private static bool _isNew = false;
-        public static BindingList<IdmAccount>? Users { get; private set; }
+        public static BindingList<User>? Users { get; private set; }
 
         private static HashSet<IdmRole> Roles { get; set; } = new();
         private static HashSet<WorkArea> WorkAreas { get; set; } = new();
@@ -87,8 +85,6 @@ namespace Lieferliste_WPF.ViewModels
 
             SelectionChangedCommand = new ActionCommand(OnSelectionChangeExecuted, OnSelectionChangeCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            NewCommand = new ActionCommand(OnNewExecuted, OnNewCanExecute);
-            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
 
             roleSource.Source = Roles;
@@ -129,11 +125,11 @@ namespace Lieferliste_WPF.ViewModels
 
         private void CostFilterPredicate(object sender, FilterEventArgs e)
         {
-            var cost = e.Item as Costunit;
-            if (_usrCV?.CurrentItem is User us)
-            {
-                e.Accepted = !us.UserCosts.Any(x => x.CostId == cost?.CostunitId);
-            }
+            //var cost = e.Item as Costunit;
+            //if (_usrCV?.CurrentItem is User us)
+            //{
+            //    e.Accepted = !us.CostUnits.Any(x => x.CostId == cost?.CostunitId);
+            //}
         }
 
         private void WorkAreaFilterPredicate(object sender, FilterEventArgs e)
@@ -141,17 +137,17 @@ namespace Lieferliste_WPF.ViewModels
             var work = e.Item as WorkArea;
             if (_usrCV?.CurrentItem is User us)
             {
-                e.Accepted = !us.UserWorkAreas.Any(x => x.WorkAreaId == work?.WorkAreaId);
+                e.Accepted = !us.WorkAreas.Any(x => x.WorkAreaId == work?.WorkAreaId);
             }
         }
 
         private void RoleFilterPredicate(object sender, FilterEventArgs e)
         {
-            var role = e.Item as Role;
-            if (_usrCV?.CurrentItem is User us)
-            {
-                e.Accepted = !us.UserRoles.Any(x => x.RoleId == role?.Id);
-            }
+            //var role = e.Item as Role;
+            //if (_usrCV?.CurrentItem is User us)
+            //{
+            //    e.Accepted = !us.UserRoles.Any(x => x.RoleId == role?.Id);
+            //}
         }
 
 
@@ -173,69 +169,13 @@ namespace Lieferliste_WPF.ViewModels
         {
             return true;
         }
-
-        private bool OnDeleteCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.UserDelete);
-        }
-
-        private void OnDeleteExecuted(object obj)
-        {
-            var u = _usrCV?.CurrentItem;
-
-            if (u is User usr)
-            {
-
-                Users?.Remove(usr);
-                _dbctx.Users.Remove(usr);
-                OnSaveExecuted(usr);
-
-            }
-        }
-
-        private static bool OnNewCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.UserNew) && !_isNew;
-        }
-
-        private void OnNewExecuted(object obj)
-        {
-            var u = Users?.AddNew();
-
-            _usrCV?.MoveCurrentTo(u);
-            RoleView.Refresh();
-            WorkView.Refresh();
-            CostView.Refresh();
-            _isNew = true;
-        }
+  
 
         private void OnSaveExecuted(object obj)
         {
             try
             {
-                if (_isNew)
-                {
-
-                    var user = Users?.Except(_dbctx.Users).FirstOrDefault();
-                    if (user != null)
-                    {
-                        if (user.UsrName.IsNullOrEmpty()) ValidName = 1;
-                        if (user.UserIdent.IsNullOrEmpty() || _dbctx.Users.Any(x => x.UserIdent == user.UserIdent)) ValidIdent = 1;
-                        if (ValidName == 1 || ValidIdent == 1)
-                        {
-                            MessageBox.Show("Speichern wegen ungültigen Daten nicht möglich", "Speicherfehler",
-                                MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
-                        user.Exited = false;
-                        _dbctx.Users.Add((User)user);
-                    }
-
-                    _isNew = false;
-                    ValidIdent = 0;
-                    ValidName = 0;
-
-                }
+ 
                 _dbctx.SaveChangesAsync();
             }
             catch (Exception e)
@@ -267,28 +207,30 @@ namespace Lieferliste_WPF.ViewModels
         private void LoadData()
         {
             Users = new();
-            var u = _dbctx.Users
-                .Include(x => x.UserWorkAreas)
-                .Include(y => y.UserRoles)
-                .ThenInclude(c => c.Role)
-                .Include(x => x.UserCosts)
+            var u = _dbctx.IdmAccounts
+                .Include(x => x.AccountWorkAreas)
+                .Include(x => x.AccountCosts)
                 .ThenInclude(x => x.Cost)
-                .Where(x => x.Exited == false)
-                .OrderBy(o => o.UsrName)
+                .OrderBy(o => o.AccountId)
                 .ToList();
             foreach (var user in u)
             {
-                User user1 = user;
-                user1.UserCosts = user.UserCosts.ToObservableCollection();
-                user1.UserRoles = user.UserRoles.ToObservableCollection();
-                user1.UserWorkAreas = user.UserWorkAreas.ToObservableCollection();
+                var r = _dbctx.IdmRelations
+                    .Include(x => x.Role)
+                    .Where(x => x.AccountId == user.AccountId)
+                    .Select(x => x.Role)
+                    .ToList();
+
+                User user1 = new User(user.AccountId, user.Firstname, user.Lastname, user.Email, r);
+                //user1.CostUnits = user.AccountCosts;
+                //user1.WorkAreas = user.UserWorkAreas;
                 Users.Add(user1);
             }
 
-            var rl = UserInfo.User.UserRoles.Max(x => x.Role.Rolelevel);
-            Roles = _dbctx.Roles.Where(x => x.Rolelevel <= rl).ToHashSet();
-            WorkAreas = _dbctx.WorkAreas.ToHashSet();
-            CostUnits = _dbctx.Costunits.ToHashSet();
+                //var rl = UserInfo.User.Roles.Max(x => x.Role.Rolelevel);
+                //Roles = _dbctx.Roles.Where(x => x.Rolelevel <= rl).ToHashSet();
+                //WorkAreas = _dbctx.WorkAreas.ToHashSet();
+                //CostUnits = _dbctx.Costunits.ToHashSet();
         }
 
         public void DragOver(IDropInfo dropInfo)
@@ -300,20 +242,13 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName)
                     {
-                        if ((dropInfo.Data.GetType() == typeof(Role)
-                            || dropInfo.Data.GetType() == typeof(UserRole))
-                            && UiName.Contains("ROLE"))
-                        {
-                            allowed = true;
-                        }
-                        if ((dropInfo.Data.GetType() == typeof(WorkArea)
-                            || dropInfo.Data.GetType() == typeof(UserWorkArea))
+
+                        if (dropInfo.Data.GetType() == typeof(WorkArea)
                             && UiName.Contains("WORKAREA"))
                         {
                             allowed = true;
                         }
-                        if ((dropInfo.Data.GetType() == typeof(Costunit)
-                            || dropInfo.Data.GetType() == typeof(UserCost))
+                        if (dropInfo.Data.GetType() == typeof(Costunit)
                             && UiName.Contains("COSTUNIT"))
                         {
                             allowed = true;
@@ -335,42 +270,32 @@ namespace Lieferliste_WPF.ViewModels
                 User us = (User)_usrCV.CurrentItem;
                 Object? data = null;
 
-                if (dropInfo.Data is Role r)
-                {
-                    data = new UserRole() { RoleId = r.Id, UserIdent = us.UserIdent, Role = r };
-                    us.UserRoles.Add((UserRole)data);
-                    RoleView.Refresh();
-
-                }
+  
                 if (dropInfo.Data is WorkArea w)
                 {
-                    data = new UserWorkArea() { WorkAreaId = w.WorkAreaId, UserId = us.UserIdent, WorkArea = w };
-                    us.UserWorkAreas.Add((UserWorkArea)data);
+                    data = new AccountWorkArea() { WorkAreaId = w.WorkAreaId, AccountId = us.UserId, WorkArea = w };
+                    us.WorkAreas.Add((WorkArea)data);
                     WorkView.Refresh();
 
                 }
                 if (dropInfo.Data is Costunit c)
                 {
-                    data = new UserCost() { CostId = c.CostunitId, UsrIdent = us.UserIdent, Cost = c };
-                    us.UserCosts.Add((UserCost)data);
+                    data = new AccountCost() { CostId = c.CostunitId, AccountId = us.UserId, Cost = c };
+                    us.CostUnits.Add((Costunit)data);
                     CostView.Refresh();
 
                 }
                 if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName && data == null)
                 {
-                    if (UiName.Contains("ROLE"))
-                    {
-                        us.UserRoles.Remove((UserRole)dropInfo.Data);
-                        RoleView.Refresh();
-                    }
+ 
                     if (UiName.Contains("WORKAREA"))
                     {
-                        us.UserWorkAreas.Remove((UserWorkArea)dropInfo.Data);
+                        us.WorkAreas.Remove((WorkArea)dropInfo.Data);
                         WorkView.Refresh();
                     }
                     if (UiName.Contains("COSTUNIT"))
                     {
-                        us.UserCosts.Remove((UserCost)dropInfo.Data);
+                        us.CostUnits.Remove((Costunit)dropInfo.Data);
                         CostView.Refresh();
                     }
                 }

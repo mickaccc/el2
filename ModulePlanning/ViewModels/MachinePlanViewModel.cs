@@ -209,11 +209,9 @@ namespace ModulePlanning.ViewModels
 
         private void LoadWorkAreas()
         {
-            var w = UserInfo.User.AccountWorkAreas.OrderByDescending(x => x.Standard);
-            foreach (var workArea in w)
-            {
-                WorkAreas.Add(workArea.WorkArea);
-            }
+
+                WorkAreas.AddRange(UserInfo.User.WorkAreas);
+            
         }
         private async Task<List<Vorgang>> GetVorgangsAsync(string? aid)
         {
@@ -280,7 +278,7 @@ namespace ModulePlanning.ViewModels
                 .Include(x => x.RessourceCostUnits)
                 .ToListAsync();
             var mach2 = new List<Ressource>();
-            foreach (var uc in UserInfo.User.AccountWorkAreas)
+            foreach (var uc in UserInfo.User.WorkAreas)
             {
                 mach2.AddRange(mach.Where(x => uc.WorkAreaId == x.WorkAreaId));
             }
@@ -316,10 +314,10 @@ namespace ModulePlanning.ViewModels
                 List<Vorgang> list = new();
                 foreach (PlanMachine m in _machines)
                 {
-                    foreach (var c in UserInfo.User.AccountCosts)
+                    foreach (var c in UserInfo.User.CostUnits)
                     {
                         list.AddRange(proc.FindAll(x => x.ArbPlSapNavigation?.RessourceId == m.Rid &&
-                            x.ArbPlSapNavigation.CostId == c.CostId));
+                            x.ArbPlSapNavigation.CostId == c.CostunitId));
                     }
                 }
                 Priv_processes = list.FindAll(x => x.Rid == null)

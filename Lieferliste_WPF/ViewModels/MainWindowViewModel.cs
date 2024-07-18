@@ -316,7 +316,7 @@ namespace Lieferliste_WPF.ViewModels
                             if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
                         }
 
-                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.User.UserIdent.Equals(x.Userid)
+                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.User.UserId.Equals(x.Userid)
                          && UserInfo.PC == x.PcId);
                         if (Dbctx.InMemoryMsgs.Any()) Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().OnlId)).ExecuteDelete();
                         del.ExecuteDelete();
@@ -564,7 +564,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     var m = await db.InMemoryMsgs.AsNoTracking()
                         .Include(x => x.Onl)
-                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.Userid == UserInfo.User.UserIdent)
+                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.Userid == UserInfo.User.UserId)
                         .ToListAsync();
                     if (m.Count > 0)
                     {                     
@@ -609,18 +609,18 @@ namespace Lieferliste_WPF.ViewModels
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 await using var transaction = await db.Database.BeginTransactionAsync();
-                var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserIdent && x.PcId == UserInfo.PC);
+                var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC);
                 if (onl != null)
                 {
                     db.Database.ExecuteSqlRaw("DELETE dbo.InMemoryMsg WHERE OnlId=@p0", onl.OnlId);
                     db.Database.ExecuteSqlRaw("DELETE dbo.InMemoryOnline WHERE OnlId=@p0", onl.OnlId);
                 }
                 db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.InMemoryOnline(Userid,PcId,Login) VALUES({0},{1},{2})",
-                    UserInfo.User.UserIdent,
+                    UserInfo.User.UserId,
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 await transaction.CommitAsync();
-                _Logger.LogInformation("Startup {user}-{pc}--{version}", [UserInfo.User.UserIdent, UserInfo.PC, Assembly.GetExecutingAssembly().GetName().Version]);
+                _Logger.LogInformation("Startup {user}-{pc}--{version}", [UserInfo.User.UserId, UserInfo.PC, Assembly.GetExecutingAssembly().GetName().Version]);
             }
             catch (Exception e)
             {              

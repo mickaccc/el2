@@ -125,17 +125,11 @@ namespace Lieferliste_WPF.Planning
         private void LoadData()
         {
             using var _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var usr = _dbctx.Users.AsNoTracking()
-                .Include(x => x.UserRoles)
-                .ThenInclude(x => x.Role)
-                .Include(x => x.UserCosts)
-                .Include(x => x.RessourceUsers)
-                .ThenInclude(x => x.RidNavigation)
-                .Single(x => x.UserIdent == UserId);
+            var usr = _dbctx.IdmAccounts.AsNoTracking()
+                .Single(x => x.AccountId == UserId);
 
-            Name = usr.UsrName;
-            Description = usr.UsrInfo;
-            PersNo = usr.Personalnumber;
+            Name = string.Format("{0} {1}", usr.Firstname, usr.Lastname);
+            Description = usr.Department;
 
             ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
@@ -313,9 +307,9 @@ namespace Lieferliste_WPF.Planning
                     p[i].SortPos = (p[i].SysStatus?.Contains("RÜCK") == true) ? "Z" :
                         string.Format("{0}_{1,3:0}", UserId[..4], i.ToString("D3"));
                 }
-                if (vrg.UserVorgangs.All(x => x.UserId != UserId && x.Vid != vrg.VorgangId))
+                if (vrg.AccountVorgangs.All(x => x.AccountId != UserId && x.VorgangId != vrg.VorgangId))
                 {
-                    vrg.UserVorgangs.Add(new UserVorgang() { UserId = this.UserId, Vid = vrg.VorgangId });
+                    vrg.AccountVorgangs.Add(new AccountVorgang() { AccountId = this.UserId, VorgangId = vrg.VorgangId });
                 }
                 t.Refresh();
 

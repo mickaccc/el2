@@ -9,9 +9,11 @@ public partial class PermissionRole
 {
     public DateTime Created { get; set; }
 
-    public int RoleKey { get; set; }
+    public long RoleKey { get; set; }
 
     public string PermissionKey { get; set; } = null!;
 
     public virtual Permission PermissionKeyNavigation { get; set; } = null!;
+
+    public virtual IdmRole RoleKeyNavigation { get; set; } = null!;
 }

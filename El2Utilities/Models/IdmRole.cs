@@ -12,5 +12,6 @@ public partial class IdmRole
     public string RoleName { get; set; } = null!;
 
     public DateTime? Lastmodified { get; set; }
-    public ICollection<PermissionRole> PermissionsRole { get; set; }
+
+    public virtual ICollection<PermissionRole> PermissionRoles { get; set; } = new List<PermissionRole>();
 }

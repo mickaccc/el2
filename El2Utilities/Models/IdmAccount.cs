@@ -24,6 +24,4 @@ public partial class IdmAccount
     public virtual ICollection<AccountVorgang> AccountVorgangs { get; set; } = new List<AccountVorgang>();
 
     public virtual ICollection<AccountWorkArea> AccountWorkAreas { get; set; } = new List<AccountWorkArea>();
-
-    public virtual ICollection<IdmRelation> IdmRelations { get; set; } = new List<IdmRelation>();
 }

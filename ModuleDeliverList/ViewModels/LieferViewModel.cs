@@ -747,7 +747,7 @@ namespace ModuleDeliverList.ViewModels
                                 if (vorg.ArbPlSap?.Length >= 3 && !relev)
                                 {
                                     if (int.TryParse(vorg.ArbPlSap[..3], out int c))
-                                        if (UserInfo.User.AccountCosts.Any(y => y.CostId == c))
+                                        if (UserInfo.User.CostUnits.Any(y => y.CostunitId == c))
                                         {
                                             relev = true;
                                             break;
@@ -819,7 +819,7 @@ namespace ModuleDeliverList.ViewModels
                 if (vrgAdd.ArbPlSap?.Length >= 3)
                 {
                     if (int.TryParse(vrgAdd.ArbPlSap[..3], out int c))
-                        if (UserInfo.User.AccountCosts.Any(y => y.CostId == c))
+                        if (UserInfo.User.CostUnits.Any(y => y.CostunitId == c))
                         {
                             _orders.Add(vrgAdd);
                             return true;

@@ -163,7 +163,7 @@ namespace Lieferliste_WPF.ViewModels
             using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 var r = Dbctx.IdmRoles
-                 .Include(x => x.PermissionsRole)
+                 .Include(x => x.PermissionRoles)
                  .ThenInclude(x => x.PermissionKeyNavigation)
                  .ToList();
 

@@ -13,12 +13,12 @@ namespace El2Core.Utils
     public interface IGlobals
     {
         static string PC { get; }
-        static IdmAccount User { get; }
+        static User User { get; }
     }
     public class Globals : IGlobals, IDisposable
     {
-        public IdmAccount User { get; private set; }
-        public string PC { get; private set; }
+        public User User { get; private set; }
+        public string PC { get; }
         public List<Rule> Rules { get; private set; }
         private IContainerProvider _container;
         public Globals(IContainerProvider container)
@@ -26,7 +26,44 @@ namespace El2Core.Utils
             _container = container;
             PC = Environment.MachineName;
             LoadData();
-            User ??= new();
+            
+        }
+        public static UserInfo CreateUserInfo(IContainerProvider container)
+        {
+            //user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            string us = Environment.UserName;
+
+            using (var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            {
+                var idm = db.IdmRelations
+                    .Include(x => x.Account)
+                    .Include(x => x.Role)
+                    .Where(x => x.AccountId == us)
+                    .ToList();
+
+                if (idm.Count == 0) throw new KeyNotFoundException("User nicht gefunden");
+                UserInfo userInfo = new UserInfo();
+                List<IdmRole> roles = new List<IdmRole>();
+                foreach(var r in idm)
+                {
+                    roles.Add(r.Role);
+                }
+                var usr = idm.First().Account;
+                var user = new User(usr.AccountId, usr.Firstname, usr.Lastname, usr.Email, roles);
+
+                var acc = db.IdmAccounts
+                    .Include(x => x.AccountCosts)
+                    .ThenInclude(x => x.Cost)
+                    .Include(x => x.AccountWorkAreas)
+                    .ThenInclude(x => x.WorkArea)
+                    .First(x => x.AccountId == us);
+                user.CostUnits = acc.AccountCosts.Select(x => x.Cost).ToList();
+                user.WorkAreas = acc.AccountWorkAreas.Select(x => x.WorkArea).ToList();
+                userInfo.Initialize(Environment.MachineName, user);
+
+                return userInfo;  
+                //Rules = db.Rules.ToList();
+            }
         }
         private void LoadData()
         {
@@ -36,16 +73,14 @@ namespace El2Core.Utils
 
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                var u = db.IdmAccounts 
-                .Include(x => x.AccountCosts)
-                .ThenInclude(x => x.Cost)
-                .Include(x => x.AccountWorkAreas)
-                .ThenInclude(x => x.WorkArea)
-                .Include(y => y.IdmRelations)
-                .ThenInclude(y => y.Role)
-                .Single(x => x.AccountId == us);
-                    
-                User = u;
+                var u = db.IdmRelations
+                    .Include(x => x.Account)
+                    .Include(x => x.Role)
+                    .ToList();
+  
+                var rel = u.Where(x => x.AccountId == us);
+                var usr = rel.First().Account;
+                User = new User(usr.AccountId, usr.Firstname, usr.Lastname, usr.Email, rel.Select(x => x.Role).ToList());
                     
                 Rules = db.Rules.ToList(); 
             }
@@ -87,12 +122,12 @@ namespace El2Core.Utils
     public readonly struct UserInfo
     {
         public static string? PC => _PC ?? string.Empty;
-        public static IdmAccount User => _User;
-
+        public static User User => _User;
+  
         private static string? _PC;
-        private static IdmAccount _User;
+        private static User _User;
 
-        public void Initialize(string PC, IdmAccount Usr)
+        public void Initialize(string PC, User Usr)
         {
             _PC = PC;
             _User = Usr;
@@ -128,5 +163,16 @@ namespace El2Core.Utils
         public string Regex { get; set; }
         public ProjectScheme() { }
         public ProjectScheme(string key, string regex) { Key = key; Regex = regex; }
+    }
+    public class User(string id, string? firstName, string? lastname, string? email, List<IdmRole>? roles)
+    {
+        public string? FirstName { get; } = firstName;
+        public string? LastName { get; } = lastname;
+        public string? Email { get; } = email;
+        public string UserId { get; } = id;
+        public ImmutableArray<IdmRole>? Roles { get; } = [.. roles];
+        public List<Costunit>? CostUnits { get; set; }
+        public List<WorkArea>? WorkAreas { get; set; }
+
     }
 }
