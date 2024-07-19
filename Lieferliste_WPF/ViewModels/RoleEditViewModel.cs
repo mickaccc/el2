@@ -34,7 +34,7 @@ namespace Lieferliste_WPF.ViewModels
         public static ObservableCollection<IdmRole>? Roles { get; } = new();
 
         public static ObservableCollection<Permission> PermissionsAvail { get; } = new();
-        public static ObservableCollection<PermissionRole> PermissionsInter { get; } = new();
+        public static ObservableCollection<RolePermission> PermissionsInter { get; } = new();
         private static readonly List<Permission> _permissionsAll = new();
 
 
@@ -163,8 +163,8 @@ namespace Lieferliste_WPF.ViewModels
             using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 var r = Dbctx.IdmRoles
-                 .Include(x => x.PermissionRoles)
-                 .ThenInclude(x => x.PermissionKeyNavigation)
+                 .Include(x => x.RolePermissions)
+                 .ThenInclude(x => x.PermissKeyNavigation)
                  .ToList();
 
                 foreach (var role in r)
@@ -181,7 +181,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.RoleDrop))
             {
-                if (dropInfo.Data is Permission || dropInfo.Data is PermissionRole)
+                if (dropInfo.Data is Permission || dropInfo.Data is RolePermission)
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                     dropInfo.Effects = DragDropEffects.Move;
@@ -197,15 +197,15 @@ namespace Lieferliste_WPF.ViewModels
 
                 if (r != null)
                 {
-                    PermissionsInter.Add(new PermissionRole() { Created = DateTime.Now, PermissionKey = p.PKey, RoleKey = r.RoleId });
+                    PermissionsInter.Add(new RolePermission() { Created = DateTime.Now,  PermissKey = p.PKey, RoleId = r.RoleId });
                     PermissionsAvail.Remove(p);
                 }
             }
-            else if (dropInfo.Data is PermissionRole pr)
+            else if (dropInfo.Data is RolePermission pr)
             {
                 if (r != null)
                 {
-                    var p2 = _permissionsAll.Find(x => x.PKey == pr.PermissionKey);
+                    var p2 = _permissionsAll.Find(x => x.PKey == pr.PermissKey);
                     PermissionsAvail.Add(p2);
                     PermissionsInter.Remove(pr);
                 }

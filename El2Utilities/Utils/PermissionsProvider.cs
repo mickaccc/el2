@@ -32,9 +32,9 @@ namespace El2Core.Utils
 
             foreach (var item in user.Roles)
             {
-                foreach (var permission in item.PermissionRoles)
+                foreach (var permission in item.RolePermissions)
                 {
-                    _permissions.Add(permission.PermissionKey.Trim());
+                    _permissions.Add(permission.PermissKey.Trim());
                 }
             }
             foreach (var access in user.WorkAreas)

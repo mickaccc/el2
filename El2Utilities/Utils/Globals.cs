@@ -4,8 +4,10 @@ using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data;
 using System.IO;
 using System.Linq;
+using Rule = El2Core.Models.Rule;
 
 namespace El2Core.Utils
 
@@ -44,12 +46,15 @@ namespace El2Core.Utils
                 if (idm.Count == 0) throw new KeyNotFoundException("User nicht gefunden");
                 UserInfo userInfo = new UserInfo();
                 List<IdmRole> roles = new List<IdmRole>();
-                foreach(var r in idm)
-                {
-                    roles.Add(r.Role);
-                }
                 var usr = idm.First().Account;
                 var user = new User(usr.AccountId, usr.Firstname, usr.Lastname, usr.Email, roles);
+                foreach (var r in idm)
+                {
+                    foreach (var perm in r.Role.RolePermissions)
+                    {
+                        user.Permissions.Add(perm.PermissKey);
+                    }
+                }
 
                 var acc = db.IdmAccounts
                     .Include(x => x.AccountCosts)
@@ -78,10 +83,16 @@ namespace El2Core.Utils
                     .Include(x => x.Role)
                     .ToList();
   
-                var rel = u.Where(x => x.AccountId == us);
+                var rel = u.Where(x => x.AccountId.Equals(us, StringComparison.CurrentCultureIgnoreCase));
                 var usr = rel.First().Account;
                 User = new User(usr.AccountId, usr.Firstname, usr.Lastname, usr.Email, rel.Select(x => x.Role).ToList());
-                    
+                foreach(var role in rel.Select(x => x.Role).ToList())
+                {
+                    foreach (var perm in role.RolePermissions)
+                    {
+                        User.Permissions.Add(perm.PermissKey);
+                    }
+                }
                 Rules = db.Rules.ToList(); 
             }
         }
@@ -170,6 +181,7 @@ namespace El2Core.Utils
         public string? LastName { get; } = lastname;
         public string? Email { get; } = email;
         public string UserId { get; } = id;
+        public HashSet<string> Permissions { get; } = new HashSet<string>();
         public ImmutableArray<IdmRole>? Roles { get; } = [.. roles];
         public List<Costunit>? CostUnits { get; set; }
         public List<WorkArea>? WorkAreas { get; set; }
