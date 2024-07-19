@@ -1,5 +1,6 @@
 ﻿using El2Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -43,19 +44,29 @@ namespace El2Core.Utils
                     .Where(x => x.AccountId == us)
                     .ToList();
 
-               
+                //FormattableString sql = $"SELECT * FROM dbo.idm_accounts a INNER JOIN dbo.idm_relations b ON a.account_id = b.account_id WHERE a.account_id = {us}";
+                //var sq = db.IdmAccounts.FromSql(sql).ToList();
+                var test = db.IdmAccounts.Join(db.IdmRelations,
+                    account => account.AccountId,
+                    relation => relation.AccountId,
+                    (acc, rel) => new { Accoun = acc, Rela = rel })
+                    .Where(x => x.Accoun.AccountId == us);
+
+                var result = from account in db.IdmAccounts
+                             join r in db.IdmRelations on account.AccountId equals r.AccountId
+                             join role in db.IdmRoles on r.RoleId equals role.RoleId
+                             join perm in db.RolePermissions on role.RoleId equals perm.RoleId
+                             where account.AccountId == us
+                             select new { account, perm };
+                    
 
                 if (idm.Count == 0) throw new KeyNotFoundException("User nicht gefunden");
                 UserInfo userInfo = new UserInfo();
-                List<IdmRole> roles = new List<IdmRole>();
-                var usr = idm.First().Account;
-                var user = new User(usr.AccountId, usr.Firstname, usr.Lastname, usr.Email, roles);
-                foreach (var r in idm)
+                var usr = result.First().account;
+                var user = new User(usr.AccountId, usr.Firstname, usr.Lastname, usr.Email);
+                foreach (var r in result)
                 {
-                    foreach (var perm in r.Role.RolePermissions)
-                    {
-                        user.Permissions.Add(perm.PermissKey);
-                    }
+                    user.Permissions.Add(r.perm.PermissKey.Trim());                  
                 }
 
                 var acc = db.IdmAccounts
@@ -80,21 +91,7 @@ namespace El2Core.Utils
 
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                var u = db.IdmRelations
-                    .Include(x => x.Account)
-                    .Include(x => x.Role)
-                    .ToList();
-  
-                var rel = u.Where(x => x.AccountId.Equals(us, StringComparison.CurrentCultureIgnoreCase));
-                var usr = rel.First().Account;
-                User = new User(usr.AccountId, usr.Firstname, usr.Lastname, usr.Email, rel.Select(x => x.Role).ToList());
-                foreach(var role in rel.Select(x => x.Role).ToList())
-                {
-                    foreach (var perm in role.RolePermissions)
-                    {
-                        User.Permissions.Add(perm.PermissKey);
-                    }
-                }
+
                 Rules = db.Rules.ToList(); 
             }
         }
@@ -177,14 +174,13 @@ namespace El2Core.Utils
         public ProjectScheme() { }
         public ProjectScheme(string key, string regex) { Key = key; Regex = regex; }
     }
-    public class User(string id, string? firstName, string? lastname, string? email, List<IdmRole>? roles)
+    public class User(string id, string? firstName, string? lastname, string? email)
     {
         public string? FirstName { get; } = firstName;
         public string? LastName { get; } = lastname;
         public string? Email { get; } = email;
         public string UserId { get; } = id;
         public HashSet<string> Permissions { get; } = new HashSet<string>();
-        public ImmutableArray<IdmRole>? Roles { get; } = [.. roles];
         public List<Costunit>? CostUnits { get; set; }
         public List<WorkArea>? WorkAreas { get; set; }
 

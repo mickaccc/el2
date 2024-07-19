@@ -30,12 +30,11 @@ namespace El2Core.Utils
         private void LoadPermissions(User user)
         {
 
-            foreach (var item in user.Roles)
+            foreach (var item in user.Permissions)
             {
-                foreach (var permission in item.RolePermissions)
-                {
-                    _permissions.Add(permission.PermissKey.Trim());
-                }
+
+                    _permissions.Add(item);
+                
             }
             foreach (var access in user.WorkAreas)
             {

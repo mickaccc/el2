@@ -7,11 +7,11 @@ namespace El2Core.Models;
 
 public partial class RolePermission
 {
+    public DateTime Created { get; set; }
+
     public long RoleId { get; set; }
 
     public string PermissKey { get; set; } = null!;
-
-    public DateTime Created { get; set; }
 
     public virtual Permission PermissKeyNavigation { get; set; } = null!;
 

@@ -221,7 +221,7 @@ namespace Lieferliste_WPF.ViewModels
                     .Select(x => x.Role)
                     .ToList();
 
-                User user1 = new User(user.AccountId, user.Firstname, user.Lastname, user.Email, r);
+                User user1 = new User(user.AccountId, user.Firstname, user.Lastname, user.Email);
                 //user1.CostUnits = user.AccountCosts;
                 //user1.WorkAreas = user.UserWorkAreas;
                 Users.Add(user1);
