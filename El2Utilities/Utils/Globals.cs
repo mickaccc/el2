@@ -43,6 +43,8 @@ namespace El2Core.Utils
                     .Where(x => x.AccountId == us)
                     .ToList();
 
+               
+
                 if (idm.Count == 0) throw new KeyNotFoundException("User nicht gefunden");
                 UserInfo userInfo = new UserInfo();
                 List<IdmRole> roles = new List<IdmRole>();
