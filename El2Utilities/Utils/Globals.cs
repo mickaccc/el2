@@ -38,29 +38,14 @@ namespace El2Core.Utils
 
             using (var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
-                var idm = db.IdmRelations
-                    .Include(x => x.Account)
-                    .Include(x => x.Role)
-                    .Where(x => x.AccountId == us)
-                    .ToList();
 
-                //FormattableString sql = $"SELECT * FROM dbo.idm_accounts a INNER JOIN dbo.idm_relations b ON a.account_id = b.account_id WHERE a.account_id = {us}";
-                //var sq = db.IdmAccounts.FromSql(sql).ToList();
-                var test = db.IdmAccounts.Join(db.IdmRelations,
-                    account => account.AccountId,
-                    relation => relation.AccountId,
-                    (acc, rel) => new { Accoun = acc, Rela = rel })
-                    .Where(x => x.Accoun.AccountId == us);
-
-                var result = from account in db.IdmAccounts
+                var result = (from account in db.IdmAccounts
                              join r in db.IdmRelations on account.AccountId equals r.AccountId
                              join role in db.IdmRoles on r.RoleId equals role.RoleId
                              join perm in db.RolePermissions on role.RoleId equals perm.RoleId
                              where account.AccountId == us
-                             select new { account, perm };
-                    
+                             select new { account, perm }) ?? throw new KeyNotFoundException("User nicht gefunden");
 
-                if (idm.Count == 0) throw new KeyNotFoundException("User nicht gefunden");
                 UserInfo userInfo = new UserInfo();
                 var usr = result.First().account;
                 var user = new User(usr.AccountId, usr.Firstname, usr.Lastname, usr.Email);
@@ -80,7 +65,7 @@ namespace El2Core.Utils
                 userInfo.Initialize(Environment.MachineName, user);
 
                 return userInfo;  
-                //Rules = db.Rules.ToList();
+               
             }
         }
         private void LoadData()
