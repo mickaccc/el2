@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace El2Core.Models;
 
-public partial class OrderRb : ModelBase
+public partial class OrderRb :ModelBase
 {
     public string Aid { get; set; } = null!;
 

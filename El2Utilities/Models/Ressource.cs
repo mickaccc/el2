@@ -29,6 +29,8 @@ public partial class Ressource
 
     public int? ShiftPlanId { get; set; }
 
+    public virtual ICollection<MeasureRessRessource> MeasureRessRessources { get; set; } = new List<MeasureRessRessource>();
+
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
     public virtual ICollection<RessourceUser> RessourceUsers { get; set; } = new List<RessourceUser>();

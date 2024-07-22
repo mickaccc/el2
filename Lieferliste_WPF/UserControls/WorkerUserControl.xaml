@@ -56,7 +56,6 @@
 				</Button>
                 <Button Canvas.Top="30"
 					Command="{Binding OpenWorkerCommand, Mode=OneWay}"
-					CommandParameter="{Binding InventNo}"
 					HorizontalAlignment="Left"
 					Padding="2"
 					Style="{StaticResource MaterialDesignFlatButton}"

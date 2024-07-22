@@ -48,14 +48,14 @@ namespace Lieferliste_WPF.Planning
             this.SettingsService = settingsService;
             this.DialogService = dialogService;
         }
-        public PlanWorker CreatePlanWorker(string UserId, List<Vorgang> processesAll)
+        public PlanWorker CreatePlanWorker(int MessRid, List<Vorgang> processesAll)
         {
-            return new PlanWorker(UserId, processesAll, Container, ApplicationCommands, SettingsService, DialogService);
+            return new PlanWorker(MessRid, processesAll, Container, ApplicationCommands, SettingsService, DialogService);
         }
     }
     public interface IPlanWorker
     {
-        public string UserId { get; }
+        public int MessRId { get; }
         
     }
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
@@ -64,13 +64,13 @@ namespace Lieferliste_WPF.Planning
 
         #region Constructors
 
-        public PlanWorker(string UserId, List<Vorgang> processes, IContainerProvider container,
+        public PlanWorker(int MessRId, List<Vorgang> processes, IContainerProvider container,
             IApplicationCommands applicationCommands,
             IUserSettingsService settingsService,
             IDialogService dialogService)
         {
             _container = container;
-            _userId = UserId;
+            _messRid = MessRId;
             _applicationCommands = applicationCommands;
             _settingsService = settingsService;
             _dialogService = dialogService;
@@ -88,12 +88,12 @@ namespace Lieferliste_WPF.Planning
         public ICommand? WorkerPrintCommand { get; private set; }
         public ICommand? KlimaPrintCommand { get; private set; }
         public ICommand? DocumentAddCommand { get; private set; }
-        private readonly string _userId;
+        private readonly int _messRid;
 
-        public string UserId => _userId;
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public int? PersNo { get; private set; }
+        public int MessRId => _messRid;
+        public string? Name { get; private set; }
+        public string UserId { get; private set; }
+        public string? Description { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
         public ObservableCollection<Vorgang>? Processes { get; set; }
@@ -125,12 +125,11 @@ namespace Lieferliste_WPF.Planning
         private void LoadData()
         {
             using var _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var usr = _dbctx.IdmAccounts.AsNoTracking()
-                .Single(x => x.AccountId == UserId);
+            var usr = _dbctx.MeasureResses.Include(x => x.User).First(x => x.MessRid == MessRId).User;
 
             Name = string.Format("{0} {1}", usr.Firstname, usr.Lastname);
             Description = usr.Department;
-
+            UserId = usr.AccountId;
             ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
             ProcessesCV.Refresh();
@@ -305,11 +304,11 @@ namespace Lieferliste_WPF.Planning
                 for (var i = 0; i < p.Count; i++)
                 {
                     p[i].SortPos = (p[i].SysStatus?.Contains("RÜCK") == true) ? "Z" :
-                        string.Format("{0}_{1,3:0}", UserId[..4], i.ToString("D3"));
+                        string.Format("{0}_{1,3:0}", MessRId, i.ToString("D3"));
                 }
-                if (vrg.AccountVorgangs.All(x => x.AccountId != UserId && x.VorgangId != vrg.VorgangId))
+                if (vrg.MeasureRessVorgangs.All(x => x.MessId != MessRId && x.VorgId != vrg.VorgangId))
                 {
-                    vrg.AccountVorgangs.Add(new AccountVorgang() { AccountId = this.UserId, VorgangId = vrg.VorgangId });
+                    vrg.MeasureRessVorgangs.Add(new MeasureRessVorgang() { MessId = this.MessRId, VorgId = vrg.VorgangId });
                 }
                 t.Refresh();
 

@@ -110,12 +110,9 @@
                     <materialDesign:PackIcon Kind="PrinterFavorite" Width="30" Height="30"/>
             </Button>
 
-                <TextBox Text="{Binding PlanWorker.Name}" Grid.Column="1" FontSize="30" FontWeight="SemiBold" Background="Transparent"
-                         IsReadOnly="true"/>
+                <TextBlock Text="{Binding PlanWorker.Name}" Grid.Column="1" FontSize="30" FontWeight="SemiBold" Background="Transparent"/>
 
                 <TextBlock Text="{Binding PlanWorker.UserId}" Grid.Column="2" FontSize="30" FontWeight="Bold"/>
-            <TextBox Text="{Binding PlanWorker.Description}" Grid.Row="1" Grid.Column="1" FontSize="20" Background="Transparent"
-                      IsReadOnly="{Binding Converter={StaticResource permiss},ConverterParameter={x:Static const:Permissions.MachRenameInvers}}"/>
             </Grid>
         </DockPanel>
         <DataGrid Grid.Row="1" ItemsSource="{Binding PlanWorker.ProcessesCV}" AutoGenerateColumns="False"

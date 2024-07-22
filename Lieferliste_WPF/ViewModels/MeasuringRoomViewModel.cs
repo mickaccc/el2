@@ -88,14 +88,13 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
             .ThenInclude(x => x.MaterialNavigation)
             .Include(x => x.AidNavigation.DummyMatNavigation)
             .Include(x => x.ArbPlSapNavigation)
-            .Include(x => x.AccountVorgangs)
+            .Include(x => x.MeasureRessVorgangs)
             .Where(x => (x.ArbPlSapNavigation.Ressource != null)
-                && x.ArbPlSapNavigation.Ressource.WorkAreaId == 5
                 && x.AidNavigation.Abgeschlossen == false
                 && ((x.SysStatus != null) && x.SysStatus.Contains("RÜCK") == false))
             .ToListAsync();
 
-                _vorgangsList.AddRange(ord.ExceptBy(_dbctx.AccountVorgangs.Select(x => x.VorgangId), x => x.VorgangId));
+                _vorgangsList.AddRange(ord.ExceptBy(_dbctx.MeasureRessVorgangs.Select(x => x.VorgId), x => x.VorgangId));
                 VorgangsView = CollectionViewSource.GetDefaultView(_vorgangsList);
                 VorgangsView.Filter += FilterPredicate;
             }
@@ -105,29 +104,33 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
                 MessageBox.Show(ex.Message, "MeasuringRoom Load Data", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return VorgangsView;
-
         }
 
         private async Task<ICollectionView> LoadMemberAsync()
         {
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-  
+            var mem = await db.MeasureResses
+              .ToListAsync();
             var ord = await _dbctx.Vorgangs
                 .Include(x => x.AidNavigation)
                 .ThenInclude(x => x.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.ArbPlSapNavigation)
-                .Include(x => x.AccountVorgangs)
-                .Where(x => (x.ArbPlSapNavigation.Ressource != null)
-                && x.ArbPlSapNavigation.Ressource.WorkAreaId == 5
+                .Include(x => x.MeasureRessVorgangs)
+                .Where(x => (x.MeasureRessVorgangs != null)
+                && x.ArbPlSapNavigation.Ressource.MeasureRessRessources.Any()
                 && x.AidNavigation.Abgeschlossen == false
                 && ((x.SysStatus != null) && x.SysStatus.Contains("RÜCK") == false))
                 .ToListAsync();
             var factory = _container.Resolve<PlanWorkerFactory>();
- 
+            foreach (var item in mem)
+            {
+                var vorg = ord.Where(x => x.MeasureRessVorgangs.Any(x => x.MessId == item.MessRid)).ToList();
+                _emploeeList.Add(factory.CreatePlanWorker(item.MessRid, vorg));
+            }
 
-            _vorgangsList.AddRange(ord.ExceptBy(_dbctx.AccountVorgangs.Select(x => x.VorgangId), x => x.VorgangId));
- 
+            _vorgangsList.AddRange(ord.ExceptBy(_dbctx.MeasureRessVorgangs.Select(x => x.VorgId), x => x.VorgangId));
+            EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);
             return EmploeeList;
 
         }
@@ -172,7 +175,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
                 source.Remove(vrg);
                 ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
                 ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
-                _dbctx.AccountVorgangs.RemoveRange(_dbctx.AccountVorgangs.Where(x => x.VorgangId.Trim() == vrg.VorgangId));
+                _dbctx.MeasureRessVorgangs.RemoveRange(_dbctx.MeasureRessVorgangs.Where(x => x.VorgId.Trim() == vrg.VorgangId));
 
             }
         }

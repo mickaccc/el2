@@ -180,6 +180,7 @@ namespace El2Core.Utils
         public string? LastName { get; } = lastname;
         public string? Email { get; } = email;
         public string UserId { get; } = id;
+        public string UsrName { get { return string.Format("{0} {1}", FirstName, LastName); } }
         public HashSet<string> Permissions { get; } = new HashSet<string>();
         public List<Costunit>? CostUnits { get; set; }
         public List<WorkArea>? WorkAreas { get; set; }

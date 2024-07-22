@@ -19,10 +19,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[AccountVorgang]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[AccountWorkArea]",
          "ObjectType": 0
       },
@@ -48,6 +44,18 @@
       },
       {
          "Name": "[dbo].[InMemoryOnline]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[measureRess]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[measureRess_Ressource]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MeasureRessVorgang]",
          "ObjectType": 0
       },
       {
@@ -133,6 +141,7 @@
    ],
    "UiHint": null,
    "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDateOnlyTimeOnly": false,

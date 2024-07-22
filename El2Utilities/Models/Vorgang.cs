@@ -93,11 +93,11 @@ public partial class Vorgang : ModelBase
 
     public string? SortPos { get; set; }
 
-    public virtual ICollection<AccountVorgang> AccountVorgangs { get; set; } = new List<AccountVorgang>();
-
     public virtual OrderRb AidNavigation { get; set; } = null!;
 
     public virtual WorkSap? ArbPlSapNavigation { get; set; }
+
+    public virtual ICollection<MeasureRessVorgang> MeasureRessVorgangs { get; set; } = new List<MeasureRessVorgang>();
 
     public virtual Ressource? RidNavigation { get; set; }
 }
