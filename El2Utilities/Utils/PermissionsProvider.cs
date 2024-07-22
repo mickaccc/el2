@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace El2Core.Utils
 {
-
     public sealed class PermissionsProvider
     {
         private static PermissionsProvider? _instance;
@@ -17,7 +16,6 @@ namespace El2Core.Utils
         {
             if (_instance == null)
             {
-
                 _instance = new PermissionsProvider();
                 _instance.LoadPermissions(UserInfo.User);
                 return _instance;
@@ -29,12 +27,9 @@ namespace El2Core.Utils
 
         private void LoadPermissions(User user)
         {
-
             foreach (var item in user.Permissions)
             {
-
-                    _permissions.Add(item);
-                
+                _permissions.Add(item);                
             }
             foreach (var access in user.WorkAreas)
             {
