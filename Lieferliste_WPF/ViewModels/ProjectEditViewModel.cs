@@ -34,13 +34,11 @@ namespace Lieferliste_WPF.ViewModels
         private RelayCommand? _projectSearchCommand;
         public ICommand OrderSearchCommand => _orderSearchCommand ??= new RelayCommand(OnOrderSearch);
         public ICommand ProjectSearchCommand => _projectSearchCommand ??= new RelayCommand(OnProjectSearch);
-        public ICommand ConcatCommand { get; private set; }
-        public ICommand DeleteCommand { get; private set; }
+
         private ObservableCollection<OrderRb> _ordersList = [];
         public ICollectionView? OrdersCollectionView { get; private set; }
         private PspNode<Shape> Projects = new PspNode<Shape> { Node = new ("Projekte")};
         public ICollectionView? PSP_NodeCollectionView { get; private set; }
-        private List<Tree<string>> treeList = new();
         private string _orderSearchText = string.Empty;
         private string _projectSearchText = string.Empty;
         public string ProjectSearchText
@@ -71,45 +69,11 @@ namespace Lieferliste_WPF.ViewModels
         {
             _container = container;
             _applicationCommands = applicationCommands;
-            DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
-            ConcatCommand = new ActionCommand(OnConcatExecuted, OnConcatCanExecute);
+
             OrdTask = new NotifyTaskCompletion<ICollectionView>(LoadOrderDataAsync());
-            PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync()); 
-            
+            PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync());             
         }
 
-
-        private bool OnDeleteCanExecute(object arg)
-        {
-            return false;
-        }
-
-        private void OnDeleteExecuted(object obj)
-        {
-            TreeNode<string> t = (TreeNode<string>)obj;
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            if (t.NodeType == "PSP-Type")
-            {
-                var psp = db.Projects.FirstOrDefault(x => x.ProjectPsp == t.Value);
-                if (psp != null)
-                {
-                    db.Projects.Remove(psp);
-                    //tree?.Nodes.Remove(t);
-                    PSP_NodeCollectionView?.Refresh();
-                }
-            }
-            else
-            {
-                var ord = db.OrderRbs.FirstOrDefault(x => x.Aid == t.Value);
-                if (ord != null)
-                {
-                    ord.ProId = null;
-                    //tree?.Nodes.Remove(t);
-                    PSP_NodeCollectionView?.Refresh();
-                }
-            }
-            db.SaveChanges();
-        }
 
         private void OnProjectSearch(object obj)
         {
@@ -129,68 +93,6 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private bool OnConcatCanExecute(object arg)
-        {
-            return false;
-        }
-
-        private void OnConcatExecuted(object obj)
-        {
-            //if (obj == null) return;
-            //var values = (object[])obj;
-            //var psp = (string)values[0];
-            //var aid = (string)values[1];
-
-            //if (!IsValidPsp(psp))
-            //{
-            //    MessageBox.Show("PSP-Element ist ungültig!\nBitte korrigieren.", "Eingabefehler",
-            //    MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
-            //}
-            //if (aid == null)
-            //{
-            //    MessageBox.Show("Auftragsnummer fehlt!\nBitte eintragen", "Eingabefehler",
-            //    MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
-            //}
-            //if (_ordersList.All(x => x.Aid != aid))
-            //{
-            //    MessageBox.Show("Auftragsnummer ist nicht vorhanden!", "Eingabefehler",
-            //    MessageBoxButton.OK, MessageBoxImage.Exclamation); return;
-            //}
-
-            //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            //int rootLength = psp.StartsWith("ds", StringComparison.OrdinalIgnoreCase) ? 9 : 15;
-            //var root = tree?.Nodes.FirstOrDefault(x => psp[..rootLength] == x.Value);
-            //if (root == null)
-            //{
-            //    var t = tree?.Begin(psp[..rootLength]);
-            //    root = t.Nodes.Last();
-            //}
-            //for (int i = rootLength+3; i <= psp.Length; i += 3)
-            //{
-            //    var pre = root.Children.FirstOrDefault(x => psp[..i] == x.Value);
-            //    if (pre == null)
-            //    {
-            //        pre = root.Add(psp[..i]);
-            //    }
-
-
-            //    root = pre;
-            //}
-            //if (root.Value.Length == psp.Length)
-            //{
-            //    if (root.Children.All(x => x.Value != aid))
-            //    {
-            //        root.Add(aid);
-            //    }
-            //}
-            //while (tree?.level > 0) { tree.End(); }
-
-            //if (db.Projects.All(x => x.ProjectPsp != psp)) db.Database.ExecuteSqlRaw("INSERT INTO DBO.Project(ProjectPsp) VALUES({0})", psp);
-
-            //db.OrderRbs.First(x => x.Aid == aid).ProId = psp;
-            //db.SaveChanges();
-            //PSP_NodeCollectionView?.Refresh();
-        }
         private async Task<ICollectionView> LoadOrderDataAsync()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();

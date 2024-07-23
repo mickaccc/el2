@@ -40,8 +40,8 @@ namespace Lieferliste_WPF.ViewModels
         public static BindingList<User>? Users { get; private set; }
 
         private static HashSet<IdmRole> Roles { get; set; } = new();
-        private static HashSet<WorkArea> WorkAreas { get; set; } = new();
-        private static HashSet<Costunit> CostUnits { get; set; } = new();
+        private static List<WorkArea> WorkAreas { get; set; }
+        private static List<Costunit> CostUnits { get; set; }
         private IContainerExtension _container;
         private readonly IUserSettingsService _SettingsService;
         internal CollectionViewSource roleSource { get; } = new();
@@ -209,28 +209,32 @@ namespace Lieferliste_WPF.ViewModels
             Users = new();
             var u = _dbctx.IdmAccounts
                 .Include(x => x.AccountWorkAreas)
+                .ThenInclude(x => x.WorkArea)
                 .Include(x => x.AccountCosts)
                 .ThenInclude(x => x.Cost)
                 .OrderBy(o => o.AccountId)
                 .ToList();
+            var us = (from role in _dbctx.IdmRoles
+                      join r in _dbctx.IdmRelations on role.RoleId equals r.RoleId
+                      join a in _dbctx.IdmAccounts on r.AccountId equals a.AccountId
+                      select new { role, a });
             foreach (var user in u)
             {
-                var r = _dbctx.IdmRelations
-                    .Include(x => x.Role)
-                    .Where(x => x.AccountId == user.AccountId)
-                    .Select(x => x.Role)
-                    .ToList();
-
+     
                 User user1 = new User(user.AccountId, user.Firstname, user.Lastname, user.Email);
-                //user1.CostUnits = user.AccountCosts;
-                //user1.WorkAreas = user.UserWorkAreas;
+                user1.WorkAreas = user.AccountWorkAreas.Select(x => x.WorkArea).ToList();
+                user1.CostUnits = user.AccountCosts.Select(x => x.Cost).ToList();
+
+                foreach (var r in us.AsEnumerable().Where(x => x.a.AccountId == user.AccountId))
+                {
+                    user1.Roles.Add(r.role.RoleName);
+                }
+
                 Users.Add(user1);
             }
 
-                //var rl = UserInfo.User.Roles.Max(x => x.Role.Rolelevel);
-                //Roles = _dbctx.Roles.Where(x => x.Rolelevel <= rl).ToHashSet();
-                //WorkAreas = _dbctx.WorkAreas.ToHashSet();
-                //CostUnits = _dbctx.Costunits.ToHashSet();
+            WorkAreas = [.. _dbctx.WorkAreas.OrderBy(x => x.Bereich)];
+            CostUnits = [.. _dbctx.Costunits.OrderBy(x => x.CostunitId)];
         }
 
         public void DragOver(IDropInfo dropInfo)
