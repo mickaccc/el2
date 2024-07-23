@@ -358,7 +358,7 @@ namespace ModuleDeliverList.ViewModels
                             {
                                 foreach (var v in DBctx.Vorgangs.Where(x => x.Aid == rbId.Item2))
                                 {
-                                    Application.Current.Dispatcher.Invoke(AddRelevantProcess, v.VorgangId);
+                                    Application.Current.Dispatcher.Invoke(AddRelevantProcess, (rbId.Item1, v.VorgangId));
                                 }
                             }
                         }
@@ -397,7 +397,7 @@ namespace ModuleDeliverList.ViewModels
                          else v = DBctx.Vorgangs.FirstOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
                          {
                              if (v != null && v.Aktuell)
-                                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg.Value.Item2);
+                                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
                          }
                      }
                 }
@@ -760,7 +760,7 @@ namespace ModuleDeliverList.ViewModels
                         {
                             foreach (var vorg in group)
                             {
-                                if (vorg.AidNavigation.ProId != null)
+                                if (vorg.AidNavigation.ProId != null && !vorg.AidNavigation.ProId.StartsWith('0'))
                                 {
                                     var p = vorg.AidNavigation.Pro;
                                     if (p != null)
@@ -803,7 +803,7 @@ namespace ModuleDeliverList.ViewModels
             }
             return OrdersView;
         }
-        private bool AddRelevantProcess(string vid)
+        private bool AddRelevantProcess((string, string) income)
         {
 
             try
@@ -813,8 +813,10 @@ namespace ModuleDeliverList.ViewModels
                     .Include(x => x.AidNavigation)
                     .ThenInclude(x => x.MaterialNavigation)
                     .Include(x => x.AidNavigation.DummyMatNavigation)
+                    .Include(x => x.AidNavigation.Pro)
+                    .ThenInclude(x => x.ProjectAttachments)
                     .Include(x => x.RidNavigation)
-                    .First(x => x.VorgangId.Trim() == vid);
+                    .First(x => x.VorgangId.Trim() == income.Item2);
 
                 if (vrgAdd.ArbPlSap?.Length >= 3)
                 {
