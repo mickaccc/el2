@@ -31,11 +31,11 @@ namespace El2Core.Utils
             {
                 _permissions.Add(item);                
             }
-            foreach (var access in user.WorkAreas)
+            foreach (var access in user.AccountWorkAreas)
             {
-                foreach (var wo in access.AccountWorkAreas.Where(x => x.FullAccess))
+                if(access.FullAccess)
                 {
-                     _fullAccesses.Add(wo.WorkAreaId);
+                     _fullAccesses.Add(access.WorkAreaId);
                 }
             }
         }

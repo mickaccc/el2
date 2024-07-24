@@ -59,8 +59,8 @@ namespace El2Core.Utils
                     .Include(x => x.AccountWorkAreas)
                     .ThenInclude(x => x.WorkArea)
                     .First(x => x.AccountId == us);
-                user.CostUnits = acc.AccountCosts.Select(x => x.Cost).ToList();
-                user.WorkAreas = acc.AccountWorkAreas.Select(x => x.WorkArea).ToList();
+                user.AccountCostUnits = acc.AccountCosts.ToList();
+                user.AccountWorkAreas = acc.AccountWorkAreas.ToList();
                 userInfo.Initialize(Environment.MachineName, user);
 
                 return userInfo;  
@@ -167,8 +167,8 @@ namespace El2Core.Utils
         public string UsrName { get { return string.Format("{0} {1}", FirstName, LastName); } }
         public HashSet<string> Permissions { get; } = new HashSet<string>();
         public HashSet<string> Roles { get; } = [];
-        public List<Costunit>? CostUnits { get; set; }
-        public List<WorkArea>? WorkAreas { get; set; }
+        public List<AccountCost>? AccountCostUnits { get; set; }
+        public List<AccountWorkArea>? AccountWorkAreas { get; set; }
 
     }
 }

@@ -49,10 +49,11 @@
             <ListBox x:Name="ListUsers" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Users}"
                   SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding UsrName}"/>
-                            <TextBlock Text="{Binding Email}"/>
+                    <DataTemplate >
+                        <StackPanel Orientation="Horizontal" >
+                            <TextBlock Text="{Binding UserId}"/>
+                            <TextBlock Text="{Binding UsrName}" Margin="10,0,10,0"/>
+                            <TextBlock Text="{Binding Email}" DockPanel.Dock="Right"/>
                         </StackPanel>
                     </DataTemplate>
 
@@ -67,11 +68,12 @@
             </ListBox>
         </ScrollViewer>
         <ListBox Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" x:Name="ListRoles" ItemsSource="{Binding Users/Roles}"/>
-        <ListBox x:Name="UsrWORKAREA" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Users/UserWorkAreas}" 
+        <ListBox x:Name="UsrWORKAREA" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Users/AccountWorkAreas}"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
                  dd:DragDrop.DragHandler="{Binding}"
-                 dd:DragDrop.DropHandler="{Binding}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                 dd:DragDrop.DropHandler="{Binding}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
             <ListBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Blue"/>
@@ -126,7 +128,7 @@
             </ListBox>
         </ScrollViewer>
 
-        <ListBox x:Name="UsrCOSTUNIT" Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Users/UserCosts}"
+        <ListBox x:Name="UsrCOSTUNIT" Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Users/AccountCostUnits}"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
                  dd:DragDrop.DragHandler="{Binding}"
