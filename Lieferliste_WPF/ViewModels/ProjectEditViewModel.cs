@@ -30,16 +30,13 @@ namespace Lieferliste_WPF.ViewModels
             get { return _applicationCommands; }
             set { _applicationCommands = value; }
         }
-        private RelayCommand? _orderSearchCommand;
         private RelayCommand? _projectSearchCommand;
-        public ICommand OrderSearchCommand => _orderSearchCommand ??= new RelayCommand(OnOrderSearch);
+    
         public ICommand ProjectSearchCommand => _projectSearchCommand ??= new RelayCommand(OnProjectSearch);
 
-        private ObservableCollection<OrderRb> _ordersList = [];
-        public ICollectionView? OrdersCollectionView { get; private set; }
         private PspNode<Shape> Projects = new PspNode<Shape> { Node = new ("Projekte")};
         public ICollectionView? PSP_NodeCollectionView { get; private set; }
-        private string _orderSearchText = string.Empty;
+
         private string _projectSearchText = string.Empty;
         public string ProjectSearchText
         {
@@ -62,7 +59,6 @@ namespace Lieferliste_WPF.ViewModels
 
         private static readonly object _lock = new();
 
-        public NotifyTaskCompletion<ICollectionView>? OrdTask { get; private set; }
         public NotifyTaskCompletion<ICollectionView>? PspTask { get; private set; }
 
         public ProjectEditViewModel(IContainerProvider container, IApplicationCommands applicationCommands)
@@ -70,7 +66,6 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             _applicationCommands = applicationCommands;
 
-            OrdTask = new NotifyTaskCompletion<ICollectionView>(LoadOrderDataAsync());
             PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync());             
         }
 
@@ -84,26 +79,8 @@ namespace Lieferliste_WPF.ViewModels
                     PSP_NodeCollectionView?.Refresh();
             }
         }
-        private void OnOrderSearch(object obj)
-        {
-            if (obj != null)
-            {
-                _orderSearchText = (string)obj;
-                OrdersCollectionView?.Refresh();
-            }
-        }
+  
 
-        private async Task<ICollectionView> LoadOrderDataAsync()
-        {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var orders = await db.OrderRbs.AsNoTracking()
-                .Include(x => x.MaterialNavigation)
-                .Where(x => x.Abgeschlossen == false).ToListAsync();
-            _ordersList.AddRange(orders);
-            OrdersCollectionView = CollectionViewSource.GetDefaultView(_ordersList);
-            OrdersCollectionView.Filter += FilterPredicateOrder;
-            return OrdersCollectionView;
-        }
 
         private async Task<ICollectionView> LoadPspDataAsync()
         {
@@ -140,10 +117,7 @@ namespace Lieferliste_WPF.ViewModels
                             var node = Projects.Children.FirstOrDefault(x => psp.StartsWith(x.Node.ToString()));
                             if (node == null)
                             {                                
-                                stepNode = Projects.Add(new Shape(psp), "Psp-Type");
-                                stepNode.Node.Description = item.ProjectInfo;
-                                stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
-                                stepNode.Node.PropertyChanged += OnProjectPropertyChanged;
+                                stepNode = Projects.Add(new Shape(psp), "Psp-Type");                              
                             }
                             else if(node.Node.ToString() == psp)
                             {
@@ -151,12 +125,8 @@ namespace Lieferliste_WPF.ViewModels
                             }
                             else
                             {
-                                stepNode = node.Add(new Shape(psp), "Psp-Type");
-                                stepNode.Node.Description = item.ProjectInfo;
-                                stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
-                                stepNode.Node.PropertyChanged += OnProjectPropertyChanged;
+                                stepNode = node.Add(new Shape(psp), "Psp-Type");                             
                             }
-
                         }
  
                         foreach (var o in item.OrderRbs)
@@ -164,6 +134,13 @@ namespace Lieferliste_WPF.ViewModels
                             var sh = new Shape(o.Aid);
                             sh.Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng);
                             stepNode.Add(sh, "Order-Type");
+                            
+                        }
+                        if(stepNode.HasOrder)
+                        {
+                            stepNode.Node.Description = item.ProjectInfo;
+                            stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
+                            stepNode.Node.PropertyChanged += Node_PropertyChanged;
                         }
                     }
                 }
@@ -175,11 +152,13 @@ namespace Lieferliste_WPF.ViewModels
             return PSP_NodeCollectionView;
         }
 
-        private void OnProjectPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void Node_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             var tn = sender as Shape;
+
             if (tn != null)
             {
+                var hash = tn.GetHashCode();
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 var pr = db.Projects.Single(x => x.ProjectPsp == tn.ToString());
                 if (e.PropertyName == "ProjectType" &&
@@ -188,9 +167,10 @@ namespace Lieferliste_WPF.ViewModels
                     PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDesript)) pr.ProjectInfo = tn.Description;
 
                 db.SaveChanges();
+                
             }
-
         }
+
 
         private bool FilterPredicatePsp(object obj)
         {
@@ -209,18 +189,6 @@ namespace Lieferliste_WPF.ViewModels
 
         }
 
-        private bool FilterPredicateOrder(object obj)
-        {
-            if (_orderSearchText != string.Empty)
-            {
-                var ord = (OrderRb)obj;
-                return ord.Aid.Contains(_orderSearchText, StringComparison.CurrentCultureIgnoreCase);
-            }
-            else
-            {
-                return true;
-            }
-        }
 
         private string ClearPsp(string pspIn)
         {

@@ -59,7 +59,7 @@ namespace El2Core.Utils
     /// </summary>
     public class Shape(string name) : ViewModelBase.ViewModelBase, IComparable<Shape>
     {
-        private string? _description = string.Empty;
+        private string? _description;
         public string? Description
         {
             get { return _description; }
@@ -72,7 +72,7 @@ namespace El2Core.Utils
                 }
             }
         }
-        private ProjectType _projectType = ProjectType.None;
+        private ProjectType _projectType;
 
         public ProjectType ProjectType
         {
@@ -90,5 +90,6 @@ namespace El2Core.Utils
 
         // IComparable<Shape> Member
         public int CompareTo(Shape? other) => (this == other) ? 0 : -1;
+
     }
 }

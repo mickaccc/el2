@@ -134,25 +134,7 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </TextBox>
-                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"  Grid.Column="1"  HorizontalAlignment="Stretch"
-                        Command="{Binding ConcatCommand}" >
-                    <Button.CommandParameter>
-                        <MultiBinding Converter="{StaticResource multi}">
-                            <Binding Path="Text" ElementName="searchPsp"/>
-                            <Binding Path="Text" ElementName="searchOrder"/>
-                        </MultiBinding>
-                    </Button.CommandParameter>
-                    <materialDesign:PackIcon Kind="CompareHorizontal"/>
-                    
-                </Button>
-                    <TextBox x:Name="searchOrder" Grid.Column="2" VerticalAlignment="Stretch"
-                    materialDesign:HintAssist.Hint="Auftragsnummer" Margin="15,0,0,0">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="TextChanged">
-                                <i:InvokeCommandAction Command="{Binding OrderSearchCommand}" CommandParameter="{Binding Path=Text, ElementName=searchOrder}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </TextBox>
+    
                 </Grid>
             <Grid Grid.Row="1" VerticalAlignment="Stretch">
                 <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" IsActive="True" Foreground="{DynamicResource MahApps.Brushes.Tile}"
@@ -163,28 +145,6 @@
                           ItemTemplate="{StaticResource Branch}" />
 
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="1">
- 
-                <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" Foreground="{DynamicResource MahApps.Brushes.Tile}"
-                             Visibility="{Binding OrdTask.IsNotCompleted, Converter={StaticResource boolVis}}"/>
-                <TextBlock Text="{Binding OrdTask.ErrorMessage}" Visibility="{Binding OrdTask.IsFaulted, Converter={StaticResource boolVis}}"/>
-                <DataGrid x:Name="orders" ItemsSource="{Binding OrdTask.Result}" AutoGenerateColumns="False" IsReadOnly="True"
-                          Visibility="{Binding OrdTask.IsSuccessfullyCompleted, Converter={StaticResource boolVis}}"
-                          SelectionMode="Single" SelectionChanged="DataGrid_SelectionChanged">
-                <DataGrid.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Auftrrag öffnen"
-                                  Command="{Binding ApplicationCommands.OpenOrderCommand}"
-                                  CommandParameter="{Binding Path=PlacementTarget.SelectedItem.Aid, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </ContextMenu>
-                </DataGrid.ContextMenu>
-            <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Aid}" />
-                    <DataGridTextColumn Binding="{Binding Material, Converter={StaticResource ttnr}}" />
-                <DataGridTextColumn  Binding="{Binding MaterialNavigation.Bezeichng}"/>
-            </DataGrid.Columns>
-            
-        </DataGrid>
-        </Grid>
+  
     </Grid>
 </UserControl>
