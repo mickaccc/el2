@@ -42,7 +42,19 @@ namespace El2Core.Utils
         public List<PspNode<T>> Children { get; } = [];
         public string NodeType { get; private set; } = "unknown";
         public bool HasOrder { get { return Children.Any(x => x.NodeType == "Order-Type"); } }
-  
+        public PspNode<T>? Find(string psp)
+        {
+
+                var n = Search(this, psp);
+            return n;
+        }
+        private PspNode<T>? Search(PspNode<T> node, string psp)
+        {
+            var res = node.Children.Find(x => x.Node.ToString() == psp);
+            if(res != null) return res;
+            node.Children.ForEach(n => Search(n, psp));
+            return null;
+        }
         // Recursively displays node and its children 
         public static void Display(PspNode<T> node, int indentation)
         {

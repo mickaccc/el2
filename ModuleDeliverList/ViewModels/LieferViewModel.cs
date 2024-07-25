@@ -713,11 +713,10 @@ namespace ModuleDeliverList.ViewModels
                .Include(r => r.RidNavigation)
                .Include(m => m.AidNavigation.DummyMatNavigation)
                .Include(d => d.AidNavigation.Pro)
-               .ThenInclude(x => x.ProjectAttachments)
                .Include(v => v.ArbPlSapNavigation)
                .Where(x => x.AidNavigation.Abgeschlossen == false)
                .ToListAsync();
-            
+
             var ress = await DBctx.Ressources.AsNoTracking()
                 .Include(x => x.WorkArea)
                 .ToArrayAsync();

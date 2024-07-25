@@ -5,6 +5,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
+using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,7 +20,7 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    public class ProjectEditViewModel : ViewModelBase
+    public class ProjectEditViewModel : ViewModelBase, IDialogAware
     {
         public string Title { get; } = "Projekt Editor";
 
@@ -56,8 +57,10 @@ namespace Lieferliste_WPF.ViewModels
         {
             get { return _projectSearchText.Length >= 5; }
         }
-
+        private Dictionary<string, Shape> EditResult = [];
         private static readonly object _lock = new();
+
+        public event Action<IDialogResult> RequestClose;
 
         public NotifyTaskCompletion<ICollectionView>? PspTask { get; private set; }
 
@@ -109,7 +112,7 @@ namespace Lieferliste_WPF.ViewModels
                     if (match.Success && match.Groups.Count > 1)
                     {
                         string psp = string.Empty;
-                        PspNode<Shape> stepNode = new PspNode<Shape>();
+                        PspNode<Shape> stepNode = new();
                         foreach(var m in match.Groups.Values.Skip(1))
                         {
                             if (m.Value == "") break;
@@ -141,6 +144,7 @@ namespace Lieferliste_WPF.ViewModels
                             stepNode.Node.Description = item.ProjectInfo;
                             stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
                             stepNode.Node.PropertyChanged += Node_PropertyChanged;
+                            
                         }
                     }
                 }
@@ -159,14 +163,15 @@ namespace Lieferliste_WPF.ViewModels
             if (tn != null)
             {
                 var hash = tn.GetHashCode();
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var pr = db.Projects.Single(x => x.ProjectPsp == tn.ToString());
-                if (e.PropertyName == "ProjectType" &&
-                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectTypeChange)) pr.ProjectType = (int)tn.ProjectType;
-                if (e.PropertyName == "Description" &&
-                    PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProjectDesript)) pr.ProjectInfo = tn.Description;
-
-                db.SaveChanges();
+                Shape result;
+                if (EditResult.TryGetValue(tn.ToString(), out result))
+                {
+                    result = tn;
+                }
+                else
+                {
+                    EditResult.Add(tn.ToString(), tn);
+                }
                 
             }
         }
@@ -226,6 +231,27 @@ namespace Lieferliste_WPF.ViewModels
             return psp;
         }
 
+        public bool CanCloseDialog()
+        {
+            return true;
+        }
 
+        public void OnDialogClosed()
+        {
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var pro = db.Projects;
+            foreach (var edit in EditResult)
+            {
+                var current = pro.First(x => x.ProjectPsp == edit.Key);
+                if(current.ProjectInfo != edit.Value.Description) current.ProjectInfo = edit.Value.Description;
+                if (current.ProjectType != (int)edit.Value.ProjectType) current.ProjectType = (int)edit.Value.ProjectType;
+            }
+            db.SaveChanges();
+        }
+
+        public void OnDialogOpened(IDialogParameters parameters)
+        {
+            
+        }
     }
 }

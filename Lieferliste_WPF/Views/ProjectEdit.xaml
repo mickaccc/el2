@@ -11,10 +11,11 @@
              xmlns:prism="http://prismlibrary.com/"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             prism:Dialog.WindowStartupLocation="CenterOwner"
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
              xmlns:util="clr-namespace:El2Core.Utils;assembly=El2Core"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
+             d:DesignHeight="350" d:DesignWidth="800" MaxHeight="800" Tag="{Binding Title}">
     <UserControl.Resources>
         <conv:PSP_Converter x:Key="psp"/>
         <conv:TTNR_Converter x:Key="ttnr"/>
@@ -26,6 +27,7 @@
         <BitmapImage x:Key="PSP-Type" UriSource="pack://application:,,,/Images/CircleRound32.png"/>
         <BitmapImage x:Key="Order-Type" UriSource="pack://application:,,,/Images/OrangeCross32.png"/>
         <const:ProjectTypes x:Key="types"/>
+
 
         <Style x:Key="IconImageStyleSmall" TargetType="Image">
             <Setter Property="MaxWidth" Value="16"/>
@@ -84,7 +86,7 @@
                             HorizontalAlignment="Right" Background="Azure" MinWidth="40"/>
 
                                 <ComboBox Margin="15,0,0,0"  Name="ProjectType"
-                            ItemsSource="{Binding Path=Node.ProjectType, Converter={conv:EnumToCollectionConverter}, Mode=TwoWay}"
+                            ItemsSource="{Binding Node.ProjectType, Converter={conv:EnumToCollectionConverter}, Mode=TwoWay}"
                             SelectedValuePath="Value"
                             SelectedValue="{Binding Path=Node.ProjectType, Mode=TwoWay}"
                             DisplayMemberPath="Description" Initialized="ProjectType_Initialized"/>
@@ -109,11 +111,7 @@
         </HierarchicalDataTemplate>
     </UserControl.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
+        <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>

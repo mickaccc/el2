@@ -201,8 +201,10 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenProjectCombineExecuted(object obj)
         {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ProjectEdit", UriKind.Relative));
+            _dialogService.Show("ProjectEdit");
         }
+
+
 
         private bool OnOpenProjectOverViewCanExecute(object arg)
         {
@@ -355,7 +357,7 @@ namespace Lieferliste_WPF.ViewModels
         private static bool OnOpenOrderCanExecute(object arg)
         {
             if (arg is string s)
-                if (s.StartsWith("DS") || s.StartsWith("SC-PR"))
+                if (s.StartsWith("DS") || s.StartsWith("SC-PR") || s.StartsWith("BM"))
                     return false;
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Order);
         }
