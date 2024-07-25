@@ -15,6 +15,7 @@ namespace El2Core.Services
         string Theme { get; set; }
         double FontSize { get; set; }
         string PlanedSetup { get; set; }
+        double SizePercent { get; set; }
         bool IsDefaults();
         bool IsChanged { get; }
         void Save();
@@ -53,6 +54,11 @@ namespace El2Core.Services
         {
             get { return Properties.Settings.Default.FontSize; }
             set { Properties.Settings.Default[nameof(FontSize)] = value; _isChanged = true; }
+        }
+        public double SizePercent
+        {
+            get { return Properties.Settings.Default.SizePercent; }
+            set { Properties.Settings.Default[nameof(SizePercent)] = value; _isChanged = true; }
         }
         public string Theme
         {

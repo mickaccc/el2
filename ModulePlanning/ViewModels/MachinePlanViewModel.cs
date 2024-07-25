@@ -77,6 +77,7 @@ namespace ModulePlanning.ViewModels
                 }
             }
         }
+        public double SizePercent { get; }
         private readonly ILogger _Logger;
         private int _currentWorkArea;
         private string? _searchFilterText;
@@ -95,6 +96,7 @@ namespace ModulePlanning.ViewModels
             _ea = ea;
             _settingsService = settingsService;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            SizePercent = 340 * _settingsService.SizePercent / 100;
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
             LoadWorkAreas();
@@ -548,7 +550,7 @@ namespace ModulePlanning.ViewModels
             catch (Exception e)
             {
                 _Logger.LogError("{message}", e.ToString());
-                MessageBox.Show(e.Message, "Closing", MessageBoxButton.OK, MessageBoxImage.Error);
+                
             }
         }
 

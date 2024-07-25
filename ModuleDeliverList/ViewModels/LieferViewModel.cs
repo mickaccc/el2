@@ -358,7 +358,8 @@ namespace ModuleDeliverList.ViewModels
                             {
                                 foreach (var v in DBctx.Vorgangs.Where(x => x.Aid == rbId.Item2))
                                 {
-                                    Application.Current.Dispatcher.Invoke(AddRelevantProcess, (rbId.Item1, v.VorgangId));
+                                    if(v.Aktuell)
+                                        Application.Current.Dispatcher.Invoke(AddRelevantProcess, (rbId.Item1, v.VorgangId));
                                 }
                             }
                         }
@@ -813,7 +814,6 @@ namespace ModuleDeliverList.ViewModels
                     .ThenInclude(x => x.MaterialNavigation)
                     .Include(x => x.AidNavigation.DummyMatNavigation)
                     .Include(x => x.AidNavigation.Pro)
-                    .ThenInclude(x => x.ProjectAttachments)
                     .Include(x => x.RidNavigation)
                     .First(x => x.VorgangId.Trim() == income.Item2);
 

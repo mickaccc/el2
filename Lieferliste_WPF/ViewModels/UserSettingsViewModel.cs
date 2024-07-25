@@ -57,6 +57,22 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+
+        public double GlobalFontSize
+        {
+            get { return _settingsService.FontSize; }
+            set
+            {
+                _settingsService.FontSize = value;
+                App.GlobalFontSize = value;
+            }
+        }
+
+        public double SizePercent
+        {
+            get { return _settingsService.SizePercent; }
+            set { _settingsService.SizePercent = value; }
+        }
         public MeasureFirstPartInfo FirstPartInfo { get; private set; }
         public VmpbDocumentInfo VmpbDocumentInfo { get; private set; }
         public WorkareaDocumentInfo WorkareaDocumentInfo { get; private set; }

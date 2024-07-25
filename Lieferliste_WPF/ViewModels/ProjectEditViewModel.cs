@@ -78,7 +78,7 @@ namespace Lieferliste_WPF.ViewModels
             if (obj != null)
             {
                 ProjectSearchText = ConvertPsp((string)obj);
-                if (_projectSearchText.Length >= 5 || _projectSearchText.Length == 0)
+                if (_projectSearchText.Length >= 2 || _projectSearchText.Length == 0)
                     PSP_NodeCollectionView?.Refresh();
             }
         }
@@ -162,7 +162,6 @@ namespace Lieferliste_WPF.ViewModels
 
             if (tn != null)
             {
-                var hash = tn.GetHashCode();
                 Shape result;
                 if (EditResult.TryGetValue(tn.ToString(), out result))
                 {
@@ -201,15 +200,7 @@ namespace Lieferliste_WPF.ViewModels
             string psp = reg.Replace(pspIn, "");
             return psp;
         }
-        private bool IsValidPsp(string psp)
-        {
-
-            if ((psp.Length >= 9) && ((psp.Length % 3) == 0))
-            {
-                return true;
-            }
-            else return false;
-        }
+ 
         private string ConvertPsp(string psp)
         {
             psp = ClearPsp(psp.ToUpper().Trim());

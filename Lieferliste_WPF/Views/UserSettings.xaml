@@ -59,6 +59,8 @@
                           ItemsSource="{Binding Source={StaticResource Themes}}" />
                     <Label Content="Personal Path"/>
                     <TextBox x:Name="ExpRoot" Text="{Binding Path=PersonalFolder}"/>
+                    <Label Content="Schriftgröße"/>
+                    <TextBox x:Name="FontSize" Text="{Binding Path=GlobalFontSize}"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Teamleiter">
@@ -96,6 +98,8 @@
 
                                 </StackPanel>
                             </materialDesign:Chip>
+                            <Label Content="Maschinenbreite in Prozent"/>
+                            <TextBox Text="{Binding Path=SizePercent}"/>
                         </StackPanel>
     
                     </Grid>

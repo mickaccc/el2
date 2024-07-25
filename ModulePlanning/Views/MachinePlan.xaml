@@ -141,7 +141,7 @@
         </Border>
 
         <Slider x:Name="slider" Width="200" Minimum="30" Maximum="340" Margin="10"
-                    Value="200" HorizontalAlignment="Right" />
+                    Value="{Binding Path=SizePercent, Mode=OneWay}" HorizontalAlignment="Right" />
         <GridSplitter Grid.Row="2" VerticalAlignment="Stretch"/>
         <DataGrid x:Name="UnPlaned" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" ItemsSource="{Binding ProcessCV}" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
