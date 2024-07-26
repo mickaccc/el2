@@ -8,8 +8,6 @@
         public const string OpenUserEdit = "UM00";
         public const string UserEdit = "UM01";
         public const string UserEditInvers = "!UM01";
-        public const string UserDelete = "UM02";
-        public const string UserNew = "UM03";
         public const string UserSett = "SET00";
         public const string Liefer = "LIE00";
         public const string CommentMe = "COM-ME";

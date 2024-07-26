@@ -45,7 +45,7 @@ namespace ModulePlanning.ViewModels
         private IContainerExtension _container;
         private IEventAggregator _ea;
         private IUserSettingsService _settingsService;
-        public ICollectionView? RessCV { get; private set; }
+        public ICollectionView RessCV { get; private set; }
         public ICollectionView ProcessCV { get { return ProcessViewSource.View; } }
         public ICollectionView ParkingCV { get { return ParkingViewSource.View; } }
         private IApplicationCommands _applicationCommands;
@@ -185,12 +185,10 @@ namespace ModulePlanning.ViewModels
             catch (InvalidOperationException e)
             {
                 _Logger.LogError("{message}", e.ToString());
-                MessageBox.Show(e.Message, "SaveCanExecute", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception e)
             {
                 _Logger.LogError("{message}", e.ToString());
-                MessageBox.Show(e.Message, "SaveCanExecute", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return false;
         }
@@ -362,7 +360,7 @@ namespace ModulePlanning.ViewModels
                             _currentWorkArea = wa.WorkAreaId;
                             ProcessCV.Refresh();
                             ParkingCV.Refresh();
-                            RessCV?.Refresh();
+                            RessCV.Refresh();
                         }
                     } 
                 }
