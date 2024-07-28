@@ -48,6 +48,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenShiftCommand { get; private set; }
         public ICommand OpenHolidayCommand { get; private set; }
         public ICommand OpenMeasureOperCommand { get; private set; }
+        public ICommand OpenReportCommand { get; private set; }
 
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
@@ -153,6 +154,7 @@ namespace Lieferliste_WPF.ViewModels
                 OpenHolidayCommand = new ActionCommand(OnOpenHolidayExecuted, OnOpenHolidayCanExecute);
                 OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
                 OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
+                OpenReportCommand = new ActionCommand(OnOpenReportExecuted, OnOpenReportCanExecute);
 
                 _workareaDocumentInfo = new WorkareaDocumentInfo(container);
                 //DbOperations();
@@ -162,6 +164,16 @@ namespace Lieferliste_WPF.ViewModels
                 _Logger?.LogError("{message}", ex);
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        private bool OnOpenReportCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnOpenReportExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ReportMainView", UriKind.Relative));
         }
 
         #region Commands

@@ -75,6 +75,8 @@
                     <MenuItem Header="Produktkatalog">
                         <MenuItem Header="Projekte" 
                                   Command="{Binding OpenProjectCombineCommand}"/>
+                        <MenuItem Header="Auswertungen"
+                                  Command="{Binding OpenReportCommand}"/>
                         <MenuItem Header="Messdokumente"
                                   Command="{Binding OpenMeasureOperCommand}"/>
                     </MenuItem>

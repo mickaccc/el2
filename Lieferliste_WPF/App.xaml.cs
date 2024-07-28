@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using Prism.Regions;
+using Prism.Unity;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Lieferliste_WPF
 {
@@ -62,6 +66,7 @@ namespace Lieferliste_WPF
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run();
         }
+
     }
     
 }
