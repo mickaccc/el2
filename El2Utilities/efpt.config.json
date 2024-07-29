@@ -83,6 +83,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Response]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Ressource]",
          "ObjectType": 0
       },
@@ -141,7 +145,6 @@
    ],
    "UiHint": null,
    "UncountableWords": null,
-   "UseAsyncStoredProcedureCalls": true,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDateOnlyTimeOnly": false,

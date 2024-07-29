@@ -18,8 +18,18 @@
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-
-        <ContentControl Grid.Row="1" prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportFilterRegion}"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <ContentControl prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportFilterRegion}"/>
+            <ContentControl Grid.Column="1" prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportToolRegion}"/>
+        </Grid>
 
         <StackPanel Grid.Row="1" Grid.Column="1">
             <ContentControl prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportViewRegion}" />

@@ -19,6 +19,7 @@ namespace ModuleReport.ViewModels
 
             _regionManager.RegisterViewWithRegion<MaterialResultList>(RegionNames.ReportViewRegion);
             _regionManager.RegisterViewWithRegion<SelectionWorkArea>(RegionNames.ReportFilterRegion);
+            _regionManager.RegisterViewWithRegion<SelectionDate>(RegionNames.ReportToolRegion);
             
         }
         private IContainerProvider _containerProvider;

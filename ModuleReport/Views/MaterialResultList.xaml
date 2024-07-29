@@ -10,10 +10,18 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition MaxHeight="300"/>
+            <RowDefinition Height="390"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <DataGrid ItemsSource="{Binding Materials}"/>
-        <TextBlock Grid.Row="1" Text="{Binding Sum}"/>
+        <DataGrid ItemsSource="{Binding Materials}" VerticalScrollBarVisibility="Visible"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Label Content="Summe Gutteile:" Margin="0,0,10,0"/>
+            <TextBlock Text="{Binding Path=YieldSum}"/>
+            <Label Content="Summe Ausschuß:" Margin="20,0,10,0"/>
+            <TextBlock Text="{Binding Path=ScrapSum}"/>
+            <Label Content="Summe Nacharbeit:" Margin="20,0,10,0"/>
+            <TextBlock Text="{Binding Path=ReworkSum}"/>
+        </StackPanel>
+
     </Grid>
 </UserControl>

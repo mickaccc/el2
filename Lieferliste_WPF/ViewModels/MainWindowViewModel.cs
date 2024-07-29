@@ -645,19 +645,27 @@ namespace Lieferliste_WPF.ViewModels
 
         private void DbOperations()
         {
-            var gl = new Globals(_container);
+            //var gl = new Globals(_container);
 
-            List<ProjectScheme> schemes = new List<ProjectScheme>();
-            schemes.Add(new ProjectScheme("DS", "(DS-[0-9]{6})(-[0-9]{2})*"));
-            schemes.Add(new ProjectScheme("SC-PR", "(SC-PR-[0-9]{9})([0-9]{2})*"));
-            schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(_[0-9]{3})(_[0-9]{8})*"));
+            //List<ProjectScheme> schemes = new List<ProjectScheme>();
+            //schemes.Add(new ProjectScheme("DS", "(DS-[0-9]{6})(-[0-9]{2})*"));
+            //schemes.Add(new ProjectScheme("SC-PR", "(SC-PR-[0-9]{9})([0-9]{2})*"));
+            //schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(_[0-9]{3})(_[0-9]{8})*"));
 
-            gl.SaveProjectSchemes(schemes);
-                //var pcont = new PersonalFilterContainer();
-                //var filt = new PersonalFilter("^F", PropertyNames.Auftragsnummer);
-                //pcont.Add("name", filt);
-                //var res = filt.TestValue(new Vorgang() { Aid = "f2100", BemM = "V" });
-                     
+            //gl.SaveProjectSchemes(schemes);
+            //var pcont = new PersonalFilterContainer();
+            //var filt = new PersonalFilter("^F", PropertyNames.Auftragsnummer);
+            //pcont.Add("name", filt);
+            //var res = filt.TestValue(new Vorgang() { Aid = "f2100", BemM = "V" });
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var vorg = db.Vorgangs;
+
+            foreach (var v in vorg.Skip(40).Take(10))
+            {
+                var res = new Response() { Rework = 0, Scrap = 0, Yield = 112, Timestamp = DateTime.Now };
+                v.Responses.Add(res);
+            }
+            db.SaveChanges();
         }
 
     }

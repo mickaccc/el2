@@ -18,7 +18,9 @@ namespace ModuleReport.ViewModels
         }
         IContainerProvider container;
         public List<Mat> Materials { get; private set; } = [];
-        public int Sum { get; private set; } = 0;
+        public int YieldSum { get; private set; } = 0;
+        public int ReworkSum { get; private set; } = 0;
+        public int ScrapSum { get; private set; } = 0;
         private void LoadData()
         {
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -26,19 +28,35 @@ namespace ModuleReport.ViewModels
             var results = db.TblMaterials
                 .Include(x => x.OrderRbs)
                 .ThenInclude(x => x.Vorgangs)
-                .ThenInclude(x => x.RidNavigation)
+                .ThenInclude(x => x.Responses)
                 .ToList();
             foreach (var result in results)
             {
-                Materials.Add(new() { TTNR = result.Ttnr, Description = result.Bezeichng, Response = 2 });
-                Sum += 2;
+                var m = new Mat() { TTNR = result.Ttnr, Description = result.Bezeichng };
+                foreach (var ord in result.OrderRbs)
+                {
+                    foreach(var vorg in ord.Vorgangs)
+                    {
+                        m.Responses = [.. vorg.Responses];
+                    }
+                }
+                Materials.Add(m);
+            }
+            foreach (var mats in Materials.Where(x => x.Responses.Any(y => y.Timestamp.Date == DateTime.Today)))
+            {
+                YieldSum += mats.Responses.Sum(x => x.Yield);
+                ScrapSum += mats.Responses.Sum(x => x.Scrap);
+                ReworkSum += mats.Responses.Sum(x => x.Rework);
             }
         }
         public struct Mat
         {          
             public string TTNR { get; set; }
             public string? Description { get; set; }
-            public int Response { get; set; }
+            public List<Response> Responses { get; set; }
+            public int YieldSum { get { return Responses.Sum(x => x.Yield); } }
+            public int ScrapSum { get {  return Responses.Sum(x => x.Scrap); } }
+            public int ReworkSum { get { return Responses.Sum(x => x.Rework); } }
 
         }
 
