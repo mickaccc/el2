@@ -134,16 +134,16 @@ namespace Lieferliste_WPF.ViewModels
         }
         private RelayCommand? _DateChangedCommand;
         public RelayCommand DateChangedCommand => _DateChangedCommand ??= new RelayCommand(OnDateChanged);
-
+        public ActionCommand DeleteCommand { get; private set; }
         private void OnDateChanged(object obj)
         {
             if (obj is Vorgang vrg)
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var v = db.Vorgangs.Single<Vorgang>(x => x.VorgangId==vrg.VorgangId);
+                var v = db.Vorgangs.Single<Vorgang>(x => x.VorgangId == vrg.VorgangId);
                 v.Termin = vrg.Termin;
 
-                db.SaveChanges(true);
+                db.SaveChanges();
             }
         }
 
@@ -316,7 +316,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         public ICommand SaveCommand;
-        public ActionCommand DeleteCommand { get; private set; }
+        
         public bool CanCloseDialog()
         {
             return true;
