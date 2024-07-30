@@ -61,8 +61,6 @@ public partial class Vorgang : ModelBase
 
     public int? QuantityMiss { get; set; }
 
-    public string? MarkCode { get; set; }
-
     public string? ProcessingUom { get; set; }
 
     public float? ProcessTime { get; set; }
@@ -79,11 +77,13 @@ public partial class Vorgang : ModelBase
 
     public int? Spos { get; set; }
 
-    public string? CommentMach { get; set; }
-
     public int? Rid { get; set; }
 
+    public string? CommentMach { get; set; }
+
     public string? BulletTwo { get; set; }
+
+    public string? MarkCode { get; set; }
 
     public DateTime? KlimaPrint { get; set; }
 

@@ -226,8 +226,6 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
-
-
         public LieferViewModel(IContainerProvider container,
             IApplicationCommands applicationCommands,
             IEventAggregator ea,
@@ -347,8 +345,7 @@ namespace ModuleDeliverList.ViewModels
                         {
                             var o = _orders.FirstOrDefault(x => x.Aid == rbId.Item2);
                             if (o != null)
-                            {
-                    
+                            {                  
                                 DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State = EntityState.Detached;
                                 DBctx.Entry<Vorgang>(o).Reload();
                                 o.RunPropertyChanged();
@@ -392,7 +389,8 @@ namespace ModuleDeliverList.ViewModels
                              if (v.Aktuell == false)
                              {
                                  _orders.Remove(v);
-                                 DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
+                                 DBctx.ChangeTracker.Entries<Vorgang>()
+                                 .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
                              }
                          }
                          else v = DBctx.Vorgangs.FirstOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);

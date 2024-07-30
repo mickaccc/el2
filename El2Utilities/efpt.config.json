@@ -95,10 +95,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[RessourceUser]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[RessourceWorkshift]",
          "ObjectType": 0
       },
@@ -145,6 +141,7 @@
    ],
    "UiHint": null,
    "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDateOnlyTimeOnly": false,

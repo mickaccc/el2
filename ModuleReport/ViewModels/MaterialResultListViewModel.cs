@@ -42,11 +42,14 @@ namespace ModuleReport.ViewModels
                 }
                 Materials.Add(m);
             }
-            foreach (var mats in Materials.Where(x => x.Responses.Any(y => y.Timestamp.Date == DateTime.Today)))
+            foreach (var mats in Materials.Where(x => x.Responses != null))
             {
-                YieldSum += mats.Responses.Sum(x => x.Yield);
-                ScrapSum += mats.Responses.Sum(x => x.Scrap);
-                ReworkSum += mats.Responses.Sum(x => x.Rework);
+                if (mats.Responses.Any(y => y.Timestamp.Date == DateTime.Today))
+                {
+                    YieldSum += mats.Responses.Sum(x => x.Yield);
+                    ScrapSum += mats.Responses.Sum(x => x.Scrap);
+                    ReworkSum += mats.Responses.Sum(x => x.Rework);
+                }
             }
         }
         public struct Mat
@@ -54,9 +57,9 @@ namespace ModuleReport.ViewModels
             public string TTNR { get; set; }
             public string? Description { get; set; }
             public List<Response> Responses { get; set; }
-            public int YieldSum { get { return Responses.Sum(x => x.Yield); } }
-            public int ScrapSum { get {  return Responses.Sum(x => x.Scrap); } }
-            public int ReworkSum { get { return Responses.Sum(x => x.Rework); } }
+            public int YieldSum { get { return (Responses == null) ? 0 : Responses.Sum(x => x.Yield); } }
+            public int ScrapSum { get {  return (Responses == null) ? 0 : Responses.Sum(x => x.Scrap); } }
+            public int ReworkSum { get { return (Responses == null) ? 0 : Responses.Sum(x => x.Rework); } }
 
         }
 

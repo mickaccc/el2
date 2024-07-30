@@ -33,8 +33,6 @@ public partial class Ressource
 
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
-    public virtual ICollection<RessourceUser> RessourceUsers { get; set; } = new List<RessourceUser>();
-
     public virtual ICollection<RessourceWorkshift> RessourceWorkshifts { get; set; } = new List<RessourceWorkshift>();
 
     public virtual ShiftPlan? ShiftPlan { get; set; }

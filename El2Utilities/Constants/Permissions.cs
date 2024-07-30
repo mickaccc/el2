@@ -78,5 +78,6 @@
         public const string DelMeasureDocu = "DELMEADOCU";
         public const string MysticCode = "MYSTICCODE";
         public const string MysticCodeInvers = "!MYSTICCODE";
+        public const string ReportOpen = "REP00";
     }
 }

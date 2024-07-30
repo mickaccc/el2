@@ -168,7 +168,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenReportCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ReportOpen);
         }
 
         private void OnOpenReportExecuted(object obj)
