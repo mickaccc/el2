@@ -370,3 +370,4 @@ FodyWeavers.xsd
 /.vscode/launch.json
 /.vscode/msbuild-tools.json
 /Properties/launchSettings.json
+/Lieferliste_WPF/Lieferliste_WPF.csproj
