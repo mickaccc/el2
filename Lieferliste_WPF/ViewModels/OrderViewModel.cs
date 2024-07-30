@@ -31,6 +31,8 @@ namespace Lieferliste_WPF.ViewModels
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecute);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(OnMessageReceived);
             CopyClipBoardCommand = new ActionCommand(OnCopyClipBoardExecuted, OnCopyClipBoardCanExecute);
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            OrderGroups = db.OrderGroups.ToObservableCollection();
         }
 
         private bool OnCopyClipBoardCanExecute(object arg)
@@ -260,7 +262,24 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        public List<OrderGroup> OrderGroups { get; private set; }
+        private ObservableCollection<OrderGroup> _Ordergroups;
+
+        public ObservableCollection<OrderGroup> OrderGroups
+        {
+            get
+            {
+                return _Ordergroups;
+            }
+            set
+            {
+                if (value != _Ordergroups)
+                {
+                    _Ordergroups = value;
+                    NotifyPropertyChanged(() => OrderGroups);
+                }
+            }
+        }
+
         private string? _sysStatus;
 
         public string? SysStatus
@@ -350,8 +369,7 @@ namespace Lieferliste_WPF.ViewModels
                 this.OrderGroup = v.AidNavigation.OrderGroup;
                 VorgangCV.Refresh(); 
 
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                OrderGroups = db.OrderGroups.ToList();
+
             }
             else
                 MessageBox.Show("keine Vorgänge vorhanden", Title,MessageBoxButton.OK, MessageBoxImage.Error);

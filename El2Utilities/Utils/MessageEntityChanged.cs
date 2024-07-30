@@ -1,5 +1,6 @@
 ﻿using El2Core.Models;
 using Prism.Events;
+using System;
 using System.Collections.Generic;
 
 namespace El2Core.Utils
@@ -14,5 +15,7 @@ namespace El2Core.Utils
     { }
     public class SearchTextFilter : PubSubEvent<string> { }
     public class MessagePlanmachineChanged : PubSubEvent<Vorgang> { }
+    public class MessageReportFilterWorkAreaChanged : PubSubEvent<(string, bool)> { }
+    public class MessageReportFilterDateChanged : PubSubEvent<DateTime> { }
 
 }
