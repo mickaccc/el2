@@ -24,5 +24,15 @@ namespace ModuleReport.Views
         {
             InitializeComponent();
         }
+
+        private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if(e.PropertyName == "IsActive" ||
+                e.PropertyName == "Responses" ||
+                e.PropertyName == "InventNos")
+            {
+                e.Cancel = true;
+            }
+        }
     }
 }

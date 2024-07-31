@@ -104,7 +104,7 @@
             <Label Grid.Column="4" Content="Projekt" Height="28" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" />
             <wpf:SelectableTextBlock Grid.Column="4" Height="23" HorizontalAlignment="Right" Margin="5" x:Name="txtProj"
                        VerticalAlignment="Top" Width="120" Text="{Binding Pro, Mode=OneWay}" ToolTip="Projekt" />
-            <ComboBox Grid.Column="5" SelectedValue="{Binding OrderGroup}" ItemsSource="{Binding OrderGroups}"
+            <ComboBox x:Name="ordergrp" Grid.Column="5" SelectedValue="{Binding OrderGroup}"
                       SelectedValuePath="Id" DisplayMemberPath="Description"
                       IsEditable="True" IsHitTestVisible="True" Height="30">
                 <ItemsPanelTemplate>

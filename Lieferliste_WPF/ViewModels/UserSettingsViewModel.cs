@@ -177,6 +177,7 @@ namespace Lieferliste_WPF.ViewModels
             PropertyNames.Add(PropertyPair.RessourceName.ToTuple());
             PropertyNames.Add(PropertyPair.Project.ToTuple());
             PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
+            PropertyNames.Add(PropertyPair.MarkerCode.ToTuple());
         }
  
  

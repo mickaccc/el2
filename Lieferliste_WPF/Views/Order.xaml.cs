@@ -1,8 +1,10 @@
-﻿using Prism.Services.Dialogs;
+﻿using Lieferliste_WPF.ViewModels;
+using Prism.Services.Dialogs;
 using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace Lieferliste_WPF.Views
 {
@@ -14,7 +16,6 @@ namespace Lieferliste_WPF.Views
         public Order()
         {
             InitializeComponent();
-
         }
 
         public Window Owner { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

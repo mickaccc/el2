@@ -343,17 +343,17 @@ namespace ModuleDeliverList.ViewModels
                     {
                         foreach ((string, string) rbId in rb.Where(x => x != null))
                         {
-                            var o = _orders.FirstOrDefault(x => x.Aid == rbId.Item2);
+                            var o = _orders.FirstOrDefault(x => x.Aid.Trim() == rbId.Item2.Trim());
                             if (o != null)
                             {                  
-                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == o.VorgangId).State = EntityState.Detached;
+                                DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;
                                 DBctx.Entry<Vorgang>(o).Reload();
                                 o.RunPropertyChanged();
                                 
                             }
                             else
                             {
-                                foreach (var v in DBctx.Vorgangs.Where(x => x.Aid == rbId.Item2))
+                                foreach (var v in DBctx.Vorgangs.Where(x => x.Aid.Trim() == rbId.Item2.Trim()))
                                 {
                                     if(v.Aktuell)
                                         Application.Current.Dispatcher.Invoke(AddRelevantProcess, (rbId.Item1, v.VorgangId));
@@ -381,7 +381,7 @@ namespace ModuleDeliverList.ViewModels
                 {
                      if (vrg != null)
                      {
-                         var v = _orders.FirstOrDefault(x => x.VorgangId == vrg.Value.Item2);
+                         var v = _orders.FirstOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2.Trim());
                          if (v != null)
                          {
                              DBctx.Entry<Vorgang>(v).Reload();
@@ -390,10 +390,10 @@ namespace ModuleDeliverList.ViewModels
                              {
                                  _orders.Remove(v);
                                  DBctx.ChangeTracker.Entries<Vorgang>()
-                                 .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
+                                 .First(x => x.Entity.VorgangId.Trim() == v.VorgangId.Trim()).State = EntityState.Unchanged;
                              }
                          }
-                         else v = DBctx.Vorgangs.FirstOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
+                         else v = DBctx.Vorgangs.FirstOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2.Trim());
                          {
                              if (v != null && v.Aktuell)
                                  Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
@@ -813,7 +813,7 @@ namespace ModuleDeliverList.ViewModels
                     .Include(x => x.AidNavigation.DummyMatNavigation)
                     .Include(x => x.AidNavigation.Pro)
                     .Include(x => x.RidNavigation)
-                    .First(x => x.VorgangId.Trim() == income.Item2);
+                    .First(x => x.VorgangId.Trim() == income.Item2.Trim());
 
                 if (vrgAdd.ArbPlSap?.Length >= 3)
                 {

@@ -13,7 +13,7 @@
             <RowDefinition Height="390"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <DataGrid ItemsSource="{Binding Materials}" VerticalScrollBarVisibility="Visible"/>
+        <DataGrid ItemsSource="{Binding Materials}" VerticalScrollBarVisibility="Visible" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"/>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Label Content="Summe Gutteile:" Margin="0,0,10,0"/>
             <TextBlock Text="{Binding Path=YieldSum}"/>
