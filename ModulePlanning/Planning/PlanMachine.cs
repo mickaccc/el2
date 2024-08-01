@@ -246,21 +246,18 @@ namespace ModulePlanning.Planning
 
         private void Initialize()
         {
-
             SetMarkerCommand = new ActionCommand(OnSetMarkerExecuted, OnSetMarkerCanExecute);
             OpenMachineCommand = new ActionCommand(OnOpenMachineExecuted, OnOpenMachineCanExecute);
             HistoryCommand = new ActionCommand(OnHistoryExecuted, OnHistoryCanExecute);
             FastCopyCommand = new ActionCommand(OnFastCopyExecuted, OnFastCopyCanExecute);
             CorrectionCommand = new ActionCommand(OnCorrectionExecuted, OnCorrectionCanExecute);
             NewCalculateCommand = new ActionCommand(OnCalculateExecuted, OnCalculateCanExecute);
-            
-            _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageReceived);
+            _eventAggregator.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
+            _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
-            EnableRowDetails = _settingsService.IsRowDetails;
-            
+            EnableRowDetails = _settingsService.IsRowDetails;           
         }
-
 
         private void CalculateEndTime()
         {
@@ -329,8 +326,34 @@ namespace ModulePlanning.Planning
                 _logger.LogError("{message}", ex.ToString());
             }
         }
-
-        private void MessageReceived(List<(string, string)?> vorgangIdList)
+        private void MessageOrderReceived(List<(string, string)?> list)
+        {
+            try
+            {
+                Task.Run(() =>
+                {
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    lock (_lock)
+                    {
+                        foreach((string, string)?  item in list)
+                        {
+                            if (item == null) continue;
+                            foreach(var v in Processes?.Where(x => x.Aid == item.Value.Item2) )
+                            {
+                                db.Entry<Vorgang>(v).Reload();
+                                _logger.LogInformation("Planmachine - reloaded {message}", v.VorgangId);
+                            }
+                        }
+                    }
+                }
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{message}", ex.ToString());
+            }
+        }
+        private void MessageVorgangReceived(List<(string, string)?> vorgangIdList)
         {
             try
             { 
@@ -352,6 +375,7 @@ namespace ModulePlanning.Planning
                                     {
                                         proc.SortPos = "Z";
                                         Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
+                                        _logger.LogInformation("PlanMachine - remove {message}", pr.VorgangId);
                                     }
                                     if (pr.Equals(proc) == false) { ChangedValues(idTuple.Value.Item1, pr, proc); }
                                 }
@@ -367,6 +391,7 @@ namespace ModulePlanning.Planning
                                     if (vo?.SysStatus?.Contains("RÜCK") == false)
                                     {
                                         Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));
+                                        _logger.LogInformation("PlanMachine - add {message}", vo.VorgangId);
                                     }
                                 }
                             }

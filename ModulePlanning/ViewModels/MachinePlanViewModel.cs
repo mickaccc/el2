@@ -153,13 +153,13 @@ namespace ModulePlanning.ViewModels
             }
         }
 
-        private void MessageOrderReceived(List<string?> list)
+        private void MessageOrderReceived(List<(string, string)> list)
         {
             try
             {
                 foreach (var item in list)
                 {
-                    if (Priv_processes?.Any(x => x.Aid == item) ?? false)
+                    if (Priv_processes?.Any(x => x.Aid == item.Item2) ?? false)
                     {
                         Task.Factory.StartNew(async () =>
                         {

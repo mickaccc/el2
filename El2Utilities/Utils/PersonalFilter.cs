@@ -45,7 +45,7 @@ namespace El2Core.Utils
         {
             var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
 
-            var companyName = versionInfo.CompanyName.Replace('/', '_');
+            var companyName = versionInfo.CompanyName?.Replace('/', '_') ?? string.Empty;
             var env = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             FileInfo fileInfo = new FileInfo(Path.Combine(env.ToString(), companyName, "Perfilter.xml"));
             if (fileInfo.Exists)
@@ -88,7 +88,7 @@ namespace El2Core.Utils
             {
                 var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
 
-                var companyName = versionInfo.CompanyName.Replace('/', '_');
+                var companyName = versionInfo.CompanyName?.Replace('/', '_') ?? string.Empty;
                 var env = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 string fileName = Path.Combine(env.ToString(), companyName, "Perfilter.xml");
 
@@ -196,7 +196,7 @@ namespace El2Core.Utils
     [XmlInclude(typeof(PersonalFilterRessource))]
     [XmlInclude(typeof(PersonalFilterProject))]
     [Serializable]
-    public abstract class PersonalFilter : INotifyPropertyChanged
+    public abstract partial class PersonalFilter : INotifyPropertyChanged
     {
         public abstract string Name {get; set;}
         public abstract string Pattern { get; set; }
@@ -213,7 +213,7 @@ namespace El2Core.Utils
         {
             var Reg = GetRegEx();
             var test = GetTestString(vorgang, container);
-            return Reg.Match(test).Success;
+            return (Reg != null) ? Reg.Match(test).Success : false;
         }
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
@@ -224,14 +224,16 @@ namespace El2Core.Utils
             OnPropertyChanged(propertyName);
             return true;
         }
+        [GeneratedRegex("")]
+        public static partial Regex MyRegex();
     }
     [Serializable]
-    public class PersonalFilterVorgang : PersonalFilter
+    public partial class PersonalFilterVorgang : PersonalFilter
     {
         public PersonalFilterVorgang() { }
         public PersonalFilterVorgang(string name, string regex, (string, string, int) field) { _name = name; RegEx = new Regex(regex); _Field = field; }
-        private Regex RegEx;
-        private string _name;
+        private Regex RegEx = MyRegex();
+        private string _name = string.Empty;
         public override string Name { get => _name; set => SetField(ref _name, value); }
         private (string, string, int) _Field;
         public override (string, string, int) Field
@@ -239,9 +241,9 @@ namespace El2Core.Utils
             get => _Field;
             set => SetField(ref _Field, value);
         }
-        public override string Pattern
+        public override string? Pattern
         {
-            get { return RegEx.ToString(); }
+            get { return (RegEx != null) ? RegEx.ToString() : null; }
             set
             {
                 RegEx = new Regex(value);
@@ -262,14 +264,16 @@ namespace El2Core.Utils
                 return info.GetValue(vorgang, null)?.ToString() ?? string.Empty;
             return string.Empty;
         }
+
+
     }
     [Serializable]
     public class PersonalFilterOrderRb : PersonalFilter
     {
-        private string _name;
+        private string _name = string.Empty;
 
         public override string Name { get => _name; set => SetField(ref _name, value); }
-        private Regex RegEx;
+        private Regex RegEx = MyRegex();
         private (string, string, int) _Field;
  
         public PersonalFilterOrderRb() { }
@@ -311,7 +315,7 @@ namespace El2Core.Utils
             if (nav != null)
             {
                 modelData = nav.TargetEntityType;
-                var value = modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation, null);
+                var value = modelData?.FindDeclaredProperty(Field.Item2)?.PropertyInfo?.GetValue(vorgang.AidNavigation, null);
                 return (value != null) ? value.ToString() : string.Empty;
             }
                      
@@ -321,11 +325,11 @@ namespace El2Core.Utils
     [Serializable]
     public class PersonalFilterMaterial : PersonalFilter
     {
-        private string _name; 
+        private string _name = string.Empty; 
         public override string Name { get => _name; set => SetField(ref _name, value); }
-        private Regex RegEx;
+        private Regex RegEx = MyRegex();
         private (string, string, int) _Field;
-        public PersonalFilterMaterial() { }
+        private PersonalFilterMaterial() { }
         public PersonalFilterMaterial(string name, string regex, (string, string, int) field)
         {
             _name = name;
@@ -369,7 +373,7 @@ namespace El2Core.Utils
                 modelData = nav.TargetEntityType;
                 if (vorgang.AidNavigation.MaterialNavigation != null)
                 {
-                    var value = modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation.MaterialNavigation, null);
+                    var value = modelData?.FindDeclaredProperty(Field.Item2)?.PropertyInfo?.GetValue(vorgang.AidNavigation.MaterialNavigation, null);
                     return (value != null) ? value.ToString() : string.Empty;
                 }
             }
@@ -380,11 +384,9 @@ namespace El2Core.Utils
     [Serializable]
     public class PersonalFilterRessource : PersonalFilter
     {
-        private string _name;
+        private string _name = string.Empty;
         public override string Name { get => _name; set => SetField(ref _name, value); }
-        private Regex RegEx;
-        private string Navigation;
-        private string Property;
+        private Regex RegEx = MyRegex();
         private (string, string, int) _Field;
         public PersonalFilterRessource() { }
         public PersonalFilterRessource(string name, string regex, (string, string, int) field)
@@ -427,7 +429,7 @@ namespace El2Core.Utils
                 modelData = nav.TargetEntityType;
                 if (vorgang.RidNavigation != null)
                 {
-                    var value = modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.RidNavigation, null);
+                    var value = modelData?.FindDeclaredProperty(Field.Item2)?.PropertyInfo?.GetValue(vorgang.RidNavigation, null);
                     return (value != null) ? value.ToString() : string.Empty;
                 }
             }
@@ -438,11 +440,9 @@ namespace El2Core.Utils
     [Serializable]
     public class PersonalFilterProject : PersonalFilter
     {
-        private string _name;
+        private string _name = string.Empty;
         public override string Name { get => _name; set => SetField(ref _name, value); }
-        private Regex RegEx;
-        private string Navigation;
-        private string Property;
+        private Regex RegEx = MyRegex();
         private (string, string, int) _Field;
         public PersonalFilterProject() { }
         public PersonalFilterProject(string name, string regex, (string, string, int) field)
@@ -480,16 +480,17 @@ namespace El2Core.Utils
             var modelData = db.Vorgangs.EntityType;
 
             var nav = modelData.FindDeclaredNavigation("AidNavigation");
-            modelData = nav.TargetEntityType;
-            nav = modelData.FindDeclaredNavigation("Pro");
+            modelData = nav?.TargetEntityType;
+            nav = modelData?.FindDeclaredNavigation("Pro");
             if (nav != null)
             {
                 modelData = nav.TargetEntityType;
                 if (vorgang.AidNavigation.Pro != null)
                 {
-                    var value = modelData.FindDeclaredProperty(Field.Item2).PropertyInfo.GetValue(vorgang.AidNavigation.Pro, null);
+                    var value = modelData?.FindDeclaredProperty(Field.Item2)?.PropertyInfo?.GetValue(vorgang.AidNavigation.Pro, null);
                     return (value != null) ? value.ToString() : string.Empty;
                 }
+                return string.Empty;
             }
 
             return string.Empty;
