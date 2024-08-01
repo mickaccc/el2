@@ -235,11 +235,18 @@
                         </TextBox>
             </GroupBox>
                 </Grid>
-                <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Orientation="Horizontal">
-                    <Label Content="TABG" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Visibility="{Binding Path=SysStatus, ElementName=luc,
-                        Converter={StaticResource sysVisible}, ConverterParameter=TABG}"/>
+                <VirtualizingStackPanel Grid.Column="6" Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
+
                     <Label Content="EROF" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Visibility="{Binding Path=SysStatus, ElementName=luc,
                         Converter={StaticResource sysVisible}, ConverterParameter=EROF}"/>
+ 
+                        <TextBox  x:Name="CommentHighPrio" ToolTip="Priotext" MinWidth="100" MaxWidth="200"
+                                  TextWrapping="Wrap" HorizontalAlignment="Stretch"
+                               Height="{Binding Path=ActualHeight, ElementName=prio}"
+                              Text="{Binding PrioText, ElementName=luc, Mode=TwoWay}"
+                              IsReadOnly="{Binding Converter={StaticResource Permission},
+                        ConverterParameter={x:Static const:Permissions.VorgangPrioInvers}}"/>
+   
                 </VirtualizingStackPanel>
 
                 <Controls:SelectableTextBlock Grid.Column="7" x:Name="txtEnd" FontSize="16" FontWeight="Bold"
@@ -264,13 +271,7 @@
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"
                     Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-                <Canvas x:Name="prio" Grid.Row="2" Grid.Column="7" >
-                    <TextBox  x:Name="CommentHighPrio" Canvas.Left="20"  ToolTip="Priotext" Width="80" TextWrapping="Wrap"
-                               Height="{Binding Path=ActualHeight, ElementName=prio}"
-                              Text="{Binding PrioText, ElementName=luc, Mode=TwoWay}"
-                              IsReadOnly="{Binding Converter={StaticResource Permission},
-                        ConverterParameter={x:Static const:Permissions.VorgangPrioInvers}}"/>
-            </Canvas>
+
                 <Label Grid.Column="10" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Margin="6" Padding="2" HorizontalAlignment="Center"
                        Visibility="{Binding InVisible, ElementName=luc, Converter={StaticResource BooleanToVisibilityConverter}}">ausgeblendet</Label>
                 <Button Grid.Column="10" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
