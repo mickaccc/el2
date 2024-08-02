@@ -513,7 +513,7 @@ namespace El2Core.Utils
         public static ValueTuple<string, string, int> Project = ValueTuple.Create("Projekt", "ProId", 2);
         public static ValueTuple<string, string, int> ProjectInfo = ValueTuple.Create("Projekt Info", "ProjectInfo", 5);
         public static ValueTuple<string, string, int> MarkerCode = ValueTuple.Create("Reihung", "MarkCode", 2);
-
+        
     }
 
 }
