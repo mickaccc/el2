@@ -54,7 +54,7 @@ namespace ModuleReport.ViewModels
         private void Mach_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (sender is Machine machine)
-                ea.GetEvent<MessageReportFilterWorkAreaChanged>().Publish((machine.InventNo, machine.IsChecked));
+                ea.GetEvent<MessageReportFilterWorkAreaChanged>().Publish((machine.RessId, machine.IsChecked));
         }
 
         public class WorkRegion

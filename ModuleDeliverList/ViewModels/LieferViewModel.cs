@@ -351,7 +351,7 @@ namespace ModuleDeliverList.ViewModels
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;
                                     DBctx.Entry<Vorgang>(o).Reload();
                                     o.RunPropertyChanged();
-                                    _Logger.LogInformation("LieferOrd reloaded {message}", o.VorgangId);
+                                    _Logger.LogInformation("reloaded {message}", o.VorgangId);
                                 }
                             }
                             else
@@ -384,22 +384,24 @@ namespace ModuleDeliverList.ViewModels
                 {
                      if (vrg != null)
                      {
-                         var v = _orders.FirstOrDefault(x => x.VorgangId == vrg.Value.Item2);
-                         if (v != null)
+                         
+                         if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
                          {
+                             var v = _orders.SingleOrDefault(x => x.VorgangId == vrg.Value.Item2);
                              DBctx.Entry<Vorgang>(v).Reload();
-                             _Logger.LogInformation("LieferVrg reloaded {message}", v.VorgangId);
+                             _Logger.LogInformation("reloaded {message}", v.VorgangId);
                              v.RunPropertyChanged();
                              if (v.Aktuell == false)
                              {
                                  _orders.Remove(v);
                                  DBctx.ChangeTracker.Entries<Vorgang>()
                                  .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
-                                 _Logger.LogInformation("LieferVrg remove {message}", v.VorgangId);
+                                 _Logger.LogInformation("remove {message}", v.VorgangId);
                              }
                          }
-                         else v = DBctx.Vorgangs.FirstOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
+                         else 
                          {
+                             var v = DBctx.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
                              if (v != null && v.Aktuell)
                                  Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
                          }
@@ -826,7 +828,7 @@ namespace ModuleDeliverList.ViewModels
                         if (UserInfo.User.AccountCostUnits.Any(y => y.CostId == c))
                         {
                             _orders.Add(vrgAdd);
-                            _Logger.LogInformation("Relev added {message}", vrgAdd.VorgangId);
+                            _Logger.LogInformation("added {message}", vrgAdd.VorgangId);
                             return true;
                         }
                 }

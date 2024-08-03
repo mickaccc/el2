@@ -24,5 +24,26 @@ namespace ModuleReport.Views
         {
             InitializeComponent();
         }
+
+        private void btnDay_Click(object sender, RoutedEventArgs e)
+        {
+            var cal = FindName("calendar") as Calendar;
+            if (cal != null)
+                cal.DisplayMode = CalendarMode.Month;
+        }
+
+        private void btnMonth_Click(object sender, RoutedEventArgs e)
+        {
+            var cal = FindName("calendar") as Calendar;
+            if (cal != null)
+                cal.DisplayMode = CalendarMode.Year;
+        }
+
+        private void btnYear_Click(object sender, RoutedEventArgs e)
+        {
+            var cal = FindName("calendar") as Calendar;
+            if (cal != null)
+                cal.DisplayMode = CalendarMode.Decade;
+        }
     }
 }

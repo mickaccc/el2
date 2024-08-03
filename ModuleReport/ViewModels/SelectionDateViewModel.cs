@@ -22,7 +22,7 @@ namespace ModuleReport.ViewModels
 
         private void OnDateChanged(object obj)
         {
-            ea.GetEvent<MessageReportFilterDateChanged>().Publish(SelectedDate);
+            ea.GetEvent<MessageReportFilterDateChanged>().Publish([SelectedDate]);
             
         }
     }

@@ -9,11 +9,50 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+
+   
         <Grid.RowDefinitions>
             <RowDefinition Height="390"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <DataGrid ItemsSource="{Binding Materials}" VerticalScrollBarVisibility="Visible" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"/>
+        <DataGrid x:Name="DGSalesINvoice" LayoutUpdated="DG_LayoutUpdated" ItemsSource="{Binding Materials}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="DG_COL_IdSalesInvoice" Width="Auto" Header="Material" Binding="{Binding TTNR}" />
+                <DataGridTextColumn x:Name="DG_COL_CustomerName" Width="Auto" Header="Bezeichnung" Binding="{Binding Description}" />
+                <DataGridTemplateColumn x:Name="DG_COL_SalesInvoiceAmount" Width="Auto" Header="Aufträge">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DataGrid ItemsSource="{Binding DisplayVorgangs}" AutoGenerateColumns="False" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid}"/>
+                                    <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr}"/>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <DataGrid ItemsSource="{Binding Responses}" AutoGenerateColumns="False" IsReadOnly="True">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Gut" Binding="{Binding Yield}"/>
+                                                        <DataGridTextColumn Header="Auss" Binding="{Binding Scrap}"/>
+                                                        <DataGridTextColumn Header="NA" Binding="{Binding Rework}"/>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+ 
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Background="GhostWhite">
+            <TextBlock x:Name="lblTotal" TextAlignment="Right" FontWeight="Bold">Total</TextBlock>
+            <TextBlock x:Name="lblTotalSalesInvoiceAmount" TextAlignment="Right" FontWeight="Bold" Text="{Binding YieldSum}"/>
+        </StackPanel>
+        <!--<DataGrid ItemsSource="{Binding Materials}" VerticalScrollBarVisibility="Visible" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"/>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Label Content="Summe Gutteile:" Margin="0,0,10,0"/>
             <TextBlock Text="{Binding Path=YieldSum}"/>
@@ -21,7 +60,7 @@
             <TextBlock Text="{Binding Path=ScrapSum}"/>
             <Label Content="Summe Nacharbeit:" Margin="20,0,10,0"/>
             <TextBlock Text="{Binding Path=ReworkSum}"/>
-        </StackPanel>
+        </StackPanel>-->
 
     </Grid>
 </UserControl>

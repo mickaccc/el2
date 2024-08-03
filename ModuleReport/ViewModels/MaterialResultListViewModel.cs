@@ -27,29 +27,33 @@ namespace ModuleReport.ViewModels
             ea.GetEvent<MessageReportFilterDateChanged>().Subscribe(OnFilterDateReceived);
         }
 
-        private void OnFilterDateReceived(DateTime date)
+        private void OnFilterDateReceived(List<DateTime> date)
         {
-            _YieldSum = 0;
-            _ScrapSum = 0;
-            _ReworkSum = 0;
+            YieldSum = 0;
             foreach (var item in _Materials)
             {
-                if(item.IsActive = item.Responses.Any(x => x.Timestamp.Date.Equals(date.Date)))
+                foreach (var dt in date)
                 {
-                    YieldSum += item.Responses.Sum(x => x.Yield);
-                    ScrapSum += item.Responses.Sum(x => x.Scrap);
-                    ReworkSum += item.Responses.Sum(x => x.Rework);
+
+                    item.DateRange = date;
+                    YieldSum += item.GetYieldSum(dt);
                 }
             }
+
+            _ScrapSum = 0;
+            _ReworkSum = 0;
+   
             Materials.Refresh();
         }
 
-        private void OnFilterWorkAreaReceived((string, bool) tuple)
+        private void OnFilterWorkAreaReceived((int, bool) tuple)
         {
-            var m = _Materials.Where(x => x.InventNos.Any(y => y.Equals(tuple.Item1)));
-            foreach (var item in m)
+            foreach (var item in _Materials)
             {
-                item.IsActive = tuple.Item2;
+                if (tuple.Item2)
+                    item.FilterRids.Add(tuple.Item1);
+                else
+                    item.FilterRids.Remove(tuple.Item1);
             }
             Materials.Refresh();
         }
@@ -92,34 +96,66 @@ namespace ModuleReport.ViewModels
         {
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            var results = db.Vorgangs
+            var res = db.Vorgangs
                 .Include(x => x.RidNavigation)
                 .ThenInclude(x => x.WorkArea)
                 .Include(x => x.Responses)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
-                .Where(x => x.AidNavigation.Abgeschlossen == false)               
+                .Where(x => x.AidNavigation.Abgeschlossen == false && x.RidNavigation != null)               
                 .ToList();
-            foreach (var result in results.Where(x => x.Rid != null))
-            {
-                if (UserInfo.User.AccountWorkAreas.Any(x => x.WorkAreaId == result.RidNavigation.WorkAreaId))
+            var results = res.Where(x => UserInfo.User.AccountWorkAreas.Any(y => y.WorkAreaId == x.RidNavigation.WorkAreaId));
+            foreach (var result in results.GroupBy(x => x.Aid))
+            {              
                 {
-                    var m = new Mat() { TTNR = result.AidNavigation.MaterialNavigation.Ttnr, Description = result.AidNavigation.MaterialNavigation.Bezeichng };
-   
-                    m.Responses = result.Responses.ToList();
-                    m.InventNos.Add(result.RidNavigation.Inventarnummer);
-                    m.IsActive = true;
-                    _Materials.Add(m);
+                    string? ttnr = string.Empty;
+                    string? descript = string.Empty;
+ 
+                    if(result.FirstOrDefault()?.AidNavigation.Material != null)
+                    {
+                        ttnr = result.First().AidNavigation.Material.ToString();
+                        descript = result.First().AidNavigation.MaterialNavigation?.Bezeichng;
+                    }
+                    else if(result.FirstOrDefault()?.AidNavigation.DummyMat != null) 
+                    {
+                        ttnr = result.First().AidNavigation.DummyMat.ToString();
+                        descript = result.First().AidNavigation.DummyMatNavigation?.Mattext;
+                    }
+                    var rid = result.FirstOrDefault()?.Rid;
+                    if (ttnr != null && rid != null)
+                    {
+                        if (_Materials.All(x => x.TTNR != ttnr))
+                        {
+                            var m = new Mat();
+
+                            m.TTNR = ttnr;
+                            m.Description = descript;
+                            m.Vorgangs = result.ToList();
+                            m.DateRange.Add(DateTime.Today);
+                            _Materials.Add(m);
+                        }
+                        else
+                        {
+                            var m = _Materials.Single(x => x.TTNR == ttnr);
+                            m.FilterRids.Add((int)rid);
+                        }
+                    }
                 }
             }
-            foreach (var mats in _Materials.Where(x => x.Responses != null))
+            foreach (var mats in _Materials)
             {
-                if (mats.Responses.Any(y => y.Timestamp.Date == DateTime.Today))
+                if (mats.Vorgangs == null) continue;
+                foreach (var vrg in mats.Vorgangs.Where(x => x.Responses.Any()))
                 {
-                    YieldSum += mats.Responses.Sum(x => x.Yield);
-                    ScrapSum += mats.Responses.Sum(x => x.Scrap);
-                    ReworkSum += mats.Responses.Sum(x => x.Rework);
+                    if (vrg.Responses.Any(y => y.Timestamp.Date == DateTime.Today))
+                    {
+                        YieldSum += vrg.Responses.Sum(x => x.Yield);
+                        ScrapSum += vrg.Responses.Sum(x => x.Scrap);
+                        ReworkSum += vrg.Responses.Sum(x => x.Rework);
+                    }
+                    
                 }
+                YieldSum = mats.GetYieldSum(DateTime.Today);
             }
             Materials = CollectionViewSource.GetDefaultView(_Materials);
             Materials.Filter += OnFilterPredicate;
@@ -129,7 +165,7 @@ namespace ModuleReport.ViewModels
         {
             if (obj is Mat m)
             {
-                return m.IsActive;
+                return m.IsVisible;
             }
             return false;
         }
@@ -138,12 +174,110 @@ namespace ModuleReport.ViewModels
         {          
             public string TTNR { get; set; }
             public string? Description { get; set; }
-            public List<Response> Responses { get; set; }
-            public HashSet<string> InventNos { get; } = [];
-            public bool IsActive { get; set; }
-            public int YieldSum { get { return (Responses == null) ? 0 : Responses.Sum(x => x.Yield); } }
-            public int ScrapSum { get {  return (Responses == null) ? 0 : Responses.Sum(x => x.Scrap); } }
-            public int ReworkSum { get { return (Responses == null) ? 0 : Responses.Sum(x => x.Rework); } }
+            public List<DateTime> DateRange { get; set; } = [];
+            public HashSet<int> FilterRids { get; set; } = [];
+            public List<Vorgang> DisplayVorgangs { get; } = [];
+            public List<Vorgang>? Vorgangs { get; set; }
+            public bool IsVisible
+            {
+                get { return GetVisible(); }
+            }
+            public int GetYieldSum(DateTime date)
+            {
+                int r = 0;
+                foreach (var vrg in DisplayVorgangs)
+                {
+                    r += vrg.Responses.Where(y => y.Timestamp.Date == date).Sum(x => x.Yield);
+                }
+                return r;
+            }
+            public int GetScrapSum(DateTime date)
+            {
+                int r = 0;
+                foreach (var vrg in DisplayVorgangs)
+                {
+                    r += vrg.Responses.Where(y => y.Timestamp.Date == date).Sum(x => x.Scrap);
+                }
+                return r;
+            }
+            public int GetReworkSum(DateTime date)
+            {
+                int r = 0;
+                foreach (var vrg in DisplayVorgangs)
+                {
+                    r += vrg.Responses.Where(y => y.Timestamp.Date == date).Sum(x => x.Rework);
+                }
+                return r;
+            }
+            private bool GetVisible()
+            {
+                if(FilterRids.Count == 0) return false;
+                if(DateRange.Count == 0) return false;
+                if(Vorgangs == null) return false;
+                if(Vorgangs.Count == 0) return false;
+                bool visible = false;
+                foreach(var vrg in Vorgangs)
+                {
+                    if (FilterRids.Contains(vrg.Rid ?? 0)) visible = true; break;
+                }
+                if (visible)
+                {
+                    foreach(var date in DateRange)
+                    {
+
+                        foreach (var vrg in Vorgangs)
+                        {
+                            var responses = vrg.Responses.Where(x => x.Timestamp.Date == date);
+                            if (responses.Any())
+                            {
+                                Vorgang tempVorg = new();
+                                tempVorg.Aid = vrg.Aid;
+                                tempVorg.Vnr = vrg.Vnr;
+                                tempVorg.VorgangId = vrg.VorgangId;
+                                tempVorg.Responses = responses.ToList();
+                                DisplayVorgangs.Add(tempVorg);
+                            }
+                        }                     
+                    }
+                }
+                return DisplayVorgangs.Any();
+            }
+            public int YieldSum
+            {
+                get
+                {
+                    int r = 0;
+                    foreach (var vrg in Vorgangs)
+                    {
+                        r += vrg.Responses.Sum(x => x.Yield);
+                    }
+                    return r;
+                }
+            }
+            public int ScrapSum
+            {
+                    get
+                {
+                        int r = 0;
+                        foreach (var vrg in Vorgangs)
+                        {
+                            r += vrg.Responses.Sum(x => x.Scrap);
+                        }
+                        return r;
+                    }
+                }
+            public int ReworkSum
+            {
+                get
+                {
+                    int r = 0;
+                    foreach (var vrg in Vorgangs)
+                    {
+                        r += vrg.Responses.Sum(x => x.Rework);
+                    }
+                    return r;
+                }
+            }
 
         }
 

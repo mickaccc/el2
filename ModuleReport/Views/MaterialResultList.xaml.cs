@@ -34,5 +34,15 @@ namespace ModuleReport.Views
                 e.Cancel = true;
             }
         }
+
+        private void DG_LayoutUpdated(object sender, EventArgs e)
+        {
+            Thickness t = lblTotal.Margin;
+            t.Left = (DGSalesINvoice.Columns[0].ActualWidth + 7);
+            lblTotal.Margin = t;
+            lblTotal.Width = DGSalesINvoice.Columns[1].ActualWidth;
+
+            lblTotalSalesInvoiceAmount.Width = DGSalesINvoice.Columns[2].ActualWidth;
+        }
     }
 }

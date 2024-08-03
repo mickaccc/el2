@@ -15,7 +15,7 @@ namespace El2Core.Utils
     { }
     public class SearchTextFilter : PubSubEvent<string> { }
     public class MessagePlanmachineChanged : PubSubEvent<Vorgang> { }
-    public class MessageReportFilterWorkAreaChanged : PubSubEvent<(string, bool)> { }
-    public class MessageReportFilterDateChanged : PubSubEvent<DateTime> { }
+    public class MessageReportFilterWorkAreaChanged : PubSubEvent<(int, bool)> { }
+    public class MessageReportFilterDateChanged : PubSubEvent<List<DateTime>> { }
 
 }

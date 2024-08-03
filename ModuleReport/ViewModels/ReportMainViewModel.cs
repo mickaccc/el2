@@ -22,6 +22,7 @@ namespace ModuleReport.ViewModels
             _regionManager.RegisterViewWithRegion<SelectionDate>(RegionNames.ReportToolRegion);
             
         }
+        public string Title { get; } = "Bericht und Auswertungen";
         private IContainerProvider _containerProvider;
         private IRegionManager _regionManager;
     }
