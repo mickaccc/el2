@@ -356,10 +356,11 @@ namespace ModuleDeliverList.ViewModels
                             }
                             else
                             {
-                                foreach (var v in DBctx.Vorgangs.Where(x => x.Aid.Trim() == rbId.Item2.Trim()))
+                                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                                foreach (var v in db.Vorgangs.Where(x => x.Aid.Trim() == rbId.Item2.Trim()))
                                 {
                                     if (v.Aktuell)
-                                        Application.Current.Dispatcher.Invoke(AddRelevantProcess, (rbId.Item1, v.VorgangId));
+                                        Application.Current.Dispatcher.Invoke(AddRelevantProcess, (rbId.Item1, v.VorgangId));                                 
                                 }
                             }
                         }
@@ -401,9 +402,15 @@ namespace ModuleDeliverList.ViewModels
                          }
                          else 
                          {
-                             var v = DBctx.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
-                             if (v != null && v.Aktuell)
+                             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                             var v = db.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
+                             _Logger.LogInformation("dbState {message}", v?.ToString());
+
+                              if (v.Aktuell)
+                              {
+                                  _Logger.LogInformation("maybe adding {message}", v.VorgangId);
                                  Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
+                              }
                          }
                      }
                 }
@@ -813,6 +820,7 @@ namespace ModuleDeliverList.ViewModels
 
             try
             {
+                bool returnValue = false;
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 var vrgAdd = db.Vorgangs
                     .Include(x => x.AidNavigation)
@@ -825,15 +833,18 @@ namespace ModuleDeliverList.ViewModels
                 if (vrgAdd.ArbPlSap?.Length >= 3)
                 {
                     if (int.TryParse(vrgAdd.ArbPlSap[..3], out int c))
+                    {
                         if (UserInfo.User.AccountCostUnits.Any(y => y.CostId == c))
                         {
                             _orders.Add(vrgAdd);
                             _Logger.LogInformation("added {message}", vrgAdd.VorgangId);
-                            return true;
+ 
+                            returnValue = true;
                         }
+                    }
                 }
-
-                return false;
+                if(returnValue) OrdersView.Refresh();
+                return returnValue;
             }
             catch (Exception ex)
             {
