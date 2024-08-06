@@ -167,8 +167,8 @@ namespace El2Core.Utils
         public string UsrName { get { return string.Format("{0} {1}", FirstName, LastName); } }
         public HashSet<string> Permissions { get; } = new HashSet<string>();
         public HashSet<string> Roles { get; } = [];
-        public List<AccountCost>? AccountCostUnits { get; set; }
-        public List<AccountWorkArea>? AccountWorkAreas { get; set; }
+        public List<AccountCost> AccountCostUnits { get; set; }
+        public List<AccountWorkArea> AccountWorkAreas { get; set; }
 
     }
 }

@@ -60,7 +60,7 @@ namespace ModuleReport.ViewModels
 
         IContainerProvider container;
         IEventAggregator ea;
-        private List<Mat> _Materials = [];
+        private List<ReportMaterial> _Materials = [];
         public ICollectionView Materials { get; private set; }
         private int _YieldSum = 0;
         private int _ScrapSum = 0;
@@ -96,13 +96,13 @@ namespace ModuleReport.ViewModels
         {
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            var res = db.Vorgangs
+            var res = db.Vorgangs.AsNoTracking()
                 .Include(x => x.RidNavigation)
                 .ThenInclude(x => x.WorkArea)
                 .Include(x => x.Responses)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
-                .Where(x => x.AidNavigation.Abgeschlossen == false && x.RidNavigation != null)               
+                .Where(x => x.RidNavigation != null)               
                 .ToList();
             var results = res.Where(x => UserInfo.User.AccountWorkAreas.Any(y => y.WorkAreaId == x.RidNavigation.WorkAreaId));
             foreach (var result in results.GroupBy(x => x.Aid))
@@ -126,7 +126,7 @@ namespace ModuleReport.ViewModels
                     {
                         if (_Materials.All(x => x.TTNR != ttnr))
                         {
-                            var m = new Mat();
+                            var m = new ReportMaterial();
 
                             m.TTNR = ttnr;
                             m.Description = descript;
@@ -163,14 +163,14 @@ namespace ModuleReport.ViewModels
 
         private bool OnFilterPredicate(object obj)
         {
-            if (obj is Mat m)
+            if (obj is ReportMaterial m)
             {
                 return m.IsVisible;
             }
             return false;
         }
 
-        public class Mat
+        public class ReportMaterial
         {          
             public string TTNR { get; set; }
             public string? Description { get; set; }
