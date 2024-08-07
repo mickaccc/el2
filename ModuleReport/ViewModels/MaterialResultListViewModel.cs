@@ -131,7 +131,7 @@ namespace ModuleReport.ViewModels
                             m.TTNR = ttnr;
                             m.Description = descript;
                             m.Vorgangs = result.ToList();
-                            m.DateRange.Add(DateTime.Today);
+                            //m.DateRange.Add(DateTime.Today);
                             _Materials.Add(m);
                         }
                         else
@@ -142,21 +142,21 @@ namespace ModuleReport.ViewModels
                     }
                 }
             }
-            foreach (var mats in _Materials)
-            {
-                if (mats.Vorgangs == null) continue;
-                foreach (var vrg in mats.Vorgangs.Where(x => x.Responses.Any()))
-                {
-                    if (vrg.Responses.Any(y => y.Timestamp.Date == DateTime.Today))
-                    {
-                        YieldSum += vrg.Responses.Sum(x => x.Yield);
-                        ScrapSum += vrg.Responses.Sum(x => x.Scrap);
-                        ReworkSum += vrg.Responses.Sum(x => x.Rework);
-                    }
+            //foreach (var mats in _Materials)
+            //{
+            //    if (mats.Vorgangs == null) continue;
+            //    foreach (var vrg in mats.Vorgangs.Where(x => x.Responses.Any()))
+            //    {
+            //        foreach(var resp in vrg.Responses)
+            //        {
+            //            YieldSum += vrg.Responses.Sum(x => x.Yield);
+            //            ScrapSum += vrg.Responses.Sum(x => x.Scrap);
+            //            ReworkSum += vrg.Responses.Sum(x => x.Rework);
+            //        }
                     
-                }
-                YieldSum = mats.GetYieldSum(DateTime.Today);
-            }
+            //    }
+            //    YieldSum = mats.GetYieldSum(DateTime.Today);
+            //}
             Materials = CollectionViewSource.GetDefaultView(_Materials);
             Materials.Filter += OnFilterPredicate;
         }
@@ -174,6 +174,7 @@ namespace ModuleReport.ViewModels
         {          
             public string TTNR { get; set; }
             public string? Description { get; set; }
+            public DateTime Date_Time { get; set; }
             public List<DateTime> DateRange { get; set; } = [];
             public HashSet<int> FilterRids { get; set; } = [];
             public List<Vorgang> DisplayVorgangs { get; } = [];
@@ -216,6 +217,7 @@ namespace ModuleReport.ViewModels
                 if(Vorgangs == null) return false;
                 if(Vorgangs.Count == 0) return false;
                 bool visible = false;
+                DisplayVorgangs.Clear();
                 foreach(var vrg in Vorgangs)
                 {
                     if (FilterRids.Contains(vrg.Rid ?? 0)) visible = true; break;
@@ -227,7 +229,7 @@ namespace ModuleReport.ViewModels
 
                         foreach (var vrg in Vorgangs)
                         {
-                            var responses = vrg.Responses.Where(x => x.Timestamp.Date == date);
+                            var responses = vrg.Responses.Where(x => x.Timestamp.Date == date.Date);
                             if (responses.Any())
                             {
                                 Vorgang tempVorg = new();

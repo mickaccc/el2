@@ -32,6 +32,9 @@ namespace ModuleReport.ViewModels
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var areas = db.WorkAreas
                 .Include(x => x.Ressources)
+                .ThenInclude(x => x.Vorgangs)
+                .ThenInclude(x => x.Responses)
+                .Where(x => x.Ressources.Any(y => y.Vorgangs.Count > 0))
                 .ToList();
 
             foreach (var area in areas)
@@ -41,12 +44,18 @@ namespace ModuleReport.ViewModels
                     List<Machine> list = [];
                     foreach (var m in area.Ressources)
                     {
-                        Machine mach = new(m.RessourceId, m.Inventarnummer, m.RessName);
-                        mach.PropertyChanged += Mach_PropertyChanged;
-                        list.Add(mach);
+                        if (m.Vorgangs.Any(x => x.Responses.Count > 0))
+                        {
+                            Machine mach = new(m.RessourceId, m.Inventarnummer, m.RessName);
+                            mach.PropertyChanged += Mach_PropertyChanged;
+                            list.Add(mach);
+                        }
                     }
-                    var w = new WorkRegion(area.Bereich, list);
-                    WorkAreas.Add(w); 
+                    if (list.Count > 0)
+                    {
+                        var w = new WorkRegion(area.Bereich, list);
+                        WorkAreas.Add(w);
+                    }
                 }
             }
         }
@@ -65,7 +74,7 @@ namespace ModuleReport.ViewModels
                 this.Machines = Machines;
             }
             public bool IsExpand { get; set; } = false;
-            private bool isChecked = true;
+            private bool isChecked = false;
             public bool IsChecked
             {
                 get { return isChecked; }

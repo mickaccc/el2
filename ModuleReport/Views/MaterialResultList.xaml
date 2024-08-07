@@ -31,6 +31,7 @@
                                             <DataTemplate>
                                                 <DataGrid ItemsSource="{Binding Responses}" AutoGenerateColumns="False" IsReadOnly="True">
                                                     <DataGrid.Columns>
+                                                        <DataGridTextColumn Binding="{Binding Timestamp}"/>
                                                         <DataGridTextColumn Header="Gut" Binding="{Binding Yield}"/>
                                                         <DataGridTextColumn Header="Auss" Binding="{Binding Scrap}"/>
                                                         <DataGridTextColumn Header="NA" Binding="{Binding Rework}"/>
