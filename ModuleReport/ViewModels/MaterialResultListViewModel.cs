@@ -107,7 +107,7 @@ namespace ModuleReport.ViewModels
             var results = res.Where(x => UserInfo.User.AccountWorkAreas.Any(y => y.WorkAreaId == x.RidNavigation.WorkAreaId));
             foreach (var result in results.GroupBy(x => x.Aid))
             {              
-                {
+                
                     string? ttnr = string.Empty;
                     string? descript = string.Empty;
  
@@ -142,17 +142,17 @@ namespace ModuleReport.ViewModels
                     }
                 }
             }
-            //foreach (var mats in _Materials)
-            //{
-            //    if (mats.Vorgangs == null) continue;
-            //    foreach (var vrg in mats.Vorgangs.Where(x => x.Responses.Any()))
-            //    {
-            //        foreach(var resp in vrg.Responses)
-            //        {
-            //            YieldSum += vrg.Responses.Sum(x => x.Yield);
-            //            ScrapSum += vrg.Responses.Sum(x => x.Scrap);
-            //            ReworkSum += vrg.Responses.Sum(x => x.Rework);
-            //        }
+            foreach (var mats in _Materials)
+            {
+                if (mats.Vorgangs == null) continue;
+                foreach (var vrg in mats.Vorgangs.Where(x => x.Responses.Any()))
+                {
+                    if (vrg.Responses.Any(y => y.Timestamp.Date == DateTime.Today))
+                    {
+                        YieldSum += vrg.Responses.Sum(x => x.Yield);
+                        ScrapSum += vrg.Responses.Sum(x => x.Scrap);
+                        ReworkSum += vrg.Responses.Sum(x => x.Rework);
+                    }
                     
             //    }
             //    YieldSum = mats.GetYieldSum(DateTime.Today);
