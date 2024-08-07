@@ -98,14 +98,13 @@ namespace ModuleReport.ViewModels
 
             var res = db.Vorgangs.AsNoTracking()
                 .Include(x => x.RidNavigation)
-                .ThenInclude(x => x.WorkArea)
                 .Include(x => x.Responses)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Where(x => x.RidNavigation != null)               
                 .ToList();
-            var results = res.Where(x => UserInfo.User.AccountWorkAreas.Any(y => y.WorkAreaId == x.RidNavigation.WorkAreaId));
-            foreach (var result in results.GroupBy(x => x.Aid))
+
+            foreach (var result in res.GroupBy(x => x.Aid))
             {              
                 
                     string? ttnr = string.Empty;
@@ -130,7 +129,7 @@ namespace ModuleReport.ViewModels
 
                             m.TTNR = ttnr;
                             m.Description = descript;
-                            m.Vorgangs = result.ToList();
+                            m.Vorgangs = [..result];
                             //m.DateRange.Add(DateTime.Today);
                             _Materials.Add(m);
                         }
@@ -140,19 +139,19 @@ namespace ModuleReport.ViewModels
                             m.FilterRids.Add((int)rid);
                         }
                     }
-                }
+                
             }
-            foreach (var mats in _Materials)
-            {
-                if (mats.Vorgangs == null) continue;
-                foreach (var vrg in mats.Vorgangs.Where(x => x.Responses.Any()))
-                {
-                    if (vrg.Responses.Any(y => y.Timestamp.Date == DateTime.Today))
-                    {
-                        YieldSum += vrg.Responses.Sum(x => x.Yield);
-                        ScrapSum += vrg.Responses.Sum(x => x.Scrap);
-                        ReworkSum += vrg.Responses.Sum(x => x.Rework);
-                    }
+            //foreach (var mats in _Materials)
+            //{
+            //    if (mats.Vorgangs == null) continue;
+            //    foreach (var vrg in mats.Vorgangs.Where(x => x.Responses.Any()))
+            //    {
+            //        if (vrg.Responses.Any(y => y.Timestamp.Date == DateTime.Today))
+            //        {
+            //            YieldSum += vrg.Responses.Sum(x => x.Yield);
+            //            ScrapSum += vrg.Responses.Sum(x => x.Scrap);
+            //            ReworkSum += vrg.Responses.Sum(x => x.Rework);
+            //        }
                     
             //    }
             //    YieldSum = mats.GetYieldSum(DateTime.Today);
@@ -220,13 +219,12 @@ namespace ModuleReport.ViewModels
                 DisplayVorgangs.Clear();
                 foreach(var vrg in Vorgangs)
                 {
-                    if (FilterRids.Contains(vrg.Rid ?? 0)) visible = true; break;
+                    if (FilterRids.Contains(vrg.Rid ?? 0)) { visible = true; break; }
                 }
                 if (visible)
                 {
                     foreach(var date in DateRange)
                     {
-
                         foreach (var vrg in Vorgangs)
                         {
                             var responses = vrg.Responses.Where(x => x.Timestamp.Date == date.Date);
