@@ -20,6 +20,7 @@ namespace ModuleReport.ViewModels
             _regionManager.RegisterViewWithRegion<MaterialResultList>(RegionNames.ReportViewRegion);
             _regionManager.RegisterViewWithRegion<SelectionWorkArea>(RegionNames.ReportFilterRegion);
             _regionManager.RegisterViewWithRegion<SelectionDate>(RegionNames.ReportToolRegion);
+            _regionManager.RegisterViewWithRegion<MaterialResultChart>(RegionNames.ReportViewRegion1);
             
         }
         public string Title { get; } = "Bericht und Auswertungen";

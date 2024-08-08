@@ -120,17 +120,18 @@ namespace ModuleReport.ViewModels
                     if (ttnr != null)
                     {
 
-                            var m = new ReportMaterial();
+                        var m = new ReportMaterial(ttnr,
+                            descript,
+                            result.Aid,
+                            result.VorgangId,
+                            result.Vnr,
+                            result.Rid,
+                            item.Yield,
+                            item.Scrap,
+                            item.Rework,
+                            item.Timestamp);
 
-                            m.TTNR = ttnr;
-                            m.Description = descript;
-                            m.Date_Time = item.Timestamp;
-                            m.Yield = item.Yield;
-                            m.Scrap = item.Scrap;
-                            m.Rework = item.Rework;
-                            m.Rid = result.Rid;
-                            m.Order = result.Aid;
-                            m.ProcessNr = result.Vnr;
+         
  
                             _Materials.Add(m);
                         
@@ -139,6 +140,7 @@ namespace ModuleReport.ViewModels
             }
 
             Materials = CollectionViewSource.GetDefaultView(_Materials);
+            Materials.GroupDescriptions.Add(new PropertyGroupDescription("TTNR"));
             Materials.Filter += OnFilterPredicate;
         }
 
@@ -157,21 +159,7 @@ namespace ModuleReport.ViewModels
             }
             return ret;
         }
+        public record ReportMaterial(string TTNR, string? Description, string Order, string VID, int ProcessNr, int? Rid, int Yield, int Scrap, int Rework, DateTime Date_Time);
 
-        public class ReportMaterial
-        {          
-            public string TTNR { get; set; }
-            public string? Description { get; set; }
-            public string Order { get; set; }
-            public int ProcessNr { get; set; }
-            public int? Rid { get; set; }
-            public int Yield { get; set; }
-            public int Scrap { get; set; }
-            public int Rework { get; set; }
-            public DateTime Date_Time { get; set; }
-
-        }
-
-        
     }
 }

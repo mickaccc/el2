@@ -27,12 +27,13 @@
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <ContentControl prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportFilterRegion}"/>
+            <ContentControl Grid.RowSpan="2" prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportFilterRegion}"/>
             <ContentControl Grid.Column="1" prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportToolRegion}"/>
+            <ContentControl Grid.Row="1" Grid.Column="1" prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportToolRegion1}"/>
         </Grid>
-
-        <StackPanel Grid.Row="1" Grid.Column="1">
-            <ContentControl prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportViewRegion}" />
+            <StackPanel Grid.Column="1" Grid.Row="1">
+                <ContentControl prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportViewRegion}" />
+                <ContentControl prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportViewRegion1}" />
         </StackPanel>
-    </Grid>
+        </Grid>
 </UserControl>
