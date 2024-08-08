@@ -38,11 +38,17 @@ namespace ModuleReport.Views
         private void DG_LayoutUpdated(object sender, EventArgs e)
         {
             Thickness t = lblTotal.Margin;
-            t.Left = (DGSalesINvoice.Columns[0].ActualWidth + 7);
-            lblTotal.Margin = t;
-            lblTotal.Width = DGSalesINvoice.Columns[1].ActualWidth;
 
-            lblTotalSalesInvoiceAmount.Width = DGSalesINvoice.Columns[2].ActualWidth;
+            t.Left = DGMaterials.Columns[0].ActualWidth +
+                DGMaterials.Columns[1].ActualWidth +
+                DGMaterials.Columns[2].ActualWidth +
+                DGMaterials.Columns[3].ActualWidth;
+            lblTotal.Margin = t;
+            lblTotal.Width = DGMaterials.Columns[4].ActualWidth;
+
+            lblTotalYieldSum.Width = DGMaterials.Columns[5].ActualWidth;
+            lblTotalScrapSum.Width = DGMaterials.Columns[6].ActualWidth;
+            lblTotalReworkSum.Width = DGMaterials.Columns[7].ActualWidth;
         }
     }
 }

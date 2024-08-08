@@ -20,11 +20,11 @@ using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    public class ProjectEditViewModel : ViewModelBase, IDialogAware
+    public partial class ProjectEditViewModel : ViewModelBase, IDialogAware
     {
         public string Title { get; } = "Projekt Editor";
 
-        private IContainerProvider _container;
+        private readonly IContainerProvider _container;
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -35,7 +35,7 @@ namespace Lieferliste_WPF.ViewModels
     
         public ICommand ProjectSearchCommand => _projectSearchCommand ??= new RelayCommand(OnProjectSearch);
 
-        private PspNode<Shape> Projects = new PspNode<Shape> { Node = new ("Projekte")};
+        private readonly PspNode<Shape> Projects = new() { Node = new ("Projekte")};
         public ICollectionView? PSP_NodeCollectionView { get; private set; }
 
         private string _projectSearchText = string.Empty;
@@ -57,7 +57,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             get { return _projectSearchText.Length >= 5; }
         }
-        private Dictionary<string, Shape> EditResult = [];
+        private readonly Dictionary<string, Shape> EditResult = [];
         private static readonly object _lock = new();
 
         public event Action<IDialogResult> RequestClose;
@@ -102,7 +102,7 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var item in proj.OrderBy(x => x.ProjectPsp))
                 {
                     var p = item.ProjectPsp.Trim();
-                    Regex regex = new Regex("");
+                    Regex regex = MyRegex();
                     foreach(var scheme in RuleInfo.ProjectSchemes)
                     {
                         if(p.StartsWith(scheme.Key, StringComparison.OrdinalIgnoreCase))
@@ -134,8 +134,10 @@ namespace Lieferliste_WPF.ViewModels
  
                         foreach (var o in item.OrderRbs)
                         {
-                            var sh = new Shape(o.Aid);
-                            sh.Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng);
+                            var sh = new Shape(o.Aid)
+                            {
+                                Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng)
+                            };
                             stepNode.Add(sh, "Order-Type");
                             
                         }
@@ -158,20 +160,17 @@ namespace Lieferliste_WPF.ViewModels
 
         private void Node_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            var tn = sender as Shape;
-
-            if (tn != null)
+            if (sender is not Shape tn)
             {
-                Shape result;
-                if (EditResult.TryGetValue(tn.ToString(), out result))
-                {
-                    result = tn;
-                }
-                else
-                {
-                    EditResult.Add(tn.ToString(), tn);
-                }
-                
+                return;
+            }
+            if (EditResult.TryGetValue(tn.ToString(), out Shape result))
+            {
+                result = tn;
+            }
+            else
+            {
+                EditResult.Add(tn.ToString(), tn);
             }
         }
 
@@ -244,5 +243,8 @@ namespace Lieferliste_WPF.ViewModels
         {
             
         }
+
+        [GeneratedRegex("")]
+        private static partial Regex MyRegex();
     }
 }

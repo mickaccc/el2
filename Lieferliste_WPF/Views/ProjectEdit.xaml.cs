@@ -24,14 +24,13 @@ namespace Lieferliste_WPF.Views
         }
 
 
-        private void searchPsp_TextChanged(object sender, TextChangedEventArgs e)
+        private void SearchPsp_TextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBox? psp = sender as TextBox;
-            if (psp != null)
+            if (sender is TextBox psp)
                 psp.SelectionStart = psp.Text.Length;
         }
 
-        private void pspTree_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void PspTree_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             //var txtbx = (TextBox)FindName("searchPsp");
             //var tree = (TextBlock)sender;
@@ -45,8 +44,7 @@ namespace Lieferliste_WPF.Views
 
         private void ProjectType_Initialized(object sender, System.EventArgs e)
         {
-            var s = sender as ComboBox;
-            if (s != null) { s.IsSynchronizedWithCurrentItem = true; }
+            if (sender is ComboBox s) { s.IsSynchronizedWithCurrentItem = true; }
         }
     }
 }

@@ -117,7 +117,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private ObservableCollection<Vorgang> Vorgangs { get; } = new();
+        private ObservableCollection<Vorgang> Vorgangs { get; } = [];
         private RelayCommand? _BemChangedCommand;
         public RelayCommand BemChangedCommand => _BemChangedCommand ??= new RelayCommand(OnBemChanged);
 

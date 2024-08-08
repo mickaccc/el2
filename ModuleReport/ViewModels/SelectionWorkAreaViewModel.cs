@@ -103,7 +103,7 @@ namespace ModuleReport.ViewModels
             public int RessId { get; }
             public string Name { get; }
             public string InventNo { get; }
-            private bool isChecked = true;
+            private bool isChecked = false;
             public bool IsChecked
             {
                 get { return isChecked; }

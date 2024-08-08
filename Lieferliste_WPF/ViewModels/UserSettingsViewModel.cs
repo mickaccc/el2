@@ -238,13 +238,12 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnPersonalFilterRemoveExecuted(object obj)
         {
-            var curr = PersonalFilterView.CurrentItem as string;
-            if (curr != null)
+            if (PersonalFilterView.CurrentItem is string curr)
             {
                 _filterContainer.Remove(curr);
                 _filterContainerKeys.Remove(curr);
                 PersonalFilterName = (string)PersonalFilterView.CurrentItem;
-            }           
+            }
         }
 
         private bool OnPersonalFilterNewCanExecute(object arg)

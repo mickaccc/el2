@@ -57,7 +57,7 @@
                                 </Style>
                             </Image.Style>
                         </Image>
-                        <TextBlock Text="{Binding Path=Node}" Margin="3,0,30,0" MouseLeftButtonDown="pspTree_MouseLeftButtonDown" >
+                        <TextBlock Text="{Binding Path=Node}" Margin="3,0,30,0" MouseLeftButtonDown="PspTree_MouseLeftButtonDown" >
                             <TextBlock.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Auftrag öffnen"
@@ -123,7 +123,7 @@
             </Grid.ColumnDefinitions>
             <TextBox x:Name="searchPsp" Grid.Column="0" VerticalAlignment="Stretch"
                          materialDesign:HintAssist.Hint="PSP-Element"
-                         Text="{Binding Path=ProjectSearchText}" TextChanged="searchPsp_TextChanged" >
+                         Text="{Binding Path=ProjectSearchText}" TextChanged="SearchPsp_TextChanged" >
    
                     <i:Interaction.Triggers>
 

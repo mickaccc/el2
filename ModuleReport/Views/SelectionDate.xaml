@@ -11,12 +11,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="btnDay" Content="Tag" Click="btnDay_Click"/>
-                <Button x:Name="btnMonth" Content="Monat" Click="btnMonth_Click"/>
-                <Button x:Name="btnYear" Content="Jahr" Click="btnYear_Click"/>
-            </StackPanel>
-        <Calendar x:Name="calendar" DisplayMode="Month" SelectedDate="{Binding Path=SelectedDate, Mode=OneWayToSource}"   SelectionMode="SingleRange" >
+
+        <Calendar x:Name="calendar" DisplayMode="Month" SelectedDate="{Binding Path=SelectedDate, Mode=OneWayToSource}"   SelectionMode="SingleDate" >
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectedDatesChanged">
                     <i:InvokeCommandAction Command="{Binding DateChangedCommand}"/>

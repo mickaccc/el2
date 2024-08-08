@@ -48,7 +48,7 @@ namespace ModuleDeliverList.ViewModels
         public string Title { get; } = "Lieferliste";
         public bool HasChange => DBctx.ChangeTracker.HasChanges();
         private readonly ILogger _Logger;
-        private readonly Dictionary<string, string> _filterCriterias = new();
+        private readonly Dictionary<string, string> _filterCriterias = [];
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
         private RelayCommand? _textSearchCommand;
@@ -61,15 +61,15 @@ namespace ModuleDeliverList.ViewModels
         private string _selectedSectionFilter = string.Empty;
         private string _markerCode = string.Empty;
         private static System.Timers.Timer? _autoSaveTimer;
-        private IContainerProvider _container;
-        private IEventAggregator _ea;
-        private IUserSettingsService _settingsService;
+        private readonly IContainerProvider _container;
+        private readonly IEventAggregator _ea;
+        private readonly IUserSettingsService _settingsService;
         private CmbFilter _selectedDefaultFilter;
-        private static List<Ressource> _ressources = [];
-        private static SortedDictionary<int, string> _sections = [];
+        private static readonly List<Ressource> _ressources = [];
+        private static readonly SortedDictionary<int, string> _sections = [];
         public SortedDictionary<int, string> Sections => _sections;
         public List<string> PersonalFilterKeys { get; } = [.. PersonalFilterContainer.GetInstance().Keys];
-        private ObservableCollection<ProjectStruct> _projects = new();
+        private ObservableCollection<ProjectStruct> _projects = [];
         public ObservableCollection<ProjectStruct> Projects
         {
             get { return _projects; }
@@ -256,8 +256,8 @@ namespace ModuleDeliverList.ViewModels
 
         private AbstracatBuilder CreateTableBuilder()
         {
-            TableBuilder t = new TableBuilder();
-            string[] headers = new[] { "Auftragsnummer", "Material", "Bezeichnng", "Kurztext", "Termin" };
+            TableBuilder t = new();
+            string[] headers = ["Auftragsnummer", "Material", "Bezeichnng", "Kurztext", "Termin"];
             AbstracatBuilder builder = new FlowTableBuilder(headers);
             List<Vorgang> query = OrdersView.Cast<Vorgang>().ToList();
             var sel = query.Select(x => new string?[]
@@ -342,7 +342,7 @@ namespace ModuleDeliverList.ViewModels
                 {
                     lock (_lock)
                     {
-                        foreach ((string, string) rbId in rb.Where(x => x != null))
+                        foreach ((string, string) rbId in rb.Where(x => x != null).Select(v => ((string, string))v))
                         {
                             if (_orders.Any(x => x.Aid == rbId.Item2))
                             {
@@ -546,13 +546,10 @@ namespace ModuleDeliverList.ViewModels
             {
                 // Save document
                 string filename = dlg.FileName;
-                using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                {
-                    FlowDocument flow = Tbuilder.GetDoc() as FlowDocument;
-                    TextRange tr = new TextRange(flow.ContentStart, flow.ContentEnd);
-                    tr.Save(fs, DataFormats.Rtf);
-
-                }
+                using FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                FlowDocument flow = Tbuilder.GetDoc() as FlowDocument;
+                TextRange tr = new TextRange(flow.ContentStart, flow.ContentEnd);
+                tr.Save(fs, DataFormats.Rtf);
             }
         }
         private bool OnCreateHtmlCanExecute(object arg)
@@ -719,7 +716,7 @@ namespace ModuleDeliverList.ViewModels
         {
             //_projects.Add(new Project() { ProjectPsp = "leer"});
 
-            if (!_sections.Keys.Contains(0)) _sections.Add(0, string.Empty);
+            if (!_sections.ContainsKey(0)) _sections.Add(0, string.Empty);
             var a = await DBctx.Vorgangs
                .Include(v => v.AidNavigation)
                .ThenInclude(x => x.MaterialNavigation)
@@ -786,15 +783,14 @@ namespace ModuleDeliverList.ViewModels
                                     var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
                                     if (z != null)
                                     {
-                                        if (!_sections.Keys.Contains(z.Sort) && z.Bereich != null)
+                                        if (!_sections.ContainsKey(z.Sort) && z.Bereich != null)
                                             _sections.Add(z.Sort, z.Bereich);
                                     }
                                 }
                             }
                         }
                         
-                        relev = false;
-                                               
+                        relev = false;                                              
                     }
                     _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
                 }
@@ -869,18 +865,12 @@ namespace ModuleDeliverList.ViewModels
             }
         }
     }
-    public class ProjectStruct : IComparable
+    public class ProjectStruct(string ProjectPsp, ProjectTypes.ProjectType ProjectType, string? projectInfo) : IComparable
     {
-        public string ProjectPsp { get; }
-        public ProjectTypes.ProjectType ProjectType { get; }
-        public string? ProjectInfo { get; }
+        public string ProjectPsp { get; } = ProjectPsp;
+        public ProjectTypes.ProjectType ProjectType { get; } = ProjectType;
+        public string? ProjectInfo { get; } = projectInfo;
 
-        public ProjectStruct(string ProjectPsp, ProjectTypes.ProjectType ProjectType, string? projectInfo)
-        {
-            this.ProjectPsp = ProjectPsp;
-            this.ProjectType = ProjectType;
-            this.ProjectInfo = projectInfo;
-        }
         public int CompareTo(object? obj)
         {
             if (obj == null) return 1;
