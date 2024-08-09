@@ -1,5 +1,6 @@
 
 using El2Core.Constants;
+using ModuleReport.ReportSources;
 using ModuleReport.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -14,10 +15,12 @@ namespace ModuleReport
     {
         public void OnInitialized(IContainerProvider containerProvider)
         {
+
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
-        {           
+        {
+            containerRegistry.RegisterSingleton<IMaterialSource, MaterialSource>();
         }
  
     }

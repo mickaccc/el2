@@ -6,8 +6,6 @@
         public const string MachEdit = "MA00";
         public const string RoleEdit = "RM00";
         public const string OpenUserEdit = "UM00";
-        public const string UserEdit = "UM01";
-        public const string UserEditInvers = "!UM01";
         public const string UserSett = "SET00";
         public const string Liefer = "LIE00";
         public const string CommentMe = "COM-ME";
@@ -33,8 +31,6 @@
         public const string RoleAddValue = "RM03";
         public const string OpenMeasure = "MEA00";
         public const string OpenProject = "PROJ00";
-        public const string Employee = "EMP00";
-        public const string ConcatProject = "PROJ01";
         public const string ProjectDesript = "PROJ02";
         public const string ProjectDescriptInvers = "!PROJ02";
         public const string MessDrop = "MEA01";
@@ -58,7 +54,6 @@
         public const string OpenFileProj = "OPENFILEPROJ";
         public const string LieferTerm = "LIETERM";
         public const string LieferTermInvers = "!LIETERM";
-        public const string ProjectDel = "PROJ05";
         public const string FastCopy = "FASTCOPY";
         public const string CopyClipboard = "COPYCLIP";
         public const string AdminFunc = "ADMINFUNC";
@@ -74,7 +69,6 @@
         public const string AddPruefDoc = "PRUEFDATA";
         public const string AddVmpb = "ADDVMPB";
         public const string OpenMeaOper = "MEA03";
-        public const string CopyClip = "COPYCLIP01";
         public const string DelMeasureDocu = "DELMEADOCU";
         public const string MysticCode = "MYSTICCODE";
         public const string MysticCodeInvers = "!MYSTICCODE";

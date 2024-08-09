@@ -2,6 +2,7 @@
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
+using ModuleReport.ReportSources;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -12,52 +13,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using static ModuleReport.ViewModels.ReportMainViewModel;
 
 namespace ModuleReport.ViewModels
 {
     internal class MaterialResultListViewModel : ViewModelBase
     {
-        public MaterialResultListViewModel(IContainerProvider containerProvider, IEventAggregator eventAggregator)
+        public MaterialResultListViewModel(IMaterialSource materialSource, IEventAggregator eventAggregator)
         { 
-            container = containerProvider;
+            Materials = CollectionViewSource.GetDefaultView(materialSource.Materials);
             ea = eventAggregator;
-            LoadData();
             ea.GetEvent<MessageReportFilterWorkAreaChanged>().Subscribe(OnFilterWorkAreaReceived);
             ea.GetEvent<MessageReportFilterDateChanged>().Subscribe(OnFilterDateReceived);
+            Materials.GroupDescriptions.Add(new PropertyGroupDescription("TTNR"));
+            Materials.Filter += OnFilterPredicate;
         }
-
-        private void OnFilterDateReceived(DateTime date)
-        {
-            FilterDate = date;   
- 
-            YieldSum = 0;
-            ReworkSum = 0;
-            ScrapSum = 0;
-
-            Materials.Refresh();
-        }
-
-        private void OnFilterWorkAreaReceived((int, bool) tuple)
-        {
-
-            if (tuple.Item2)
-                FilterRids.Add(tuple.Item1);
-            else
-                FilterRids.Remove(tuple.Item1);
-
-            YieldSum = 0;
-            ReworkSum = 0;
-            ScrapSum = 0;
-
-            Materials.Refresh();
-        }
-
-        IContainerProvider container;
+        public ICollectionView Materials { get; }
         IEventAggregator ea;
-        private List<ReportMaterial> _Materials = [];
-        public ICollectionView Materials { get; private set; }
         private HashSet<int> FilterRids = [];
-        private DateTime? FilterDate;
+        private DateTime FilterDate = DateTime.Now.Date;
         private int _YieldSum = 0;
         private int _ScrapSum = 0;
         private int _ReworkSum = 0;
@@ -88,60 +62,28 @@ namespace ModuleReport.ViewModels
                 NotifyPropertyChanged(() => ScrapSum);
             }
         }
-        private void LoadData()
+        private void OnFilterDateReceived(DateTime date)
         {
-            using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            FilterDate = date;
 
-            var res = db.Vorgangs.AsNoTracking()
-                .Include(x => x.Responses)
-                .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Include(x => x.AidNavigation.MaterialNavigation)
-                .Where(x => x.Rid != null)               
-                .ToList();
+            YieldSum = 0;
+            ReworkSum = 0;
+            ScrapSum = 0;
+            Materials.Refresh();
+        }
 
-            foreach (var result in res)
-            {                           
-                    string? ttnr = string.Empty;
-                    string? descript = string.Empty;
- 
-                    if(result.AidNavigation.Material != null)
-                    {
-                        ttnr = result.AidNavigation.Material.ToString();
-                        descript = result.AidNavigation.MaterialNavigation?.Bezeichng;
-                    }
-                    else if(result.AidNavigation.DummyMat != null) 
-                    {
-                        ttnr = result.AidNavigation.DummyMat.ToString();
-                        descript = result.AidNavigation.DummyMatNavigation?.Mattext;
-                    }
-                foreach (var item in result.Responses)
-                {
+        private void OnFilterWorkAreaReceived((int, bool) tuple)
+        {
 
-                    if (ttnr != null)
-                    {
+            if (tuple.Item2)
+                FilterRids.Add(tuple.Item1);
+            else
+                FilterRids.Remove(tuple.Item1);
 
-                        var m = new ReportMaterial(ttnr,
-                            descript,
-                            result.Aid,
-                            result.VorgangId,
-                            result.Vnr,
-                            result.Rid,
-                            item.Yield,
-                            item.Scrap,
-                            item.Rework,
-                            item.Timestamp);
-
-         
- 
-                            _Materials.Add(m);
-                        
-                    }
-                }
-            }
-
-            Materials = CollectionViewSource.GetDefaultView(_Materials);
-            Materials.GroupDescriptions.Add(new PropertyGroupDescription("TTNR"));
-            Materials.Filter += OnFilterPredicate;
+            YieldSum = 0;
+            ReworkSum = 0;
+            ScrapSum = 0;
+            Materials.Refresh();
         }
 
         private bool OnFilterPredicate(object obj)
@@ -159,7 +101,6 @@ namespace ModuleReport.ViewModels
             }
             return ret;
         }
-        public record ReportMaterial(string TTNR, string? Description, string Order, string VID, int ProcessNr, int? Rid, int Yield, int Scrap, int Rework, DateTime Date_Time);
 
     }
 }

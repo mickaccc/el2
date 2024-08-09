@@ -35,6 +35,7 @@
             </DataGrid.GroupStyle>
             
             <DataGrid.Columns>
+                <DataGridTextColumn Width="Auto" Header="Maschine" Binding="{Binding MachName}"/>
                 <DataGridTextColumn Width="Auto" Header="Material" Binding="{Binding TTNR}" />
                 <DataGridTextColumn Width="Auto" Header="Bezeichnung" Binding="{Binding Description}" />
                 <DataGridTextColumn Width="Auto" Header="Auftrag" Binding="{Binding Order}" />

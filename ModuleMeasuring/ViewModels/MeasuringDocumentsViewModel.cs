@@ -163,8 +163,7 @@ namespace ModuleMeasuring.ViewModels
                     }
                     else { MessageBox.Show(string.Format("Datei {0} wurde nicht gefunden", source), "Raster Copy", MessageBoxButton.OK); }
                     i++;
-                } while (File.Exists(source + i.ToString() + ".pdf"));
-                
+                } while (File.Exists(source + i.ToString() + ".pdf"));                
             }
             catch (Exception ex)
             {

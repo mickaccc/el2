@@ -398,13 +398,13 @@ namespace ModuleDeliverList.ViewModels
                                  DBctx.ChangeTracker.Entries<Vorgang>()
                                  .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
                                  _Logger.LogInformation("remove {message}", v.VorgangId);
+                                 OrdersView.Refresh();
                              }
                          }
                          else 
                          {
                              using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                              var v = db.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
-                             _Logger.LogInformation("dbState {message}", v?.ToString());
 
                               if (v.Aktuell)
                               {
