@@ -25,16 +25,6 @@ namespace ModuleReport.Views
             InitializeComponent();
         }
 
-        private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
-        {
-            if(e.PropertyName == "IsActive" ||
-                e.PropertyName == "Responses" ||
-                e.PropertyName == "InventNos")
-            {
-                e.Cancel = true;
-            }
-        }
-
         private void DG_LayoutUpdated(object sender, EventArgs e)
         {
             Thickness t = lblTotal.Margin;
