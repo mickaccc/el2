@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CompositeCommands.Core\CompositeCommands.Core.csproj" />
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
+    <ProjectReference Include="..\vhCalendar\vhCalendar.csproj" />
   </ItemGroup>
 
   <ItemGroup>

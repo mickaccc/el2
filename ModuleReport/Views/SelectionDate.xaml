@@ -7,18 +7,55 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:local="clr-namespace:ModuleReport.Views"
+             xmlns:vhcal="clr-namespace:vhCalendar;assembly=vhCalendar"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Initialized="UserControl_Initialized" Width="240" Height="280">
     <Grid>
+        <Grid.Resources>
+            <Style x:Key="btn_activated" TargetType="Button">
+                <Setter Property="Background" Value="Blue"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Style>
+            <Style x:Key="btn_deactivated" TargetType="Button">
+                <Setter Property="Background" Value="Beige"/>
+                <Setter Property="Foreground" Value="Black"/>
+            </Style>
+        </Grid.Resources>
         <StackPanel>
+            <vhcal:Calendar Name="Cld" 
+                         HorizontalAlignment="Center"
+                         Width="240" Height="250"
+                         Margin="4"     
+                         FontSize="12" FontFamily="Sans Serif"                          
+                         ShowDaysOfAllMonths="True"
+                         SelectionMode="Single" 
+                         FooterVisibility="Collapsed" 
+                         WeekColumnVisibility="Visible" 
+                         HeaderHeight="22" 
+                         IsTodayHighlighted="True"
+                         IsAnimated="False"
+                         AdornDrag="False" 
+                         AllowDrag="False" 
+                         HeaderFontSize="12"
+                         HeaderFontWeight="DemiBold">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectedDateChanged">
+                        <i:InvokeCommandAction Command="{Binding DateChangedCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="SelectedDatesChanged">
+                        <i:InvokeCommandAction Command="{Binding DatesChangedCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PropertyChanged">
+                        <i:InvokeCommandAction Command="{Binding PropertyChangedCommand}" PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
 
-        <Calendar x:Name="calendar" DisplayMode="Month" SelectedDate="{Binding Path=SelectedDate, Mode=OneWayToSource}"   SelectionMode="SingleDate" >
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectedDatesChanged">
-                    <i:InvokeCommandAction Command="{Binding DateChangedCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Calendar>
+            </vhcal:Calendar>
+            <DockPanel HorizontalAlignment="Stretch">
+                <Button x:Name="ButtonSingle" Content="Einzel" Click="ButtonSingle_Click" Style="{DynamicResource btn_activated}"/>
+                <Button x:Name="ButtonMultiply"  Content="Mehr" Click="ButtonMultiply_Click" Style="{DynamicResource btn_deactivated}"/>
+                <Button x:Name="ButtonWeek"  Content="Woche" Click="ButtonWeek_Click" Style="{DynamicResource btn_deactivated}"/>
+            </DockPanel>
         </StackPanel>
     </Grid>
 </UserControl>

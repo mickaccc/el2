@@ -8,28 +8,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
+using Prism.Events;
+using El2Core.Utils;
+using System.Collections.ObjectModel;
 
 namespace ModuleReport.ReportSources
 {
     interface IMaterialSource
     {
 
-        List<ReportMaterial> Materials { get; }
+        ObservableCollection<ReportMaterial> Materials { get; }
         
     }
     internal class MaterialSource : IMaterialSource
     {
-        public MaterialSource(IContainerProvider containerProvider)
+        public MaterialSource(IContainerProvider containerProvider, IEventAggregator eventAggregator)
         {
             container = containerProvider;
-            LoadData();
+            ea = eventAggregator;
+            ea.GetEvent<MessageReportChangeSource>().Subscribe(OnSourceChange);
+            LoadDefaultData();
         }
-        IContainerProvider container;
-        public List<ReportMaterial> Materials { get; private set; } = [];
 
-
-        private void LoadData()
+        private void OnSourceChange(int obj)
         {
+            if(obj == 0) LoadDefaultData();
+            if(obj == 1) LoadSapData();
+        }
+
+        IContainerProvider container;
+        IEventAggregator ea;
+        public ObservableCollection<ReportMaterial> Materials { get; private set; } = [];
+
+
+        private void LoadDefaultData()
+        {
+            Materials.Clear();
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
             var res = db.Vorgangs.AsNoTracking()
@@ -42,7 +56,7 @@ namespace ModuleReport.ReportSources
 
             foreach (var result in res)
             {
-                string? ttnr = string.Empty;
+                string? ttnr = null;
                 string? descript = string.Empty;
 
                 if (result.AidNavigation.Material != null)
@@ -73,6 +87,56 @@ namespace ModuleReport.ReportSources
                             item.Timestamp,
                             string.Format("{0}\n{1}", result.RidNavigation.RessName, result.RidNavigation.Inventarnummer));
                             
+                        Materials.Add(m);
+
+                    }
+                }
+            }
+        }
+        public void LoadSapData()
+        {
+            Materials.Clear();
+            using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+
+            var vorg = db.Vorgangs.AsNoTracking()
+                .Include(x => x.AidNavigation.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.ArbPlSapNavigation.Ressource)
+                .Where(x => x.ArbPlSapNavigation != null && x.Responses != null)
+                .ToList();
+
+            foreach (var result in vorg)
+            {
+                string? ttnr = null;
+                string? descript = string.Empty;
+
+                if (result.AidNavigation.Material != null)
+                {
+                    ttnr = result.AidNavigation.Material.ToString();
+                    descript = result.AidNavigation.MaterialNavigation?.Bezeichng;
+                }
+                else if (result.AidNavigation.DummyMat != null)
+                {
+                    ttnr = result.AidNavigation.DummyMat.ToString();
+                    descript = result.AidNavigation.DummyMatNavigation?.Mattext;
+                }
+                foreach (var item in result.Responses)
+                {
+
+                    if (ttnr != null)
+                    {
+                        var m = new ReportMaterial(ttnr,
+                            descript,
+                            result.Aid,
+                            result.VorgangId,
+                            result.Vnr,
+                            result.ArbPlSapNavigation?.RessourceId,
+                            item.Yield,
+                            item.Scrap,
+                            item.Rework,
+                            item.Timestamp,
+                            string.Format("{0}\n{1}", result.ArbPlSapNavigation?.Ressource?.RessName, result.ArbPlSapNavigation?.Ressource?.Inventarnummer));
+
                         Materials.Add(m);
 
                     }

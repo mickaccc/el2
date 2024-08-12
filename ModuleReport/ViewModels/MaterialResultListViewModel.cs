@@ -1,19 +1,9 @@
-﻿using El2Core.Models;
-using El2Core.Utils;
+﻿using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Microsoft.EntityFrameworkCore;
 using ModuleReport.ReportSources;
 using Prism.Events;
-using Prism.Ioc;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
-using static ModuleReport.ViewModels.ReportMainViewModel;
 
 namespace ModuleReport.ViewModels
 {
@@ -31,7 +21,7 @@ namespace ModuleReport.ViewModels
         public ICollectionView Materials { get; }
         IEventAggregator ea;
         private HashSet<int> FilterRids = [];
-        private DateTime FilterDate = DateTime.Now.Date;
+        private List<DateTime> FilterDates = [];
         private int _YieldSum = 0;
         private int _ScrapSum = 0;
         private int _ReworkSum = 0;
@@ -62,9 +52,9 @@ namespace ModuleReport.ViewModels
                 NotifyPropertyChanged(() => ScrapSum);
             }
         }
-        private void OnFilterDateReceived(DateTime date)
+        private void OnFilterDateReceived(List<DateTime> dates)
         {
-            FilterDate = date;
+            FilterDates = dates;
 
             YieldSum = 0;
             ReworkSum = 0;
@@ -91,7 +81,7 @@ namespace ModuleReport.ViewModels
             bool ret = false;
             if (obj is ReportMaterial m)
             {
-                ret = FilterRids.Any(x => x == m.Rid) && m.Date_Time.Date == FilterDate;
+                ret = FilterRids.Any(x => x == m.Rid) && FilterDates.Any(y => m.Date_Time.Date == y);
                 if (ret)
                 {
                     YieldSum += m.Yield;

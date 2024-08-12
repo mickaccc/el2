@@ -26,7 +26,9 @@
         <conv:BoolRowDetail x:Key="rowDetail"/>
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
 
-        <DataGrid x:Key="Setup1"  AutoGenerateColumns="False" 
+
+
+            <DataGrid x:Key="Setup1"  AutoGenerateColumns="False" 
 		  CanUserAddRows="False"
 		  CanUserDeleteRows="False"
 		  CanUserSortColumns="False"
@@ -39,83 +41,83 @@
 		  ItemsSource="{Binding ProcessesCV}"
 		  VirtualizingPanel.IsVirtualizing="False" 
 		  RowDetailsVisibilityMode="{Binding EnableRowDetails, Converter={StaticResource rowDetail}}"  IsReadOnly="True" >
-            <DataGrid.ContextMenu>
-                <ContextMenu>
-                    <ContextMenu.Resources>
-                        <Style TargetType="{x:Type MenuItem}" >
-                            <Setter Property="CommandParameter" Value="{Binding Path=PlacementTarget.SelectedItem,
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <ContextMenu.Resources>
+                            <Style TargetType="{x:Type MenuItem}" >
+                                <Setter Property="CommandParameter" Value="{Binding Path=PlacementTarget.SelectedItem,
                           RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
-                            <Setter Property="Height" Value="30"/>
-                        </Style>
-                    </ContextMenu.Resources>
-                    <ContextMenu.ItemsSource>
-                        <CompositeCollection>
-                            <CollectionContainer Collection="{StaticResource MachineCm}"/>
-                            <CollectionContainer Collection="{StaticResource AppCommandsCm}"/>
-                        </CompositeCollection>
-                    </ContextMenu.ItemsSource>
-                </ContextMenu>
-            </DataGrid.ContextMenu>
-            <DataGrid.InputBindings>
-                <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
+                                <Setter Property="Height" Value="30"/>
+                            </Style>
+                        </ContextMenu.Resources>
+                        <ContextMenu.ItemsSource>
+                            <CompositeCollection>
+                                <CollectionContainer Collection="{StaticResource MachineCm}"/>
+                                <CollectionContainer Collection="{StaticResource AppCommandsCm}"/>
+                            </CompositeCollection>
+                        </ContextMenu.ItemsSource>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.InputBindings>
+                    <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
 					  CommandParameter="{Binding Path=SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
 					  MouseAction="LeftDoubleClick"/>
-            </DataGrid.InputBindings>
+                </DataGrid.InputBindings>
 
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <Grid Background="LightBlue">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock x:Name="Row0" Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
-                                <TextBlock x:Name="Row1" Margin="10,0,5,0" Text="{Binding AidNavigation.MaterialNavigation.Bezeichng}"/>
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <Grid Background="LightBlue">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="Row0" Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
+                                    <TextBlock x:Name="Row1" Margin="10,0,5,0" Text="{Binding AidNavigation.MaterialNavigation.Bezeichng}"/>
+                                </StackPanel>
+                                <TextBlock x:Name="Row2" TextWrapping="Wrap" Text="{Binding Text}"/>
                             </StackPanel>
-                            <TextBlock x:Name="Row2" TextWrapping="Wrap" Text="{Binding Text}"/>
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
+                        </Grid>
+                    </DataTemplate>
 
-            </DataGrid.RowDetailsTemplate>
-            <DataGrid.Columns>
+                </DataGrid.RowDetailsTemplate>
+                <DataGrid.Columns>
 
-                <DataGridTemplateColumn>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
 											   BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
 											   HorizontalAlignment="Left"
 											   VerticalAlignment="Top"
                                                Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                ContextMenu="{StaticResource BulletContextMenu}"/>
 
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                <DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" 
+                    <DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" 
 							Header="Auftrag"
 							Width="Auto">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Background">
-                                <Setter.Value>
-                                    <MultiBinding Converter="{StaticResource txtColor}">
-                                        <Binding />
-                                        <Binding ElementName="searchTextBox"
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource txtColor}">
+                                            <Binding />
+                                            <Binding ElementName="searchTextBox"
 										 Path="Text"/>
-                                    </MultiBinding>
-                                </Setter.Value>
-                            </Setter>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
 
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
 
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="Vorg" Binding="{Binding Vnr, StringFormat=\{0:d4\}}"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Vorg" Binding="{Binding Vnr, StringFormat=\{0:d4\}}"/>
+                </DataGrid.Columns>
+            </DataGrid>
 
-        <DataGrid x:Key="Setup2"  AutoGenerateColumns="False" 
+            <DataGrid x:Key="Setup2"  AutoGenerateColumns="False" 
           CanUserAddRows="False"
           CanUserDeleteRows="False"
           CanUserSortColumns="False"
@@ -128,82 +130,83 @@
           ItemsSource="{Binding ProcessesCV}"
           VirtualizingPanel.IsVirtualizing="False"
           RowDetailsVisibilityMode="{Binding EnableRowDetails, Converter={StaticResource rowDetail}}"  IsReadOnly="True" >
-            <DataGrid.ContextMenu>
-                <ContextMenu>
-                    <ContextMenu.Resources>
-                        <Style TargetType="{x:Type MenuItem}" >
-                            <Setter Property="CommandParameter" Value="{Binding Path=PlacementTarget.SelectedItem,
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <ContextMenu.Resources>
+                            <Style TargetType="{x:Type MenuItem}" >
+                                <Setter Property="CommandParameter" Value="{Binding Path=PlacementTarget.SelectedItem,
                   RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
-                            <Setter Property="Height" Value="30"/>
-                        </Style>
-                    </ContextMenu.Resources>
-                    <ContextMenu.ItemsSource>
-                        <CompositeCollection>
-                            <CollectionContainer Collection="{StaticResource MachineCm}"/>
-                            <CollectionContainer Collection="{StaticResource AppCommandsCm}"/>
-                        </CompositeCollection>
-                    </ContextMenu.ItemsSource>
-                </ContextMenu>
-            </DataGrid.ContextMenu>
-            <DataGrid.InputBindings>
-                <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
+                                <Setter Property="Height" Value="30"/>
+                            </Style>
+                        </ContextMenu.Resources>
+                        <ContextMenu.ItemsSource>
+                            <CompositeCollection>
+                                <CollectionContainer Collection="{StaticResource MachineCm}"/>
+                                <CollectionContainer Collection="{StaticResource AppCommandsCm}"/>
+                            </CompositeCollection>
+                        </ContextMenu.ItemsSource>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.InputBindings>
+                    <MouseBinding Command="{Binding ApplicationCommands.OpenOrderCommand}"
 			  CommandParameter="{Binding Path=SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"
 			  MouseAction="LeftDoubleClick"/>
-            </DataGrid.InputBindings>
+                </DataGrid.InputBindings>
 
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <Grid Background="LightBlue">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock  Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
-                                <TextBlock  Margin="10,0,5,0" Text="{Binding AidNavigation.MaterialNavigation.Bezeichng}"/>
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <Grid Background="LightBlue">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock  Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
+                                    <TextBlock  Margin="10,0,5,0" Text="{Binding AidNavigation.MaterialNavigation.Bezeichng}"/>
+                                </StackPanel>
+                                <TextBlock  TextWrapping="Wrap" Text="{Binding Text}"/>
                             </StackPanel>
-                            <TextBlock  TextWrapping="Wrap" Text="{Binding Text}"/>
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
+                        </Grid>
+                    </DataTemplate>
 
-            </DataGrid.RowDetailsTemplate>
-            <DataGrid.Columns>
+                </DataGrid.RowDetailsTemplate>
+                <DataGrid.Columns>
 
-                <DataGridTemplateColumn>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wpfcontrol:BullettControl BullettColor="{Binding Bullet, TargetNullValue='White'}"
 									   BullettShape="{Binding QuantityYield, Converter={StaticResource BulletShape}}"
 									   HorizontalAlignment="Left"
 									   VerticalAlignment="Top"
                                        Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                        ContextMenu="{StaticResource BulletContextMenu}"/>
 
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                <DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" 
+                    <DataGridTextColumn Binding="{Binding Aid, Mode=OneTime}" 
 					Header="Auftrag"
 					Width="Auto">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Background">
-                                <Setter.Value>
-                                    <MultiBinding Converter="{StaticResource txtColor}">
-                                        <Binding />
-                                        <Binding ElementName="searchTextBox"
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource txtColor}">
+                                            <Binding />
+                                            <Binding ElementName="searchTextBox"
 								 Path="Text"/>
-                                    </MultiBinding>
-                                </Setter.Value>
-                            </Setter>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
 
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
 
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="Vorg" Binding="{Binding Vnr, StringFormat=\{0:d4\}}"/>
-                <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Vorg" Binding="{Binding Vnr, StringFormat=\{0:d4\}}"/>
+                    <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
     </UserControl.Resources>
 
 	<Grid DataContext="{Binding}"

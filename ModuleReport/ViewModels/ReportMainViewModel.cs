@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using El2Core.Utils;
+using System.Windows.Input;
 
 namespace ModuleReport.ViewModels
 {
@@ -24,19 +25,37 @@ namespace ModuleReport.ViewModels
             container = containerProvider;
             _regionManager = regionManager.CreateRegionManager();
             ea = eventAggregator;
-  
+            
  
             _regionManager.RegisterViewWithRegion<MaterialResultList>(RegionNames.ReportViewRegion);
             _regionManager.RegisterViewWithRegion<SelectionWorkArea>(RegionNames.ReportFilterRegion);
             _regionManager.RegisterViewWithRegion<SelectionDate>(RegionNames.ReportToolRegion);
             _regionManager.RegisterViewWithRegion<MaterialResultChart>(RegionNames.ReportViewRegion1);
+
+            ChangeSourceCommand = new ActionCommand(OnChangeSourceExecuted, OnChangeSourceCanExecute);
             
         }
+
+ 
+
         public string Title { get; } = "Bericht und Auswertungen";
 
         private IRegionManager _regionManager;
         IContainerProvider container;
         IEventAggregator ea;
-     
+        public ICommand ChangeSourceCommand { get; private set; }
+
+        private bool OnChangeSourceCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnChangeSourceExecuted(object obj)
+        {
+            if (int.TryParse((string?)obj, out int nr))
+            {
+                ea.GetEvent<MessageReportChangeSource>().Publish(nr);
+            }
+        }
     }
 }

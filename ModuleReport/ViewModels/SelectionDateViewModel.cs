@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vhCalendar;
 
 namespace ModuleReport.ViewModels
 {
@@ -17,12 +18,27 @@ namespace ModuleReport.ViewModels
         }
         IEventAggregator ea;
         RelayCommand? _DateChangedCommand;
-        public DateTime SelectedDate { get; set; }
+        RelayCommand? _DatesChangedCommand;
+        public DateTime SelectionDate { get; set; }
         public RelayCommand DateChangedCommand => _DateChangedCommand ??= new RelayCommand(OnDateChanged);
+        public RelayCommand DatesChangedCommand => _DatesChangedCommand ??= new RelayCommand(OnDatesChanged);
+
+        private void OnDatesChanged(object obj)
+        {
+            if (obj is SelectedDatesChangedEventArgs e)
+            {
+                List<DateTime> dates = [.. e.NewDates];
+                ea.GetEvent<MessageReportFilterDateChanged>().Publish(dates);
+            }
+        }
 
         private void OnDateChanged(object obj)
         {
-            ea.GetEvent<MessageReportFilterDateChanged>().Publish(SelectedDate);
+            if (obj is SelectedDateChangedEventArgs e)
+            {
+                List<DateTime> dates = [e.NewDate];
+                ea.GetEvent<MessageReportFilterDateChanged>().Publish(dates);
+            }
             
         }
     }

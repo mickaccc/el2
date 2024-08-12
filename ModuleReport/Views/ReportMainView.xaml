@@ -31,7 +31,13 @@
             <ContentControl Grid.Column="1" prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportToolRegion}"/>
             <ContentControl Grid.Row="1" Grid.Column="1" prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportToolRegion1}"/>
         </Grid>
-            <StackPanel Grid.Column="1" Grid.Row="1">
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <RadioButton Content="Einplanung lt. Lieferliste" GroupName="SourceChange" IsChecked="True"
+                         Command="{Binding ChangeSourceCommand}" CommandParameter="0"/>
+            <RadioButton Content="Einplanung lt. SAP" GroupName="SourceChange"
+                         Command="{Binding ChangeSourceCommand}" CommandParameter="1"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="1">
                 <ContentControl prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportViewRegion}" />
                 <ContentControl prism:RegionManager.RegionName="{x:Static const:RegionNames.ReportViewRegion1}" />
         </StackPanel>

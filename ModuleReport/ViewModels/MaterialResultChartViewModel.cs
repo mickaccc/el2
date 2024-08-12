@@ -2,10 +2,9 @@
 using El2Core.ViewModelBase;
 using LiveCharts;
 using LiveCharts.Wpf;
-using Microsoft.VisualBasic.Devices;
 using ModuleReport.ReportSources;
 using Prism.Events;
-using System.Windows.Forms;
+using System.Collections.ObjectModel;
 
 namespace ModuleReport.ViewModels
 {
@@ -14,6 +13,7 @@ namespace ModuleReport.ViewModels
         public MaterialResultChartViewModel(IMaterialSource materialSource, IEventAggregator eventAggregator)
         {
             Materials = materialSource.Materials;
+            Materials.CollectionChanged += Materials_CollectionChanged;
             ea = eventAggregator;
             ea.GetEvent<MessageReportFilterDateChanged>().Subscribe(OnDateChanged);
             ea.GetEvent<MessageReportFilterWorkAreaChanged>().Subscribe(OnWorkAreaChanged);
@@ -27,7 +27,7 @@ namespace ModuleReport.ViewModels
         }
 
         IEventAggregator ea;
-        private List<ReportMaterial> Materials;
+        private ObservableCollection<ReportMaterial> Materials;
         public SeriesCollection SeriesCollection { get; set; }
         private string[] labels = [];
         public string[] Labels
@@ -43,9 +43,12 @@ namespace ModuleReport.ViewModels
             }
         }
         private HashSet<int> FilterRids = [];
-        private DateTime Date = DateTime.Now.Date;
-        public Func<int, string> Formatter { get; set; }
-
+        private List<DateTime> Dates = [];
+        public Func<double, string> Formatter { get; set; }
+        private void Materials_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            RefreshData();
+        }
         private void OnWorkAreaChanged((int, bool) tuple)
         {
             if(tuple.Item2)
@@ -55,9 +58,9 @@ namespace ModuleReport.ViewModels
             RefreshData();
         }
 
-        private void OnDateChanged(DateTime time)
+        private void OnDateChanged(List<DateTime> times)
         {
-            Date = time.Date;
+            Dates = times;
             RefreshData();
         }
         private void RefreshData()
@@ -67,25 +70,28 @@ namespace ModuleReport.ViewModels
             SeriesCollection[2].Values.Clear();
             HashSet<string> keys = [];
             int yield = 0, scrap = 0, rework = 0;
-            foreach (var item in Materials.Where(x => x.Date_Time.Date == Date).GroupBy(x => x.Rid))
+            foreach (var date in Dates)
             {
-                if (FilterRids.Any(x => x == item.Key))
-                {
 
-                    foreach (var mat in item)
+                foreach (var item in Materials.Where(x => x.Date_Time.Date == date).GroupBy(x => x.Rid))
+                {
+                    if (FilterRids.Any(x => x == item.Key))
                     {
-                        yield += mat.Yield;
-                        scrap += mat.Scrap;
-                        rework += mat.Rework;
-                        keys.Add(mat.MachName);
+
+                        foreach (var mat in item)
+                        {
+                            yield += mat.Yield;
+                            scrap += mat.Scrap;
+                            rework += mat.Rework;
+                            keys.Add(mat.MachName);
+                        }
+                        SeriesCollection[0].Values.Add(yield);
+                        SeriesCollection[1].Values.Add(scrap);
+                        SeriesCollection[2].Values.Add(rework);
+                        yield = 0; scrap = 0; rework = 0;
                     }
-                    SeriesCollection[0].Values.Add(yield);
-                    SeriesCollection[1].Values.Add(scrap);
-                    SeriesCollection[2].Values.Add(rework);
-                    yield = 0; scrap = 0; rework = 0;
                 }
             }
-
             Labels = keys.ToArray();
             
         }
