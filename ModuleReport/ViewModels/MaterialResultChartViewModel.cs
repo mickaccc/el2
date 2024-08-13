@@ -5,6 +5,7 @@ using LiveCharts.Wpf;
 using ModuleReport.ReportSources;
 using Prism.Events;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
 namespace ModuleReport.ViewModels
 {
@@ -17,6 +18,7 @@ namespace ModuleReport.ViewModels
             ea = eventAggregator;
             ea.GetEvent<MessageReportFilterDateChanged>().Subscribe(OnDateChanged);
             ea.GetEvent<MessageReportFilterWorkAreaChanged>().Subscribe(OnWorkAreaChanged);
+            ea.GetEvent<MessageReportTextSearch>().Subscribe(OnTextSearch);
             SeriesCollection = new SeriesCollection
             {
                 new ColumnSeries { Title = "Gut", Values = new ChartValues<int>() },
@@ -26,9 +28,11 @@ namespace ModuleReport.ViewModels
             Formatter = value => value.ToString("N");
         }
 
+
         IEventAggregator ea;
         private ObservableCollection<ReportMaterial> Materials;
         public SeriesCollection SeriesCollection { get; set; }
+        private string textSearch;
         private string[] labels = [];
         public string[] Labels
         {
@@ -47,6 +51,12 @@ namespace ModuleReport.ViewModels
         public Func<double, string> Formatter { get; set; }
         private void Materials_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            RefreshData();
+        }
+
+        private void OnTextSearch(string obj)
+        {
+            textSearch = obj;
             RefreshData();
         }
         private void OnWorkAreaChanged((int, bool) tuple)
@@ -77,18 +87,36 @@ namespace ModuleReport.ViewModels
                 {
                     if (FilterRids.Any(x => x == item.Key))
                     {
-
+                        Regex? regex;
                         foreach (var mat in item)
                         {
-                            yield += mat.Yield;
-                            scrap += mat.Scrap;
-                            rework += mat.Rework;
-                            keys.Add(mat.MachName);
+                            if (string.IsNullOrWhiteSpace(textSearch) == false)
+                            {
+                                regex = new Regex(textSearch, RegexOptions.IgnoreCase);
+                                if (regex.Match(mat.TTNR).Success)
+                                {
+                                    yield += mat.Yield;
+                                    scrap += mat.Scrap;
+                                    rework += mat.Rework;
+                                    keys.Add(mat.MachName);
+                                }
+                            }
+                            else
+                            {
+                                yield += mat.Yield;
+                                scrap += mat.Scrap;
+                                rework += mat.Rework;
+                                keys.Add(mat.MachName);
+
+                            }
                         }
-                        SeriesCollection[0].Values.Add(yield);
-                        SeriesCollection[1].Values.Add(scrap);
-                        SeriesCollection[2].Values.Add(rework);
-                        yield = 0; scrap = 0; rework = 0;
+                        if (yield != 0 || scrap != 0 || rework != 0)
+                        {
+                            SeriesCollection[0].Values.Add(yield);
+                            SeriesCollection[1].Values.Add(scrap);
+                            SeriesCollection[2].Values.Add(rework);
+                            yield = 0; scrap = 0; rework = 0;
+                        }
                     }
                 }
             }

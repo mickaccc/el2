@@ -3,6 +3,7 @@ using El2Core.ViewModelBase;
 using ModuleReport.ReportSources;
 using Prism.Events;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Windows.Data;
 
 namespace ModuleReport.ViewModels
@@ -15,9 +16,12 @@ namespace ModuleReport.ViewModels
             ea = eventAggregator;
             ea.GetEvent<MessageReportFilterWorkAreaChanged>().Subscribe(OnFilterWorkAreaReceived);
             ea.GetEvent<MessageReportFilterDateChanged>().Subscribe(OnFilterDateReceived);
+            ea.GetEvent<MessageReportTextSearch>().Subscribe(OnTextSerarch);
             Materials.GroupDescriptions.Add(new PropertyGroupDescription("TTNR"));
             Materials.Filter += OnFilterPredicate;
         }
+
+
         public ICollectionView Materials { get; }
         IEventAggregator ea;
         private HashSet<int> FilterRids = [];
@@ -25,6 +29,7 @@ namespace ModuleReport.ViewModels
         private int _YieldSum = 0;
         private int _ScrapSum = 0;
         private int _ReworkSum = 0;
+        private string _textSearch;
         public int YieldSum
         {
             get { return _YieldSum; }
@@ -52,6 +57,15 @@ namespace ModuleReport.ViewModels
                 NotifyPropertyChanged(() => ScrapSum);
             }
         }
+
+        private void OnTextSerarch(string obj)
+        {
+            _textSearch = obj;
+            YieldSum = 0;
+            ScrapSum = 0;
+            ReworkSum = 0;
+            Materials.Refresh();
+        }
         private void OnFilterDateReceived(List<DateTime> dates)
         {
             FilterDates = dates;
@@ -78,18 +92,23 @@ namespace ModuleReport.ViewModels
 
         private bool OnFilterPredicate(object obj)
         {
-            bool ret = false;
+            bool accept = false;
             if (obj is ReportMaterial m)
             {
-                ret = FilterRids.Any(x => x == m.Rid) && FilterDates.Any(y => m.Date_Time.Date == y);
-                if (ret)
+                accept = FilterRids.Any(x => x == m.Rid) && FilterDates.Any(y => m.Date_Time.Date == y);
+                if (accept)
                 {
                     YieldSum += m.Yield;
                     ScrapSum += m.Scrap;
                     ReworkSum += m.Rework;
                 }
+                if(accept && string.IsNullOrWhiteSpace(_textSearch) == false)
+                {
+                    Regex regex = new Regex(_textSearch, RegexOptions.IgnoreCase);
+                    accept = regex.Match(m.TTNR).Success;
+                }
             }
-            return ret;
+            return accept;
         }
 
     }

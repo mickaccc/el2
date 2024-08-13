@@ -44,6 +44,16 @@ namespace ModuleReport.ViewModels
         IContainerProvider container;
         IEventAggregator ea;
         public ICommand ChangeSourceCommand { get; private set; }
+        private RelayCommand? _searchCommand;
+        public RelayCommand SearchCommand => _searchCommand ??= new RelayCommand(OnTextSearch);
+
+        private void OnTextSearch(object obj)
+        {
+            if (obj is string text)
+            {
+                ea.GetEvent<MessageReportTextSearch>().Publish(text);
+            }
+        }
 
         private bool OnChangeSourceCanExecute(object arg)
         {
