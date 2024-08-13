@@ -25,18 +25,18 @@ namespace Lieferliste_WPF.Views
             if (e.PropertyName == "PKey" ||
                 e.PropertyName == "Description" ||
                 e.PropertyName == "Categorie" ||
-                e.PropertyName == "PermissionKey" ||
-                e.PropertyName == "RoleKey" ||
-                e.PropertyName == "PermissionKeyNavigation")
+                e.PropertyName == "PermissKey" ||
+                e.PropertyName == "RoleName" ||
+                e.PropertyName == "Permission")
             {
                 e.Cancel = false;
             }
             else
             { e.Cancel = true; }
-            if (e.PropertyName == "PermissionKeyNavigation")
+            if (e.PropertyName == "PermissKeyNavigation")
             {
                 var pr = e.PropertyType.GetField("Description");
-
+                
             }
         }
     }

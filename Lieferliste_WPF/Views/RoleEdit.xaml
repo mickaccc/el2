@@ -31,6 +31,7 @@
         <DockPanel Grid.Row="0" Grid.ColumnSpan="4">
             <Menu DockPanel.Dock="Top" Height="30">
                 <MenuItem Header="_Speichern" Command="{Binding SaveCommand}"/>
+                <MenuItem Header="Syncronize" Command="{Binding SyncCommand}"/>
 
             </Menu>
         </DockPanel>
@@ -39,7 +40,7 @@
                   SelectedIndex="0" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Description}"/>
+                    <TextBlock Text="{Binding RoleName}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <i:Interaction.Triggers>
@@ -50,12 +51,18 @@
             </i:Interaction.Triggers>
 
         </ListBox>
-        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding PermissionsInter}" 
-                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"
+        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Roles/RolePermissions}" 
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}" ScrollViewer.CanContentScroll="True"
-                  IsReadOnly="{Binding Converter={StaticResource permission}, ConverterParameter={x:Static const:Permissions.RoleEditValueInvers}}"/>
+                  IsReadOnly="{Binding Converter={StaticResource permission}, ConverterParameter={x:Static const:Permissions.RoleEditValueInvers}}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Permission" Binding="{Binding PermissKey}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding PermissKeyNavigation.Description}"/>
+                <DataGridTextColumn Header="Categorie" Binding="{Binding PermissKeyNavigation.Categorie}"/>
+            </DataGrid.Columns>
+        </DataGrid>
 
         <DataGrid x:Name="ListPermission" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding PermissionsAvail}"
                   AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" CanUserAddRows="False" CanUserDeleteRows="False"

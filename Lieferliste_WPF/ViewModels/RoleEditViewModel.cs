@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -26,15 +27,18 @@ namespace Lieferliste_WPF.ViewModels
         public string Title { get; } = "Rollen Zuteilung";
         public ICommand SelectionChangedCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
+        public ICommand SyncCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
 
         private static ICollectionView _roleCV;
         private static bool _hasChanges = false;
+        private List<string> dbPermiss = [];
+        private List<string> appPermiss = [];
         private readonly IContainerExtension _container;
+        private DB_COS_LIEFERLISTE_SQLContext _Dbctx;
         public static ObservableCollection<IdmRole>? Roles { get; } = new();
 
-        public static ObservableCollection<Permission> PermissionsAvail { get; } = new();
-        public static ObservableCollection<RolePermission> PermissionsInter { get; } = new();
+        public static ICollectionView PermissionsAvail { get; private set; }
         private static readonly List<Permission> _permissionsAll = new();
 
 
@@ -43,38 +47,58 @@ namespace Lieferliste_WPF.ViewModels
         public RoleEditViewModel(IContainerExtension container)
         {
             _container = container;
+            _Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             LoadData();
 
             _roleCV = CollectionViewSource.GetDefaultView(Roles);
+            PermissionsAvail = CollectionViewSource.GetDefaultView(_permissionsAll);
+            PermissionsAvail.Filter += OnPermissionFilter;
             SelectionChangedCommand = new ActionCommand(OnSelectionChangeExecuted, OnSelectionChangeCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
+            SyncCommand = new ActionCommand(OnSyncExecuted, OnSyncCanExecute);
 
             _roleCV.MoveCurrentToFirst();
-            PermissionsInter.CollectionChanged += OnCollectionChanged;
 
         }
 
-        private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            _hasChanges = true;
-        }
 
-        public string Error { get { return null; } }
-
-        public string this[string columnName]
+        private bool OnPermissionFilter(object obj)
         {
-            get
+            if (obj is Permission permission)
             {
-                //IdmAccount us = (IdmAccount)_roleCV.CurrentItem;
-                string? result = null;
-                //if (columnName == nameof(IdmAccount.Firstname))
-                //{
-                //    if (us.UsrName.IsNullOrEmpty()) return "Der Eintrag darf nicht leer sein";
-                //}
-                return result ??= string.Empty;
+                var role = _roleCV.CurrentItem as IdmRole;
+                if(role.RolePermissions.Any(x => x.PermissKey == permission.PKey))
+                    return false;
             }
+            return true;
         }
+
+        private bool OnSyncCanExecute(object arg)
+        {
+            return dbPermiss.Any() || appPermiss.Any();
+        }
+
+        private void OnSyncExecuted(object obj)
+        {
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            foreach (var item in dbPermiss)
+            {
+                var perm = db.Permissions.Single(x => x.PKey == item);
+                _permissionsAll.Remove(perm);
+                db.Permissions.Remove(perm);
+            }
+            foreach (var item in appPermiss)
+            {
+                var perm = new Permission() { PKey = item };
+                _permissionsAll.Add(perm);
+                db.Permissions.Add(perm);
+            }
+            db.SaveChanges();
+            dbPermiss.Clear();
+            appPermiss.Clear();
+        }
+
         private void OnCloseExecuted(object obj)
         {
             if (obj is Window ob)
@@ -101,24 +125,12 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnSaveExecuted(object obj)
         {
-            //if (_roleCV.CurrentItem is Role role)
-            //{
-            //    using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
-            //    {
-            //        var inserts = PermissionsInter.ExceptBy(role.PermissionRoles.Select(x => x.PermissionKey), y => y.PermissionKey);
-            //        var removes = role.PermissionRoles.ExceptBy(PermissionsInter.Select(x => x.PermissionKey), y => y.PermissionKey);
-            //        if (inserts.Any()) Dbctx.PermissionRoles.AddRange(inserts);
-            //        if (removes.Any()) Dbctx.PermissionRoles.RemoveRange(removes);
-
-            //        Dbctx.SaveChanges();
-            //        _hasChanges = false;
-            //    }
-            //}
+            _Dbctx.SaveChangesAsync();
         }
 
         private bool OnSaveCanExecute(object arg)
         {
-            return _hasChanges;
+            return _Dbctx.ChangeTracker.HasChanges();
         }
 
         private static bool OnSelectionChangeCanExecute(object arg)
@@ -129,54 +141,49 @@ namespace Lieferliste_WPF.ViewModels
         private static void OnSelectionChangeExecuted(object obj)
         {
 
-            //if (obj is Role us)
-            //{
-            //    PermissionsInter.Clear();
-            //    foreach (var p in us.PermissionRoles)
-            //    {
-            //        PermissionsInter.Add(new PermissionRole()
-            //        {
-            //            Created = p.Created,
-            //            PermissionKey = p.PermissionKey,
-            //            RoleKey = p.RoleKey,
-            //        });
-            //    }
-            //    PermissionsAvail.Clear();
+            if (obj is IdmRole us)
+            {
+ 
+                PermissionsAvail.Refresh();
 
-            //    foreach (var p in _permissionsAll.ExceptBy(PermissionsInter.Select(o => o.PermissionKey), o => o.PKey))
-            //    {
-
-            //        PermissionsAvail.Add(new Permission()
-            //        {
-            //            PKey = p.PKey,
-            //            Description = p.Description,
-            //            Categorie = p.Categorie
-            //        });
-            //    }
-            //    _hasChanges = false;
-
-            //}
+            }
         }
 
         private void LoadData()
         {
-            using (var Dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+     
+            var r = _Dbctx.IdmRoles
+                .Include(x => x.RolePermissions)
+                .ThenInclude(x => x.PermissKeyNavigation)
+                .ToList();
+            HashSet<Permission> permissions = new HashSet<Permission>();
+            foreach (var role in r)
             {
-                var r = Dbctx.IdmRoles
-                 .Include(x => x.RolePermissions)
-                 .ThenInclude(x => x.PermissKeyNavigation)
-                 .ToList();
-
-                foreach (var role in r)
-                {
-                    Roles.Add(role);
-                }
-                var p = Dbctx.Permissions.ToList();
-
-                _permissionsAll.AddRange(p);
+                Roles.Add(role);
+     
             }
-        }
 
+            var p = _Dbctx.Permissions.AsNoTracking();
+
+            _permissionsAll.AddRange(p);
+            SyncronDiffs();        }
+        private void SyncronDiffs()
+        {
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            bool ret;
+            List<string> keys = [];
+            FieldInfo[] prop = typeof(Permissions).GetFields();
+            foreach (var key in prop) 
+            {
+                if (key.GetValue(typeof(Permissions)) is string k && k[0] != '!')
+                    keys.Add(k);
+            }
+
+            var per = db.Permissions.Select(x => x.PKey.Trim()).ToList();
+            dbPermiss.AddRange(per.Except(keys));
+            appPermiss.AddRange(keys.Except(per));
+            
+        }
         public void DragOver(IDropInfo dropInfo)
         {
             if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.RoleDrop))
@@ -197,31 +204,18 @@ namespace Lieferliste_WPF.ViewModels
 
                 if (r != null)
                 {
-                    PermissionsInter.Add(new RolePermission() { Created = DateTime.Now,  PermissKey = p.PKey, RoleId = r.RoleId });
-                    PermissionsAvail.Remove(p);
+                    r.RolePermissions.Add(new RolePermission() { Created = DateTime.Now,  PermissKey = p.PKey, RoleId = r.RoleId });
+                    PermissionsAvail.Refresh();
                 }
             }
             else if (dropInfo.Data is RolePermission pr)
             {
                 if (r != null)
                 {
-                    var p2 = _permissionsAll.Find(x => x.PKey == pr.PermissKey);
-                    PermissionsAvail.Add(p2);
-                    PermissionsInter.Remove(pr);
+                    r.RolePermissions.Remove(pr);
+                    PermissionsAvail.Refresh();
                 }
             }
-        }
-    }
-    public class RoleNameValidationRule : ValidationRule
-    {
-        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
-        {
-
-            if (value is string val)
-            {
-                if (val.IsNullOrEmpty()) { return new ValidationResult(false, "Der Eintrag darf nicht leer sein"); }
-            }
-            return ValidationResult.ValidResult;
         }
     }
 }
