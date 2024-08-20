@@ -1,11 +1,9 @@
-﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
-using El2Core.Constants;
+﻿using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Prism.Commands;
-using Prism.Services.Dialogs;
+using Prism.Dialogs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,8 +12,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
-using static Lieferliste_WPF.Dialogs.ViewModels.DetailCoverVM;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
@@ -27,7 +23,6 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         private List<TimeTuple> TimeList { get; set; } = [];
         public ICollectionView TimeListView { get; private set; }
         ButtonResult result;
-        public event Action<IDialogResult> RequestClose;
         private DelegateCommand? _closeDialogCommand;
         public DelegateCommand CloseDialogCommand =>
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand (OnOkDialog));
@@ -38,6 +33,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public DelegateCommand AddingNewCommand =>
             _addingNewCommand ?? (_addingNewCommand = new DelegateCommand(OnAddingNew));
 
+        public DialogCloseListener RequestClose { get; }
 
         private void OnAddingNew()
         {
@@ -79,12 +75,9 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
                 param.Add("Cover", Cover);
  
-            RaiseRequestClose(new DialogResult(result, param));
+            RequestClose.Invoke(param, result);
         }
-        public virtual void RaiseRequestClose(IDialogResult dialogResult)
-        {
-            RequestClose?.Invoke(dialogResult);
-        }
+
         public void OnDialogOpened(IDialogParameters parameters)
         {
             Cover = (ShiftCover)parameters.GetValue<ShiftCover>("Cover");

@@ -1,11 +1,6 @@
-﻿using ControlzEx.Standard;
-using Prism.Commands;
-using Prism.Services.Dialogs;
+﻿using Prism.Commands;
+using Prism.Dialogs;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
@@ -21,7 +16,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public DelegateCommand CancelDialogCommand =>
             _cancelDialogCommand ?? (_cancelDialogCommand = new DelegateCommand(OnCancelDialog));
 
-        public event Action<IDialogResult> RequestClose;
+        public DialogCloseListener RequestClose { get; }
+
         private void OnOkDialog()
         {
             if (string.IsNullOrWhiteSpace(InputText))
@@ -32,13 +28,13 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
                 param.Add("InputText", InputText);
 
-                RaiseRequestClose(new DialogResult(ButtonResult.OK, param));
+                RequestClose.Invoke(param, ButtonResult.OK);
             }
 
         }
         private void OnCancelDialog()
         {
-           RaiseRequestClose(new DialogResult(ButtonResult.Cancel, null)); 
+           RequestClose.Invoke(new DialogParameters(), ButtonResult.Cancel); 
         }
         public bool CanCloseDialog()
         {
@@ -51,7 +47,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         }
         public virtual void RaiseRequestClose(IDialogResult dialogResult)
         {
-            RequestClose?.Invoke(dialogResult);
+            RequestClose.Invoke(dialogResult);
         }
 
         public void OnDialogOpened(IDialogParameters parameters)

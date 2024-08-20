@@ -6,20 +6,14 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using ModulePlanning.Specials;
-using Prism.Events;
-using Prism.Ioc;
-using Prism.Services.Dialogs;
+using Microsoft.Extensions.Logging;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Microsoft.Extensions.Logging;
-using System.IO;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Text;
 
 
 

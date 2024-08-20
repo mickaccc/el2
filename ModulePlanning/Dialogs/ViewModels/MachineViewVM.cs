@@ -2,8 +2,6 @@
 using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
 using ModulePlanning.Planning;
-using Prism.Services.Dialogs;
-using System;
 using System.Windows.Input;
 
 namespace ModulePlanning.Dialogs.ViewModels
@@ -14,7 +12,6 @@ namespace ModulePlanning.Dialogs.ViewModels
         public string Title => "Maschinen Details";
         public string UserIdent => UserInfo.User.UserId;
         public PlanMachine? PlanMachine { get; private set; }
-        public event Action<IDialogResult>? RequestClose;
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -31,6 +28,8 @@ namespace ModulePlanning.Dialogs.ViewModels
         public ICommand? HistoryCommand { get; private set; }
         public ICommand? FastCopyCommand { get; private set; }
         public ICommand? CorrectionCommand { get; private set; }
+
+        public DialogCloseListener RequestClose => throw new NotImplementedException();
 
         public MachineViewVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public bool CanCloseDialog()

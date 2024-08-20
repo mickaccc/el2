@@ -20,7 +20,7 @@ using ModulePlanning.Views;
 using ModuleReport.Views;
 using Prism.Ioc;
 using Prism.Modularity;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using Prism.Unity;
 using System.IO;
 using System.Windows;
@@ -77,7 +77,7 @@ namespace Lieferliste_WPF
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
                 .UseSqlServer(defaultconnection)            
                 .EnableThreadSafetyChecks(true);

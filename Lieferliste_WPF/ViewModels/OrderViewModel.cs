@@ -4,9 +4,9 @@ using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Prism.Dialogs;
 using Prism.Events;
 using Prism.Ioc;
-using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -148,8 +148,6 @@ namespace Lieferliste_WPF.ViewModels
                 db.SaveChanges();
             }
         }
-
-        public event Action<IDialogResult> RequestClose;
         public string UserIdent { get; } = UserInfo.User.UserId;
         private string _aid;
         public string Aid
@@ -334,6 +332,9 @@ namespace Lieferliste_WPF.ViewModels
                 NotifyPropertyChanged(() => ApplicationCommands);
             }
         }
+
+        public DialogCloseListener RequestClose => throw new NotImplementedException();
+
         public ICommand SaveCommand;
         
         public bool CanCloseDialog()

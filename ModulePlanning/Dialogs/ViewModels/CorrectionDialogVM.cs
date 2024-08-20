@@ -1,11 +1,4 @@
 ﻿using El2Core.Models;
-using Prism.Commands;
-using Prism.Services.Dialogs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModulePlanning.Dialogs.ViewModels
 {
@@ -20,10 +13,11 @@ namespace ModulePlanning.Dialogs.ViewModels
         private Vorgang? vorgang;
         public string Title => "Zeit Korrektur";
 
-        public event Action<IDialogResult> RequestClose;
         private DelegateCommand<string?>? _closeDialogCommand;
         public DelegateCommand<string?> CloseDialogCommand =>
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand<string?>(CloseDialog));
+
+        public DialogCloseListener RequestClose { get; }
 
         public bool CanCloseDialog()
         {
@@ -47,11 +41,7 @@ namespace ModulePlanning.Dialogs.ViewModels
                 param.Add("correct", correctValue * 60);
                 param.Add("correction", vorgang);
             }
-            RaiseRequestClose(new DialogResult(result, param));
-        }
-        public virtual void RaiseRequestClose(IDialogResult dialogResult)
-        {
-            RequestClose?.Invoke(dialogResult);
+            RequestClose.Invoke(param, result);
         }
 
         public void OnDialogOpened(IDialogParameters parameters)

@@ -1,10 +1,8 @@
-﻿using Lieferliste_WPF.ViewModels;
-using Prism.Services.Dialogs;
+﻿using Prism.Dialogs;
 using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace Lieferliste_WPF.Views
 {

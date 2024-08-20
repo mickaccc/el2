@@ -4,17 +4,15 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
+using Prism.Dialogs;
 using Prism.Ioc;
-using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -60,9 +58,9 @@ namespace Lieferliste_WPF.ViewModels
         private readonly Dictionary<string, Shape> EditResult = [];
         private static readonly object _lock = new();
 
-        public event Action<IDialogResult> RequestClose;
-
         public NotifyTaskCompletion<ICollectionView>? PspTask { get; private set; }
+
+        public DialogCloseListener RequestClose => throw new NotImplementedException();
 
         public ProjectEditViewModel(IContainerProvider container, IApplicationCommands applicationCommands)
         {

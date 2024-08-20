@@ -1,13 +1,11 @@
 ﻿using El2Core.Services;
 using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
-using Microsoft.Identity.Client.NativeInterop;
-using Prism.Services.Dialogs;
+using Prism.Dialogs;
 using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
@@ -19,7 +17,6 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         }
         public string Title => "Dokument kopieren";
         private IUserSettingsService settingservice;
-        public event Action<IDialogResult> RequestClose;
         private RelayCommand? vmpbCommand;
         private RelayCommand? gutCommand;
         private RelayCommand? musterCommand;
@@ -27,6 +24,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public RelayCommand GutCommand => gutCommand ??= new RelayCommand(OnGutExecute);
         public RelayCommand MusterCommand => musterCommand ??= new RelayCommand(OnMusterExecute);
         public string? Path { get; set; }
+
+        public DialogCloseListener RequestClose { get; }
 
         private void OnMusterExecute(object obj)
         {

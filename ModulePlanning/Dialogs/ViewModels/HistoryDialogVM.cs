@@ -1,13 +1,6 @@
 ﻿using CompositeCommands.Core;
 using El2Core.Models;
-using Prism.Commands;
-using Prism.Services.Dialogs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace ModulePlanning.Dialogs.ViewModels
@@ -40,10 +33,12 @@ namespace ModulePlanning.Dialogs.ViewModels
         private List<Vorgang>? _orderList;
         public ICollectionView? OrderList { get; private set; }
         
-        public event Action<IDialogResult>? RequestClose;
+        //public event Action<IDialogResult>? RequestClose;
         private DelegateCommand<Vorgang?>? _closeDialogCommand;
         public DelegateCommand<Vorgang?> CloseDialogCommand =>
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand<Vorgang?>(CloseDialog));
+
+        public DialogCloseListener RequestClose { get; }
 
         protected virtual void CloseDialog(Vorgang? parameter)
         {
@@ -58,12 +53,9 @@ namespace ModulePlanning.Dialogs.ViewModels
                 param.Add("Comment", v.BemT);
                 param.Add("VID", _vid);
             }
-            RaiseRequestClose(new DialogResult(result, param));
+            RequestClose.Invoke(param, result);
         }
-        public virtual void RaiseRequestClose(IDialogResult dialogResult)
-        {
-            RequestClose?.Invoke(dialogResult);
-        }
+
         public bool CanCloseDialog()
         {
             return true;

@@ -1,8 +1,7 @@
 ﻿using CompositeCommands.Core;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Planning;
-using Prism.Services.Dialogs;
-using System;
+using Prism.Dialogs;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
@@ -12,7 +11,6 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
     {
         public string Title => "Messraum Details";
         public PlanWorker? PlanWorker { get; private set; }
-        public event Action<IDialogResult>? RequestClose;
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -26,6 +24,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             }
         }
         public ICommand? SetMarkerCommand { get; private set; }
+
+        public DialogCloseListener RequestClose => throw new System.NotImplementedException();
 
         public WorkerViewVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public bool CanCloseDialog()

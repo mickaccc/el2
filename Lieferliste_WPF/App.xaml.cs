@@ -1,8 +1,4 @@
-﻿using Prism.Regions;
-using Prism.Unity;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 
 namespace Lieferliste_WPF
 {

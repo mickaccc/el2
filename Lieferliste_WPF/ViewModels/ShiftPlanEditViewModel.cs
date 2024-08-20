@@ -1,36 +1,21 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using El2Core.Models;
+﻿using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Prism.Dialogs;
 using Prism.Ioc;
-using Prism.Services.Dialogs;
 using System;
 using System.Collections;
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using Windows.Graphics.DirectX;
-using WpfCustomControlLibrary;
-using Rule = El2Core.Models.Rule;
 
 
 namespace Lieferliste_WPF.ViewModels

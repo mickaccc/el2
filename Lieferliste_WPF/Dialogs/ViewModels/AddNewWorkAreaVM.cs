@@ -1,7 +1,7 @@
 ﻿using El2Core.Models;
 using Prism.Commands;
+using Prism.Dialogs;
 using Prism.Mvvm;
-using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,8 +34,10 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             get { return _title; }
             set { SetProperty(ref _title, value); }
         }
+
+        public DialogCloseListener RequestClose { get; }
+
         private IList<WorkArea>? workA;
-        public event Action<IDialogResult>? RequestClose;
 
         protected virtual void CloseDialog(string parameter)
         {
@@ -54,14 +56,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             else if (parameter?.ToLower() == "false")
                 result = ButtonResult.Cancel;
 
-            RaiseRequestClose(new DialogResult(result, parameters));
+            RequestClose.Invoke(parameters, result);
         }
-
-        public virtual void RaiseRequestClose(IDialogResult dialogResult)
-        {
-            RequestClose?.Invoke(dialogResult);
-        }
-
 
         public bool CanCloseDialog()
         {

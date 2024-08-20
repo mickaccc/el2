@@ -8,8 +8,8 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Prism.Dialogs;
 using Prism.Ioc;
-using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -122,9 +122,11 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        public event Action<IDialogResult> RequestClose;
 
         public ICollectionView? OrdersView { get; private set; }
+
+        public DialogCloseListener RequestClose => throw new NotImplementedException();
+
         public ProjectsViewModel(IContainerProvider container, IUserSettingsService userSettingsService, IApplicationCommands applicationCommands)
         {
             _container = container;
