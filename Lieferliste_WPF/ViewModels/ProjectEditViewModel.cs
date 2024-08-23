@@ -60,7 +60,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public NotifyTaskCompletion<ICollectionView>? PspTask { get; private set; }
 
-        public DialogCloseListener RequestClose => throw new NotImplementedException();
+        public DialogCloseListener RequestClose { get; }
 
         public ProjectEditViewModel(IContainerProvider container, IApplicationCommands applicationCommands)
         {

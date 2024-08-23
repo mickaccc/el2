@@ -25,7 +25,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         }
         public ICommand? SetMarkerCommand { get; private set; }
 
-        public DialogCloseListener RequestClose => throw new System.NotImplementedException();
+        public DialogCloseListener RequestClose { get; }
 
         public WorkerViewVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public bool CanCloseDialog()

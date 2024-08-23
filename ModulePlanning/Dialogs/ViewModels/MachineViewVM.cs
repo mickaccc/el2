@@ -29,7 +29,7 @@ namespace ModulePlanning.Dialogs.ViewModels
         public ICommand? FastCopyCommand { get; private set; }
         public ICommand? CorrectionCommand { get; private set; }
 
-        public DialogCloseListener RequestClose => throw new NotImplementedException();
+        public DialogCloseListener RequestClose { get; }
 
         public MachineViewVM(IApplicationCommands applicationCommands) { _applicationCommands = applicationCommands; }
         public bool CanCloseDialog()

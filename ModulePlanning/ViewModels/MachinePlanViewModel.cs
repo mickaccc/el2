@@ -9,8 +9,6 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ModulePlanning.Planning;
-using Prism.Events;
-using Prism.Ioc;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -20,7 +18,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Unity;
 
 
 namespace ModulePlanning.ViewModels
@@ -209,15 +206,13 @@ namespace ModulePlanning.ViewModels
 
         private void LoadWorkAreas()
         {
-            foreach (var accWork in UserInfo.User.AccountWorkAreas)
+            foreach (var accWork in UserInfo.User.AccountWorkAreas.OrderByDescending(x => x.Standard))
             {
                 WorkAreas.Add(accWork.WorkArea);
-            }
-            
+            }           
         }
         private async Task<List<Vorgang>> GetVorgangsAsync(string? aid)
         {
-
             var query = await _DbCtx.Vorgangs
               .Include(x => x.AidNavigation)
               .ThenInclude(x => x.MaterialNavigation)

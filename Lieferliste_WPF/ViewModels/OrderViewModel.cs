@@ -333,7 +333,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public DialogCloseListener RequestClose => throw new NotImplementedException();
+        public DialogCloseListener RequestClose { get; }
 
         public ICommand SaveCommand;
         

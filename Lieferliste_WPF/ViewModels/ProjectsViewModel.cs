@@ -125,7 +125,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public ICollectionView? OrdersView { get; private set; }
 
-        public DialogCloseListener RequestClose => throw new NotImplementedException();
+        public DialogCloseListener RequestClose { get; }
 
         public ProjectsViewModel(IContainerProvider container, IUserSettingsService userSettingsService, IApplicationCommands applicationCommands)
         {
