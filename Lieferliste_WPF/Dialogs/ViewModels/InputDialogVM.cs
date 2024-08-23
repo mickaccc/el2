@@ -1,6 +1,5 @@
 ﻿using Prism.Commands;
 using Prism.Dialogs;
-using System;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {

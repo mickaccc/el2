@@ -2,7 +2,6 @@
 using El2Core.Utils;
 using GongSolutions.Wpf.DragDrop;
 using Prism.Dialogs;
-using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
