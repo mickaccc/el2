@@ -27,34 +27,42 @@ namespace ModuleReport.ReportSources
             container = containerProvider;
             ea = eventAggregator;
             ea.GetEvent<MessageReportChangeSource>().Subscribe(OnSourceChange);
-            LoadDefaultData();
+            LoadDefaultDataAsync();
         }
 
         private void OnSourceChange(int obj)
         {
-            if(obj == 0) LoadDefaultData();
+            if(obj == 0) LoadDefaultDataAsync();
             if(obj == 1) LoadSapData();
         }
 
         IContainerProvider container;
         IEventAggregator ea;
         public ObservableCollection<ReportMaterial> Materials { get; private set; } = [];
+        private List<Vorgang> defaultVrg;
+        private List<Vorgang> sapVrg;
 
-
-        private void LoadDefaultData()
+        private async Task<List<Vorgang>> TakeDefaults()
         {
-            Materials.Clear();
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            var res = db.Vorgangs.AsNoTracking()
+            var res = await db.Vorgangs.AsNoTracking()
                 .Include(x => x.Responses)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Include(x => x.RidNavigation)
                 .Where(x => x.Rid != null)
-                .ToList();
-
-            foreach (var result in res)
+                .ToListAsync();
+            return res;
+        }
+        private async Task LoadDefaultDataAsync()
+        {
+            Materials.Clear();
+            if (defaultVrg == null)
+            {
+                defaultVrg = await TakeDefaults();
+            }
+            foreach (var result in defaultVrg)
             {
                 string? ttnr = null;
                 string? descript = string.Empty;
