@@ -27,12 +27,12 @@ namespace ModuleReport.ReportSources
             container = containerProvider;
             ea = eventAggregator;
             ea.GetEvent<MessageReportChangeSource>().Subscribe(OnSourceChange);
-            LoadDefaultDataAsync();
+            _ = LoadDefaultDataAsync();
         }
 
         private void OnSourceChange(int obj)
         {
-            if(obj == 0) LoadDefaultDataAsync();
+            if(obj == 0) _ = LoadDefaultDataAsync();
             if(obj == 1) LoadSapData();
         }
 
