@@ -1873,7 +1873,7 @@ namespace vhCalendar
                 }
 
                 // initialize days
-                string[] dayOfWeeks = new string[] { "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"  };
+                string[] dayOfWeeks = new string[] { "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag" };
                 for (int j = 0; j < 7; j++)
                 {
                     var element = new Label
@@ -1973,7 +1973,9 @@ namespace vhCalendar
         private void ListDaysOfAllMonths(int month, int year)
         {
             DateTime firstDay = new DateTime(year, month, 1);
-            int fstCol = (int)firstDay.DayOfWeek;
+            int fstCol = (int)firstDay.DayOfWeek - 1;
+            int rowOffset = 0;
+            if (fstCol < 0) { fstCol = 6; rowOffset = 1; }
             int newMonth = month;
 
             // adjust for year
@@ -1989,7 +1991,7 @@ namespace vhCalendar
             int days = DateTime.DaysInMonth(year, newMonth);
 
             // previous days
-            for (int d = fstCol - 1; d >= 0; d--)
+            for (int d = fstCol-1; d >= 0; d--)
             {
                 DateTime date = new DateTime(year, newMonth, days);
                 _btnMonthMode[0, d].Content = days.ToString();
@@ -2012,7 +2014,7 @@ namespace vhCalendar
 
             days = DateTime.DaysInMonth(year, month);
             int day = 1;
-            for (int d = fstCol + days +1; d <= 42; d++)
+            for (int d = fstCol + days + 1; d <= 42; d++)
             {
                 int c = (d - 1) % 7;
                 int r = (d - 1) / 7;
@@ -2057,9 +2059,10 @@ namespace vhCalendar
             int month = date.Month;
             DateTime firstDay = new DateTime(year, month, 1);
             int fstCol = (int)firstDay.DayOfWeek -1;
-
-            r = (date.Day + fstCol) / 7;
-            c = (date.Day + fstCol) % 7;
+            int rowOffset = 0;
+            if (fstCol < 0) { fstCol = 6; rowOffset = 1; }
+            r = (date.Day + fstCol) / 7 - rowOffset;
+            c = (date.Day + fstCol-1) % 7;
         }
 
         /// <summary>
@@ -2343,8 +2346,8 @@ namespace vhCalendar
                 int month = DisplayDate.Month;
                 int days = DateTime.DaysInMonth(year, month);
                 DateTime firstDay = new DateTime(year, month, 1);
-                int fstCol = (int)firstDay.DayOfWeek;
-
+                int fstCol = (int)firstDay.DayOfWeek - 1;
+                if (fstCol < 0) { fstCol = 6; }
                 // clear buttons
                 for (int i = 0; i < 6; i++)
                 {
@@ -2357,15 +2360,17 @@ namespace vhCalendar
                         _btnMonthMode[i, j].IsBlackOut = false;
                     }
                 }
+                int column, row;
+                column = fstCol;
+                row = 0;
                 // write day numbers
                 for (int d = 1; d <= days; d++)
                 {
                     DateTime date = new DateTime(year, month, d);
                     if (date >= DisplayDateStart && date <= DisplayDateEnd)
                     {
-                        int column, row;
-                        row = (d + fstCol - 1) / 7;
-                        column = (d + fstCol - 1) % 7;
+                        if (column > 6) { column = 0; row++; }
+     
                         _btnMonthMode[row, column].Content = d.ToString();
                         _btnMonthMode[row, column].IsEnabled = true;
                         _btnMonthMode[row, column].IsCurrentMonth = true;
@@ -2390,6 +2395,7 @@ namespace vhCalendar
                             _btnMonthMode[row, column].IsBlackOut = true;
                             _btnMonthMode[row, column].IsEnabled = false;
                         }
+                        column++;
                     }
                 }
 

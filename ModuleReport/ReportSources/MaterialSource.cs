@@ -1,17 +1,7 @@
 ﻿using El2Core.Models;
-using Prism.Ioc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
-using Prism.Events;
 using El2Core.Utils;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 
 namespace ModuleReport.ReportSources
 {
@@ -19,7 +9,7 @@ namespace ModuleReport.ReportSources
     {
 
         ObservableCollection<ReportMaterial> Materials { get; }
-        
+
     }
     internal class MaterialSource : IMaterialSource
     {
@@ -33,8 +23,8 @@ namespace ModuleReport.ReportSources
 
         private void OnSourceChange(int obj)
         {
-            if(obj == 0) _ = LoadDefaultDataAsync();
-            if(obj == 1) _ = LoadSapDataAsync();
+            if (obj == 0) _ = LoadDefaultDataAsync();
+            if (obj == 1) _ = LoadSapDataAsync();
         }
 
         IContainerProvider container;
@@ -108,7 +98,7 @@ namespace ModuleReport.ReportSources
                             item.Rework,
                             item.Timestamp,
                             string.Format("{0}\n{1}", result.RidNavigation.RessName, result.RidNavigation.Inventarnummer));
-                            
+
                         temp.Add(m);
 
                     }
@@ -119,50 +109,55 @@ namespace ModuleReport.ReportSources
         public async Task LoadSapDataAsync()
         {
             Materials.Clear();
-            List<ReportMaterial> temp = [];
+
             sapVrg ??= await TakeSaps();
 
-            foreach (var result in sapVrg)
+            var result = await Task.Run(() =>
             {
-                string? ttnr = null;
-                string? descript = string.Empty;
+                List<ReportMaterial> temp = [];
+                foreach (var result in sapVrg)
+                {
+                    string? ttnr = null;
+                    string? descript = string.Empty;
 
-                if (result.AidNavigation.Material != null)
-                {
-                    ttnr = result.AidNavigation.Material.ToString();
-                    descript = result.AidNavigation.MaterialNavigation?.Bezeichng;
-                }
-                else if (result.AidNavigation.DummyMat != null)
-                {
-                    ttnr = result.AidNavigation.DummyMat.ToString();
-                    descript = result.AidNavigation.DummyMatNavigation?.Mattext;
-                }
-                foreach (var item in result.Responses)
-                {
-
-                    if (ttnr != null)
+                    if (result.AidNavigation.Material != null)
                     {
-                        var m = new ReportMaterial(ttnr,
-                            descript,
-                            result.Aid,
-                            result.VorgangId,
-                            result.Vnr,
-                            result.ArbPlSapNavigation?.RessourceId,
-                            item.Yield,
-                            item.Scrap,
-                            item.Rework,
-                            item.Timestamp,
-                            string.Format("{0}\n{1}", result.ArbPlSapNavigation?.Ressource?.RessName, result.ArbPlSapNavigation?.Ressource?.Inventarnummer));
+                        ttnr = result.AidNavigation.Material.ToString();
+                        descript = result.AidNavigation.MaterialNavigation?.Bezeichng;
+                    }
+                    else if (result.AidNavigation.DummyMat != null)
+                    {
+                        ttnr = result.AidNavigation.DummyMat.ToString();
+                        descript = result.AidNavigation.DummyMatNavigation?.Mattext;
+                    }
+                    foreach (var item in result.Responses)
+                    {
 
-                        temp.Add(m);
+                        if (ttnr != null)
+                        {
+                            var m = new ReportMaterial(ttnr,
+                                descript,
+                                result.Aid,
+                                result.VorgangId,
+                                result.Vnr,
+                                result.ArbPlSapNavigation?.RessourceId,
+                                item.Yield,
+                                item.Scrap,
+                                item.Rework,
+                                item.Timestamp,
+                                string.Format("{0}\n{1}", result.ArbPlSapNavigation?.Ressource?.RessName, result.ArbPlSapNavigation?.Ressource?.Inventarnummer));
 
+                            temp.Add(m);
+
+                        }
                     }
                 }
-            }
-            Materials.AddRange(temp);
+                return temp;
+            });
+            Materials.AddRange(result);
         }
 
     }
-        public record ReportMaterial(string TTNR, string? Description, string Order, string VID, int ProcessNr, int? Rid, int Yield, int Scrap, int Rework, DateTime Date_Time, string MachName);
-    
+    public record ReportMaterial(string TTNR, string? Description, string Order, string VID, int ProcessNr, int? Rid, int Yield, int Scrap, int Rework, DateTime Date_Time, string MachName);
+
 }

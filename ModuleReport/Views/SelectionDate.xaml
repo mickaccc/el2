@@ -45,9 +45,6 @@
                     <i:EventTrigger EventName="SelectedDatesChanged">
                         <i:InvokeCommandAction Command="{Binding DatesChangedCommand}" PassEventArgsToCommand="True"/>
                     </i:EventTrigger>
-                    <i:EventTrigger EventName="PropertyChanged">
-                        <i:InvokeCommandAction Command="{Binding PropertyChangedCommand}" PassEventArgsToCommand="True"/>
-                    </i:EventTrigger>
                 </i:Interaction.Triggers>
 
             </vhcal:Calendar>
