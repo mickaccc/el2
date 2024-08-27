@@ -51,7 +51,6 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         public void DragOver(IDropInfo dropInfo)
         {
             if (dropInfo.IsSameDragDropContextAsSource) PlanWorker?.DragOver(dropInfo);
-
         }
     }
 }

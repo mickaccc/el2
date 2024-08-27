@@ -11,6 +11,7 @@ using System.Windows.Media.Media3D;
 using Prism.Events;
 using El2Core.Utils;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace ModuleReport.ReportSources
 {
@@ -33,7 +34,7 @@ namespace ModuleReport.ReportSources
         private void OnSourceChange(int obj)
         {
             if(obj == 0) _ = LoadDefaultDataAsync();
-            if(obj == 1) LoadSapData();
+            if(obj == 1) _ = LoadSapDataAsync();
         }
 
         IContainerProvider container;
@@ -55,13 +56,26 @@ namespace ModuleReport.ReportSources
                 .ToListAsync();
             return res;
         }
+        private async Task<List<Vorgang>> TakeSaps()
+        {
+            using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+
+            var vorg = await db.Vorgangs.AsNoTracking()
+                .Include(x => x.AidNavigation.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.ArbPlSapNavigation.Ressource.WorkArea)
+                .Include(x => x.Responses)
+                .Where(x => x.Responses.Count > 0
+                    && x.ArbPlSapNavigation.Ressource.WorkAreaId != 0
+                    && x.SpaetEnd.Value.Year == DateTime.Now.Year)
+                .ToListAsync();
+            return vorg;
+        }
         private async Task LoadDefaultDataAsync()
         {
             Materials.Clear();
-            if (defaultVrg == null)
-            {
-                defaultVrg = await TakeDefaults();
-            }
+            List<ReportMaterial> temp = [];
+            defaultVrg ??= await TakeDefaults();
             foreach (var result in defaultVrg)
             {
                 string? ttnr = null;
@@ -95,25 +109,20 @@ namespace ModuleReport.ReportSources
                             item.Timestamp,
                             string.Format("{0}\n{1}", result.RidNavigation.RessName, result.RidNavigation.Inventarnummer));
                             
-                        Materials.Add(m);
+                        temp.Add(m);
 
                     }
                 }
             }
+            Materials.AddRange(temp);
         }
-        public void LoadSapData()
+        public async Task LoadSapDataAsync()
         {
             Materials.Clear();
-            using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            List<ReportMaterial> temp = [];
+            sapVrg ??= await TakeSaps();
 
-            var vorg = db.Vorgangs.AsNoTracking()
-                .Include(x => x.AidNavigation.MaterialNavigation)
-                .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Include(x => x.ArbPlSapNavigation.Ressource)
-                .Where(x => x.ArbPlSapNavigation != null && x.Responses != null)
-                .ToList();
-
-            foreach (var result in vorg)
+            foreach (var result in sapVrg)
             {
                 string? ttnr = null;
                 string? descript = string.Empty;
@@ -145,12 +154,12 @@ namespace ModuleReport.ReportSources
                             item.Timestamp,
                             string.Format("{0}\n{1}", result.ArbPlSapNavigation?.Ressource?.RessName, result.ArbPlSapNavigation?.Ressource?.Inventarnummer));
 
-                        Materials.Add(m);
+                        temp.Add(m);
 
                     }
                 }
             }
-
+            Materials.AddRange(temp);
         }
 
     }

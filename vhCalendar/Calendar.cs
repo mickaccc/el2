@@ -171,13 +171,13 @@ namespace vhCalendar
         /// </summary>
         private enum DayOfWeek
         {
-            Sonntag = 1,
-            Montag,
+            Montag = 1,
             Dienstag,
             Mittwoch,
             Donnerstag,
             Freitag,
-            Samstag
+            Samstag,
+            Sonntag
         }
 
         /// <summary>
@@ -1821,7 +1821,7 @@ namespace vhCalendar
         public int GetWeekNumber(DateTime date)
         {
             CultureInfo info = CultureInfo.CurrentCulture;
-            return info.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstDay, System.DayOfWeek.Sunday);
+            return info.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, System.DayOfWeek.Monday);
         }
 
         /// <summary>
@@ -1873,7 +1873,7 @@ namespace vhCalendar
                 }
 
                 // initialize days
-                string[] dayOfWeeks = new string[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+                string[] dayOfWeeks = new string[] { "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"  };
                 for (int j = 0; j < 7; j++)
                 {
                     var element = new Label
@@ -2012,7 +2012,7 @@ namespace vhCalendar
 
             days = DateTime.DaysInMonth(year, month);
             int day = 1;
-            for (int d = fstCol + days + 1; d <= 42; d++)
+            for (int d = fstCol + days +1; d <= 42; d++)
             {
                 int c = (d - 1) % 7;
                 int r = (d - 1) / 7;
@@ -2056,7 +2056,7 @@ namespace vhCalendar
             int year = date.Year;
             int month = date.Month;
             DateTime firstDay = new DateTime(year, month, 1);
-            int fstCol = (int)firstDay.DayOfWeek - 1;
+            int fstCol = (int)firstDay.DayOfWeek -1;
 
             r = (date.Day + fstCol) / 7;
             c = (date.Day + fstCol) % 7;
