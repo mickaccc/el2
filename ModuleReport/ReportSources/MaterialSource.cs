@@ -1,5 +1,6 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 
@@ -18,6 +19,8 @@ namespace ModuleReport.ReportSources
             container = containerProvider;
             ea = eventAggregator;
             ea.GetEvent<MessageReportChangeSource>().Subscribe(OnSourceChange);
+            var factory = container.Resolve<ILoggerFactory>();
+            _Logger = factory.CreateLogger<MaterialSource>();
             _ = LoadDefaultDataAsync();
         }
 
@@ -29,6 +32,7 @@ namespace ModuleReport.ReportSources
 
         IContainerProvider container;
         IEventAggregator ea;
+        private readonly ILogger _Logger;
         public ObservableCollection<ReportMaterial> Materials { get; private set; } = [];
         private List<Vorgang> defaultVrg;
         private List<Vorgang> sapVrg;
@@ -65,6 +69,7 @@ namespace ModuleReport.ReportSources
         {
             Materials.Clear();
             List<ReportMaterial> temp = [];
+            DateTime start = DateTime.Now;
             defaultVrg ??= await TakeDefaults();
             foreach (var result in defaultVrg)
             {
@@ -104,12 +109,14 @@ namespace ModuleReport.ReportSources
                     }
                 }
             }
+            DateTime end = DateTime.Now;
+            _Logger.LogInformation("Count: {message} Loadtime(ms): {1}", temp.Count, new TimeSpan(end.Ticks - start.Ticks).TotalMicroseconds);
             Materials.AddRange(temp);
         }
         public async Task LoadSapDataAsync()
         {
             Materials.Clear();
-
+            DateTime start = DateTime.Now;
             sapVrg ??= await TakeSaps();
 
             var result = await Task.Run(() =>
@@ -154,6 +161,8 @@ namespace ModuleReport.ReportSources
                 }
                 return temp;
             });
+            DateTime end = DateTime.Now;
+            _Logger.LogInformation("Count: {message} Loadtime(ms): {1}", result.Count, new TimeSpan(end.Ticks - start.Ticks).TotalMicroseconds);
             Materials.AddRange(result);
         }
 
