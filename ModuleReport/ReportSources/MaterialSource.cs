@@ -1,5 +1,6 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
+using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 
@@ -11,7 +12,7 @@ namespace ModuleReport.ReportSources
         ObservableCollection<ReportMaterial> Materials { get; }
 
     }
-    internal class MaterialSource : IMaterialSource
+    internal class MaterialSource : ViewModelBase, IMaterialSource
     {
         public MaterialSource(IContainerProvider containerProvider, IEventAggregator eventAggregator)
         {
@@ -30,6 +31,10 @@ namespace ModuleReport.ReportSources
         IContainerProvider container;
         IEventAggregator ea;
         public ObservableCollection<ReportMaterial> Materials { get; private set; } = [];
+        public long MatCount
+        {
+            get {  return Materials.Count; }
+        }
         private List<Vorgang> defaultVrg;
         private List<Vorgang> sapVrg;
 
@@ -57,7 +62,7 @@ namespace ModuleReport.ReportSources
                 .Include(x => x.Responses)
                 .Where(x => x.Responses.Count > 0
                     && x.ArbPlSapNavigation.Ressource.WorkAreaId != 0
-                    && x.SpaetEnd.Value.Year == DateTime.Now.Year)
+                    && x.SpaetEnd.Value.Year == DateTime.Now.Month)
                 .ToListAsync();
             return vorg;
         }

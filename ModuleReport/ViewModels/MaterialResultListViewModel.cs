@@ -23,6 +23,7 @@ namespace ModuleReport.ViewModels
 
 
         public ICollectionView Materials { get; }
+
         IEventAggregator ea;
         private HashSet<int> FilterRids = [];
         private List<DateTime> FilterDates = [];
