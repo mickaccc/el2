@@ -1,6 +1,7 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 
 namespace ModuleReport.ReportSources
@@ -11,7 +12,7 @@ namespace ModuleReport.ReportSources
         ObservableCollection<ReportMaterial> Materials { get; }
 
     }
-    internal class MaterialSource : ViewModelBase, IMaterialSource
+    internal class MaterialSource : IMaterialSource
     {
         public MaterialSource(IContainerProvider containerProvider, IEventAggregator eventAggregator)
         {
@@ -35,7 +36,7 @@ namespace ModuleReport.ReportSources
         public ObservableCollection<ReportMaterial> Materials { get; private set; } = [];
         public long MatCount
         {
-            get {  return Materials.Count; }
+            get {  return Materials.LongCount(); }
         }
         private List<Vorgang> defaultVrg;
         private List<Vorgang> sapVrg;
@@ -64,7 +65,7 @@ namespace ModuleReport.ReportSources
                 .Include(x => x.Responses)
                 .Where(x => x.Responses.Count > 0
                     && x.ArbPlSapNavigation.Ressource.WorkAreaId != 0
-                    && x.SpaetEnd.Value.Year == DateTime.Now.Month)
+                    && x.SpaetStart.Value > DateTime.Now.AddDays(-30))
                 .ToListAsync();
             return vorg;
         }
@@ -113,7 +114,7 @@ namespace ModuleReport.ReportSources
                 }
             }
             DateTime end = DateTime.Now;
-            _Logger.LogInformation("Count: {message} Loadtime(ms): {1}", temp.Count, new TimeSpan(end.Ticks - start.Ticks).TotalMicroseconds);
+            _Logger.LogInformation("Default Count: {message} Loadtime(ms): {1}", temp.Count, new TimeSpan(end.Ticks - start.Ticks).TotalMilliseconds);
             Materials.AddRange(temp);
         }
         public async Task LoadSapDataAsync()
@@ -165,7 +166,7 @@ namespace ModuleReport.ReportSources
                 return temp;
             });
             DateTime end = DateTime.Now;
-            _Logger.LogInformation("Count: {message} Loadtime(ms): {1}", result.Count, new TimeSpan(end.Ticks - start.Ticks).TotalMicroseconds);
+            _Logger.LogInformation("SAP Count: {message} Loadtime(ms): {1}", result.Count, new TimeSpan(end.Ticks - start.Ticks).TotalMilliseconds);
             Materials.AddRange(result);
         }
 
