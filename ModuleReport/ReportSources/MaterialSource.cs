@@ -65,7 +65,7 @@ namespace ModuleReport.ReportSources
                 .Include(x => x.Responses)
                 .Where(x => x.Responses.Count > 0
                     && x.ArbPlSapNavigation.Ressource.WorkAreaId != 0
-                    && x.SpaetStart.Value > DateTime.Now.AddDays(-30))
+                    && x.SpaetEnd.Value > DateTime.Now.AddDays(-30))
                 .ToListAsync();
             return vorg;
         }
@@ -126,7 +126,7 @@ namespace ModuleReport.ReportSources
             var result = await Task.Run(() =>
             {
                 List<ReportMaterial> temp = [];
-                foreach (var result in sapVrg)
+                foreach (var result in sapVrg.Where(x => x.Text.Contains("Auftrag starten", StringComparison.CurrentCultureIgnoreCase) == false))
                 {
                     string? ttnr = null;
                     string? descript = string.Empty;
