@@ -1,5 +1,6 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
+using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
@@ -10,9 +11,10 @@ namespace ModuleReport.ReportSources
     {
 
         ObservableCollection<ReportMaterial> Materials { get; }
+        long Counter { get; }
 
     }
-    internal class MaterialSource : IMaterialSource
+    internal class MaterialSource : ViewModelBase, IMaterialSource
     {
         public MaterialSource(IContainerProvider containerProvider, IEventAggregator eventAggregator)
         {
@@ -38,6 +40,17 @@ namespace ModuleReport.ReportSources
         {
             get {  return Materials.LongCount(); }
         }
+        private long _Counter;
+        public long Counter
+        {
+            get { return _Counter; }
+            private set
+            {
+                _Counter = value;
+                NotifyPropertyChanged(() => Counter);
+            }
+        }
+
         private List<Vorgang> defaultVrg;
         private List<Vorgang> sapVrg;
 
@@ -71,6 +84,7 @@ namespace ModuleReport.ReportSources
         }
         private async Task LoadDefaultDataAsync()
         {
+            Counter = 0;
             Materials.Clear();
             List<ReportMaterial> temp = [];
             DateTime start = DateTime.Now;
@@ -109,9 +123,10 @@ namespace ModuleReport.ReportSources
                             string.Format("{0}\n{1}", result.RidNavigation.RessName, result.RidNavigation.Inventarnummer));
 
                         temp.Add(m);
-
+                        Counter++;
                     }
                 }
+               
             }
             DateTime end = DateTime.Now;
             _Logger.LogInformation("Default Count: {message} Loadtime(ms): {1}", temp.Count, new TimeSpan(end.Ticks - start.Ticks).TotalMilliseconds);
@@ -119,6 +134,7 @@ namespace ModuleReport.ReportSources
         }
         public async Task LoadSapDataAsync()
         {
+            Counter = 0;
             Materials.Clear();
             DateTime start = DateTime.Now;
             sapVrg ??= await TakeSaps();
@@ -159,9 +175,9 @@ namespace ModuleReport.ReportSources
                                 string.Format("{0}\n{1}", result.ArbPlSapNavigation?.Ressource?.RessName, result.ArbPlSapNavigation?.Ressource?.Inventarnummer));
 
                             temp.Add(m);
-
+                            Counter++;
                         }
-                    }
+                    }                    
                 }
                 return temp;
             });

@@ -12,11 +12,11 @@
 
    
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="300*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-
+        <TextBlock Text="{Binding MaterialSource.Counter}"/>
         <DataGrid x:Name="DGMaterials" LayoutUpdated="DG_LayoutUpdated" Grid.Row="1"
                   ItemsSource="{Binding Materials}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Vertical" >
             <DataGrid.Resources>

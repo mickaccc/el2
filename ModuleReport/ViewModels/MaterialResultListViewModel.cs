@@ -1,7 +1,7 @@
 ﻿using El2Core.Utils;
 using El2Core.ViewModelBase;
 using ModuleReport.ReportSources;
-using Prism.Events;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
@@ -13,6 +13,7 @@ namespace ModuleReport.ViewModels
         public MaterialResultListViewModel(IMaterialSource materialSource, IEventAggregator eventAggregator)
         { 
             Materials = CollectionViewSource.GetDefaultView(materialSource.Materials);
+            MaterialSource = materialSource;
             ea = eventAggregator;
             ea.GetEvent<MessageReportFilterWorkAreaChanged>().Subscribe(OnFilterWorkAreaReceived);
             ea.GetEvent<MessageReportFilterDateChanged>().Subscribe(OnFilterDateReceived);
@@ -20,7 +21,6 @@ namespace ModuleReport.ViewModels
             Materials.GroupDescriptions.Add(new PropertyGroupDescription("TTNR"));
             Materials.Filter += OnFilterPredicate;
         }
-
 
         public ICollectionView Materials { get; }
 
@@ -31,6 +31,7 @@ namespace ModuleReport.ViewModels
         private int _ScrapSum = 0;
         private int _ReworkSum = 0;
         private string _textSearch;
+        public IMaterialSource MaterialSource { get; }
         public int YieldSum
         {
             get { return _YieldSum; }
@@ -63,14 +64,13 @@ namespace ModuleReport.ViewModels
         {
             _textSearch = obj;
             YieldSum = 0;
-            ScrapSum = 0;
             ReworkSum = 0;
+            ScrapSum = 0;
             Materials.Refresh();
         }
         private void OnFilterDateReceived(List<DateTime> dates)
         {
             FilterDates = dates;
-
             YieldSum = 0;
             ReworkSum = 0;
             ScrapSum = 0;
@@ -84,7 +84,6 @@ namespace ModuleReport.ViewModels
                 FilterRids.Add(tuple.Item1);
             else
                 FilterRids.Remove(tuple.Item1);
-
             YieldSum = 0;
             ReworkSum = 0;
             ScrapSum = 0;
