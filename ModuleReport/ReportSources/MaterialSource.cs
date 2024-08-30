@@ -65,7 +65,7 @@ namespace ModuleReport.ReportSources
                 .Include(x => x.Responses)
                 .Where(x => x.Responses.Count > 0
                     && x.ArbPlSapNavigation.Ressource.WorkAreaId != 0
-                    && x.SpaetEnd.Value > DateTime.Now.AddDays(-30))
+                    && x.SpaetEnd.Value > DateTime.Now.AddDays(-60))
                 .ToListAsync();
             return vorg;
         }
