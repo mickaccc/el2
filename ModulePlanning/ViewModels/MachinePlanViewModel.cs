@@ -371,15 +371,17 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                if (commandParameter != null)
+ 
+                if (commandParameter is string change)
                 {
-                    if (commandParameter is string change)
+                    if (!string.IsNullOrWhiteSpace(change))
                     {
                         _searchFilterText = change;
                         ProcessCV.Refresh();
                         _ea.GetEvent<SearchTextFilter>().Publish(_searchFilterText);
                     }
                 }
+                
             }
             catch (Exception e)
             {
@@ -390,9 +392,9 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                if (obj != null)
+                if (obj is string change)
                 {
-                    if (obj is string change)
+                    if (!string.IsNullOrWhiteSpace(change))
                     {
                         _searchFilterTextArbPl = change;
                         ProcessCV.Refresh();

@@ -7,6 +7,7 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Prism.Dialogs;
 using Prism.Ioc;
 using System;
@@ -74,7 +75,8 @@ namespace Lieferliste_WPF.Planning
             _applicationCommands = applicationCommands;
             _settingsService = settingsService;
             _dialogService = dialogService;
-            
+            var factory = _container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<PlanWorker>();
             Initialize();
             Processes.AddRange(processes);
             LoadData();
@@ -89,7 +91,7 @@ namespace Lieferliste_WPF.Planning
         public ICommand? KlimaPrintCommand { get; private set; }
         public ICommand? DocumentAddCommand { get; private set; }
         private readonly int _messRid;
-
+        ILogger logger;
         public int MessRId => _messRid;
         public string? Name { get; private set; }
         public string UserId { get; private set; }
@@ -124,21 +126,28 @@ namespace Lieferliste_WPF.Planning
 
         private void LoadData()
         {
-            using var _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var usr = _dbctx.MeasureResses.Include(x => x.User).First(x => x.MessRid == MessRId).User;
-
-            Name = string.Format("{0} {1}", usr.Firstname, usr.Lastname);
-            Description = usr.Department;
-            UserId = usr.AccountId;
-            ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
-            ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
-            ProcessesCV.Refresh();
-            var live = ProcessesCV as ICollectionViewLiveShaping;
-            if (live != null)
+            try
             {
-                live.IsLiveSorting = false;
-                live.LiveFilteringProperties.Add("SysStatus");
-                live.IsLiveFiltering = true;
+                using var _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var usr = _dbctx.MeasureResses.Include(x => x.User).First(x => x.MessRid == MessRId).User;
+
+                Name = string.Format("{0} {1}", usr.Firstname, usr.Lastname);
+                Description = usr.Department;
+                UserId = usr.AccountId;
+                ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
+                ProcessesCV.Filter = f => !((Vorgang)f).SysStatus?.Contains("RÜCK") ?? false;
+                ProcessesCV.Refresh();
+                var live = ProcessesCV as ICollectionViewLiveShaping;
+                if (live != null)
+                {
+                    live.IsLiveSorting = false;
+                    live.LiveFilteringProperties.Add("SysStatus");
+                    live.IsLiveFiltering = true;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError("{message}", e.ToString());
             }
         }
         private void Initialize()
@@ -169,6 +178,7 @@ namespace Lieferliste_WPF.Planning
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error OpenWorker", MessageBoxButton.OK, MessageBoxImage.Error);
+                logger.LogError("{message}", e.ToString());
             }
         }
 
@@ -202,30 +212,38 @@ namespace Lieferliste_WPF.Planning
 
         private void OnKlimaPrintExecuted(object obj)
         {
-            if (obj is Vorgang vrg)
+            try
             {
-                bool print = true;
-                if(!vrg.KlimaPrint.HasValue)
+                if (obj is Vorgang vrg)
                 {
-                    vrg.KlimaPrint = DateTime.Now;
+                    bool print = true;
+                    if (!vrg.KlimaPrint.HasValue)
+                    {
+                        vrg.KlimaPrint = DateTime.Now;
 
+                    }
+                    else
+                    {
+                        var result = MessageBox.Show(string.Format("Es wurde bereits am {0} ausgedruckt.\nSoll nochmals gedruckt werden?",
+                            vrg.KlimaPrint?.ToString("dd/MM/yy HH:mm")),
+                            "Info Klimaausduck", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (result == MessageBoxResult.No) { print = false; }
+                    }
+                    if (print)
+                    {
+                        var fd = Printing.CreateKlimaDocument(vrg);
+                        PrintTicket ticket = new PrintTicket();
+                        ticket.PageOrientation = PageOrientation.Landscape;
+                        ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA5);
+
+                        Printing.DoThePrint(fd, ticket, vrg.VorgangId + "-" + vrg.KlimaPrint?.ToString("ddMMyyHHmm"));
+                        logger.LogInformation("{message}", vrg.VorgangId);
+                    }
                 }
-                else
-                {
-                    var result = MessageBox.Show(string.Format("Es wurde bereits am {0} ausgedruckt.\nSoll nochmals gedruckt werden?",
-                        vrg.KlimaPrint?.ToString("dd/MM/yy HH:mm")),
-                        "Info Klimaausduck", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if(result == MessageBoxResult.No) { print = false; }
-                }
-                if (print)
-                {
-                    var fd = Printing.CreateKlimaDocument(vrg);
-                    PrintTicket ticket = new PrintTicket();
-                    ticket.PageOrientation = PageOrientation.Landscape;
-                    ticket.PageMediaSize = new PageMediaSize(PageMediaSizeName.ISOA5);
-                    
-                    Printing.DoThePrint(fd, ticket, vrg.VorgangId + "-" + vrg.KlimaPrint?.ToString("ddMMyyHHmm"));
-                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError("{message}", e.ToString());
             }
         }
 
@@ -244,10 +262,12 @@ namespace Lieferliste_WPF.Planning
                 ticket.PageOrientation = PageOrientation.Portrait;
                 print.PrintTicket = ticket;
                 //Printing.DoPrintPreview(obj, print);
+                logger.LogInformation("{message}", obj.ToString());
             }
             catch (System.Exception e)
             {
                 MessageBox.Show(e.Message, "WorkerPrint", MessageBoxButton.OK, MessageBoxImage.Error);
+                logger.LogError("{message}", e.ToString());
             }
         }
 
@@ -272,10 +292,12 @@ namespace Lieferliste_WPF.Planning
                 if (name == "Bullet4") desc.Bullet = Brushes.Blue.ToString();
 
                 ProcessesCV.Refresh();
+                logger.LogInformation("{message}", desc.VorgangId);
             }
             catch (System.Exception e)
             {
                 MessageBox.Show(e.Message, "SetMarkerMess", MessageBoxButton.OK, MessageBoxImage.Error);
+                logger.LogError("{message}", e.ToString());
             }
 
         }
@@ -310,6 +332,7 @@ namespace Lieferliste_WPF.Planning
                 {
                     vrg.MeasureRessVorgangs.Add(new MeasureRessVorgang() { MessId = this.MessRId, VorgId = vrg.VorgangId });
                 }
+                logger.LogInformation("drops {message}", vrg.VorgangId);
                 t.Refresh();
 
             }
@@ -317,6 +340,7 @@ namespace Lieferliste_WPF.Planning
             {
                 string str = string.Format("{0}\n{1}", e.Message, e.InnerException);
                 MessageBox.Show(str, "ERROR", MessageBoxButton.OK);
+                logger.LogError("{message}", e.ToString());
             }
         }
 

@@ -7,6 +7,7 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Planning;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,7 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
         private IContainerProvider _container;
         private IApplicationCommands _applicationCommands;
         private IUserSettingsService _settingsService;
+        ILogger _logger;
         private RelayCommand? _textChangedCommand;
         public ICommand TextChangedCommand => _textChangedCommand ??= new RelayCommand(OnTextChanged);
         public ICommand? SaveCommand { get; private set; }
@@ -49,6 +51,8 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
             _applicationCommands = applicationCommands;
             _settingsService = settingsService;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var factory = _container.Resolve<ILoggerFactory>();
+            _logger = factory.CreateLogger<MeasuringRoomViewModel>();
 
             MemberTask = new NotifyTaskCompletion<ICollectionView>(LoadMemberAsync());
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
@@ -102,36 +106,45 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
             {
 
                 MessageBox.Show(ex.Message, "MeasuringRoom Load Data", MessageBoxButton.OK, MessageBoxImage.Error);
+                _logger.LogError("{message}", ex.ToString());
             }
             return VorgangsView;
         }
 
         private async Task<ICollectionView> LoadMemberAsync()
         {
-            var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var mem = await db.MeasureResses
-              .ToListAsync();
-            var ord = await _dbctx.Vorgangs
-                .Include(x => x.AidNavigation)
-                .ThenInclude(x => x.MaterialNavigation)
-                .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Include(x => x.ArbPlSapNavigation)
-                .Include(x => x.MeasureRessVorgangs)
-                .Where(x => (x.MeasureRessVorgangs != null)
-                && x.ArbPlSapNavigation.Ressource.MeasureRessRessources.Any()
-                && x.AidNavigation.Abgeschlossen == false
-                && ((x.SysStatus != null) && x.SysStatus.Contains("RÜCK") == false))
-                .ToListAsync();
-            var factory = _container.Resolve<PlanWorkerFactory>();
-            foreach (var item in mem)
+            try
             {
-                var vorg = ord.Where(x => x.MeasureRessVorgangs.Any(x => x.MessId == item.MessRid)).ToList();
-                _emploeeList.Add(factory.CreatePlanWorker(item.MessRid, vorg));
-            }
+                var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var mem = await db.MeasureResses
+                  .ToListAsync();
+                var ord = await _dbctx.Vorgangs
+                    .Include(x => x.AidNavigation)
+                    .ThenInclude(x => x.MaterialNavigation)
+                    .Include(x => x.AidNavigation.DummyMatNavigation)
+                    .Include(x => x.ArbPlSapNavigation)
+                    .Include(x => x.MeasureRessVorgangs)
+                    .Where(x => (x.MeasureRessVorgangs != null)
+                    && x.ArbPlSapNavigation.Ressource.MeasureRessRessources.Any()
+                    && x.AidNavigation.Abgeschlossen == false
+                    && ((x.SysStatus != null) && x.SysStatus.Contains("RÜCK") == false))
+                    .ToListAsync();
+                var factory = _container.Resolve<PlanWorkerFactory>();
+                foreach (var item in mem)
+                {
+                    var vorg = ord.Where(x => x.MeasureRessVorgangs.Any(x => x.MessId == item.MessRid)).ToList();
+                    _emploeeList.Add(factory.CreatePlanWorker(item.MessRid, vorg));
+                }
 
-            _vorgangsList.AddRange(ord.ExceptBy(_dbctx.MeasureRessVorgangs.Select(x => x.VorgId), x => x.VorgangId));
-            EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);
-            return EmploeeList;
+                _vorgangsList.AddRange(ord.ExceptBy(_dbctx.MeasureRessVorgangs.Select(x => x.VorgId), x => x.VorgangId));
+                EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);
+                return EmploeeList;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("{message}", e.ToString());
+                return EmploeeList;
+            }
 
         }
         private void OnTextChanged(object obj)
@@ -168,15 +181,22 @@ internal class MeasuringRoomViewModel : ViewModelBase, IDropTarget, IViewModel
 
         public void Drop(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is Vorgang vrg)
+            try
             {
-                var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
-                if (source.IsAddingNew) { source.CommitNew(); }
-                source.Remove(vrg);
-                ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
-                ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
-                _dbctx.MeasureRessVorgangs.RemoveRange(_dbctx.MeasureRessVorgangs.Where(x => x.VorgId.Trim() == vrg.VorgangId));
-
+                if (dropInfo.Data is Vorgang vrg)
+                {
+                    var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
+                    if (source.IsAddingNew) { source.CommitNew(); }
+                    source.Remove(vrg);
+                    ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
+                    ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
+                    _dbctx.MeasureRessVorgangs.RemoveRange(_dbctx.MeasureRessVorgangs.Where(x => x.VorgId.Trim() == vrg.VorgangId));
+                    _logger.LogInformation("drops {message}", vrg.VorgangId);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("{message}", e.ToString());
             }
         }
 
