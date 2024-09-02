@@ -1,13 +1,9 @@
-﻿
-using El2Core.Constants;
-using El2Core.Models;
+﻿using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Lieferliste_WPF.Utilities;
+using Microsoft.Extensions.Logging;
 using Prism.Ioc;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -26,6 +22,8 @@ namespace Lieferliste_WPF.ViewModels
         public ShiftEditViewModel(IContainerExtension container)
         {
             _container = container;
+            var factory = _container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<ShiftEditViewModel>();
             SaveCommand = new ActionCommand(onSaveExecuted, onSaveCanExecute);
             AddCommand = new ActionCommand(onAddExecuted, onAddCanExecute);
             RemoveCommand = new ActionCommand(onRemoveExecuted, onRemoveCanExecute);
@@ -37,6 +35,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public string Title { get; } = "Schicht Editor";
         IContainerExtension _container;
+        ILogger logger;
         public ObservableCollection<WorkShiftService> WorkShiftCollection { get; private set; } = [];
         public ObservableCollection<DataTable> ShiftDataSets { get; private set; } = [];
         private ObservableCollection<WorkShiftItem> WorkShiftItems = [];
@@ -72,27 +71,35 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var ws = db.WorkShifts.ToList();
-            var serializer = XmlSerializerHelper.GetSerializer(typeof(ObservableCollection<WorkShiftItem>));
-            foreach (var w in ws)
+            try
             {
-                using XmlReader reader = XmlReader.Create(new StringReader(w.ShiftDef));
-                var wos = new WorkShiftService()
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var ws = db.WorkShifts.ToList();
+                var serializer = XmlSerializerHelper.GetSerializer(typeof(ObservableCollection<WorkShiftItem>));
+                foreach (var w in ws)
                 {
-                    ShiftName = w.ShiftName,
-                    id = w.Sid,
-                    ShiftType = (ShiftType)w.ShiftType,
-                    Items = (ObservableCollection<WorkShiftItem>)serializer.Deserialize(reader)
-                };
-                wos.Changed = false;
-                foreach (var item in wos.Items)
-                {
-                    item.PropertyChanged += onShiftItemChanged;
+                    using XmlReader reader = XmlReader.Create(new StringReader(w.ShiftDef));
+                    var wos = new WorkShiftService()
+                    {
+                        ShiftName = w.ShiftName,
+                        id = w.Sid,
+                        ShiftType = (ShiftType)w.ShiftType,
+                        Items = (ObservableCollection<WorkShiftItem>)serializer.Deserialize(reader)
+                    };
+                    wos.Changed = false;
+                    foreach (var item in wos.Items)
+                    {
+                        item.PropertyChanged += onShiftItemChanged;
+                    }
+                    wos.PropertyChanged += onWorkShiftServiceChanged;
+                    wos.Items.CollectionChanged += onItemsCollectionChanged;
+                    WorkShiftCollection.Add(wos);
                 }
-                wos.PropertyChanged += onWorkShiftServiceChanged;
-                wos.Items.CollectionChanged += onItemsCollectionChanged;
-                WorkShiftCollection.Add(wos);
+            }
+            catch (System.Exception e)
+            {
+
+                logger.LogError("{message}", e.ToString());
             }
         }
 
@@ -126,41 +133,50 @@ namespace Lieferliste_WPF.ViewModels
 
         private void onSaveExecuted(object obj)
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var wo = db.WorkShifts;
-            var serializer = XmlSerializerHelper.GetSerializer(typeof(ObservableCollection<WorkShiftItem>));
-
-            foreach (var w in WorkShiftCollection)
+            try
             {
-                var sw = new StringWriter();
-                if (w.id == 0)
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var wo = db.WorkShifts;
+                var serializer = XmlSerializerHelper.GetSerializer(typeof(ObservableCollection<WorkShiftItem>));
+
+                foreach (var w in WorkShiftCollection)
                 {
-                    serializer.Serialize(sw, w.Items);    
-                    var work = new WorkShift() { ShiftName = w.ShiftName, ShiftType = (int)w.ShiftType, ShiftDef = sw.ToString() };
-                    
-                    wo.Add(work);
+                    var sw = new StringWriter();
+                    if (w.id == 0)
+                    {
+                        serializer.Serialize(sw, w.Items);
+                        var work = new WorkShift() { ShiftName = w.ShiftName, ShiftType = (int)w.ShiftType, ShiftDef = sw.ToString() };
+
+                        wo.Add(work);
+                    }
+                    else if (w.Changed)
+                    {
+                        var sh = wo.Find(w.id);
+                        sh.ShiftName = w.ShiftName;
+                        sh.ShiftType = (int)w.ShiftType;
+                        w.Changed = false;
+                    }
+                    if (w.Items.Any(x => x.Changed))
+                    {
+                        serializer.Serialize(sw, w.Items);
+                        var work = wo.First(x => x.Sid == w.id);
+                        work.ShiftName = w.ShiftName;
+                        work.ShiftType = (int)w.ShiftType;
+                        work.ShiftDef = sw.ToString();
+                    }
+                    foreach (var item in w.Items.Where(x => x.Changed))
+                    {
+                        item.Changed = false;
+                    }
                 }
-                else if( w.Changed )
-                {
-                    var sh = wo.Find(w.id);
-                    sh.ShiftName = w.ShiftName;
-                    sh.ShiftType = (int)w.ShiftType;
-                    w.Changed = false;
-                }
-                if (w.Items.Any(x => x.Changed))
-                {
-                serializer.Serialize(sw, w.Items);
-                    var work = wo.First(x => x.Sid == w.id);
-                    work.ShiftName = w.ShiftName;
-                    work.ShiftType = (int)w.ShiftType;
-                    work.ShiftDef = sw.ToString();
-                }
-                foreach (var item in w.Items.Where(x => x.Changed))
-                {
-                    item.Changed = false;
-                }
+                db.SaveChanges();
+                logger.LogInformation("{message}", [.. wo]);
             }
-            db.SaveChanges();
+            catch (System.Exception e)
+            {
+
+                logger.LogError("{message}", e.ToString());
+            }
 
         }
 

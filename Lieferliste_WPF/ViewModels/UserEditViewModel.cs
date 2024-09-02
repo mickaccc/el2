@@ -4,16 +4,14 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
-using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -41,6 +39,7 @@ namespace Lieferliste_WPF.ViewModels
         private static List<WorkArea> WorkAreas { get; set; }
         private static List<Costunit> CostUnits { get; set; }
         private IContainerExtension _container;
+        ILogger logger;
         private readonly IUserSettingsService _SettingsService;
         internal CollectionViewSource roleSource { get; } = new();
         internal CollectionViewSource workSource { get; } = new();
@@ -77,6 +76,8 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             _dbctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _SettingsService = settingsService;
+            var factory = _container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<UserEditViewModel>();
             LoadData();
             _usrCV = CollectionViewSource.GetDefaultView(Users);
             _usrCV.MoveCurrentToFirst();
@@ -154,6 +155,7 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "!ERROR!", MessageBoxButton.OK, MessageBoxImage.Error);
+                logger.LogError("{message}", e.ToString());
             }
         }
 
@@ -179,35 +181,43 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-            Users = new();
-            var u = _dbctx.IdmAccounts
-                .Include(x => x.AccountWorkAreas)
-                .ThenInclude(x => x.WorkArea)
-                .Include(x => x.AccountCosts)
-                .ThenInclude(x => x.Cost)
-                .OrderBy(o => o.AccountId)
-                .ToList();
-            var us = (from role in _dbctx.IdmRoles
-                      join r in _dbctx.IdmRelations on role.RoleId equals r.RoleId
-                      join a in _dbctx.IdmAccounts on r.AccountId equals a.AccountId
-                      select new { role, a });
-            foreach (var user in u)
+            try
             {
-     
-                User user1 = new User(user.AccountId, user.Firstname, user.Lastname, user.Email);
-                user1.AccountWorkAreas = user.AccountWorkAreas.ToList();
-                user1.AccountCostUnits = user.AccountCosts.ToList();
-                
-                foreach (var r in us.AsEnumerable().Where(x => x.a.AccountId == user.AccountId))
+                Users = new();
+                var u = _dbctx.IdmAccounts
+                    .Include(x => x.AccountWorkAreas)
+                    .ThenInclude(x => x.WorkArea)
+                    .Include(x => x.AccountCosts)
+                    .ThenInclude(x => x.Cost)
+                    .OrderBy(o => o.AccountId)
+                    .ToList();
+                var us = (from role in _dbctx.IdmRoles
+                          join r in _dbctx.IdmRelations on role.RoleId equals r.RoleId
+                          join a in _dbctx.IdmAccounts on r.AccountId equals a.AccountId
+                          select new { role, a });
+                foreach (var user in u)
                 {
-                    user1.Roles.Add(r.role.RoleName);
+
+                    User user1 = new User(user.AccountId, user.Firstname, user.Lastname, user.Email);
+                    user1.AccountWorkAreas = user.AccountWorkAreas.ToList();
+                    user1.AccountCostUnits = user.AccountCosts.ToList();
+
+                    foreach (var r in us.AsEnumerable().Where(x => x.a.AccountId == user.AccountId))
+                    {
+                        user1.Roles.Add(r.role.RoleName);
+                    }
+
+                    Users.Add(user1);
                 }
 
-                Users.Add(user1);
+                WorkAreas = [.. _dbctx.WorkAreas.OrderBy(x => x.Bereich)];
+                CostUnits = [.. _dbctx.Costunits.OrderBy(x => x.CostunitId)];
             }
+            catch (Exception e)
+            {
 
-            WorkAreas = [.. _dbctx.WorkAreas.OrderBy(x => x.Bereich)];
-            CostUnits = [.. _dbctx.Costunits.OrderBy(x => x.CostunitId)];
+                logger.LogError("{message}", e.ToString());
+            }
         }
 
         public void DragOver(IDropInfo dropInfo)
@@ -253,7 +263,7 @@ namespace Lieferliste_WPF.ViewModels
                     us.AccountWorkAreas.Add(data);
                     _dbctx.AccountWorkAreas.Add(data);
                     WorkView.Refresh();
-
+                    logger.LogInformation("add Workarea {message}", (AccountWorkArea)dropInfo.Data);
                 }
                 if (dropInfo.Data is Costunit c)
                 {
@@ -261,7 +271,7 @@ namespace Lieferliste_WPF.ViewModels
                     us.AccountCostUnits.Add(data);
                     _dbctx.AccountCosts.Add(data);
                     CostView.Refresh();
-
+                    logger.LogInformation("add Workarea {message}", (AccountCost)dropInfo.Data);
                 }
                 if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName &&
                     (dropInfo.Data is AccountCost || dropInfo.Data is AccountWorkArea))
@@ -273,12 +283,14 @@ namespace Lieferliste_WPF.ViewModels
                         us.AccountWorkAreas.Remove((AccountWorkArea)dropInfo.Data);
                         _dbctx.AccountWorkAreas.Remove((AccountWorkArea)dropInfo.Data);
                         WorkView.Refresh();
+                        logger.LogInformation("remove Workarea {message}", (AccountWorkArea)dropInfo.Data);
                     }
                     if (UiName.Contains("COSTUNIT"))
                     {
                         us.AccountCostUnits.Remove((AccountCost)dropInfo.Data);
                         _dbctx.AccountCosts.Remove((AccountCost)dropInfo.Data);
                         CostView.Refresh();
+                        logger.LogInformation("remove Cost {message}", (AccountCost)dropInfo.Data);
                     }
                 }
                 _usrCV.Refresh();

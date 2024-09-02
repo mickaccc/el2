@@ -2,6 +2,7 @@
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using Microsoft.Extensions.Logging;
 using ModulePlanning.Specials;
 using Prism.Ioc;
 using System;
@@ -22,6 +23,7 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<string> _ExplorerFilter = new();
         public ICollectionView ExplorerFilter { get; }
         private IUserSettingsService _settingsService;
+        ILogger _logger;
         public ICommand SaveCommand { get; }
         public ICommand ResetCommand { get; }
         public ICommand ReloadCommand { get; }
@@ -136,6 +138,8 @@ namespace Lieferliste_WPF.ViewModels
         {
 
             _settingsService = settingsService;
+            var factory = container.Resolve<ILoggerFactory>();
+            _logger = factory.CreateLogger<UserSettingsViewModel>();
             var br = new BrushConverter();
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             ResetCommand = new ActionCommand(OnResetExecuted, OnResetCanExecute);
@@ -230,6 +234,7 @@ namespace Lieferliste_WPF.ViewModels
             WorkareaDocumentInfo.SaveDocumentData();
             MeasureDocumentInfo.SaveDocumentData();
             _filterContainer.Save();
+
         }
         private bool OnPersonalFilterRemoveCanExecute(object arg)
         {
@@ -273,39 +278,48 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnPersonalFilterAddExecuted(object obj)
         {
-            
-            if (string.IsNullOrEmpty(PersonalFilterName) ||
-                string.IsNullOrEmpty(PersonalFilterRegex) ||
-                PersonalFilterField == null) return;
-            
-            PersonalFilter? pf = null;
-            switch (PersonalFilterField.Item3)
+
+            try
             {
-                case 1:
-                    pf = new PersonalFilterVorgang(
-                        PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
-                    break;
-                case 2:
-                    pf = new PersonalFilterOrderRb(
-                        PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
-                    break;
-                case 3:
-                    pf = new PersonalFilterMaterial(
-                        PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
-                    break;
-                case 4:
-                    pf = new PersonalFilterRessource(
-                        PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
-                    break;
-                case 5:
-                    pf = new PersonalFilterProject(
-                        PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
-                    break;
+                if (string.IsNullOrEmpty(PersonalFilterName) ||
+             string.IsNullOrEmpty(PersonalFilterRegex) ||
+             PersonalFilterField == null) return;
+
+                PersonalFilter? pf = null;
+                switch (PersonalFilterField.Item3)
+                {
+                    case 1:
+                        pf = new PersonalFilterVorgang(
+                            PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
+                        break;
+                    case 2:
+                        pf = new PersonalFilterOrderRb(
+                            PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
+                        break;
+                    case 3:
+                        pf = new PersonalFilterMaterial(
+                            PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
+                        break;
+                    case 4:
+                        pf = new PersonalFilterRessource(
+                            PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
+                        break;
+                    case 5:
+                        pf = new PersonalFilterProject(
+                            PersonalFilterName, PersonalFilterRegex, (PersonalFilterField.Item1, PersonalFilterField.Item2, PersonalFilterField.Item3));
+                        break;
+                }
+                if (pf != null)
+                {
+                    _filterContainer.Add(pf.Name, pf);
+                    _filterContainerKeys.Add(pf.Name);
+                    _logger.LogInformation("{message} ", pf.ToString());
+                }
             }
-            if (pf != null)
+            catch (Exception e)
             {
-                _filterContainer.Add(pf.Name, pf);
-                _filterContainerKeys.Add(pf.Name);
+
+                _logger.LogError("{message}", e.ToString());
             }
         }
 

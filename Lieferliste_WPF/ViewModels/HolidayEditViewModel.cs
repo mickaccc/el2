@@ -2,6 +2,7 @@
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Lieferliste_WPF.Utilities;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Prism.Ioc;
 using System;
@@ -21,6 +22,8 @@ namespace Lieferliste_WPF.ViewModels
         public HolidayEditViewModel(IContainerExtension container) 
         {
             _container = container;
+            var factory = _container.Resolve<ILoggerFactory>();
+            _Logger = factory.CreateLogger<HolidayEditViewModel>();
             LoadData();
             SaveHolidayCommand = new ActionCommand(onSaveExecuted, onSaveCanExecute);
             DeleteHolidayCommand = new ActionCommand(onDelExecuted, onDelCanExecute);
@@ -63,19 +66,28 @@ namespace Lieferliste_WPF.ViewModels
 
         private void onSaveExecuted(object obj)
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var holi = db.Rules.First(x => x.RuleValue == "Holi");
-            var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
+            try
+            {
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var holi = db.Rules.First(x => x.RuleValue == "Holi");
+                var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
 
-            CloseAndHolidayRule data = new();
-            data.FixHoliday.AddRange(FixHolidays);
-            data.VariousHoliday.AddRange(VarHolidays);
-            data.CloseDay.AddRange(CloseHolidays);
-            StringWriter sw = new StringWriter();
-            xml.Serialize(sw, data);
-            holi.RuleData = sw.ToString();
-            db.SaveChanges();
-            _isChanged = false;
+                CloseAndHolidayRule data = new();
+                data.FixHoliday.AddRange(FixHolidays);
+                data.VariousHoliday.AddRange(VarHolidays);
+                data.CloseDay.AddRange(CloseHolidays);
+                StringWriter sw = new StringWriter();
+                xml.Serialize(sw, data);
+                holi.RuleData = sw.ToString();
+                db.SaveChanges();
+                _isChanged = false;
+                _Logger.LogInformation("{message}", holi.RuleData);
+            }
+            catch (Exception e)
+            {
+
+                _Logger.LogError("{message}", e.ToString());
+            }
         }
 
 
@@ -102,23 +114,32 @@ namespace Lieferliste_WPF.ViewModels
         public ObservableCollection<HolidayRule> VarHolidays { get; set; } = [];
         public ObservableCollection<Holiday> CloseHolidays { get; set; } = [];
         IContainerExtension _container;
+        ILogger _Logger;
         public ICommand SaveHolidayCommand { get; private set; }
         public ICommand DeleteHolidayCommand { get; private set; }
         private bool _isChanged;
         void LoadData()
         {
-            var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
+            try
+            {
+                var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
 
-            TextReader reader = new StringReader(RuleInfo.Rules["Feiertage"].RuleData);
-            CloseAndHolidayRule result;
-            result = (CloseAndHolidayRule)xml.Deserialize(reader);
+                TextReader reader = new StringReader(RuleInfo.Rules["Feiertage"].RuleData);
+                CloseAndHolidayRule result;
+                result = (CloseAndHolidayRule)xml.Deserialize(reader);
 
                 FixHolidays.AddRange(result.FixHoliday);
                 VarHolidays.AddRange(result.VariousHoliday);
                 CloseHolidays.AddRange(result.CloseDay);
-            foreach(var c in CloseHolidays)
+                foreach (var c in CloseHolidays)
+                {
+                    c.PropertyChanged += onPropertyChanged;
+                }
+                _Logger.LogInformation("Fix {message} Var {1} Close {2}", FixHolidays.Count, VarHolidays.Count, CloseHolidays.Count);
+            }
+            catch (Exception e)
             {
-                c.PropertyChanged += onPropertyChanged;
+                _Logger.LogError("{message}", e.ToString());
             }
             
         }

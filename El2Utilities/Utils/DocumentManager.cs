@@ -1,4 +1,5 @@
 ﻿using El2Core.Models;
+using Microsoft.Extensions.Logging;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -77,53 +78,65 @@ namespace El2Core.Utils
     public class MeasureFirstPartInfo : DocumentInfo
     {
         private Document document;
+        ILogger logger;
 
         public MeasureFirstPartInfo(IContainerExtension container) : base(container)
         {
+            var factory = container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<MeasureDocumentInfo>();
         }
 
         public override Document CreateDocumentInfos(string[]? folders)
         {
-            document = new FirstPartDocument();
-            document[DocumentPart.Type] = "FirstPart";
-            document[DocumentPart.RootPath] = string.Empty;
-            document[DocumentPart.Template] = string.Empty;
-            document[DocumentPart.RegularEx] = string.Empty;
-            document[DocumentPart.JumpTarget] = string.Empty;
-            document[DocumentPart.RasterFolder1] = string.Empty;
-            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
-            var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
-
-            TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
-            List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
-            foreach (var entry in doc)
+            try
             {
-                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
-                document[DokuPart] = (string)entry.Value;
-            }
-            if (folders != null)
-            {
+                document = new FirstPartDocument();
+                document[DocumentPart.Type] = "FirstPart";
+                document[DocumentPart.RootPath] = string.Empty;
+                document[DocumentPart.Template] = string.Empty;
+                document[DocumentPart.RegularEx] = string.Empty;
+                document[DocumentPart.JumpTarget] = string.Empty;
+                document[DocumentPart.RasterFolder1] = string.Empty;
+                if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
+                var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
-                document[DocumentPart.TTNR] = folders[0];
-                Regex regex = new Regex(document[DocumentPart.RegularEx]);
-                Match match2 = regex.Match(folders[0]);
-                StringBuilder nsb = new StringBuilder();
-                foreach (Group ma in match2.Groups.Values.Skip(1))
+                TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
+                List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+                foreach (var entry in doc)
                 {
-                    if (ma.Value != folders[0])
-                    {
-                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
-                    }
+                    DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+                    document[DokuPart] = (string)entry.Value;
                 }
-                document[DocumentPart.SavePath] = nsb.ToString();
-                FileInfo f = new(document[DocumentPart.Template]);
-                document[DocumentPart.File] = Path.Combine(
-                    document[DocumentPart.RootPath],
-                    document[DocumentPart.SavePath],
-                    f.Name.Replace("Messblatt", folders[0]));
-                document[DocumentPart.Folder] = folders[1];
+                if (folders != null)
+                {
+
+                    document[DocumentPart.TTNR] = folders[0];
+                    Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                    Match match2 = regex.Match(folders[0]);
+                    StringBuilder nsb = new StringBuilder();
+                    foreach (Group ma in match2.Groups.Values.Skip(1))
+                    {
+                        if (ma.Value != folders[0])
+                        {
+                            nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                        }
+                    }
+                    document[DocumentPart.SavePath] = nsb.ToString();
+                    FileInfo f = new(document[DocumentPart.Template]);
+                    document[DocumentPart.File] = Path.Combine(
+                        document[DocumentPart.RootPath],
+                        document[DocumentPart.SavePath],
+                        f.Name.Replace("Messblatt", folders[0]));
+                    document[DocumentPart.Folder] = folders[1];
+                }
+                return document;
             }
-            return document;
+            catch (Exception e)
+            {
+                logger.LogError("{message}", e.ToString());
+                return document;
+            }
+
         }
 
         public override Document CreateDocumentInfos()
@@ -147,51 +160,61 @@ namespace El2Core.Utils
     public class VmpbDocumentInfo : DocumentInfo
     {
         private Document document;
-
+        ILogger logger;
         public VmpbDocumentInfo(IContainerExtension container) : base(container)
         {
+            var factory = container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<VmpbDocumentInfo>();
         }
 
         public override Document CreateDocumentInfos(string[]? folders)
         {
-            document = new VmpbDocument();
-            document[DocumentPart.Type] = "VmpbPart";
-            document[DocumentPart.RootPath] = string.Empty;
-            document[DocumentPart.Template] = string.Empty;
-            document[DocumentPart.RegularEx] = string.Empty;
-            document[DocumentPart.JumpTarget] = string.Empty;
-            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
-            var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
-
-            TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
-            List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
-            foreach (var entry in doc)
+            try
             {
-                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
-                document[DokuPart] = (string)entry.Value;
-            }
-            if (folders != null)
-            {
+                document = new VmpbDocument();
+                document[DocumentPart.Type] = "VmpbPart";
+                document[DocumentPart.RootPath] = string.Empty;
+                document[DocumentPart.Template] = string.Empty;
+                document[DocumentPart.RegularEx] = string.Empty;
+                document[DocumentPart.JumpTarget] = string.Empty;
+                if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
+                var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
-                document[DocumentPart.TTNR] = folders[0];
-                Regex regex = new Regex(document[DocumentPart.RegularEx]);
-                Match match2 = regex.Match(folders[0]);
-                StringBuilder nsb = new StringBuilder();
-                foreach (Group ma in match2.Groups.Values.Skip(1))
+                TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
+                List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+                foreach (var entry in doc)
                 {
-                    if (ma.Value != folders[0])
-                    {
-                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
-                    }
+                    DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+                    document[DokuPart] = (string)entry.Value;
                 }
-                document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar).ToString();
-                document[DocumentPart.File] = Path.Combine(
-                    document[DocumentPart.RootPath],
-                    document[DocumentPart.SavePath],
-                    folders[0] + "_VMPB.docx"); 
-            }
+                if (folders != null)
+                {
 
-            return document;
+                    document[DocumentPart.TTNR] = folders[0];
+                    Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                    Match match2 = regex.Match(folders[0]);
+                    StringBuilder nsb = new StringBuilder();
+                    foreach (Group ma in match2.Groups.Values.Skip(1))
+                    {
+                        if (ma.Value != folders[0])
+                        {
+                            nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                        }
+                    }
+                    document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar).ToString();
+                    document[DocumentPart.File] = Path.Combine(
+                        document[DocumentPart.RootPath],
+                        document[DocumentPart.SavePath],
+                        folders[0] + "_VMPB.docx");
+                }
+
+                return document;
+            }
+            catch (Exception e)
+            {
+                logger.LogError("{message}", e.ToString());
+                return document;
+            }
         }
 
         public override Document CreateDocumentInfos()
@@ -215,50 +238,60 @@ namespace El2Core.Utils
     public class WorkareaDocumentInfo : DocumentInfo
     {
         private Document document;
-
+        ILogger logger;
         public WorkareaDocumentInfo(IContainerExtension container) : base(container)
         {
+            var factory = container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<WorkareaDocumentInfo>();
         }
 
         public override Document CreateDocumentInfos(string[]? folders)
         {
-            document = new FirstPartDocument();
-            document[DocumentPart.Type] = "WorkPart";
-            document[DocumentPart.RootPath] = string.Empty;
-            document[DocumentPart.RegularEx] = string.Empty;
-            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
-            var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
-
-            TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
-            List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
-            foreach (var entry in doc)
+            try
             {
-                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
-                document[DokuPart] = (string)entry.Value;
-            }
+                document = new FirstPartDocument();
+                document[DocumentPart.Type] = "WorkPart";
+                document[DocumentPart.RootPath] = string.Empty;
+                document[DocumentPart.RegularEx] = string.Empty;
+                if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
+                var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
-            if (folders != null)
-            {
-
-                document[DocumentPart.TTNR] = folders[0];
-                Regex regex = new Regex(document[DocumentPart.RegularEx]);
-                Match match2 = regex.Match(folders[0]);
-                StringBuilder nsb = new StringBuilder();
-                foreach (Group ma in match2.Groups.Values.Skip(1))
+                TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
+                List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+                foreach (var entry in doc)
                 {
-                    if (ma.Value != folders[0])
+                    DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+                    document[DokuPart] = (string)entry.Value;
+                }
+
+                if (folders != null)
+                {
+
+                    document[DocumentPart.TTNR] = folders[0];
+                    Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                    Match match2 = regex.Match(folders[0]);
+                    StringBuilder nsb = new StringBuilder();
+                    foreach (Group ma in match2.Groups.Values.Skip(1))
                     {
-                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                        if (ma.Value != folders[0])
+                        {
+                            nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                        }
                     }
+                    foreach (var s in folders.Skip(1))
+                    {
+                        if (!string.IsNullOrEmpty(s)) nsb.Append(s).Append(Path.DirectorySeparatorChar);
+                    }
+                    document[DocumentPart.SavePath] = nsb.ToString();
                 }
-                foreach(var s in folders.Skip(1))
-                {
-                    if(!string.IsNullOrEmpty(s)) nsb.Append(s).Append(Path.DirectorySeparatorChar);
-                }
-                document[DocumentPart.SavePath] = nsb.ToString();
-            }
 
-            return document;
+                return document;
+            }
+            catch (Exception e)
+            {
+                logger.LogError("{message}", e.ToString());
+                return document;
+            }
         }
 
         public override Document CreateDocumentInfos()
@@ -282,49 +315,59 @@ namespace El2Core.Utils
     public class MeasureDocumentInfo : DocumentInfo
     {
         private Document document;
-
+        ILogger logger;
         public MeasureDocumentInfo(IContainerExtension container) : base(container)
         {
+            var factory = container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<MeasureDocumentInfo>();
         }
 
         public override Document CreateDocumentInfos(string[]? folders)
         {
-            document = new FirstPartDocument();
-            document[DocumentPart.Type] = "MeasurePart";
-            document[DocumentPart.RootPath] = string.Empty;
-            document[DocumentPart.RegularEx] = string.Empty;
-            document[DocumentPart.JumpTarget] = string.Empty;
-            document[DocumentPart.Folder] = string.Empty;
-            if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
-            var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
-
-            TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
-            List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
-            foreach (var entry in doc)
+            try
             {
-                DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
-                document[DokuPart] = (string)entry.Value;
-            }
+                document = new FirstPartDocument();
+                document[DocumentPart.Type] = "MeasurePart";
+                document[DocumentPart.RootPath] = string.Empty;
+                document[DocumentPart.RegularEx] = string.Empty;
+                document[DocumentPart.JumpTarget] = string.Empty;
+                document[DocumentPart.Folder] = string.Empty;
+                if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
+                var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
-            if (folders != null)
-            {
-
-                document[DocumentPart.TTNR] = folders[0];
-                Regex regex = new Regex(document[DocumentPart.RegularEx]);
-                Match match2 = regex.Match(folders[0]);
-                StringBuilder nsb = new StringBuilder();
-                foreach (Group ma in match2.Groups.Values.Skip(1))
+                TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
+                List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+                foreach (var entry in doc)
                 {
-                    if (ma.Value != folders[0])
-                    {
-                        nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
-                    }
+                    DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+                    document[DokuPart] = (string)entry.Value;
                 }
-                document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar)
-                    .Append(document[DocumentPart.Folder]).Append(Path.DirectorySeparatorChar).ToString();
-            }
 
-            return document;
+                if (folders != null)
+                {
+
+                    document[DocumentPart.TTNR] = folders[0];
+                    Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                    Match match2 = regex.Match(folders[0]);
+                    StringBuilder nsb = new StringBuilder();
+                    foreach (Group ma in match2.Groups.Values.Skip(1))
+                    {
+                        if (ma.Value != folders[0])
+                        {
+                            nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                        }
+                    }
+                    document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar)
+                        .Append(document[DocumentPart.Folder]).Append(Path.DirectorySeparatorChar).ToString();
+                }
+
+                return document;
+            }
+            catch (Exception e)
+            {
+                logger.LogError("{message}", e.ToString());
+                return document;
+            }
         }
 
         public override Document CreateDocumentInfos()

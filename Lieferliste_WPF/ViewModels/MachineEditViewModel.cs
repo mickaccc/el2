@@ -2,7 +2,9 @@
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
+using log4net.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Prism.Ioc;
 using System;
@@ -29,6 +31,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand TextSearchCommand => textSearchCommand ??= new RelayCommand(OnTextSearch);
 
         public ICollectionView RessourcesCV { get; }
+        ILogger logger;
         private RelayCommand? textSearchCommand;
         private string _searchFilterText = String.Empty;
         private readonly IContainerExtension _container;
@@ -44,6 +47,8 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             DBctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             _settingsService = settingsService;
+            var factory = _container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<MachineEditViewModel>();
             LoadData();
 
             RessourcesCV = new ListCollectionView(_ressources);
@@ -152,18 +157,26 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Closing()
         {
-            if (DBctx.ChangeTracker.HasChanges())
+            try
             {
-                if (_settingsService.IsSaveMessage)
+                if (DBctx.ChangeTracker.HasChanges())
                 {
-                    var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", Title),
-                        Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
+                    if (_settingsService.IsSaveMessage)
                     {
-                        DBctx.SaveChanges();
+                        var result = MessageBox.Show(string.Format("Sollen die Änderungen in {0} gespeichert werden?", Title),
+                            Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            DBctx.SaveChanges();
+                        }
                     }
+                    else DBctx.SaveChanges();
                 }
-                else DBctx.SaveChanges();
+            }
+            catch (Exception e)
+            {
+
+                logger.LogError("{message}", e.ToString());
             }
         }
     }

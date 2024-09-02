@@ -113,10 +113,10 @@ namespace Lieferliste_WPF.ViewModels
                 if (obj is OrderRb o)
                 {
                     ret = o.Aid.Contains(_searchValue) ||
-                        ((o.Material != null) && o.Material.Contains(_searchValue)) ||
-                        ((o.MaterialNavigation != null) && o.MaterialNavigation.Ttnr.Contains(_searchValue)) ||
-                        ((o.MaterialNavigation?.Bezeichng != null) && o.MaterialNavigation.Bezeichng.Contains(_searchValue)) ||
-                        ((o.ProId != null) && o.ProId.Contains(_searchValue));
+                        ((o.Material != null) && o.Material.Contains(_searchValue, System.StringComparison.CurrentCultureIgnoreCase)) ||
+                        ((o.MaterialNavigation != null) && o.MaterialNavigation.Ttnr.Contains(_searchValue, System.StringComparison.CurrentCultureIgnoreCase)) ||
+                        ((o.MaterialNavigation?.Bezeichng != null) && o.MaterialNavigation.Bezeichng.Contains(_searchValue, System.StringComparison.CurrentCultureIgnoreCase)) ||
+                        ((o.ProId != null) && o.ProId.Contains(_searchValue, System.StringComparison.CurrentCultureIgnoreCase));
                 }
             }
             return ret;

@@ -344,6 +344,7 @@ namespace ModuleDeliverList.ViewModels
                     {
                         foreach ((string, string) rbId in rb.Where(x => x != null).Select(v => ((string, string))v))
                         {
+                            _Logger.LogInformation("commin {message}, {1}", rbId.Item1, rbId.Item2);
                             if (_orders.Any(x => x.Aid == rbId.Item2))
                             {
                                 foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
@@ -377,12 +378,14 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
+                
                 Task.Run(() =>
          {
             lock (_lock)
             {
                 foreach (var vrg in vrgIdList.Where(x => x != null))
                 {
+                     _Logger.LogInformation("commin {message}, {1}", vrg.Value.Item1, vrg.Value.Item2);
                      if (vrg != null)
                      {
                          
