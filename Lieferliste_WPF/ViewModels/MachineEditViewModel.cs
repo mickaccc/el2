@@ -2,7 +2,6 @@
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using log4net.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
