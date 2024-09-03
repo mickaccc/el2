@@ -83,7 +83,7 @@ namespace El2Core.Utils
         public MeasureFirstPartInfo(IContainerExtension container) : base(container)
         {
             var factory = container.Resolve<ILoggerFactory>();
-            logger = factory.CreateLogger<MeasureDocumentInfo>();
+            logger = factory.CreateLogger<MeasureFirstPartInfo>();
         }
 
         public override Document CreateDocumentInfos(string[]? folders)

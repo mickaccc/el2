@@ -16,7 +16,7 @@
             
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="45"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="80*"/>
         </Grid.RowDefinitions>
         <DockPanel>

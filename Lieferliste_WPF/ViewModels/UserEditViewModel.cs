@@ -263,7 +263,7 @@ namespace Lieferliste_WPF.ViewModels
                     us.AccountWorkAreas.Add(data);
                     _dbctx.AccountWorkAreas.Add(data);
                     WorkView.Refresh();
-                    logger.LogInformation("add Workarea {message}", (AccountWorkArea)dropInfo.Data);
+                    logger.LogInformation("add Workarea {message}", (WorkArea)dropInfo.Data);
                 }
                 if (dropInfo.Data is Costunit c)
                 {
@@ -271,7 +271,7 @@ namespace Lieferliste_WPF.ViewModels
                     us.AccountCostUnits.Add(data);
                     _dbctx.AccountCosts.Add(data);
                     CostView.Refresh();
-                    logger.LogInformation("add Workarea {message}", (AccountCost)dropInfo.Data);
+                    logger.LogInformation("add Workarea {message}", (Costunit)dropInfo.Data);
                 }
                 if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName &&
                     (dropInfo.Data is AccountCost || dropInfo.Data is AccountWorkArea))

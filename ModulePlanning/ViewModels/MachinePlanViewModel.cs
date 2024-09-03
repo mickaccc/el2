@@ -363,15 +363,14 @@ namespace ModulePlanning.ViewModels
 
             catch (Exception e)
             {
-                _Logger.LogError("{message} CommandParameter: {par} WorkArea: {work}",
-                    e.ToString(), commandParameter.ToString(), work.ToString());
+                _Logger.LogError("{message} CommandParameter: {par} WorkArea: {work} ProcessCV {pro} Parking {perk} RessCV {res}",
+                    e.ToString(), commandParameter.ToString(), work.ToString(), ProcessCV, ParkingCV, RessCV);
             }
         }
         private void OnTextSearch(object commandParameter)
         {
             try
             {
- 
                 if (commandParameter is string change)
                 {
                     if (!string.IsNullOrWhiteSpace(change))
@@ -385,7 +384,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception e)
             {
-                _Logger.LogError("{message}", e.ToString());
+                _Logger.LogError("{message} commandParameter= {1} ProcessCV {proc}", e.ToString(), commandParameter, ProcessCV);
             }
         }
         private void OnTextSearchArbPl(object obj)
@@ -403,7 +402,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception e)
             {
-                _Logger.LogError("{message}", e.ToString());
+                _Logger.LogError("{message}, obj= {1}", e.ToString(), obj);
             }
         }
         private void ProcessCV_Filter(object sender, FilterEventArgs e)
@@ -413,7 +412,7 @@ namespace ModulePlanning.ViewModels
                 Vorgang v = (Vorgang)e.Item;
                 e.Accepted = false;
                 var l = _machines.Where(x => x.WorkArea?.WorkAreaId == _currentWorkArea);
-                if (l.Any(x => x.Rid == v.ArbPlSapNavigation?.RessourceId))
+               if (l.Any(x => x.Rid == v.ArbPlSapNavigation?.RessourceId))
                 {
                     e.Accepted = true;
                     if (!string.IsNullOrWhiteSpace(_searchFilterText))
