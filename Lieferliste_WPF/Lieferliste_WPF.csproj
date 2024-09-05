@@ -200,6 +200,7 @@
     <ProjectReference Include="..\ModuleDeliverList\ModuleDeliverList.csproj" />
     <ProjectReference Include="..\ModuleMeasuring\ModuleMeasuring.csproj" />
     <ProjectReference Include="..\ModulePlanning\ModulePlanning.csproj" />
+    <ProjectReference Include="..\ModuleProducts\ModuleProducts.csproj" />
     <ProjectReference Include="..\ModuleReport\ModuleReport.csproj" />
   </ItemGroup>
 
