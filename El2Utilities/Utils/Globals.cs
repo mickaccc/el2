@@ -133,7 +133,7 @@ namespace El2Core.Utils
         public static ImmutableDictionary<string, ProjectScheme> ProjectSchemes { get; private set; } = ImmutableDictionary<string, ProjectScheme>.Empty;
         public RuleInfo(List<Rule> rules)
         {
-            Rules = rules.ToImmutableDictionary(x => x.RuleValue.Trim(), x => x);
+            Rules = rules.ToImmutableDictionary(x => x.RuleName.Trim(), x => x);
             Dictionary<string, ProjectScheme> sc = new Dictionary<string, ProjectScheme>();
             var scheme = rules.SingleOrDefault(x => x.RuleValue.Trim() == "ProjStruct");
             if (scheme != null)

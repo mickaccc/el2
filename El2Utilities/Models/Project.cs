@@ -2,11 +2,14 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace El2Core.Models;
 
 public partial class Project
 {
+    [NotMapped]
+    public int AttCount { get; set; }
     public string ProjectPsp { get; set; } = null!;
 
     public int ProjectType { get; set; }

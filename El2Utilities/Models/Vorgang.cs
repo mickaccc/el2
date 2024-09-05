@@ -13,6 +13,8 @@ public partial class Vorgang : ModelBase
     public bool? Alert { get; set; }
     [NotMapped]
     public string? Extends { get; set; }
+    [NotMapped]
+    public int AttCount { get; set; }
     public string VorgangId { get; set; } = null!;
 
     public string Aid { get; set; } = null!;

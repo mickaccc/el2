@@ -221,7 +221,7 @@
                             Project="{Binding AidNavigation.ProId}"
                             ProjectInfo="{Binding AidNavigation.Pro.ProjectInfo, Mode=TwoWay}"
                             ProjectPrio="{Binding AidNavigation.Pro.ProjectPrio, Mode=TwoWay}"
-                            ProjectAttachmentCount="{Binding AidNavigation.Pro.ProjectAttachments.Count}"
+                            ProjectAttachmentCount="{Binding AidNavigation.Pro.AttCount}"
                             Quantity="{Binding AidNavigation.Quantity}" 
                             QuantityYield="{Binding QuantityYield,NotifyOnTargetUpdated=True}" 
                             QuantityScrap="{Binding QuantityScrap,NotifyOnTargetUpdated=True}" 

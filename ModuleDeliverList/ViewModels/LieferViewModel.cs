@@ -725,11 +725,12 @@ namespace ModuleDeliverList.ViewModels
                .ThenInclude(x => x.MaterialNavigation)
                .Include(r => r.RidNavigation)
                .Include(m => m.AidNavigation.DummyMatNavigation)
-               .Include(d => d.AidNavigation.Pro)
+               .Include(p => p.AidNavigation.Pro)
                .Include(v => v.ArbPlSapNavigation)
                .Where(x => x.AidNavigation.Abgeschlossen == false)
                .ToListAsync();
 
+            var att = await DBctx.ProjectAttachments.Select(x => x.ProjectPsp).ToListAsync();
             var ress = await DBctx.Ressources.AsNoTracking()
                 .Include(x => x.WorkArea)
                 .ToArrayAsync();
@@ -770,13 +771,17 @@ namespace ModuleDeliverList.ViewModels
                         }
                         if (relev)
                         {
+                            
                             foreach (var vorg in group)
                             {
                                 if (vorg.AidNavigation.ProId != null && !vorg.AidNavigation.ProId.StartsWith('0'))
                                 {
                                     var p = vorg.AidNavigation.Pro;
                                     if (p != null)
+                                    {
                                         pl.Add(new(p.ProjectPsp.Trim(), (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
+                                        p.AttCount = att.Where(x => x == p.ProjectPsp).Count();
+                                    }
                                 }
 
                                 if (vorg.Aktuell)
@@ -816,7 +821,6 @@ namespace ModuleDeliverList.ViewModels
         }
         private bool AddRelevantProcess((string, string) income)
         {
-
             try
             {
                 bool returnValue = false;
