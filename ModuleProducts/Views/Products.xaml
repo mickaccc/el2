@@ -3,10 +3,70 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:local="clr-namespace:ModuleProducts.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
     <Grid>
-            
+        <Grid.Resources>
+            <conv:TTNR_Converter x:Key="TTNR"/>
+            <conv:ActivateColorConverter ActiveColor="Green" x:Key="Active"/>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBox x:Name="search" >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="TextChanged">
+                    <i:InvokeCommandAction Command="{Binding SearchCommand}"
+                                           CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType=TextBox}}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
+        <ListBox Grid.Row="1" ItemsSource="{Binding MaterialTask.Result}" >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Background="Cyan" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                            <TextBlock Text="{Binding Ttnr, Converter={StaticResource TTNR}}" Margin="0,0,10,0" />
+                            <TextBlock Text="{Binding Bezeichng}"/>
+                            <TextBlock Text="{Binding OrderRbs.Count}" Margin="10,0,0,0"/>
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Explorer"  Command="{Binding PlacementTarget.Tag.ApplicationCommands.ExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                              CommandParameter="{Binding Path=PlacementTarget.Parent.Parent.SelectedItem.Ttnr, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+                        <DataGrid ItemsSource="{Binding OrderRbs}" IsReadOnly="True" AutoGenerateColumns="False">
+                            <DataGrid.InputBindings>
+                                <MouseBinding Command="{Binding DataContext.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                  CommandParameter="{Binding Path=SelectedItem.Aid,  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                  MouseAction="LeftDoubleClick"/>
+                            </DataGrid.InputBindings>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid}" >
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Background" Value="{Binding Abgeschlossen, Converter={StaticResource Active}}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                    
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Eckstart" Binding="{Binding Eckstart, StringFormat=\{0:d\}}"/>
+                                <DataGridTextColumn Header="Eckende" Binding="{Binding Eckende, StringFormat=\{0:d\}}"/>
+                                <DataGridTextColumn Header="Menge" Binding="{Binding Quantity}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
     </Grid>
 </UserControl>

@@ -68,6 +68,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand ArchivateCommand { get; }
         public ICommand OpenProjectOverViewCommand { get; }
         public ICommand MachinePrintCommand { get; }
+        public ICommand OpenProductViewCommand { get; }
         private NotifyTaskCompletion<int>? _onlineTask;
         public NotifyTaskCompletion<int>? OnlineTask
         {
@@ -155,6 +156,7 @@ namespace Lieferliste_WPF.ViewModels
                 OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
                 OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
                 OpenReportCommand = new ActionCommand(OnOpenReportExecuted, OnOpenReportCanExecute);
+                OpenProductViewCommand = new ActionCommand(OnOpenProductExecuted, OnOpenProductCanExecute);
 
                 _workareaDocumentInfo = new WorkareaDocumentInfo(container);
                 //DbOperations();
@@ -164,6 +166,16 @@ namespace Lieferliste_WPF.ViewModels
                 _Logger?.LogError("{message}", ex);
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        private bool OnOpenProductCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.ProductsViewOpen);
+        }
+
+        private void OnOpenProductExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Products", UriKind.Relative));
         }
 
         private bool OnOpenReportCanExecute(object arg)

@@ -17,6 +17,7 @@ using ModulePlanning.Dialogs;
 using ModulePlanning.Dialogs.ViewModels;
 using ModulePlanning.Planning;
 using ModulePlanning.Views;
+using ModuleProducts.Views;
 using ModuleReport.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -103,6 +104,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<HolidayEdit>();
             containerRegistry.RegisterForNavigation<ShiftPlanEdit>();
             containerRegistry.RegisterForNavigation<ReportMainView>();
+            containerRegistry.RegisterForNavigation<Products>();
 
 
             containerRegistry.RegisterSingleton<IPlanMachineFactory, PlanMachineFactory>();
@@ -133,6 +135,7 @@ namespace Lieferliste_WPF
             moduleCatalog.AddModule<ModuleMeasuring.MeasuringModule>();
             moduleCatalog.AddModule<ModulePlanning.PlanningModule>();
             moduleCatalog.AddModule<ModuleReport.ReportModule>();
+            moduleCatalog.AddModule<ModuleProducts.ProductsModule>();
         }
     }
 }

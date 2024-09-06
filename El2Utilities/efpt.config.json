@@ -127,6 +127,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[VorgangAttachment]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[WorkArea]",
          "ObjectType": 0
       },

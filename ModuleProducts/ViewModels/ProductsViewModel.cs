@@ -4,12 +4,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace ModuleProducts.ViewModels
@@ -25,11 +20,15 @@ namespace ModuleProducts.ViewModels
 
             MaterialTask = new NotifyTaskCompletion<ICollectionView>(OnLoadMaterialsAsync());
         }
-
+        public string Title { get; } = "Produkt Übersicht";
         IContainerProvider _container;
         ILogger _Logger;
         public ICollectionView ProductsView { get; private set; }
         private List<TblMaterial> _Materials;
+        private string? _SearchText;
+        private RelayCommand? _SearchCommand;
+        public RelayCommand SearchCommand => _SearchCommand ??= new RelayCommand(OnTextSearch);
+
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
         {
@@ -65,7 +64,7 @@ namespace ModuleProducts.ViewModels
 
                 var mat = await db.TblMaterials.AsNoTracking()
                     .Include(x => x.OrderRbs)
-                    .OrderBy(x => x.OrderRbs.First().Eckstart)
+                    .Where(x => string.IsNullOrWhiteSpace(x.Ttnr) == false)
                     .ToListAsync();
 
                 _Materials = mat;
@@ -81,12 +80,22 @@ namespace ModuleProducts.ViewModels
 
         private bool OnFilterPredicate(object obj)
         {
-            bool accept = false;
-            if (obj is TblMaterial mat)
+            bool accept = true;
+            if (obj is TblMaterial mat && _SearchText != null)
             {
-
+                accept = mat.Ttnr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
+                if (!accept)
+                    accept = (mat.Bezeichng != null) && mat.Bezeichng.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
             }
             return accept;
+        }
+        private void OnTextSearch(object obj)
+        {
+            if(obj is string search)
+            {
+                _SearchText = search;
+                ProductsView.Refresh();
+            }
         }
     }
 }

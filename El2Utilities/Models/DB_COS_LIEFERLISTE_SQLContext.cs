@@ -69,6 +69,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<Vorgang> Vorgangs { get; set; }
 
+    public virtual DbSet<VorgangAttachment> VorgangAttachments { get; set; }
+
     public virtual DbSet<WorkArea> WorkAreas { get; set; }
 
     public virtual DbSet<WorkSap> WorkSaps { get; set; }
@@ -734,6 +736,30 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasForeignKey(d => d.Rid)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Vorgang_Ressource");
+        });
+
+        modelBuilder.Entity<VorgangAttachment>(entity =>
+        {
+            entity.HasKey(e => e.AttachId);
+
+            entity.ToTable("VorgangAttachment");
+
+            entity.Property(e => e.AttachId)
+                .ValueGeneratedNever()
+                .HasColumnName("AttachID");
+            entity.Property(e => e.Link)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.Timestamp)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnName("timestamp");
+            entity.Property(e => e.VorgangId)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Vorgang).WithMany(p => p.VorgangAttachments)
+                .HasForeignKey(d => d.VorgangId)
+                .HasConstraintName("FK_VorgangAttachment_Vorgang");
         });
 
         modelBuilder.Entity<WorkArea>(entity =>

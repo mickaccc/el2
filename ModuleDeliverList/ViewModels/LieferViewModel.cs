@@ -730,7 +730,8 @@ namespace ModuleDeliverList.ViewModels
                .Where(x => x.AidNavigation.Abgeschlossen == false)
                .ToListAsync();
 
-            var att = await DBctx.ProjectAttachments.Select(x => x.ProjectPsp).ToListAsync();
+            var attPro = await DBctx.ProjectAttachments.Select(x => x.ProjectPsp).ToListAsync();
+            var attVrg = await DBctx.VorgangAttachments.Select(x => x.VorgangId).ToListAsync();
             var ress = await DBctx.Ressources.AsNoTracking()
                 .Include(x => x.WorkArea)
                 .ToArrayAsync();
@@ -780,12 +781,13 @@ namespace ModuleDeliverList.ViewModels
                                     if (p != null)
                                     {
                                         pl.Add(new(p.ProjectPsp.Trim(), (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
-                                        p.AttCount = att.Where(x => x == p.ProjectPsp).Count();
+                                        p.AttCount = attPro.Where(x => x == p.ProjectPsp).Count();
                                     }
                                 }
 
                                 if (vorg.Aktuell)
                                 {
+                                    vorg.AttCount = attVrg.Where(x => x == vorg.VorgangId).Count();
                                     result.Add(vorg);
                                     var inv = (vorg.ArbPlSap != null) ? vorg.ArbPlSap[3..] : string.Empty;
                                     var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;

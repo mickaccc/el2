@@ -79,6 +79,8 @@
                                   Command="{Binding OpenReportCommand}"/>
                         <MenuItem Header="Messdokumente"
                                   Command="{Binding OpenMeasureOperCommand}"/>
+                        <MenuItem Header="Produkte"
+                                  Command="{Binding OpenProductViewCommand}"/>
                     </MenuItem>
                     
                     <MenuItem Header="Adminfunktionen">

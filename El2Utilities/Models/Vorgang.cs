@@ -104,4 +104,6 @@ public partial class Vorgang : ModelBase
     public virtual ICollection<Response> Responses { get; set; } = new List<Response>();
 
     public virtual Ressource? RidNavigation { get; set; }
+
+    public virtual ICollection<VorgangAttachment> VorgangAttachments { get; set; } = new List<VorgangAttachment>();
 }
