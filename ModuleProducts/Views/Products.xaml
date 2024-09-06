@@ -14,6 +14,7 @@
         <Grid.Resources>
             <conv:TTNR_Converter x:Key="TTNR"/>
             <conv:ActivateColorConverter ActiveColor="Green" x:Key="Active"/>
+            <conv:MultiObjectConverter x:Key="multi"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -38,8 +39,7 @@
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Explorer"  Command="{Binding PlacementTarget.Tag.ApplicationCommands.ExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                              CommandParameter="{Binding Path=PlacementTarget.Parent.Parent.SelectedItem.Ttnr, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                    
+                                              CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>
@@ -49,6 +49,12 @@
                                   CommandParameter="{Binding Path=SelectedItem.Aid,  RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                   MouseAction="LeftDoubleClick"/>
                             </DataGrid.InputBindings>
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Auftrag öffnen" Command="{Binding PlacementTarget.Parent.Parent.Tag.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                              CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid}" >
                                     <DataGridTextColumn.ElementStyle>

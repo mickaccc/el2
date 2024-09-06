@@ -490,6 +490,10 @@ namespace Lieferliste_WPF.ViewModels
             {
                 docu = _workareaDocumentInfo.CreateDocumentInfos([v.AidNavigation.Material, v.Aid, string.Empty]);
             }
+            else if (obj is TblMaterial m)
+            {
+                docu = _workareaDocumentInfo.CreateDocumentInfos([m.Ttnr, string.Empty, string.Empty]);
+            }
             else 
             { 
                 var dic = obj as Dictionary<string, object>;
