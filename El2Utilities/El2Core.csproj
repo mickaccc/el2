@@ -47,6 +47,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="NewFolder\**" />
+	  <EmbeddedResource Remove="NewFolder\**" />
+	  <None Remove="NewFolder\**" />
+	  <Page Remove="NewFolder\**" />
+	</ItemGroup>
+
+	<ItemGroup>
     <Compile Remove="Converters\ActiveDocumentConverter.cs" />
     <Compile Remove="Utils\ConverterBindableParameter.cs" />
   </ItemGroup>
@@ -92,10 +99,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>
