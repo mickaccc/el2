@@ -23,7 +23,7 @@ namespace El2Core.Utils
         public abstract IDbAttachment CreateDbAttachment(string link, bool isLink);
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto, PreserveSig = true, SetLastError = false)]
         public static extern IntPtr GetActiveWindow();
-        private ImageSource? GetIcon(ProgramIcon programIcon)
+        private static ImageSource? GetIcon(ProgramIcon programIcon)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace El2Core.Utils
             }
             return null;
         }
-        public IDisplayAttachment FloatAttachment(IDisplayAttachment attachment, string? file, bool isLink)
+        public static IDisplayAttachment FloatAttachment(IDisplayAttachment attachment, string? file, bool isLink)
         {   
             
             FileInfo fi = new FileInfo(file ?? string.Empty);
@@ -65,7 +65,7 @@ namespace El2Core.Utils
             }
             return attachment;
         }
-        public IDbAttachment FloatAttachment(IDbAttachment dbAttachment, string fileString, bool isLink)
+        public static IDbAttachment FloatAttachment(IDbAttachment dbAttachment, string fileString, bool isLink)
         {
             FileInfo fi = new FileInfo(fileString);
             if (fi.Exists)
@@ -101,11 +101,11 @@ namespace El2Core.Utils
             else MessageBox.Show("Datei wurde nicht gefunden", "Datei anfügen", MessageBoxButton.OK, MessageBoxImage.Error);
             return dbAttachment;
         }
-        public void OpenFile(string file, MemoryStream? memoryStream)
+        public static void OpenFile(string file, MemoryStream? memoryStream)
         {
             try
             {
-                FileInfo fi = new FileInfo(file);
+                FileInfo fi = new(file);
                 string filepath;
                 if (memoryStream == null)  
                 {
@@ -129,9 +129,9 @@ namespace El2Core.Utils
                 MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "OpenStream", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        public static async Task<string> GetFilePath()
+        public static async Task<string> GetFilePathFromPicker()
         {
-            FileOpenPicker openPicker = new FileOpenPicker();
+            FileOpenPicker openPicker = new();
             var initializeWithWindowWrapper = openPicker.As<IInitializeWithWindow>();
             initializeWithWindowWrapper.Initialize(GetActiveWindow());
             openPicker.ViewMode = PickerViewMode.List;
