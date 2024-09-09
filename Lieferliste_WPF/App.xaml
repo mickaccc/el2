@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="/Styles/AnimColors.xaml"/>
                 <ResourceDictionary Source="/Styles/UIColors.xaml"/>
                 <ResourceDictionary Source="/Styles/ControlStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/DialogBoxStyle.xaml"/>
                 <!--<ResourceDictionary Source="/Styles/ButtonStyle.xaml"/>-->
 
 

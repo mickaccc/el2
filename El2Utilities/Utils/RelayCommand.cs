@@ -24,6 +24,10 @@
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
+
+        public RelayCommand(Action onDialogClosed)
+        {
+        }
         #endregion // Constructors
 
         #region ICommand Members

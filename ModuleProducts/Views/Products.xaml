@@ -13,7 +13,7 @@
     <Grid>
         <Grid.Resources>
             <conv:TTNR_Converter x:Key="TTNR"/>
-            <conv:ActivateColorConverter ActiveColor="Green" x:Key="Active"/>
+            <conv:ActivateColorConverter ActiveColor="LightGreen" x:Key="Active"/>
             <conv:MultiObjectConverter x:Key="multi"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -43,7 +43,7 @@
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>
-                        <DataGrid ItemsSource="{Binding OrderRbs}" IsReadOnly="True" AutoGenerateColumns="False">
+                        <DataGrid ItemsSource="{Binding OrderRbs}" IsReadOnly="True" AutoGenerateColumns="False" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <DataGrid.InputBindings>
                                 <MouseBinding Command="{Binding DataContext.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                   CommandParameter="{Binding Path=SelectedItem.Aid,  RelativeSource={RelativeSource AncestorType=DataGrid}}"
@@ -51,8 +51,10 @@
                             </DataGrid.InputBindings>
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Auftrag öffnen" Command="{Binding PlacementTarget.Parent.Parent.Tag.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                              CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Auftrag öffnen" Command="{Binding PlacementTarget.Tag.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem.Aid, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Explorer" Command="{Binding PlacementTarget.Tag.ApplicationCommands.ExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>

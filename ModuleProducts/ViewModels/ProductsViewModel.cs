@@ -11,19 +11,20 @@ namespace ModuleProducts.ViewModels
 {
     internal class ProductsViewModel : ViewModelBase
     {
-        public ProductsViewModel(IContainerProvider container, IApplicationCommands applicationCommands)
+        public ProductsViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
         {
             _container = container;
             _applicationCommands = applicationCommands;
             var loggerFactory = _container.Resolve<ILoggerFactory>();
             _Logger = loggerFactory.CreateLogger<ProductsViewModel>();
-
+            firstPartInfo = new MeasureFirstPartInfo(_container);
             MaterialTask = new NotifyTaskCompletion<ICollectionView>(OnLoadMaterialsAsync());
         }
         public string Title { get; } = "Produkt Übersicht";
-        IContainerProvider _container;
+        IContainerExtension _container;
         ILogger _Logger;
         public ICollectionView ProductsView { get; private set; }
+        private MeasureFirstPartInfo firstPartInfo;
         private List<TblMaterial> _Materials;
         private string? _SearchText;
         private RelayCommand? _SearchCommand;

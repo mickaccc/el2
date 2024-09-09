@@ -482,6 +482,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnOpenExplorerExecuted(object obj)
         {
             Document? docu;
+            if (obj is null) return;
             if (obj is OrderViewModel o)
             {
                 docu = _workareaDocumentInfo.CreateDocumentInfos([o.Material, o.Aid, string.Empty]);
@@ -493,6 +494,10 @@ namespace Lieferliste_WPF.ViewModels
             else if (obj is TblMaterial m)
             {
                 docu = _workareaDocumentInfo.CreateDocumentInfos([m.Ttnr, string.Empty, string.Empty]);
+            }
+            else if (obj is OrderRb orb)
+            {
+                docu = _workareaDocumentInfo.CreateDocumentInfos([orb.Material, orb.Aid, string.Empty]);
             }
             else 
             { 

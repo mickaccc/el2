@@ -6,6 +6,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Prism.Dialogs;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -40,6 +41,7 @@ namespace ModuleDeliverList.ViewModels
         public ICommand CreatePdfCommand { get; private set; }
         public ICommand CreateHtmlCommand { get; private set; }
         public ICommand SendMailCommand { get; private set; }
+        public ICommand AttachmentCommand { get; private set; }
         private ConcurrentObservableCollection<Vorgang> _orders { get; } = [];
         private DB_COS_LIEFERLISTE_SQLContext DBctx { get; set; }
         public ActionCommand SaveCommand { get; private set; }
@@ -48,6 +50,7 @@ namespace ModuleDeliverList.ViewModels
         public string Title { get; } = "Lieferliste";
         public bool HasChange => DBctx.ChangeTracker.HasChanges();
         private readonly ILogger _Logger;
+        IDialogService _dialogService;
         private readonly Dictionary<string, string> _filterCriterias = [];
         private readonly string _sortField = string.Empty;
         private readonly string _sortDirection = string.Empty;
@@ -229,7 +232,8 @@ namespace ModuleDeliverList.ViewModels
         public LieferViewModel(IContainerProvider container,
             IApplicationCommands applicationCommands,
             IEventAggregator ea,
-            IUserSettingsService settingsService)
+            IUserSettingsService settingsService,
+            IDialogService dialogService)
         {
             _applicationCommands = applicationCommands;
             DBctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -238,6 +242,7 @@ namespace ModuleDeliverList.ViewModels
             _Logger = factory.CreateLogger<LieferViewModel>();
             _ea = ea;
             _settingsService = settingsService;
+            _dialogService = dialogService;
 
             InvisibilityCommand = new ActionCommand(OnInvisibilityExecuted, OnInvisibilityCanExecute);
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
@@ -245,6 +250,7 @@ namespace ModuleDeliverList.ViewModels
             ProjectPrioCommand = new ActionCommand(OnSetProjectPrioExecuted, OnSetProjectPrioCanExecute);
             CreateRtfCommand = new ActionCommand(OnCreateRtfExecuted, OnCreateRtfCanExecute);
             CreateHtmlCommand = new ActionCommand(OnCreateHtmlExecuted, OnCreateHtmlCanExecute);
+            AttachmentCommand = new ActionCommand(OnAttachmentExecuted, OnAttachmentCanExecute);
             OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
 
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
@@ -582,6 +588,20 @@ namespace ModuleDeliverList.ViewModels
                 AbstracatBuilder Tbuilder = CreateTableBuilder();
                 string content = Tbuilder.GetHtml();
                 File.WriteAllText(filename, content);
+            }
+        }
+        private bool OnAttachmentCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnAttachmentExecuted(object obj)
+        {
+            if (obj is Vorgang vrg)
+            {
+                var par = new DialogParameters();
+                par.Add("vid", vrg.VorgangId);
+                _dialogService.ShowDialog("AttachmentDialog", par);
             }
         }
         private bool OnSetProjectPrioCanExecute(object arg)
