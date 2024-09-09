@@ -600,7 +600,7 @@ namespace ModuleDeliverList.ViewModels
             if (obj is Vorgang vrg)
             {
                 var par = new DialogParameters();
-                par.Add("vid", vrg.VorgangId);
+                par.Add("vrg", vrg);
                 _dialogService.ShowDialog("AttachmentDialog", par);
             }
         }

@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:ModuleDeliverList.Dialogs"
              xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Title="{Binding Title}" MinHeight="100" MinWidth="100">
+             d:DesignHeight="450" d:DesignWidth="800" Title="{Binding Title}" MinHeight="150" MinWidth="100">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -16,10 +16,15 @@
         <ItemsControl ItemsSource="{Binding AttachView}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                      Background="{DynamicResource MahApps.Brushes.Accent4}" Tag="{Binding}"
                      dd:DragDrop.IsDropTarget="True"
-                     dd:DragDrop.IsDragSource="True"
+                     dd:DragDrop.IsDragSource="False"
                      dd:DragDrop.DropHandler="{Binding}"
                      dd:DragDrop.DragHandler="{Binding}">
-
+            <ItemsControl.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Anhang in Datenbank" Command="{Binding AddAttachmentCommand}"/>
+                    <MenuItem Header="Anhang als Link" Command="{Binding AddLinkedAttachmentCommand}"/>
+                </ContextMenu>
+            </ItemsControl.ContextMenu>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>
@@ -28,13 +33,13 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Button ToolTip="{Binding Name}" Background="Transparent" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=Grid}}"
-                           Command="{Binding Tag.OpenFileCommand, RelativeSource={RelativeSource AncestorType=Button}}"
+                           Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                            CommandParameter="{Binding}">
                         <Image Source="{Binding Content}" MaxHeight="80"/>
                         <Button.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Anhang löschen"
-                                         Command="{Binding PlacementTarget.Tag.RemoveFileCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                         Command="{Binding PlacementTarget.Tag.DelAttachmentCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext}"/>
                             </ContextMenu>
                         </Button.ContextMenu>

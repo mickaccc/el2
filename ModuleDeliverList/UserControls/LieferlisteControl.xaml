@@ -191,6 +191,7 @@
                     </Grid.ColumnDefinitions>
                     <!--<Controls:CommentControl User="{Binding Path=User, ElementName=luc, Mode=OneTime}"
                                              CommentString="{Binding Path=Comment_Me, ElementName=luc, Mode=TwoWay}"/>-->
+                    
                     <GroupBox ToolTip="Kommentar Meister" VerticalAlignment="Stretch" MinWidth="30" MaxWidth="390"
                           Header="{Binding Comment_Me, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">

@@ -6,16 +6,23 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Windows.Storage.Pickers;
+using Windows.Storage;
+using System.Runtime.InteropServices;
+using WinRT;
 
 namespace El2Core.Utils
 {
     public abstract class AttachmentFactory
     {
         public abstract IDisplayAttachment CreateDisplayAttachment(string link, bool isLink);
-        public abstract IDbAttachment CreateDbAttachment(string? link, bool isLink);
+        public abstract IDbAttachment CreateDbAttachment(string link, bool isLink);
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto, PreserveSig = true, SetLastError = false)]
+        public static extern IntPtr GetActiveWindow();
         private ImageSource? GetIcon(ProgramIcon programIcon)
         {
             try
@@ -40,6 +47,7 @@ namespace El2Core.Utils
             
             FileInfo fi = new FileInfo(file ?? string.Empty);
             var fileass = new FileAssociationInfo(fi.Extension);
+            
             if (fileass.Exists)
             {
                 var prog = new ProgramAssociationInfo(fileass.ProgID);
@@ -53,51 +61,58 @@ namespace El2Core.Utils
 
                 attachment.Content = icon;
                 attachment.Name = (isLink) ? fi.FullName : fi.Name;
+                attachment.IsLink = isLink;
             }
             return attachment;
         }
-        public IDbAttachment FloatAttachment(IDbAttachment dbAttachment, string fileString)
+        public IDbAttachment FloatAttachment(IDbAttachment dbAttachment, string fileString, bool isLink)
         {
             FileInfo fi = new FileInfo(fileString);
             if (fi.Exists)
             {
-                
-                if (fi.Length < 0x500000)    //Filesize of 5 MiB
-                {
-
-                    MemoryStream ms = new MemoryStream();
-                    using (FileStream file = new FileStream(fileString, FileMode.Open, FileAccess.Read))
-                        file.CopyTo(ms);
-                    dbAttachment.Link = fi.Name;
-                    dbAttachment.BinaryData = ms.ToArray();
-                    dbAttachment.TimeStamp = DateTime.Now;
-                }
-                else if (MessageBox.Show("Die Datei ist größer als 5 MiB, soll es als Link gespeichert werden?", "",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (isLink)
                 {
                     dbAttachment.Link = fi.FullName;
                     dbAttachment.IsLink = true;
                     dbAttachment.TimeStamp = DateTime.Now;
                 }
+                else
+                {
+                    if (fi.Length < 0x500000)    //Filesize of 5 MiB
+                    {
+
+                        MemoryStream ms = new MemoryStream();
+                        using (FileStream file = new FileStream(fileString, FileMode.Open, FileAccess.Read))
+                            file.CopyTo(ms);
+                        dbAttachment.Link = fi.Name;
+                        dbAttachment.IsLink= false;
+                        dbAttachment.BinaryData = ms.ToArray();
+                        dbAttachment.TimeStamp = DateTime.Now;
+                    }
+                    else if (MessageBox.Show("Die Datei ist größer als 5 MiB, soll es als Link gespeichert werden?", "",
+                        MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        dbAttachment.Link = fi.FullName;
+                        dbAttachment.IsLink = true;
+                        dbAttachment.TimeStamp = DateTime.Now;
+                    }
+                }
             }
             else MessageBox.Show("Datei wurde nicht gefunden", "Datei anfügen", MessageBoxButton.OK, MessageBoxImage.Error);
             return dbAttachment;
         }
-        private void OnOpenFileExecuted(object obj)
+        public void OpenFile(string file, MemoryStream? memoryStream)
         {
             try
             {
-                Attachment att = (Attachment)obj;
-                FileInfo fi = new FileInfo(att.Name);
+                FileInfo fi = new FileInfo(file);
                 string filepath;
-                if (att.IsLink)
+                if (memoryStream == null)  
                 {
-                    filepath = att.Name;
+                    filepath = fi.FullName;
                 }
                 else
                 {
-                    var pa = Project.ProjectAttachments.First(x => x.AttachId == att.Ident);
-                    using MemoryStream memoryStream = new(pa.AttachmentBin);
 
                     filepath = Path.Combine(Path.GetTempPath(), fi.Name);
                     using FileStream fs = new(filepath, FileMode.Create);
@@ -114,36 +129,32 @@ namespace El2Core.Utils
                 MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "OpenStream", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private bool OnRemoveFileCanExecute(object arg)
+        public static async Task<string> GetFilePath()
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.DelProjAttachment);
+            FileOpenPicker openPicker = new FileOpenPicker();
+            var initializeWithWindowWrapper = openPicker.As<IInitializeWithWindow>();
+            initializeWithWindowWrapper.Initialize(GetActiveWindow());
+            openPicker.ViewMode = PickerViewMode.List;
+            openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            openPicker.FileTypeFilter.Add("*");
+            StorageFile op = await openPicker.PickSingleFileAsync();
+            if (op != null) { return op.Path; }
+            return string.Empty;
         }
 
-        private void OnRemoveFileExecuted(object obj)
-        {
-            var att = (Attachment)obj;
-            Attachments.Remove(att);
-            var dbAtt = _dbctx.ProjectAttachments.FirstOrDefault(x => x.AttachId == att.Ident);
-            if (dbAtt != null)
-            {
-                _dbctx.ProjectAttachments.Remove(dbAtt);
-                _dbctx.SaveChanges();
-            }
-        }
-        private bool OnPrintCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.PrintProj);
-        }
+
     }
     public interface IDisplayAttachment
     {
+        int Id { get; set; }
         string Name { get; set; }
         string? Description { get; set; }
         object? Content { get; set; }
+        bool IsLink { get; set; }
     }
     public interface IDbAttachment
     {
-        string? Link { get; set; }
+        string Link { get; set; }
         bool IsLink { get; set; }
         DateTime TimeStamp { get; set; }
         byte[]? BinaryData { get; set; }

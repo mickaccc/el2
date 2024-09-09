@@ -744,9 +744,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.ToTable("VorgangAttachment");
 
-            entity.Property(e => e.AttachId)
-                .ValueGeneratedNever()
-                .HasColumnName("AttachID");
+            entity.Property(e => e.AttachId).HasColumnName("AttachID");
             entity.Property(e => e.Link)
                 .HasMaxLength(255)
                 .IsUnicode(false);

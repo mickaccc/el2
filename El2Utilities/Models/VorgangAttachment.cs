@@ -13,9 +13,11 @@ public partial class VorgangAttachment
 
     public byte[]? Data { get; set; }
 
-    public string? Link { get; set; }
+    public string Link { get; set; } = null!;
 
     public DateTime Timestamp { get; set; }
+
+    public bool IsLink { get; set; }
 
     public virtual Vorgang Vorgang { get; set; } = null!;
 }

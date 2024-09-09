@@ -74,5 +74,7 @@
         public const string MysticCodeInvers = "!MYSTICCODE";
         public const string ReportOpen = "REP00";
         public const string ProductsViewOpen = "PROD00";
+        public const string AddVrgAttachment = "ADDVRGATT";
+        public const string DelVrgAttachment = "DELVRGATT";
     }
 }

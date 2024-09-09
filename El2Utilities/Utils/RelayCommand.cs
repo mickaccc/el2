@@ -25,9 +25,6 @@
             _canExecute = canExecute;
         }
 
-        public RelayCommand(Action onDialogClosed)
-        {
-        }
         #endregion // Constructors
 
         #region ICommand Members
