@@ -7,6 +7,7 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Lieferliste_WPF.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Prism.Dialogs;
 using Prism.Ioc;
 using System;
@@ -68,7 +69,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private Project Project { get; set; }
+        private ILogger _logger;
+        private Project Project;
         private string _wbsElement;
         public string WbsElement
         {
@@ -120,6 +122,8 @@ namespace Lieferliste_WPF.ViewModels
             _userSettingsService = userSettingsService;
             _applicationCommands = applicationCommands;
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var loggerFactory = container.Resolve<ILoggerFactory>();
+            _logger = loggerFactory.CreateLogger<ProjectsViewModel>();
         }
 
         private async Task<ICollectionView?> LoadAsync(string projectNo)
@@ -134,6 +138,7 @@ namespace Lieferliste_WPF.ViewModels
 
                 this.WbsElement = pro.ProjectPsp.Trim() ?? "NULL";
                 this.WbsInfo = pro.ProjectInfo?.Trim() ?? string.Empty;
+                this.Project = pro;
 
                 var profact = new ProjAttachmentCreator();
                 foreach (var o in pro.ProjectAttachments)
@@ -187,6 +192,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (o.Length > 0)
                 {
                     AddAttachment(o[0], false);
+                    _logger.LogInformation("Att droped {message}", o[0]);
                 }
             }
         }
@@ -248,6 +254,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     _dbctx.ProjectAttachments.Remove(dbAtt);
                     _dbctx.SaveChanges();
+                    _logger.LogInformation("deleted {message}", dbAtt.AttachmentLink);
                 }
             }
         }
@@ -271,9 +278,12 @@ namespace Lieferliste_WPF.ViewModels
 
         private async void OnAddFileExecutedAsync(object obj)
         {
-            var f = await AttachmentFactory.GetFilePath();
+            var f = await AttachmentFactory.GetFilePickerPath();
             if (f != null)
+            {
                 AddAttachment(f, false);
+                _logger.LogInformation("Att added {message}", f);
+            }
         }
         private bool OnAddFileAsLinkCanExecute(object arg)
         {
@@ -282,9 +292,12 @@ namespace Lieferliste_WPF.ViewModels
 
         private async void OnAddFileAsLinkExecutedAsync(object obj)
         {
-            var f = await AttachmentFactory.GetFilePath();
+            var f = await AttachmentFactory.GetFilePickerPath();
             if (f != null)
+            { 
                 AddAttachment(f, true);
+                _logger.LogInformation("Att added as Link {message}", f);
+            }
         }
     }
     internal class ProjDbAttachment : IDbAttachment

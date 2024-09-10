@@ -125,7 +125,7 @@ namespace El2Core.Utils
                 MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "OpenStream", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        public static async Task<string> GetFilePath()
+        public static async Task<string> GetFilePickerPath()
         {
             FileOpenPicker openPicker = new FileOpenPicker();
             var initializeWithWindowWrapper = openPicker.As<IInitializeWithWindow>();

@@ -69,6 +69,7 @@ namespace ModuleDeliverList.Dialogs.ViewModels
                 var dbatt = db.VorgangAttachments.Single(x => x.AttachId == disp.Id);
                 db.VorgangAttachments.Remove(dbatt);
                 db.SaveChanges();
+                Logger.LogInformation("{message}", dbatt.Link);
             }
         }
         private bool OnLinkedAttachmentCanExecute(object arg)
@@ -79,9 +80,12 @@ namespace ModuleDeliverList.Dialogs.ViewModels
         private async void OnLinkedAttachmentExecuted(object obj)
         {
             
-            var f = await AttachmentFactory.GetFilePath();
+            var f = await AttachmentFactory.GetFilePickerPath();
             if (f != null)
+            {
                 AddAttachment(f, true);
+                Logger.LogInformation("{message}", f);
+            }
         }
         private bool OnAttachmentCanExecute(object arg)
         {
@@ -91,9 +95,12 @@ namespace ModuleDeliverList.Dialogs.ViewModels
         private async void OnAttachmentExecuted(object obj)
         {
 
-            var f = await AttachmentFactory.GetFilePath();
+            var f = await AttachmentFactory.GetFilePickerPath();
             if (f != null)
+            {
                 AddAttachment(f, false);
+                Logger.LogInformation("{message}", f);
+            }
         }
         private bool OnOpenFileCanExecute(object arg)
         {
@@ -135,6 +142,7 @@ namespace ModuleDeliverList.Dialogs.ViewModels
                 if (o.Length > 0)
                 {
                     AddAttachment(o[0], false);
+                    Logger.LogInformation("Att droped {message}", o[0]);
                 }
             }
         }
