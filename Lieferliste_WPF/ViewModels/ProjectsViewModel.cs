@@ -1,5 +1,4 @@
-﻿using BrendanGrant.Helpers.FileAssociation;
-using CompositeCommands.Core;
+﻿using CompositeCommands.Core;
 using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Services;
@@ -13,8 +12,6 @@ using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Printing;
@@ -24,25 +21,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-using WinRT;
 
 
 namespace Lieferliste_WPF.ViewModels
 {
 
 
- 
+
     internal class ProjectsViewModel : ViewModelBase, IDialogAware, IDropTarget
     {
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto, PreserveSig = true, SetLastError = false)]
         public static extern IntPtr GetActiveWindow();
         private string _title = "Projektübersicht";
         public string Title => _title;
-
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private IUserSettingsService _userSettingsService;
         private IContainerProvider _container;
@@ -105,8 +96,8 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private List<OrderRb> _orderRbs;
-        private ObservableList<Attachment> _attachments = new();
-        public ObservableList<Attachment> Attachments
+        private ObservableList<IDisplayAttachment> _attachments = new();
+        public ObservableList<IDisplayAttachment> Attachments
         {
             get { return _attachments; }
             set
@@ -143,11 +134,13 @@ namespace Lieferliste_WPF.ViewModels
 
                 this.WbsElement = pro.ProjectPsp.Trim() ?? "NULL";
                 this.WbsInfo = pro.ProjectInfo?.Trim() ?? string.Empty;
-                this.Project = pro;
 
+                var profact = new ProjAttachmentCreator();
                 foreach (var o in pro.ProjectAttachments)
                 {
-                    AddAttachment(o.AttachId, o.AttachmentLink, o.IsLink);
+                    var attDisp = profact.CreateDisplayAttachment(o.AttachmentLink, o.IsLink);
+                    attDisp.Id = o.AttachId;
+                    _attachments.Add(attDisp);
                 }
                 _orderRbs = new List<OrderRb>(pro.OrderRbs.ToList());
                 OrdersView = CollectionViewSource.GetDefaultView(_orderRbs);
@@ -156,48 +149,6 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Load Projects", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            return null;
-        }
-
-        private void AddAttachment(int id, string? file, bool isLink)
-        {
-
-            Attachment attachment = new(id, isLink);
-            FileInfo fi = new FileInfo(file ?? string.Empty);
-            var fileass = new FileAssociationInfo(fi.Extension);
-            if (fileass.Exists)
-            {
-                var prog = new ProgramAssociationInfo(fileass.ProgID);
-                ImageSource? icon;
-
-                if (prog.Exists)
-                {
-                    icon = GetIcon(prog.DefaultIcon);
-                }
-                else icon = new BitmapImage(new Uri("\\Images\\unknown-file.png", UriKind.Relative));
-
-                attachment.Content = icon;
-                attachment.Name = (isLink) ? fi.FullName : fi.Name;
-                Attachments.Add(attachment);
-            }
-        }
-        public static ImageSource? GetIcon(ProgramIcon programIcon)
-        {
-            try
-            {      
-                Icon? icon = Icon.ExtractIcon(programIcon.Path, programIcon.Index, 32);
-                if (icon != null)
-                {
-                    return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                                icon.Handle,
-                                new Int32Rect(0, 0, icon.Width, icon.Height),
-                                BitmapSizeOptions.FromEmptyOptions());
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "GetIcon", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return null;
         }
@@ -214,6 +165,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
+
             var p = parameters.GetValue<string>("projectNo");
             ProjTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync(p));
         }
@@ -234,39 +186,29 @@ namespace Lieferliste_WPF.ViewModels
                 var o = (string[])f.GetData(DataFormats.FileDrop);
                 if (o.Length > 0)
                 {
-                    AddFile(o[0]);
+                    AddAttachment(o[0], false);
                 }
             }
         }
-        private void AddFile(string fileString)
+        private void AddAttachment(string link, bool isLink)
         {
-            FileInfo fi = new FileInfo(fileString);
-            if (fi.Exists)
-            {
-                ProjectAttachment Patt = new();
-                if (fi.Length < 0x500000)    //Filesize of 5 MiB
-                {
+            var profact = new ProjAttachmentCreator();
 
-                    MemoryStream ms = new MemoryStream();
-                    using (FileStream file = new FileStream(fileString, FileMode.Open, FileAccess.Read))
-                        file.CopyTo(ms);
-                    Patt.AttachmentLink = fi.Name;
-                    Patt.AttachmentBin = ms.ToArray();
-                    Patt.Timestamp = DateTime.Now;
-                }
-                else if (MessageBox.Show("Die Datei ist größer als 5 MiB, soll es als Link gespeichert werden?", "",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    Patt.AttachmentLink = fi.FullName;
-                    Patt.IsLink = true;
-                    Patt.Timestamp = DateTime.Now;
-                }
-                else return;
-                Project.ProjectAttachments.Add(Patt);
-                _dbctx.SaveChanges();
-                AddAttachment(Patt.AttachId, Patt.AttachmentLink, Patt.IsLink);
-            }
-            else MessageBox.Show("Datei wurde nicht gefunden", "Datei anfügen", MessageBoxButton.OK, MessageBoxImage.Error);
+            var att = profact.CreateDbAttachment(link, isLink);
+
+            var patt = new ProjectAttachment();
+            patt.Timestamp = att.TimeStamp;
+            patt.AttachmentBin = att.BinaryData;
+            patt.AttachmentLink = att.Link;
+            patt.IsLink = att.IsLink;
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var pro = db.Projects.Single(x => x.ProjectPsp == this.Project.ProjectPsp);
+            pro.ProjectAttachments.Add(patt);
+            db.SaveChanges();
+
+            var attDisp = profact.CreateDisplayAttachment(att.Link, att.IsLink);
+            attDisp.Id = patt.AttachId;
+            _attachments.Add(attDisp);
         }
         private bool OnOpenFileCanExecute(object arg)
         {
@@ -275,33 +217,20 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenFileExecuted(object obj)
         {
-            try
+            if (obj is ProjDisplayAttachment disp)
             {
-                Attachment att = (Attachment)obj;
-                FileInfo fi = new FileInfo(att.Name);
-                string filepath;
-                if (att.IsLink)
+                var fact = new ProjAttachmentCreator();
+                if (disp.IsLink)
                 {
-                    filepath = att.Name;                   
+                    AttachmentFactory.OpenFile(disp.Name, null);
                 }
                 else
                 {
-                    var pa = Project.ProjectAttachments.First(x => x.AttachId == att.Ident);
-                    using MemoryStream memoryStream = new(pa.AttachmentBin);
-
-                    filepath = Path.Combine(Path.GetTempPath(), fi.Name);
-                    using FileStream fs = new(filepath, FileMode.Create);
-                    memoryStream.CopyTo(fs);
-                    fs.Flush();
-                    fs.Close();
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    var att = db.ProjectAttachments.Single(x => x.AttachId.Equals(disp.Id));
+                    using MemoryStream ms = new(att.AttachmentBin);
+                    AttachmentFactory.OpenFile(disp.Name, ms);
                 }
-                var asso = MiniFileAssociation.Association.GetAssociatedExePath(fi.Extension);
-
-                if (asso != null) new Process() { StartInfo = new ProcessStartInfo(filepath) { UseShellExecute = true } }.Start();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "OpenStream", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private bool OnRemoveFileCanExecute(object arg)
@@ -311,13 +240,15 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnRemoveFileExecuted(object obj)
         {
-            var att = (Attachment)obj;
-            Attachments.Remove(att);
-            var dbAtt = _dbctx.ProjectAttachments.FirstOrDefault(x => x.AttachId == att.Ident);
-            if (dbAtt != null)
+            if (obj is ProjDisplayAttachment att)
             {
-                _dbctx.ProjectAttachments.Remove(dbAtt);
-                _dbctx.SaveChanges();
+                Attachments.Remove(att);
+                var dbAtt = _dbctx.ProjectAttachments.FirstOrDefault(x => x.AttachId == att.Id);
+                if (dbAtt != null)
+                {
+                    _dbctx.ProjectAttachments.Remove(dbAtt);
+                    _dbctx.SaveChanges();
+                }
             }
         }
         private bool OnPrintCanExecute(object arg)
@@ -340,14 +271,9 @@ namespace Lieferliste_WPF.ViewModels
 
         private async void OnAddFileExecutedAsync(object obj)
         {
-            FileOpenPicker openPicker = new FileOpenPicker();
-            var initializeWithWindowWrapper = openPicker.As<IInitializeWithWindow>();
-            initializeWithWindowWrapper.Initialize(GetActiveWindow());
-            openPicker.ViewMode = PickerViewMode.List;
-            openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            openPicker.FileTypeFilter.Add("*");
-            StorageFile op = await openPicker.PickSingleFileAsync();
-            if (op != null) { AddFile(op.Path); }
+            var f = await AttachmentFactory.GetFilePath();
+            if (f != null)
+                AddAttachment(f, false);
         }
         private bool OnAddFileAsLinkCanExecute(object arg)
         {
@@ -356,24 +282,40 @@ namespace Lieferliste_WPF.ViewModels
 
         private async void OnAddFileAsLinkExecutedAsync(object obj)
         {
-            FileOpenPicker openPicker = new();
-            var initializeWithWindowWrapper = openPicker.As<IInitializeWithWindow>();
-            initializeWithWindowWrapper.Initialize(GetActiveWindow());
-            openPicker.ViewMode = PickerViewMode.List;
-            openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            openPicker.FileTypeFilter.Add("*");
-            StorageFile op = await openPicker.PickSingleFileAsync();
-            if (op != null)
-            {
-                ProjectAttachment patt = new();
-                patt.AttachmentLink = op.Path;
-                patt.IsLink = true;
+            var f = await AttachmentFactory.GetFilePath();
+            if (f != null)
+                AddAttachment(f, true);
+        }
+    }
+    internal class ProjDbAttachment : IDbAttachment
+    {
+        public string Link { get; set; }
+        public bool IsLink { get; set ; }
+        public DateTime TimeStamp { get; set; }
+        public byte[]? BinaryData { get; set; }
+    }
+    internal class ProjDisplayAttachment : IDisplayAttachment
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string? Description { get; set; }
+        public object? Content { get; set; }
+        public bool IsLink { get; set; }
+    }
+    internal class ProjAttachmentCreator : AttachmentFactory
+    {
+        public override IDbAttachment CreateDbAttachment(string link, bool isLink)
+        {
+            var attachment = new ProjDbAttachment();
+            var att = FloatAttachment(attachment, link, isLink);
+            return att;
+        }
 
-                Project.ProjectAttachments.Add(patt);
-                _dbctx.SaveChanges();
-
-                AddAttachment(patt.AttachId, patt.AttachmentLink, patt.IsLink);
-            }
+        public override IDisplayAttachment CreateDisplayAttachment(string link, bool isLink)
+        {
+            var attachment = new ProjDisplayAttachment();
+            var att = FloatAttachment(attachment, link, isLink);
+            return att;
         }
     }
 }

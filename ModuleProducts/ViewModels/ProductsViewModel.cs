@@ -87,6 +87,8 @@ namespace ModuleProducts.ViewModels
                 accept = mat.Ttnr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
                 if (!accept)
                     accept = (mat.Bezeichng != null) && mat.Bezeichng.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
+                if (!accept)
+                    accept = mat.OrderRbs.Any(x => x.Aid.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase));
             }
             return accept;
         }

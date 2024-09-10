@@ -264,9 +264,9 @@ namespace ModuleDeliverList.UserControls
 
         // Using a DependencyProperty as the backing store for ProjectAttachmentCount.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ProjectAttachmentCountProperty =
-            DependencyProperty.Register("ProjectAttachmentCount", typeof(int?), typeof(LieferlisteControl), new PropertyMetadata(null, null, OnProjectAttachment));
+            DependencyProperty.Register("ProjectAttachmentCount", typeof(int?), typeof(LieferlisteControl), new PropertyMetadata(null, null, OnAttachment));
 
-        private static object? OnProjectAttachment(DependencyObject d, object baseValue)
+        private static object? OnAttachment(DependencyObject d, object baseValue)
         {
             var b = baseValue as int?;
             return b == null || b == 0 ? null : b;
@@ -464,6 +464,18 @@ namespace ModuleDeliverList.UserControls
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedBindingProperty =
             DependencyProperty.Register("SelectedBinding", typeof(object), typeof(LieferlisteControl), new PropertyMetadata(null));
+
+
+
+        public int? AttachmentCount
+        {
+            get { return (int?)GetValue(AttachmentCountProperty); }
+            set { SetValue(AttachmentCountProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for AttachmentCount.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty AttachmentCountProperty =
+            DependencyProperty.Register("AttachmentCount", typeof(int?), typeof(LieferlisteControl), new PropertyMetadata(null, null, OnAttachment));
 
 
         public string HasMouseOver { get; internal set; }

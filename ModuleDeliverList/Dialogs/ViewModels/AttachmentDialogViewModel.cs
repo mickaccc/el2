@@ -106,15 +106,15 @@ namespace ModuleDeliverList.Dialogs.ViewModels
             {
                 var fact = new VorgangAttachmentCreator();
                 if (disp.IsLink)
-                {                  
-                    fact.OpenFile(disp.Name, null);
+                {
+                    AttachmentFactory.OpenFile(disp.Name, null);
                 }
                 else
                 {
                     using var db = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     var att = db.VorgangAttachments.Single(x => x.AttachId.Equals(disp.Id));
                     using MemoryStream ms = new(att.Data);
-                    fact.OpenFile(disp.Name, ms);
+                    AttachmentFactory.OpenFile(disp.Name, ms);
                 }
             }
         }
@@ -156,7 +156,6 @@ namespace ModuleDeliverList.Dialogs.ViewModels
             foreach (var att in attach)
             {
                 var va = vaFactory.CreateDisplayAttachment(att.Link, att.IsLink);
-                va.Description = att.VorgangId;
                 va.Id = att.AttachId;
                 _attachments.Add(va);
             }
@@ -177,6 +176,7 @@ namespace ModuleDeliverList.Dialogs.ViewModels
             vatt.Timestamp = att.TimeStamp;
             vatt.Data = att.BinaryData;
             vatt.Link = att.Link;
+            vatt.IsLink = att.IsLink;
             using var db = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var vrg = db.Vorgangs.Single(x => x.VorgangId == this.Vorgang.VorgangId);
             vrg.VorgangAttachments.Add(vatt);

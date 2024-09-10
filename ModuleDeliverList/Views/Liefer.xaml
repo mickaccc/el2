@@ -210,8 +210,8 @@
             </ListBox.ContextMenu>
             <ListBox.ItemTemplate>
                 <DataTemplate >
-                    <materialDesign:Badged Badge="{Binding AttCount}" BadgePlacementMode="Left"  HorizontalAlignment="Stretch">
-                        <userControls:LieferlisteControl x:Name="ucLiefer" GotFocus="ucLiefer_GotFocus"
+
+                    <userControls:LieferlisteControl x:Name="ucLiefer" GotFocus="ucLiefer_GotFocus"
                                                      
                             Aid="{Binding Aid}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
@@ -242,10 +242,11 @@
                             SysStatus="{Binding AidNavigation.SysStatus}"
                             MarkCode="{Binding AidNavigation.MarkCode, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
-                            Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}" >
+                            Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}"
+                            AttachmentCount="{Binding AttCount, Mode=OneWay}">
 
                         </userControls:LieferlisteControl>
-                    </materialDesign:Badged>
+
                 </DataTemplate>
         </ListBox.ItemTemplate>
     </ListBox>
