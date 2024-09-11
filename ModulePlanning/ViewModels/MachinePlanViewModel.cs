@@ -27,12 +27,24 @@ namespace ModulePlanning.ViewModels
     {
         public string Title { get; } = "Teamleiter Zuteilung";
         public bool HasChange => Changed();
+        private string searchArbpl = string.Empty;
+        public string SearchArbpl
+        {
+            get { return searchArbpl; }
+            set
+            {
+                if (searchArbpl != value)
+                {
+                    searchArbpl = value;
+                    NotifyPropertyChanged(() => SearchArbpl);
+                    ProcessCV.Refresh();
+                }
+            }
+        }
         private RelayCommand? _selectionChangeCommand;
         private RelayCommand? _textSearchCommand;
-        private RelayCommand? _textSearchArbPlCommand;
         public ICommand SelectionChangeCommand => _selectionChangeCommand ??= new RelayCommand(SelectionChange);
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
-        public ICommand TextSearchArbPlCommand => _textSearchArbPlCommand ??= new RelayCommand(OnTextSearchArbPl);
         public ICommand SaveCommand { get; private set; }
         public List<WorkArea> WorkAreas { get; } = [];
         private ConcurrentObservableCollection<PlanMachine> _machines { get; } = new();
@@ -79,7 +91,7 @@ namespace ModulePlanning.ViewModels
         private int _currentWorkArea;
         private string? _searchFilterText;
         private readonly object _lock = new();
-        private string? _searchFilterTextArbPl;
+
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
 
@@ -387,24 +399,7 @@ namespace ModulePlanning.ViewModels
                 _Logger.LogError("{message} commandParameter= {1} ProcessCV {proc}", e.ToString(), commandParameter, ProcessCV);
             }
         }
-        private void OnTextSearchArbPl(object obj)
-        {
-            try
-            {
-                if (obj is string change)
-                {
-                    if (!string.IsNullOrWhiteSpace(change))
-                    {
-                        _searchFilterTextArbPl = change;
-                        ProcessCV.Refresh();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                _Logger.LogError("{message}, obj= {1}", e.ToString(), obj);
-            }
-        }
+
         private void ProcessCV_Filter(object sender, FilterEventArgs e)
         {
             try
@@ -421,8 +416,8 @@ namespace ModulePlanning.ViewModels
                             if (!(e.Accepted = v.AidNavigation?.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
                                 e.Accepted = v.AidNavigation?.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
                     }
-                    else if (string.IsNullOrWhiteSpace(_searchFilterTextArbPl) == false)
-                        e.Accepted = v.ArbPlSap?.Contains(_searchFilterTextArbPl, StringComparison.CurrentCultureIgnoreCase) ?? false;
+                    if (SearchArbpl != string.Empty)
+                        e.Accepted = v.ArbPlSap?.Contains(SearchArbpl, StringComparison.CurrentCultureIgnoreCase) ?? false;
                 }
             }
             catch (Exception ex)

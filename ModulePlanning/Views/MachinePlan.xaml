@@ -75,14 +75,10 @@
             </TextBox>
             <TextBox x:Name="searchTextBoxArbPl" VerticalContentAlignment="Center" DockPanel.Dock="Left" Margin="10,0,10,0"
          materialdesign:HintAssist.Hint="suchen in Arbeitsplatz SAP"
-         materialdesign:TextFieldAssist.HasClearButton="false" 
-         Style="{DynamicResource MaterialDesignFloatingHintTextBox}" >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="TextChanged">
-                        <i:InvokeCommandAction Command="{Binding TextSearchArbPlCommand}" CommandParameter="{Binding Path=Text, ElementName=searchTextBoxArbPl}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </TextBox>
+         materialdesign:TextFieldAssist.HasClearButton="false" Text="{Binding SearchArbpl, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+         Style="{DynamicResource MaterialDesignFloatingHintTextBox}" />
+
+
         </DockPanel>
         <mah:ProgressRing Grid.Row="1" IsActive="True" Foreground="{DynamicResource ActiveProcess}"
                      Visibility="{Binding MachineTask.IsNotCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
