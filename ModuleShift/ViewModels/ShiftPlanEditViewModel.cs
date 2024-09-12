@@ -326,42 +326,28 @@ namespace ModuleShift.ViewModels
             BitArray cover = new BitArray(data.CoverMask);
             if (IsRubberChecked)
             {
-                for(int i = 0;i < cover.Length;i++)
-                {
-                    if (cover[i]) item.Definition[i] = false;
-                }
+                var s = _SelectedPlan.Clone();
+                var d = s.ShiftWeekDays.Single(x => x.Id == item.Id);
+                
+                d.Definition.And(cover.Not());
+                SelectedPlan = null;
+                SelectedPlan = s;
             }
             else 
-            {
-                
+            {                
                 var s = _SelectedPlan.Clone();
                 var d = s.ShiftWeekDays.Single(x => x.Id == item.Id);
                 d.Definition.Or(cover);
                 SelectedPlan = null;
                 SelectedPlan = s;
-            }
-            
-
-            
+            }           
         }
         public class ShiftDay(int id, BitArray definition) : ViewModelBase
         {
             public readonly int Id = id;
             public string WeekDayName { get; } = DateTimeFormatInfo.CurrentInfo.GetDayName((DayOfWeek)id);
             private BitArray _Definition = definition;
-            public BitArray Definition
-            {
-                get { return _Definition; }
-                set
-                {
-                    _Definition = value;
-                    NotifyPropertyChanged(() => Definition);
-                }
-            }
-            public void DefinitionChanged()
-            {
-                NotifyPropertyChanged(() => Definition);
-            }
+            public BitArray Definition {  get { return _Definition; } }
         }
         public class ShiftWeek
         {

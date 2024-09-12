@@ -60,12 +60,14 @@
                  Foreground="Red" />
         </StackPanel>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" CanUserAddRows="True" >
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="AddingNewItem">
-                    <i:InvokeCommandAction Command="{Binding AddNewCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" CanUserAddRows="False">
+
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="neue Zeile"
+                              Command="{Binding PlacementTarget.DataContext.AddNewRowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Startzeit">
                     <DataGridTemplateColumn.CellTemplate>

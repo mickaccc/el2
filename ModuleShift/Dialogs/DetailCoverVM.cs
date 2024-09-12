@@ -3,11 +3,13 @@ using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace ModuleShift.Dialogs
 {
@@ -16,7 +18,7 @@ namespace ModuleShift.Dialogs
         public string Title => "Cover Details";
         public ShiftCover Cover { get; set; }
         public bool IsLocked { get; private set; }
-        private List<TimeTuple> TimeList { get; set; } = [];
+        private ObservableCollection<TimeTuple> TimeList { get; set; } = [];
         public ICollectionView TimeListView { get; private set; }
         ButtonResult result;
         private DelegateCommand? _closeDialogCommand;
@@ -25,16 +27,24 @@ namespace ModuleShift.Dialogs
         private DelegateCommand? _cancelDialogCommand;
         public DelegateCommand CancelDialogCommand =>
             _cancelDialogCommand ?? (_cancelDialogCommand = new DelegateCommand(OnCancelDialog));
-        private DelegateCommand? _addingNewCommand;
-        public DelegateCommand AddingNewCommand =>
-            _addingNewCommand ?? (_addingNewCommand = new DelegateCommand(OnAddingNew));
+  
+        private DelegateCommand? _addNewRowCommand;
+        public DelegateCommand AddNewRowCommand =>
+            _addNewRowCommand ?? (_addNewRowCommand = new DelegateCommand(OnAddingNewRow, OnCanAddNewRow));
+
+        private bool OnCanAddNewRow()
+        {
+            return !IsLocked;
+        }
+
+        private void OnAddingNewRow()
+        {
+            TimeList.Add(new TimeTuple());
+            
+        }
 
         public DialogCloseListener RequestClose { get; }
 
-        private void OnAddingNew()
-        {
-            
-        }
 
         private void OnOkDialog()
         {

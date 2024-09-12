@@ -20,8 +20,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120"/>
             <ColumnDefinition/>
-    
-       
+          
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
@@ -36,9 +35,11 @@
             <Button Command="{Binding SaveAllCommand}"
                     CommandParameter="{Binding SelectedItem, ElementName=ShiftPlans}"
                     Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
-                <icons:PackIconCoolicons Kind="Save"/>
+                <icons:PackIconCoolicons Kind="Save"
+                                         ToolTip="ausgewählter Wochenplan speichern"/>
             </Button>
-            <Button Command="{Binding SaveNewCommand}" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5">
+            <Button Command="{Binding SaveNewCommand}" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}" Margin="5"
+                    ToolTip="Wochenplan unter neuen Namen speichern">
                 <icons:BootstrapIcons Kind="Save"/>
             </Button>
             <ToggleButton IsChecked="{Binding IsRubberChecked}">
@@ -91,15 +92,14 @@
 
         <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding SelectedPlan.ShiftWeekDays}"
                       drop:DragDrop.IsDropTarget="True" drop:DragDrop.DropHandler="{Binding}" >
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <wpfCustom:BitPicture1D BoolPattern="{Binding Definition, Mode=OneWay}" WeekDay="{Binding WeekDayName, Mode=OneTime}" 
-                                                StripeHeight="50" LowColor="AntiqueWhite" HighColor="{DynamicResource Theme.ShowcaseBrush}"
-                                                Margin="5" Height="70"/>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <wpfCustom:BitPicture1D BoolPattern="{Binding Definition, Mode=OneWay}" WeekDay="{Binding WeekDayName, Mode=OneTime}" 
+                                            StripeHeight="50" LowColor="AntiqueWhite" HighColor="{DynamicResource Theme.ShowcaseBrush}"
+                                            Margin="5" Height="70"/>
 
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-    
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </UserControl>
