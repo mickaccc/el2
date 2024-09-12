@@ -3,6 +3,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.Extensions.Logging;
+using ModuleShift.Services;
 using Prism.Ioc;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -15,7 +16,7 @@ using System.Windows.Input;
 using System.Xml;
 using static El2Core.Constants.ShiftTypes;
 
-namespace Lieferliste_WPF.ViewModels
+namespace ModuleShift.ViewModels
 {
     internal class ShiftEditViewModel : ViewModelBase
     {

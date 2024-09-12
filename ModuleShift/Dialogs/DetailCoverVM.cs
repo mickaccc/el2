@@ -2,20 +2,16 @@
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Prism.Commands;
-using Prism.Dialogs;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Lieferliste_WPF.Dialogs.ViewModels
+namespace ModuleShift.Dialogs
 {
-    internal class DetailCoverVM : ViewModelBase, IDialogAware
+    public class DetailCoverVM : ViewModelBase, IDialogAware
     {
         public string Title => "Cover Details";
         public ShiftCover Cover { get; set; }
@@ -43,20 +39,22 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         private void OnOkDialog()
         {
             result = ButtonResult.OK;
+            bool[] bools = new bool[1440];
             foreach (var t in TimeList)
             {
-                bool[] bools = new bool[1440];
-                if(string.IsNullOrWhiteSpace(t.Start) || string.IsNullOrWhiteSpace(t.End) || string.IsNullOrWhiteSpace(Cover.CoverName) ) { break; }
+
+                if (string.IsNullOrWhiteSpace(t.Start) || string.IsNullOrWhiteSpace(t.End) || string.IsNullOrWhiteSpace(Cover.CoverName)) { break; }
                 int start = t.TotalMinute(t.Start);
                 int end = t.TotalMinute(t.End);
-                if(end == 0) { end = 1440; }
-                if(start > end) { break; }
+                if (end == 0) { end = 1440; }
+                if (start > end) { break; }
                 bools.AsSpan().Slice(start, end - start).Fill(true);
+            }
                 BitArray bit = new BitArray(bools);
                 byte[] bytes = new byte[180];
                 bit.CopyTo(bytes, 0);
                 Cover.CoverMask = bytes;
-            }
+       
             OnDialogClosed();
         }
         private void OnCancelDialog()
@@ -90,7 +88,9 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             else
             {
                 LoadTimeList();
-                IsLocked = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
+                IsLocked = Cover.Lock;
+                if (IsLocked)
+                    IsLocked = !PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
             }
             TimeListView = CollectionViewSource.GetDefaultView(TimeList);
             TimeListView.CollectionChanged += OnTimeListChanged;

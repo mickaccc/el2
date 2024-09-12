@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ReportTypes\**" />
+    <EmbeddedResource Remove="ReportTypes\**" />
+    <None Remove="ReportTypes\**" />
+    <Page Remove="ReportTypes\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" NoWarn="NU1701" />
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="3.1.0" />
     <PackageReference Include="Prism.Core" Version="9.0.537" />
@@ -18,10 +25,6 @@
     <ProjectReference Include="..\CompositeCommands.Core\CompositeCommands.Core.csproj" />
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
     <ProjectReference Include="..\vhCalendar\vhCalendar.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ReportTypes\" />
   </ItemGroup>
 
 </Project>

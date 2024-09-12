@@ -1,16 +1,13 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
-using Prism.Ioc;
-using System;
-using System.Collections.Generic;
+using El2Core.ViewModelBase;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Xml.Serialization;
 using static El2Core.Constants.ShiftTypes;
 
 
-namespace El2Core.Services
+namespace ModuleShift.Services
 {
     public interface IProcessStripeService
     { }
@@ -131,7 +128,7 @@ namespace El2Core.Services
         }
 
     }
-    public class WorkShiftService : ViewModelBase.ViewModelBase
+    public class WorkShiftService : ViewModelBase
     {
         public WorkShiftService() { }
         private int _id;
@@ -183,7 +180,7 @@ namespace El2Core.Services
 
         public ObservableCollection<WorkShiftItem> Items { get; set; } = [];
     }
-    public class WorkShiftItem : ViewModelBase.ViewModelBase
+    public class WorkShiftItem : ViewModelBase
     {
         public WorkShiftItem() { }
         [XmlIgnore]

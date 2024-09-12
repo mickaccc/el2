@@ -21,6 +21,9 @@ using ModulePlanning.Planning;
 using ModulePlanning.Views;
 using ModuleProducts.Views;
 using ModuleReport.Views;
+using ModuleShift.Dialogs;
+using ModuleShift.Services;
+using ModuleShift.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Navigation.Regions;
@@ -140,6 +143,7 @@ namespace Lieferliste_WPF
             moduleCatalog.AddModule<ModulePlanning.PlanningModule>();
             moduleCatalog.AddModule<ModuleReport.ReportModule>();
             moduleCatalog.AddModule<ModuleProducts.ProductsModule>();
+            moduleCatalog.AddModule<ModuleShift.ShiftModule>();
         }
     }
 }

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Lieferliste_WPF.Dialogs
+namespace ModuleShift.Views
 {
     /// <summary>
-    /// Interaction logic for InputDialog.xaml
+    /// Interaction logic for ShiftPlanEdit.xaml
     /// </summary>
-    public partial class InputDialog : UserControl
+    public partial class ShiftPlanEdit : UserControl
     {
-        public InputDialog()
+        public ShiftPlanEdit()
         {
             InitializeComponent();
         }

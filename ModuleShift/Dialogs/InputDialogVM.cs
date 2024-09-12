@@ -1,7 +1,7 @@
 ﻿using Prism.Commands;
 using Prism.Dialogs;
 
-namespace Lieferliste_WPF.Dialogs.ViewModels
+namespace ModuleShift.Dialogs
 {
     public class InputDialogVM : IDialogAware
     {
@@ -33,7 +33,8 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         }
         private void OnCancelDialog()
         {
-           RequestClose.Invoke(new DialogParameters(), ButtonResult.Cancel); 
+            InputText = "cancel";
+            RequestClose.Invoke(new DialogParameters(), ButtonResult.Cancel); 
         }
         public bool CanCloseDialog()
         {

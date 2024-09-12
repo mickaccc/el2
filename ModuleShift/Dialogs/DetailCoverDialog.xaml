@@ -1,11 +1,10 @@
-﻿<UserControl x:Class="Lieferliste_WPF.Dialogs.DetailCoverDialog"
+﻿<UserControl x:Class="ModuleShift.Dialogs.DetailCoverDialog"
              xml:lang="de-AT"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Lieferliste_WPF.Dialogs"
-             xmlns:vm="clr-namespace:Lieferliste_WPF.Dialogs.ViewModels"
+             xmlns:local="clr-namespace:ModuleShift.Dialogs"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
@@ -16,6 +15,7 @@
     <Grid>
         <Grid.Resources>
             <conv:BooleanInverter x:Key="boolInv"/>
+            
             <Style TargetType="mah:TimePicker">
                 <Setter Property="IsReadOnly" Value="{Binding Path=DataContext.IsLocked, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                 <Setter Property="SelectedTimeFormat" Value="Short"/>
@@ -43,7 +43,7 @@
         <Grid.BindingGroup>
             <BindingGroup>
                 <BindingGroup.ValidationRules>
-                    <vm:CoverValidationRule/>
+                    <local:CoverValidationRule/>
                 </BindingGroup.ValidationRules>
             </BindingGroup>
         </Grid.BindingGroup>
@@ -60,7 +60,7 @@
                  Foreground="Red" />
         </StackPanel>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" CanUserAddRows="False" >
+        <DataGrid Grid.Row="1" ItemsSource="{Binding TimeListView}" AutoGenerateColumns="False" CanUserAddRows="True" >
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="AddingNewItem">
                     <i:InvokeCommandAction Command="{Binding AddNewCommand}"/>

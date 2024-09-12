@@ -18,7 +18,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 
 
-namespace Lieferliste_WPF.ViewModels
+namespace ModuleShift.ViewModels
 {
     internal class ShiftPlanEditViewModel : ViewModelBase, IDropTarget
     {

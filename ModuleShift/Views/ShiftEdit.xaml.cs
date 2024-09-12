@@ -1,5 +1,5 @@
 ﻿using El2Core.Services;
-using Lieferliste_WPF.Utilities;
+using ModuleShift.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Lieferliste_WPF.Views
+namespace ModuleShift.Views
 {
     /// <summary>
     /// Interaction logic for ShiftEdit.xaml
