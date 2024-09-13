@@ -29,13 +29,19 @@ public partial class Ressource
 
     public int? ShiftPlanId { get; set; }
 
+    public int? ShiftCalendar { get; set; }
+
     public virtual ICollection<MeasureRessRessource> MeasureRessRessources { get; set; } = new List<MeasureRessRessource>();
 
     public virtual ICollection<RessourceCostUnit> RessourceCostUnits { get; set; } = new List<RessourceCostUnit>();
 
     public virtual ICollection<RessourceWorkshift> RessourceWorkshifts { get; set; } = new List<RessourceWorkshift>();
 
+    public virtual ShiftCalendar? ShiftCalendarNavigation { get; set; }
+
     public virtual ShiftPlan? ShiftPlan { get; set; }
+
+    public virtual ICollection<Stopage> Stopages { get; set; } = new List<Stopage>();
 
     public virtual ICollection<Vorgang> Vorgangs { get; set; } = new List<Vorgang>();
 

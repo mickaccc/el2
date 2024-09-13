@@ -5,27 +5,17 @@ using System.Collections.Generic;
 
 namespace El2Core.Models;
 
-public partial class ShiftPlan
+public partial class ShiftCalendar
 {
     public int Id { get; set; }
 
-    public string PlanName { get; set; } = null!;
+    public string CalendarName { get; set; } = null!;
 
-    public byte[] Sun { get; set; } = null!;
-
-    public byte[] Mon { get; set; } = null!;
-
-    public byte[] Tue { get; set; } = null!;
-
-    public byte[] Wed { get; set; } = null!;
-
-    public byte[] Thu { get; set; } = null!;
-
-    public byte[] Fre { get; set; } = null!;
-
-    public byte[] Sat { get; set; } = null!;
+    public DateTime Timestamp { get; set; }
 
     public bool Lock { get; set; }
+
+    public bool Repeat { get; set; }
 
     public virtual ICollection<Ressource> Ressources { get; set; } = new List<Ressource>();
 

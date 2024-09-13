@@ -107,11 +107,23 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ShiftCalendar]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ShiftCalendarShiftPlan]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[ShiftCover]",
          "ObjectType": 0
       },
       {
          "Name": "[dbo].[ShiftPlan]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Stopage]",
          "ObjectType": 0
       },
       {

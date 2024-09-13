@@ -59,9 +59,15 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<Rule> Rules { get; set; }
 
+    public virtual DbSet<ShiftCalendar> ShiftCalendars { get; set; }
+
+    public virtual DbSet<ShiftCalendarShiftPlan> ShiftCalendarShiftPlans { get; set; }
+
     public virtual DbSet<ShiftCover> ShiftCovers { get; set; }
 
     public virtual DbSet<ShiftPlan> ShiftPlans { get; set; }
+
+    public virtual DbSet<Stopage> Stopages { get; set; }
 
     public virtual DbSet<TblDummy> TblDummies { get; set; }
 
@@ -494,6 +500,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.RessName).HasMaxLength(30);
             entity.Property(e => e.Visability).HasDefaultValue(true);
 
+            entity.HasOne(d => d.ShiftCalendarNavigation).WithMany(p => p.Ressources)
+                .HasForeignKey(d => d.ShiftCalendar)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Ressource_ShiftCalendar");
+
             entity.HasOne(d => d.ShiftPlan).WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.ShiftPlanId)
                 .OnDelete(DeleteBehavior.SetNull)
@@ -574,6 +585,48 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .IsFixedLength();
         });
 
+        modelBuilder.Entity<ShiftCalendar>(entity =>
+        {
+            entity.ToTable("ShiftCalendar");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CalendarName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Lock).HasColumnName("lock");
+            entity.Property(e => e.Repeat)
+                .HasDefaultValue(true)
+                .HasColumnName("repeat");
+            entity.Property(e => e.Timestamp)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp");
+        });
+
+        modelBuilder.Entity<ShiftCalendarShiftPlan>(entity =>
+        {
+            entity.HasKey(e => new { e.CalId, e.PlanId });
+
+            entity.ToTable("ShiftCalendarShiftPlan");
+
+            entity.Property(e => e.Timestamp)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp");
+            entity.Property(e => e.YearKw)
+                .HasMaxLength(6)
+                .IsFixedLength()
+                .HasColumnName("YearKW");
+
+            entity.HasOne(d => d.Cal).WithMany(p => p.ShiftCalendarShiftPlans)
+                .HasForeignKey(d => d.CalId)
+                .HasConstraintName("FK_ShiftCalendarShiftPlan_ShiftCalendar");
+
+            entity.HasOne(d => d.Plan).WithMany(p => p.ShiftCalendarShiftPlans)
+                .HasForeignKey(d => d.PlanId)
+                .HasConstraintName("FK_ShiftCalendarShiftPlan_ShiftPlan");
+        });
+
         modelBuilder.Entity<ShiftCover>(entity =>
         {
             entity.ToTable("ShiftCover");
@@ -623,6 +676,26 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(180)
                 .IsFixedLength()
                 .HasColumnName("wed");
+        });
+
+        modelBuilder.Entity<Stopage>(entity =>
+        {
+            entity.ToTable("Stopage");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Description)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Endtime).HasColumnType("datetime");
+            entity.Property(e => e.Starttime).HasColumnType("datetime");
+            entity.Property(e => e.Timestamp)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp");
+
+            entity.HasOne(d => d.RidNavigation).WithMany(p => p.Stopages)
+                .HasForeignKey(d => d.Rid)
+                .HasConstraintName("FK_Stopage_Ressource");
         });
 
         modelBuilder.Entity<TblDummy>(entity =>
