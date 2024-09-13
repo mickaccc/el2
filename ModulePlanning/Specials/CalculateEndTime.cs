@@ -1,5 +1,6 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
+using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
 using System;
 using System.Collections;
@@ -24,6 +25,7 @@ namespace ModulePlanning.Specials
         IContainerProvider container;
         private readonly int rid;
         private HolidayLogic holidayLogic;
+        private List<Stopage> stoppages;
 
         public ShiftPlanService(int rid, IContainerProvider container)
         {
@@ -32,62 +34,76 @@ namespace ModulePlanning.Specials
             this.container = container;
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            var s = db.ShiftPlans.SingleOrDefault(x => x.Ressources.Any(x => x.RessourceId == rid));
-            List<bool[]> days = new List<bool[]>();
-            Byte[] bytes;
-            bool[] sbools = new bool[1440];
-            bytes = s.Sun;
-            BitArray bitArray = new BitArray(bytes);
-            bitArray.CopyTo(sbools, 0);
-            days.Add(sbools);
+            stoppages = db.Stopages.AsNoTracking().Where(x => x.Rid == rid).ToList();
+            var scal = db.ShiftCalendars
+                .Include(x => x.ShiftCalendarShiftPlans)
+                .ThenInclude(x => x.Plan)
+                .SingleOrDefault(x => x.Ressources.Any(x => x.RessourceId == rid));
+            if (scal != null)
+            {
+                foreach (var s in scal.ShiftCalendarShiftPlans.OrderBy(x => x.YearKw))
+                {
+                    List<bool[]> days = new List<bool[]>();
+                    Byte[] bytes;
+                    bool[] sbools = new bool[1440];
+                    bytes = s.Plan.Sun;
+                    BitArray bitArray = new BitArray(bytes);
+                    bitArray.CopyTo(sbools, 0);
+                    days.Add(sbools);
 
-            bytes = s.Mon;
-            bitArray = new BitArray(bytes);
-            bool[] mbools = new bool[1440];
-            bitArray.CopyTo(mbools, 0);
-            days.Add(mbools);
+                    bytes = s.Plan.Mon;
+                    bitArray = new BitArray(bytes);
+                    bool[] mbools = new bool[1440];
+                    bitArray.CopyTo(mbools, 0);
+                    days.Add(mbools);
 
-            bytes = s.Tue;
-            bitArray = new BitArray(bytes);
-            bool[] tubools = new bool[1440];
-            bitArray.CopyTo(tubools, 0);
-            days.Add(tubools);
+                    bytes = s.Plan.Tue;
+                    bitArray = new BitArray(bytes);
+                    bool[] tubools = new bool[1440];
+                    bitArray.CopyTo(tubools, 0);
+                    days.Add(tubools);
 
-            bytes = s.Wed;
-            bitArray = new BitArray(bytes);
-            bool[] wbools = new bool[1440];
-            bitArray.CopyTo(wbools, 0);
-            days.Add(wbools);
+                    bytes = s.Plan.Wed;
+                    bitArray = new BitArray(bytes);
+                    bool[] wbools = new bool[1440];
+                    bitArray.CopyTo(wbools, 0);
+                    days.Add(wbools);
 
-            bytes = s.Thu;
-            bitArray = new BitArray(bytes);
-            bool[] thbools = new bool[1440];
-            bitArray.CopyTo(thbools, 0);
-            days.Add(thbools);
+                    bytes = s.Plan.Thu;
+                    bitArray = new BitArray(bytes);
+                    bool[] thbools = new bool[1440];
+                    bitArray.CopyTo(thbools, 0);
+                    days.Add(thbools);
 
-            bytes = s.Fre;
-            bitArray = new BitArray(bytes);
-            bool[] fbools = new bool[1440];
-            bitArray.CopyTo(fbools, 0);
-            days.Add(fbools);
+                    bytes = s.Plan.Fre;
+                    bitArray = new BitArray(bytes);
+                    bool[] fbools = new bool[1440];
+                    bitArray.CopyTo(fbools, 0);
+                    days.Add(fbools);
 
-            bytes = s.Sat;
-            bitArray = new BitArray(bytes);
-            bool[] sabools = new bool[1440];
-            bitArray.CopyTo(sabools, 0);
-            days.Add(sabools);
+                    bytes = s.Plan.Sat;
+                    bitArray = new BitArray(bytes);
+                    bool[] sabools = new bool[1440];
+                    bitArray.CopyTo(sabools, 0);
+                    days.Add(sabools);
 
-
-            weekPlan = days.ToImmutableArray();
-            //}
+                    weekPlan = days.ToImmutableArray();
+                }
+            }          
+            
             holidayLogic = container.Resolve<HolidayLogic>();
         }
- 
- 
+        //public bool InclusiveBetween(this IComparable a, IComparable b, IComparable c)
+        //{
+        //    return a.CompareTo(b) >= 0 && a.CompareTo(c) <= 0;
+        //}
+
         public DateTime GetEndDateTime(double processLength, DateTime start)
         {
-            
-            if(weekPlan.IsDefaultOrEmpty || processLength == 0) return start;
+            var stop = stoppages.FirstOrDefault(x => x.Starttime > start && start < x.Endtime);
+            if (stop != null) start = stop.Endtime;
+
+            if (weekPlan.IsDefaultOrEmpty || processLength == 0) return start;
             bool[] tmpWeekPlan;
             int resultMinute = 0;
             double length = processLength;
@@ -112,7 +128,5 @@ namespace ModulePlanning.Specials
             }
             return start;
         }
-
- 
     }
 }
