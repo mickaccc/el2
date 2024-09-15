@@ -48,6 +48,8 @@ namespace ModuleShift.ViewModels
         }
         private List<ShiftWeek> _ShiftWeekPlans { get; set; }
         public ICollectionView ShiftWeekPlans { get; private set; }
+        private List<ShiftCalendar> shiftCalendars;
+        public ICollectionView ShiftCalendars { get; private set; }
         public List<string> Shifts { get; set; }
         public ShiftPlanEditViewModel(IContainerProvider container, IDialogService dialogService)
         {
@@ -126,6 +128,7 @@ namespace ModuleShift.ViewModels
                 }
                 SelectedPlan = _ShiftWeekPlans.First();
                 ShiftWeekPlans = CollectionViewSource.GetDefaultView(_ShiftWeekPlans);
+                
             }
         }
         private Byte[]? GetDefinition(ShiftPlan shiftPlanDb, int index)
@@ -376,6 +379,13 @@ namespace ModuleShift.ViewModels
             {
                 return (ShiftWeek)this.MemberwiseClone();
             }
+        }
+        public class ShiftCalendar
+        {
+            public int id { get; set; }
+            public string CalendarName { get; set; }
+            public bool IsLocked { get; set; }
+            public List<ShiftWeek> ShiftWeeks { get; set; }
         }
         void addshift()
         {
