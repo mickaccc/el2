@@ -19,18 +19,19 @@
     <Grid>
         <Grid.Resources>
             <conv:BooleanToVisibilityConverter x:Key="boolToVis"/>
+            <conv:MultiObjectConverter x:Key="multi"/>
 
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120"/>
-            <ColumnDefinition/>
-          
+            <ColumnDefinition Width="400*"/>
+            <ColumnDefinition Width="100*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <ToolBar Grid.ColumnSpan="2">
+        <ToolBar Grid.ColumnSpan="3">
             <ToolBar.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Cover hinzufügen" Command="{Binding AddCoverCommand}"/>
@@ -87,11 +88,6 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Label Visibility="{Binding Lock, Converter={StaticResource boolToVis}}">
-                            <Label.Content>
-                                <icons:BootstrapIcons Kind="Lock"/>
-                            </Label.Content>
-                        </Label>
                         <TextBlock  Text="{Binding ShiftPlanName}" TextWrapping="Wrap" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
 
                             <TextBlock.ContextMenu>
@@ -101,6 +97,11 @@
                                 </ContextMenu>
                             </TextBlock.ContextMenu>
                         </TextBlock>
+                        <Label Visibility="{Binding Lock, Converter={StaticResource boolToVis}}">
+                            <Label.Content>
+                                <icons:BootstrapIcons Kind="Lock"/>
+                            </Label.Content>
+                        </Label>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -122,28 +123,72 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-        </Grid>
-        <ListBox ItemsSource="{Binding ShiftCalendars}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
 
-                        <Label Visibility="{Binding Lock, Converter={StaticResource boolToVis}}">
-                            <Label.Content>
-                                <icons:BootstrapIcons Kind="Lock"/>
-                            </Label.Content>
-                        </Label>
-                        <TextBlock Text="{Binding CalendarName}" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <ListView Grid.Row="1" ItemsSource="{Binding CalendarItems}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ComboBox ItemsSource="{Binding ShiftPlanWeeks}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            <ListBox ItemsSource="{Binding ShiftCalendars}" SelectedItem="{Binding SelectedCalendar}">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="neuer Schicht Kalender" Command="{Binding NewCalendarCommand}"/>
+                        <MenuItem Header="Kalender löschen" Command="{Binding PlacementTarget.DataContext.DelCalendarCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding Repeat}"/>
+                            <TextBlock Text="{Binding CalendarName}" TextWrapping="Wrap"/>
+                            <Label Visibility="{Binding IsLocked, Converter={StaticResource boolToVis}}">
+                                <Label.Content>
+                                    <icons:BootstrapIcons Kind="Lock"/>
+                                </Label.Content>
+                            </Label>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ListView Grid.Row="1" ItemsSource="{Binding SelectedCalendar.ShiftWeeks}" >
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="neuer Eintrag" Command="{Binding NewCalendarShiftCommand}"/>
+         
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="2024"
+                                       Visibility="{Binding DataContext.SelectedCalendar.IsNotRepeat, Converter={StaticResource boolToVis},
+                                    RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                            <ComboBox ItemsSource="{Binding DataContext.ShiftWeekPlans, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                  SelectedItem="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=ListViewItem}}"
+                                      x:Name="cmbShiftPlan" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListView}}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.ComboSelectionChangedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                            <i:InvokeCommandAction.CommandParameter>
+                                                <MultiBinding Converter="{StaticResource multi}">
+                                                    <Binding Path="SelectedIndex" ElementName="cmbShiftPlan"/>
+                                                    <Binding Path="SelectedItem" ElementName="cmbShiftPlan"/>
+                                                </MultiBinding>
+                                            </i:InvokeCommandAction.CommandParameter>
+                                        </i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ShiftPlanName}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                                <ComboBox.ContextMenu>
+                                    <ContextMenu >
+                                        <MenuItem Header="Eintrag löschen" Command="{Binding PlacementTarget.Tag.DelCalendarShiftCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    </ContextMenu>
+                                </ComboBox.ContextMenu>
+                            </ComboBox>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </UserControl>

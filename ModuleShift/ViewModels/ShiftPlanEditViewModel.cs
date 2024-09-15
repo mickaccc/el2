@@ -3,12 +3,14 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using ModuleShift.Dialogs;
 using Prism.Dialogs;
 using Prism.Ioc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
@@ -27,11 +29,18 @@ namespace ModuleShift.ViewModels
         public string Title { get; } = "Schichtplan";
         private RelayCommand? _ShiftPlanSelectionChangedCommand;
         public RelayCommand ShiftPlanSelectionChangedCommand => _ShiftPlanSelectionChangedCommand ??= new RelayCommand(OnPlanSelected);
+        private RelayCommand? _ComboSelectionChangedCommand;
+        public RelayCommand ComboSelectionChangedCommand => _ComboSelectionChangedCommand ??= new RelayCommand(OnSelectionChanged);
+
         public ICommand SaveAllCommand { get; private set; }
         public ICommand DeleteCommand { get; private set;}
         public ICommand SaveNewCommand { get; private set; }
         public ICommand DetailCoverCommand { get; private set; }
         public ICommand AddCoverCommand { get; private set; }
+        public ICommand NewCalendarCommand { get; private set; }
+        public ICommand DelCalendarCommand { get; private set; }
+        public ICommand NewCalendarShiftCommand { get; private set; }
+        public ICommand DelCalendarShiftCommand { get; private set; }
         public Dictionary<int, List<ShiftDay>> ShiftWeeks { get; set; }
         private ShiftWeek _SelectedPlan;
         public ShiftWeek SelectedPlan
@@ -46,11 +55,25 @@ namespace ModuleShift.ViewModels
                 }
             }
         }
+        private ShiftCalendar selectedCalendar;
+
+        public ShiftCalendar SelectedCalendar
+        {
+            get { return selectedCalendar; }
+            set
+            {
+                if (selectedCalendar != value)
+                {
+                    selectedCalendar = value;
+                    NotifyPropertyChanged(() => SelectedCalendar);
+                }
+            }
+        }
+        public ShiftWeek SelectedWeek { get; set; }
         private List<ShiftWeek> _ShiftWeekPlans { get; set; }
         public ICollectionView ShiftWeekPlans { get; private set; }
-        private List<ShiftCalendar> shiftCalendars;
+        private ObservableCollection<ShiftCalendar> shiftCalendars = [];
         public ICollectionView ShiftCalendars { get; private set; }
-        public List<string> Shifts { get; set; }
         public ShiftPlanEditViewModel(IContainerProvider container, IDialogService dialogService)
         {
             _container = container;
@@ -60,10 +83,15 @@ namespace ModuleShift.ViewModels
             DeleteCommand = new ActionCommand(OnDeleteExecuted, OnDeleteCanExecuted);
             AddCoverCommand = new ActionCommand(OnAddExecuted, OnAddCanExecuted);
             DetailCoverCommand = new ActionCommand(OnDetailExecuted, OnDetailCanExecuted);
+            NewCalendarCommand = new ActionCommand(OnNewCalendarExecuted, OnNewCalendarCanExecute);
+            DelCalendarCommand = new ActionCommand(OnDelCalendarExecuted, OnDelCalendarCanExecute);
+            NewCalendarShiftCommand = new ActionCommand(OnNewCalendarShiftExecuted, OnNewCalendarShiftCanExecute);
+            DelCalendarShiftCommand = new ActionCommand(OnDelCalendarShiftExecuted, OnDelCalendarShiftCanExecute);
             LoadData();
             LoadCovers();
             
         }
+
 
         public bool IsRubberChecked { get; set; }
         private List<ShiftCover> _ShiftCovers = [];
@@ -107,6 +135,7 @@ namespace ModuleShift.ViewModels
                     week.Id = item.Id;
                     week.ShiftPlanName = item.PlanName;
                     week.Lock = item.Lock;
+                   
                     List<ShiftDay> shiftDays = new();
                     Byte[] bytes;
                     bytes = item.Sun;
@@ -128,7 +157,20 @@ namespace ModuleShift.ViewModels
                 }
                 SelectedPlan = _ShiftWeekPlans.First();
                 ShiftWeekPlans = CollectionViewSource.GetDefaultView(_ShiftWeekPlans);
-                
+                var cal = db.ShiftCalendars
+                    .Include(x => x.ShiftCalendarShiftPlans)
+                    .ToList();
+                foreach (var scal in cal)
+                {
+                    var c = new ShiftCalendar() { id = scal.Id, CalendarName = scal.CalendarName, IsLocked = scal.Lock, Repeat = scal.Repeat };
+                    foreach (var sc in scal.ShiftCalendarShiftPlans)
+                    {
+                        c.ShiftWeeks.AddRange(_ShiftWeekPlans.Where(x => x.Id == sc.CalId));
+                    }
+                    shiftCalendars.Add(c);
+                }
+                ShiftCalendars = CollectionViewSource.GetDefaultView(shiftCalendars);
+                SelectedCalendar = (ShiftCalendar)ShiftCalendars.CurrentItem;
             }
         }
         private Byte[]? GetDefinition(ShiftPlan shiftPlanDb, int index)
@@ -145,6 +187,71 @@ namespace ModuleShift.ViewModels
             }
             return null;
         }
+
+        private bool OnDelCalendarShiftCanExecute(object arg)
+        {
+            return !SelectedCalendar.IsLocked;
+        }
+
+        private void OnDelCalendarShiftExecuted(object obj)
+        {
+            if (obj is ShiftWeek sw)
+            {
+                SelectedCalendar.ShiftWeeks.Remove(sw);
+            }
+        }
+
+        private bool OnNewCalendarShiftCanExecute(object arg)
+        {
+            return !SelectedCalendar.IsLocked;
+        }
+
+        private void OnNewCalendarShiftExecuted(object obj)
+        {
+ 
+            SelectedCalendar.ShiftWeeks.Add(new ShiftWeek());
+        }
+
+        private bool OnDelCalendarCanExecute(object arg)
+        {
+            return !SelectedCalendar.IsLocked;
+        }
+
+        private void OnDelCalendarExecuted(object obj)
+        {
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var c = db.ShiftCalendars.Single(x => x.Id == SelectedCalendar.id);
+            db.ShiftCalendars.Remove(c);
+            db.SaveChangesAsync();
+            shiftCalendars.Remove(SelectedCalendar);
+            SelectedCalendar = shiftCalendars.First();           
+        }
+
+        private bool OnNewCalendarCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnNewCalendarExecuted(object obj)
+        {
+            _dialogService.ShowDialog("InputDialog", DialogCallBack);
+        }
+
+        private void DialogCallBack(IDialogResult result)
+        {
+            if (result.Result == ButtonResult.OK)
+            {
+                var r = result.Parameters.GetValue<string>("InputText");
+                
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var sc = new El2Core.Models.ShiftCalendar() { CalendarName = r };
+                db.ShiftCalendars.Add(sc);
+                db.SaveChanges();
+                SelectedCalendar = new ShiftCalendar() { CalendarName = r, id = sc.Id };
+                shiftCalendars.Add(SelectedCalendar);
+            }
+        }
+
         private bool OnDetailCanExecuted(object arg)
         {
             return true;
@@ -204,6 +311,29 @@ namespace ModuleShift.ViewModels
         private void OnPlanSelected(object obj)
         {
             
+
+        }
+
+
+        private void OnSelectionChanged(object obj)
+        {
+            if(SelectedCalendar.IsLocked == false)
+            {
+                var ob = obj as object[];
+                if (ob != null)
+                {
+                    int index = (int)ob[0];
+                    ShiftWeek sw = (ShiftWeek)ob[1];
+
+                    var oldweek = SelectedCalendar.ShiftWeeks[index];
+                    //SelectedCalendar.ShiftWeeks[index] = sw;
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    var s = db.ShiftCalendars.Single(x => x.Id == SelectedCalendar.id).ShiftCalendarShiftPlans.ElementAt(index);
+                    db.ShiftCalendarShiftPlans.Remove(s);
+                    db.ShiftCalendarShiftPlans.Add(new ShiftCalendarShiftPlan() { CalId = SelectedCalendar.id, PlanId = sw.Id, YearKw = sw.YearKW });
+                    db.SaveChangesAsync();
+                }
+            }
 
         }
         private bool OnDeleteCanExecuted(object arg)
@@ -355,8 +485,9 @@ namespace ModuleShift.ViewModels
         public class ShiftWeek
         {
             public int Id { get; set; }
-            public string ShiftPlanName { get; set; }
+            public string ShiftPlanName { get; set; } = string.Empty;
             public bool Lock { get; set; } = false;
+            public string YearKW { get; set; } = string.Empty;
             public List<ShiftDay> ShiftWeekDays { get; set; } = [];
 
             public ShiftPlan GetNewShiftPlan()
@@ -383,9 +514,11 @@ namespace ModuleShift.ViewModels
         public class ShiftCalendar
         {
             public int id { get; set; }
-            public string CalendarName { get; set; }
+            public string CalendarName { get; set; } = string.Empty;
             public bool IsLocked { get; set; }
-            public List<ShiftWeek> ShiftWeeks { get; set; }
+            public bool Repeat { get; set; }
+            public bool IsNotRepeat {  get {  return !Repeat; } }
+            public ObservableCollection<ShiftWeek> ShiftWeeks { get; set; } = [];
         }
         void addshift()
         {
