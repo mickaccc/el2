@@ -323,11 +323,7 @@ namespace ModuleShift.ViewModels
         }
         private void OnPlanSelected(object obj)
         {
-            
-
         }
-
-
         private void OnSelectionChanged(object obj)
         {
             if(SelectedCalendar.IsLocked == false)
