@@ -3,6 +3,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ModuleShift.Dialogs;
 using Prism.Dialogs;
 using Prism.Ioc;
@@ -11,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
@@ -42,8 +44,8 @@ namespace ModuleShift.ViewModels
         public ICommand NewCalendarShiftCommand { get; private set; }
         public ICommand DelCalendarShiftCommand { get; private set; }
         public Dictionary<int, List<ShiftDay>> ShiftWeeks { get; set; }
-        private ShiftWeek _SelectedPlan;
-        public ShiftWeek SelectedPlan
+        private IShiftWeek _SelectedPlan;
+        public IShiftWeek SelectedPlan
         {
             get { return _SelectedPlan; }
             set
@@ -69,8 +71,7 @@ namespace ModuleShift.ViewModels
                 }
             }
         }
-        public ShiftWeek SelectedWeek { get; set; }
-        private List<ShiftWeek> _ShiftWeekPlans { get; set; }
+        private List<IShiftWeek> _ShiftWeekPlans { get; set; }
         public ICollectionView ShiftWeekPlans { get; private set; }
         private ObservableCollection<ShiftCalendar> shiftCalendars = [];
         public ICollectionView ShiftCalendars { get; private set; }
@@ -163,16 +164,25 @@ namespace ModuleShift.ViewModels
                 foreach (var scal in cal)
                 {
                     var c = new ShiftCalendar() { id = scal.Id, CalendarName = scal.CalendarName, IsLocked = scal.Lock, Repeat = scal.Repeat };
-                    foreach (var sc in scal.ShiftCalendarShiftPlans)
+                    foreach (var sc in scal.ShiftCalendarShiftPlans.OrderBy(x => x.YearKw))
                     {
-                        c.ShiftWeeks.AddRange(_ShiftWeekPlans.Where(x => x.Id == sc.CalId));
+                        var sw = _ShiftWeekPlans.Single(x => x.Id == sc.PlanId).Clone();
+                        sw.YearKW = sc.YearKw;
+                        c.ShiftWeeks.Add(sw);
                     }
+                    c.ShiftWeeks.CollectionChanged += CalendarShiftWeeksChanged;
                     shiftCalendars.Add(c);
                 }
                 ShiftCalendars = CollectionViewSource.GetDefaultView(shiftCalendars);
                 SelectedCalendar = (ShiftCalendar)ShiftCalendars.CurrentItem;
             }
         }
+
+        private void CalendarShiftWeeksChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            
+        }
+
         private Byte[]? GetDefinition(ShiftPlan shiftPlanDb, int index)
         {
             switch (index)
@@ -208,8 +218,10 @@ namespace ModuleShift.ViewModels
 
         private void OnNewCalendarShiftExecuted(object obj)
         {
- 
-            SelectedCalendar.ShiftWeeks.Add(new ShiftWeek());
+            var sw = _ShiftWeekPlans.First().Clone();
+            sw.YearKW = string.Format("{0}{1}", DateTime.Now.Year,
+                       CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday));
+            SelectedCalendar.ShiftWeeks.Add(sw);
         }
 
         private bool OnDelCalendarCanExecute(object arg)
@@ -324,14 +336,20 @@ namespace ModuleShift.ViewModels
                 {
                     int index = (int)ob[0];
                     ShiftWeek sw = (ShiftWeek)ob[1];
-
-                    var oldweek = SelectedCalendar.ShiftWeeks[index];
-                    //SelectedCalendar.ShiftWeeks[index] = sw;
+                    var newWeek = sw.Clone();
+                    var oldWeek = SelectedCalendar.ShiftWeeks[index];
+                    newWeek.YearKW = oldWeek.YearKW;
+                    SelectedCalendar.ShiftWeeks[index] = newWeek;
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    var s = db.ShiftCalendars.Single(x => x.Id == SelectedCalendar.id).ShiftCalendarShiftPlans.ElementAt(index);
-                    db.ShiftCalendarShiftPlans.Remove(s);
-                    db.ShiftCalendarShiftPlans.Add(new ShiftCalendarShiftPlan() { CalId = SelectedCalendar.id, PlanId = sw.Id, YearKw = sw.YearKW });
-                    db.SaveChangesAsync();
+                    if (db.ShiftCalendars.SingleOrDefault(x => x.Id == SelectedCalendar.id).ShiftCalendarShiftPlans.Count > index)
+                    {
+                        var s = db.ShiftCalendars.SingleOrDefault(x => x.Id == SelectedCalendar.id).ShiftCalendarShiftPlans.ElementAt(index);
+                        db.ShiftCalendarShiftPlans.Remove(s);
+                    }
+                    var newWeekdb = new ShiftCalendarShiftPlan() { CalId = SelectedCalendar.id, PlanId = newWeek.Id, YearKw = newWeek.YearKW };
+                    db.ShiftCalendarShiftPlans.Add(newWeekdb);
+                    db.SaveChanges();
+                    
                 }
             }
 
@@ -386,7 +404,7 @@ namespace ModuleShift.ViewModels
             if (result.Result == ButtonResult.OK)
             {
                 var input = result.Parameters.GetValue<string>("InputText");
-                ShiftWeek week = _SelectedPlan;
+                IShiftWeek week = _SelectedPlan;
                 week.Lock = false;
                 week.ShiftPlanName = input;
 
@@ -482,12 +500,22 @@ namespace ModuleShift.ViewModels
             private BitArray _Definition = definition;
             public BitArray Definition {  get { return _Definition; } }
         }
-        public class ShiftWeek
+        public interface IShiftWeek
+        {
+            int Id { get; set; }
+            string ShiftPlanName { get; set; }
+            bool Lock {  get; set; }
+            string YearKW { get; set; }
+            List<ShiftDay> ShiftWeekDays { get; set; }
+            ShiftWeek Clone();
+            Byte[] GetDayDefinition(int id);
+        }
+        public class ShiftWeek : IShiftWeek
         {
             public int Id { get; set; }
-            public string ShiftPlanName { get; set; } = string.Empty;
+            public string ShiftPlanName { get; set; }
             public bool Lock { get; set; } = false;
-            public string YearKW { get; set; } = string.Empty;
+            public string YearKW { get; set; }
             public List<ShiftDay> ShiftWeekDays { get; set; } = [];
 
             public ShiftPlan GetNewShiftPlan()

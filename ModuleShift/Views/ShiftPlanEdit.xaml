@@ -145,28 +145,44 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <ListView Grid.Row="1" ItemsSource="{Binding SelectedCalendar.ShiftWeeks}" >
-                <ListView.ContextMenu>
+            <ListBox Grid.Row="1" x:Name="lvShiftWeek" ItemsSource="{Binding SelectedCalendar.ShiftWeeks}"
+                      IsSynchronizedWithCurrentItem="True" >
+                <ListBox.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="neuer Eintrag" Command="{Binding NewCalendarShiftCommand}"/>
          
                     </ContextMenu>
-                </ListView.ContextMenu>
-                <ListView.ItemTemplate>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="2024"
+                            <TextBox Text="{Binding YearKW}" Margin="15,0,15,0" Name="txtKW"
                                        Visibility="{Binding DataContext.SelectedCalendar.IsNotRepeat, Converter={StaticResource boolToVis},
-                                    RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                    RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="LostFocus">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.ComboSelectionChangedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                            <i:InvokeCommandAction.CommandParameter>
+                                                <MultiBinding Converter="{StaticResource multi}">
+                                                    <Binding Path="SelectedIndex" ElementName="lvShiftWeek"/>
+                                                    <Binding Path="Text" ElementName="txtKW"/>
+                                                </MultiBinding>
+                                            </i:InvokeCommandAction.CommandParameter>
+                                        </i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </TextBox>
                             <ComboBox ItemsSource="{Binding DataContext.ShiftWeekPlans, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                  SelectedItem="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=ListViewItem}}"
-                                      x:Name="cmbShiftPlan" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListView}}">
+                                      SelectedItem="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                      
+                                      x:Name="cmbShiftPlan" 
+                                      GotFocus="cmbShiftPlan_GotFocus" >
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="SelectionChanged">
                                         <i:InvokeCommandAction Command="{Binding DataContext.ComboSelectionChangedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
                                             <i:InvokeCommandAction.CommandParameter>
                                                 <MultiBinding Converter="{StaticResource multi}">
-                                                    <Binding Path="SelectedIndex" ElementName="cmbShiftPlan"/>
+                                                    <Binding Path="SelectedIndex" ElementName="lvShiftWeek"/>
                                                     <Binding Path="SelectedItem" ElementName="cmbShiftPlan"/>
                                                 </MultiBinding>
                                             </i:InvokeCommandAction.CommandParameter>
@@ -187,8 +203,8 @@
                             </ComboBox>
                         </StackPanel>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
     </Grid>
 </UserControl>

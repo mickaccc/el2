@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GongSolutions.Wpf.DragDrop.Utilities;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ModuleShift.Views
 {
@@ -23,6 +13,16 @@ namespace ModuleShift.Views
         public ShiftPlanEdit()
         {
             InitializeComponent();
+        }
+
+  
+
+        private void cmbShiftPlan_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var cmb = sender as ComboBox;
+            var lb = FindName("lvShiftWeek") as ListBox;
+            var it = cmb.GetVisualAncestor<ListBoxItem>();
+            lb.SelectedItem = it.Content;          
         }
     }
 }

@@ -7,6 +7,8 @@ namespace El2Core.Models;
 
 public partial class ShiftCalendarShiftPlan
 {
+    public int PrimId { get; set; }
+
     public int CalId { get; set; }
 
     public int PlanId { get; set; }
