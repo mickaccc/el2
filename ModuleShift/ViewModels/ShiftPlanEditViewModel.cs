@@ -342,6 +342,7 @@ namespace ModuleShift.ViewModels
                     }
                     else if (ob[1] is string kw) 
                     {
+                        if(oldWeek.YearKW == kw) return;
                         newWeek = oldWeek;
                         newWeek.YearKW = kw;
                     }

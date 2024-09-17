@@ -20,7 +20,7 @@
         <Grid.Resources>
             <conv:BooleanToVisibilityConverter x:Key="boolToVis"/>
             <conv:MultiObjectConverter x:Key="multi"/>
-
+            <conv:BooleanInverter x:Key="negate"/>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120"/>
@@ -134,7 +134,8 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox IsChecked="{Binding Repeat}"/>
+                            <CheckBox IsChecked="{Binding Repeat}" IsEnabled="{Binding Path=IsLocked, Converter={StaticResource negate}}"/>
+
                             <TextBlock Text="{Binding CalendarName}" TextWrapping="Wrap"/>
                             <Label Visibility="{Binding IsLocked, Converter={StaticResource boolToVis}}">
                                 <Label.Content>
@@ -145,21 +146,48 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <GridSplitter/>
             <ListBox Grid.Row="1" x:Name="lvShiftWeek" ItemsSource="{Binding SelectedCalendar.ShiftWeeks}"
                       IsSynchronizedWithCurrentItem="True" >
                 <ListBox.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="neuer Eintrag" Command="{Binding NewCalendarShiftCommand}"/>
-         
+                        <MenuItem Header="Eintrag löschen" Command="{Binding DelCalendarShiftCommand}"
+                                 CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+             
                     </ContextMenu>
                 </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-
-                            <ComboBox ItemsSource="{Binding DataContext.ShiftWeekPlans, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                      SelectedValue="{Binding id}" SelectedValuePath="{Binding}"
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" x:Name="txtKW" Text="{Binding YearKW}"  Margin="10,0,10,0" BorderBrush="Black" BorderThickness="1"
+                                        Visibility="{Binding DataContext.SelectedCalendar.IsNotRepeat, Converter={StaticResource boolToVis},
+                                                               RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="LostFocus">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.ComboSelectionChangedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                            <i:InvokeCommandAction.CommandParameter>
+                                                <MultiBinding Converter="{StaticResource multi}">
+                                                    <Binding Path="SelectedIndex" ElementName="lvShiftWeek"/>
+                                                    <Binding Path="Text" ElementName="txtKW"/>
+                                                </MultiBinding>
+                                            </i:InvokeCommandAction.CommandParameter>
+                                         </i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </TextBox>
+                            <TextBlock Grid.Column="1" Text="{Binding ShiftPlanName}"/>
+                        
+                        <ComboBox Grid.Column="2" ItemsSource="{Binding DataContext.ShiftWeekPlans, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      SelectedValue="ShiftPlanName" Width="40" Foreground="Beige" Background="Beige"
+                                      DisplayMemberPath="ShiftPlanName"
                                       x:Name="cmbShiftPlan" 
-                                      GotFocus="cmbShiftPlan_GotFocus" >
+                                      GotFocus="cmbShiftPlan_GotFocus">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="SelectionChanged">
                                         <i:InvokeCommandAction Command="{Binding DataContext.ComboSelectionChangedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
@@ -172,24 +200,8 @@
                                         </i:InvokeCommandAction>
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding YearKW}"
-                                                       Visibility="{Binding DataContext.SelectedCalendar.IsNotRepeat, Converter={StaticResource boolToVis},
-                                                               RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                                            <TextBlock Text="{Binding ShiftPlanName}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                                    <ComboBox.ContextMenu>
-                                    <ContextMenu >
-                                        <MenuItem Header="Eintrag löschen" Command="{Binding PlacementTarget.Tag.DelCalendarShiftCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                    </ContextMenu>
-                                </ComboBox.ContextMenu>
                             </ComboBox>
-                        
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

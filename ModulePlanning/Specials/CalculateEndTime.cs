@@ -100,8 +100,8 @@ namespace ModulePlanning.Specials
 
         public DateTime GetEndDateTime(double processLength, DateTime start)
         {
-            var stop = stoppages.FirstOrDefault(x => x.Starttime > start && start < x.Endtime);
-            if (stop != null) start = stop.Endtime;
+            var stop = stoppages.FirstOrDefault(x => x.Starttime < start && start < x.Endtime);
+            if (stop != null) { processLength += stop.Starttime.Subtract(start).TotalMinutes; start = stop.Endtime; }
 
             if (weekPlan.IsDefaultOrEmpty || processLength == 0) return start;
             bool[] tmpWeekPlan;

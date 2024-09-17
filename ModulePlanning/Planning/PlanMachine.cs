@@ -101,6 +101,8 @@ namespace ModulePlanning.Planning
         public ICommand? FastCopyCommand { get; private set; }
         public ICommand? CorrectionCommand { get; private set; }
         public ICommand? NewCalculateCommand { get; private set; }
+        public ICommand? NewStoppageCommand { get; private set; }
+        public ICommand? DelStoppageCommand { get; private set; }
         private ILogger _logger;
         private static readonly object _lock = new();
         private HashSet<string> ImChanged = [];
@@ -154,8 +156,10 @@ namespace ModulePlanning.Planning
             [Description("keine")]
             None = 0
         }
-        private Dictionary<int, string> _ShiftPlans = [];
-        public Dictionary<int, string> ShiftPlans => _ShiftPlans;
+        private Dictionary<int, string> _ShiftCalendars = [];
+        public Dictionary<int, string> ShiftCalendars => _ShiftCalendars;
+        private Dictionary<int, string> _Stoppages = [];
+        public Dictionary<int, string> Stoppages => _Stoppages;
         private int _SelectedRadioButton;
         public int SelectedRadioButton
         {
@@ -219,7 +223,7 @@ namespace ModulePlanning.Planning
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
             WorkArea = res.WorkArea;
             Name = res.RessName;
-            _SelectedRadioButton = res.ShiftPlanId ??=0;
+            _SelectedRadioButton = res.ShiftCalendar ??=0;
             _title = res.Inventarnummer ?? string.Empty;
             Vis = res.Visability;
             Description = res.Info;
@@ -232,10 +236,14 @@ namespace ModulePlanning.Planning
  
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            foreach(var s in db.ShiftPlans.OrderBy(x => x.Id).AsNoTracking())
+            foreach(var s in db.ShiftCalendars.OrderBy(x => x.Id).AsNoTracking())
             {
-                _ShiftPlans.Add(s.Id, s.PlanName);
-            }            
+                _ShiftCalendars.Add(s.Id, s.CalendarName);
+            }
+            foreach(var stop in db.Stopages.OrderBy(x => x.Starttime).AsNoTracking())
+            {
+                _Stoppages.Add(stop.Id, stop.Description);
+            }
         }
 
         private void Initialize()
@@ -246,6 +254,8 @@ namespace ModulePlanning.Planning
             FastCopyCommand = new ActionCommand(OnFastCopyExecuted, OnFastCopyCanExecute);
             CorrectionCommand = new ActionCommand(OnCorrectionExecuted, OnCorrectionCanExecute);
             NewCalculateCommand = new ActionCommand(OnCalculateExecuted, OnCalculateCanExecute);
+            NewStoppageCommand = new ActionCommand(OnNewStoppageExecuted, OnNewStoppageCanExecute);
+            DelStoppageCommand = new ActionCommand(OnDelStoppageExecuted, OnDelStoppageCanExecute);
             _eventAggregator.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
@@ -434,7 +444,25 @@ namespace ModulePlanning.Planning
         {
             return _SelectedRadioButton != 0;
         }
+        private bool OnDelStoppageCanExecute(object arg)
+        {
+            return true;
+        }
 
+        private void OnDelStoppageExecuted(object obj)
+        {
+            
+        }
+
+        private bool OnNewStoppageCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnNewStoppageExecuted(object obj)
+        {
+            _dialogService.Show("InputStoppage");
+        }
         private void OnCalculateExecuted(object obj)
         {
             CalculateEndTime();

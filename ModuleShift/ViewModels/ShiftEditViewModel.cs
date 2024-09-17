@@ -1,16 +1,13 @@
 ﻿using El2Core.Models;
-using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.Extensions.Logging;
 using ModuleShift.Services;
-using Prism.Ioc;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml;

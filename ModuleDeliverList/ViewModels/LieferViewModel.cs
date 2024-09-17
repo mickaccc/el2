@@ -353,6 +353,8 @@ namespace ModuleDeliverList.ViewModels
                             _Logger.LogInformation("commin {message}, {1}", rbId.Item1, rbId.Item2);
                             if (_orders.Any(x => x.Aid == rbId.Item2))
                             {
+                                var ord = _orders.First(x => x.Aid == rbId.Item2).AidNavigation;
+                                DBctx.Entry<OrderRb>(ord).Reload();
                                 foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
                                 {
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;

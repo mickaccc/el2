@@ -268,7 +268,14 @@
                 </Canvas>
                 <Popup IsOpen="{Binding Path=IsChecked, ElementName=shiftOpen}" Placement="Mouse" >
                     <Border>
-                        <ListBox ItemsSource="{Binding ShiftPlans}"
+                        <Border.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="neuer Ausfall" Command="{Binding NewStoppageCommand}"/>
+                                <MenuItem Header="markierter Ausfall löschen" Command="{Binding DelStoppageCommand}"/>
+                            </ContextMenu>
+                        </Border.ContextMenu>
+                        <StackPanel>
+                        <ListBox ItemsSource="{Binding ShiftCalendars}"
                                  SelectedValuePath="Key"
                                  SelectedValue="{Binding SelectedRadioButton, Mode=TwoWay}">
                             <ListBox.Resources>
@@ -288,6 +295,14 @@
                                 </Style>
                             </ListBox.Resources>
                         </ListBox>
+                        <ListBox ItemsSource="{Binding Stoppages}" SelectedValuePath="Key" MinHeight="20" Background="Brown">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Value}" Foreground="CadetBlue"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                        </ListBox>
+                            </StackPanel>
                     </Border>
                 </Popup>
 
