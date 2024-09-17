@@ -28,7 +28,7 @@
         </Grid.RowDefinitions>
         <StackPanel >
             <Label Content="Kurzname und Zeitraum eingeben:" FontWeight="Bold" FontSize="14"/>
-            <TextBox Text="{Binding Description, TargetNullValue=0}" HorizontalAlignment="Stretch" />
+            <TextBox Text="{Binding Stopage.Description, TargetNullValue=0}" HorizontalAlignment="Stretch" />
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -39,8 +39,8 @@
             </Grid>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="2">
-            <Button Content="abbrechen" Command="{Binding CloseDialogCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-            <Button Content="OK" Command="{Binding CloseDialogCommand}" CommandParameter="1" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="abbrechen" Command="{Binding CloseCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="OK" Command="{Binding CloseCommand}" CommandParameter="1" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
             
     </Grid>

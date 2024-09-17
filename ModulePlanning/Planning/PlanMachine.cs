@@ -7,6 +7,7 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ModulePlanning.Specials;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -106,11 +107,12 @@ namespace ModulePlanning.Planning
         private ILogger _logger;
         private static readonly object _lock = new();
         private HashSet<string> ImChanged = [];
+        private ShiftPlanService _shiftPlanService;
         private readonly int _rId;
         private string _title;
         public string Title => _title;
         public string Setup { get; }
-        public bool HasChange => _shifts.Any(x => x.IsChanged);
+        public bool HasChange => false; // _shifts.Any(x => x.IsChanged);
         public int Rid => _rId;
         private string? _name;
         public string? Name { get { return _name; }
@@ -170,7 +172,7 @@ namespace ModulePlanning.Planning
                 {
                     _SelectedRadioButton = value;
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    db.Ressources.First(x => x.RessourceId == _rId).ShiftPlanId = (_SelectedRadioButton == 0) ? null : _SelectedRadioButton;
+                    db.Ressources.First(x => x.RessourceId == _rId).ShiftCalendar = (_SelectedRadioButton == 0) ? null : _SelectedRadioButton;
                     db.SaveChanges();
                 }
             }
@@ -178,8 +180,8 @@ namespace ModulePlanning.Planning
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        private ObservableCollection<ShiftStruct> _shifts = [];
-        public ICollectionView ShiftsView { get; private set; }
+        //private ObservableCollection<ShiftStruct> _shifts = [];
+        //public ICollectionView ShiftsView { get; private set; }
         public ObservableCollection<Vorgang>? Processes { get; set; }
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         public bool EnableRowDetails { get; private set; }
@@ -268,13 +270,13 @@ namespace ModulePlanning.Planning
             try
             {
                 if (_SelectedRadioButton == 0) return;
-                var s = new Specials.ShiftPlanService(Rid, _container);
+                _shiftPlanService ??= new Specials.ShiftPlanService(Rid, _container);
                 DateTime start = DateTime.Now;
                 foreach (var p in Processes.OrderBy(x => x.SortPos))
                 {
                     var dur = GetProcessDuration(p);
 
-                    var l = s.GetEndDateTime(dur, start);
+                    var l = _shiftPlanService.GetEndDateTime(dur, start);
                     var diff = l.Subtract(start);
 
                     if (diff.TotalMinutes == 0) p.Extends = "---";
@@ -446,23 +448,45 @@ namespace ModulePlanning.Planning
         }
         private bool OnDelStoppageCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.DelStoppage);
         }
 
         private void OnDelStoppageExecuted(object obj)
         {
-            
+            if(obj is int id)
+            {
+                Stoppages.Remove(id);
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var stop = db.Stopages.Single(x => x.Id == id);
+                db.Stopages.Remove(stop);
+                db.SaveChanges();
+            }
         }
 
         private bool OnNewStoppageCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddStoppage);
         }
 
         private void OnNewStoppageExecuted(object obj)
         {
-            _dialogService.Show("InputStoppage");
+
+            _dialogService.Show("InputStoppage", OnStoppageCallback);
         }
+
+        private void OnStoppageCallback(IDialogResult result)
+        {
+            if(result.Result == ButtonResult.OK)
+            {
+                var stop = result.Parameters.GetValue<Stopage>("Stopage");
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                db.Stopages.Add(stop);
+                db.SaveChanges();
+
+                Stoppages.Add(stop.Id, stop.Description);
+            }
+        }
+
         private void OnCalculateExecuted(object obj)
         {
             CalculateEndTime();
@@ -786,17 +810,17 @@ namespace ModulePlanning.Planning
 
         internal void SaveAll()
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            foreach (var s in _shifts.Where(x => x.IsChanged))
-            {
+            //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            //foreach (var s in _shifts.Where(x => x.IsChanged))
+            //{
                 
-                RessourceWorkshift ws = new RessourceWorkshift() { Rid = Rid, Sid = s.Shift.Sid };
-                if (s.IsCheck)
-                    db.RessourceWorkshifts.Add(ws);
-                else db.RessourceWorkshifts.Remove(ws);
-                s.IsChanged = false;
-            }
-            db.SaveChanges();
+            //    RessourceWorkshift ws = new RessourceWorkshift() { Rid = Rid, Sid = s.Shift.Sid };
+            //    if (s.IsCheck)
+            //        db.RessourceWorkshifts.Add(ws);
+            //    else db.RessourceWorkshifts.Remove(ws);
+            //    s.IsChanged = false;
+            //}
+            //db.SaveChanges();
             
         }
 

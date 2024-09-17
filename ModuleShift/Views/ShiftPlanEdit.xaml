@@ -121,6 +121,7 @@
         <Grid Grid.Row="1" Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition/>
+                <RowDefinition Height="5"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
@@ -146,8 +147,8 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <GridSplitter/>
-            <ListBox Grid.Row="1" x:Name="lvShiftWeek" ItemsSource="{Binding SelectedCalendar.ShiftWeeks}"
+            <GridSplitter Grid.Row="1"/>
+            <ListBox Grid.Row="2" x:Name="lvShiftWeek" ItemsSource="{Binding SelectedCalendar.ShiftWeeks}"
                       IsSynchronizedWithCurrentItem="True" >
                 <ListBox.ContextMenu>
                     <ContextMenu>
@@ -166,7 +167,7 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <TextBox Grid.Column="0" x:Name="txtKW" Text="{Binding YearKW}"  Margin="10,0,10,0" BorderBrush="Black" BorderThickness="1"
-                                        Visibility="{Binding DataContext.SelectedCalendar.IsNotRepeat, Converter={StaticResource boolToVis},
+                                        IsReadOnly="{Binding DataContext.SelectedCalendar.IsLocked,
                                                                RelativeSource={RelativeSource AncestorType=UserControl}}">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="LostFocus">

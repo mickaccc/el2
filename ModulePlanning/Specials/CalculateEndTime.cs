@@ -1,17 +1,9 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
 using Microsoft.EntityFrameworkCore;
-using Prism.Ioc;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Appointments;
+using System.Globalization;
 
 namespace ModulePlanning.Specials
 {
@@ -21,11 +13,12 @@ namespace ModulePlanning.Specials
     public class ShiftPlanService : IShiftPlan
     {
         private ImmutableArray<bool[]> weekPlan;
-        public ImmutableArray<bool[]> WeekPlan => weekPlan;
+        private Dictionary<int, ImmutableArray<bool[]>> weekPlans = [];
         IContainerProvider container;
         private readonly int rid;
         private HolidayLogic holidayLogic;
         private List<Stopage> stoppages;
+        private bool repeat;
 
         public ShiftPlanService(int rid, IContainerProvider container)
         {
@@ -41,6 +34,7 @@ namespace ModulePlanning.Specials
                 .SingleOrDefault(x => x.Ressources.Any(x => x.RessourceId == rid));
             if (scal != null)
             {
+                repeat = scal.Repeat;
                 foreach (var s in scal.ShiftCalendarShiftPlans.OrderBy(x => x.YearKw))
                 {
                     List<bool[]> days = new List<bool[]>();
@@ -87,7 +81,8 @@ namespace ModulePlanning.Specials
                     bitArray.CopyTo(sabools, 0);
                     days.Add(sabools);
 
-                    weekPlan = days.ToImmutableArray();
+                    int key = int.Parse(s.YearKw);
+                    weekPlans.Add(key, [.. days]);
                 }
             }          
             
@@ -100,6 +95,18 @@ namespace ModulePlanning.Specials
 
         public DateTime GetEndDateTime(double processLength, DateTime start)
         {
+            int key = int.Parse(string.Concat(start.Year.ToString(),
+                    CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(start, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)));
+            if (repeat)
+            {
+                var count = weekPlans.Count;
+                var diff = key - weekPlans.Keys.First();
+                var mod = diff % count;
+                var k = weekPlans.Keys.ElementAt(mod);
+                weekPlan = weekPlans[k];
+            }
+            else if (weekPlans.TryGetValue(key, out weekPlan) == false) return start;
+            
             var stop = stoppages.FirstOrDefault(x => x.Starttime < start && start < x.Endtime);
             if (stop != null) { processLength += stop.Starttime.Subtract(start).TotalMinutes; start = stop.Endtime; }
 
@@ -110,22 +117,23 @@ namespace ModulePlanning.Specials
             int startDay = (int)start.DayOfWeek;
             TimeSpan time = start.TimeOfDay;
             if (holidayLogic.IsHolyday(start)) { tmpWeekPlan = weekPlan[0]; } else tmpWeekPlan = weekPlan[startDay]; //set the start of the week
- 
-                for(int j = (int)time.TotalMinutes; j < tmpWeekPlan.Length; j++)
-                {
-                    if (tmpWeekPlan[j]) length--;
-                    if (length <= 0) { resultMinute = j; break; }
-                }
+
+            for (int j = (int)time.TotalMinutes; j < tmpWeekPlan.Length; j++)
+            {
+                if (tmpWeekPlan[j]) length--;
+                if (length <= 0) { resultMinute = j; break; }
+            }
             start = start.Date;
             while (holidayLogic.IsHolyday(start.AddDays(1))) { start = start.AddDays(1); } //move the start to => tomorrow is not holiday
             if (length > 0)
-            {               
+            {
                 start = GetEndDateTime(length, start.AddDays(1));
             }
             else
             {
                 start = start.AddMinutes(resultMinute);
             }
+            
             return start;
         }
     }

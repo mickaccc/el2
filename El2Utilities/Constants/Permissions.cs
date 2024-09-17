@@ -76,5 +76,10 @@
         public const string ProductsViewOpen = "PROD00";
         public const string AddVrgAttachment = "ADDVRGATT";
         public const string DelVrgAttachment = "DELVRGATT";
+        public const string AddStoppage = "ADDSTOP";
+        public const string DelStoppage = "DELSTOP";
+        public const string AddShiftCalendar = "ADDSHIFTCAL";
+        public const string DelShiftCalendar = "DELSHIFTCAL";
+
     }
 }

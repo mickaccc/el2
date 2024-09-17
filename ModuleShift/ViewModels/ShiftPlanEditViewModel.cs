@@ -1,22 +1,16 @@
-﻿using El2Core.Models;
+﻿using El2Core.Constants;
+using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using ModuleShift.Dialogs;
-using Prism.Dialogs;
-using Prism.Ioc;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
-using System.Linq;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Data;
@@ -201,7 +195,8 @@ namespace ModuleShift.ViewModels
 
         private bool OnDelCalendarShiftCanExecute(object arg)
         {
-            return !SelectedCalendar.IsLocked;
+            return !SelectedCalendar.IsLocked &&
+                PermissionsProvider.GetInstance().GetUserPermission(Permissions.DelShiftCalendar);
         }
 
         private void OnDelCalendarShiftExecuted(object obj)
@@ -214,7 +209,8 @@ namespace ModuleShift.ViewModels
 
         private bool OnNewCalendarShiftCanExecute(object arg)
         {
-            return !SelectedCalendar.IsLocked;
+            return !SelectedCalendar.IsLocked &&
+                PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddShiftCalendar);
         }
 
         private void OnNewCalendarShiftExecuted(object obj)
@@ -227,7 +223,8 @@ namespace ModuleShift.ViewModels
 
         private bool OnDelCalendarCanExecute(object arg)
         {
-            return !SelectedCalendar.IsLocked;
+            return !SelectedCalendar.IsLocked &&
+                PermissionsProvider.GetInstance().GetUserPermission(Permissions.DelShiftCalendar);
         }
 
         private void OnDelCalendarExecuted(object obj)
@@ -242,7 +239,7 @@ namespace ModuleShift.ViewModels
 
         private bool OnNewCalendarCanExecute(object arg)
         {
-            return true;
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddShiftCalendar);
         }
 
         private void OnNewCalendarExecuted(object obj)

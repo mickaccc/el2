@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using El2Core.Models;
+using El2Core.Utils;
 
 namespace ModulePlanning.Dialogs.ViewModels
 {
@@ -11,6 +8,18 @@ namespace ModulePlanning.Dialogs.ViewModels
         public DateTime? StartDateTime { get; set; }
         public DateTime? EndDateTime { get; set; }
         public DialogCloseListener RequestClose { get; }
+        public required Stopage Stopage { get; set; }
+        private RelayCommand? _closeCommand;
+        public RelayCommand CloseCommand => _closeCommand ??= new RelayCommand(OnDialogClosing);
+
+        private void OnDialogClosing(object obj)
+        {
+            if ((int)obj == 1)
+            {
+                OnDialogClosed();
+            }
+            else RequestClose.Invoke(ButtonResult.Cancel);
+        }
 
         public bool CanCloseDialog()
         {
@@ -19,12 +28,28 @@ namespace ModulePlanning.Dialogs.ViewModels
 
         public void OnDialogClosed()
         {
-            
+            if (StartDateTime != null) Stopage.Starttime = StartDateTime.Value;
+            if (EndDateTime != null) Stopage.Endtime = EndDateTime.Value;
+            ButtonResult result = (StartDateTime != null && EndDateTime != null && (string.IsNullOrWhiteSpace(Stopage.Description) == false))
+                ? ButtonResult.OK : ButtonResult.None;
+            DialogParameters par = [];
+            par.Add("Stopage", Stopage);
+            RequestClose.Invoke(par, result);
         }
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
             
+            var stop = parameters.GetValue<Stopage>("Stopage");
+            if (stop != null)
+            {
+                Stopage = stop;
+                StartDateTime = Stopage.Starttime;
+                EndDateTime = Stopage.Endtime;
+            }
+            else { Stopage = new(); }
+
         }
+
     }
 }
