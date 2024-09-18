@@ -857,6 +857,7 @@ namespace ModuleDeliverList.ViewModels
                     .Include(x => x.RidNavigation)
                     .First(x => x.VorgangId.Trim() == income.Item2.Trim());
 
+                _Logger.LogInformation("relevant? {message} {1}-{2} {3}", vrgAdd.VorgangId, vrgAdd.Aid, vrgAdd.Vnr, vrgAdd.ArbPlSap);
                 if (vrgAdd.ArbPlSap?.Length >= 3)
                 {
                     if (int.TryParse(vrgAdd.ArbPlSap[..3], out int c))

@@ -268,12 +268,6 @@
                 </Canvas>
                 <Popup IsOpen="{Binding Path=IsChecked, ElementName=shiftOpen}" Placement="Mouse" >
                     <Border>
-                        <Border.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="neuer Ausfall" Command="{Binding NewStoppageCommand}"/>
-                                <MenuItem Header="markierter Ausfall löschen" Command="{Binding DelStoppageCommand}"/>
-                            </ContextMenu>
-                        </Border.ContextMenu>
                         <StackPanel>
                         <ListBox ItemsSource="{Binding ShiftCalendars}"
                                  SelectedValuePath="Key"
@@ -295,10 +289,17 @@
                                 </Style>
                             </ListBox.Resources>
                         </ListBox>
-                        <ListBox ItemsSource="{Binding Stoppages}" SelectedValuePath="Key" MinHeight="20" Background="Brown">
+                        <ListBox x:Name="lstStop" ItemsSource="{Binding StoppagesView}" SelectedValuePath="Key" MinHeight="20" Background="Brown">
+                                <ListBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="neuer Ausfall" Command="{Binding NewStoppageCommand}"/>
+                                        <MenuItem Header="markierter Ausfall löschen" Command="{Binding DelStoppageCommand}"
+                                       CommandParameter="{Binding Path=PlacementTarget.SelectedItem.Key, RelativeSource={RelativeSource AncestorType=ContextMenu} }"/>
+                                    </ContextMenu>
+                                </ListBox.ContextMenu>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Value}" Foreground="CadetBlue"/>
+                                        <TextBlock Text="{Binding Value}" Foreground="Black" Background="BurlyWood"/>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                         </ListBox>

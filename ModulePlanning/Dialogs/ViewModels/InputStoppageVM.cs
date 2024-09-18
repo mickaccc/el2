@@ -14,7 +14,7 @@ namespace ModulePlanning.Dialogs.ViewModels
 
         private void OnDialogClosing(object obj)
         {
-            if ((int)obj == 1)
+            if ((string)obj == "1")
             {
                 OnDialogClosed();
             }
@@ -47,7 +47,7 @@ namespace ModulePlanning.Dialogs.ViewModels
                 StartDateTime = Stopage.Starttime;
                 EndDateTime = Stopage.Endtime;
             }
-            else { Stopage = new(); }
+            else { Stopage = new() { Description = string.Empty }; }
 
         }
 

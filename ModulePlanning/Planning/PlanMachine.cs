@@ -145,23 +145,13 @@ namespace ModulePlanning.Planning
                 }
             }
         }
-        public enum ShiftButtons
-        {
-            [Description("1 Schicht (5:00-13:309")]
-            Shift1 = 1,
-            [Description("1 Schicht (6:00-14:30)")]
-            Shift2 = 2,
-            [Description("2 Schicht")]
-            Shift3 = 4,
-            [Description("3 Schicht")]
-            Shift4 = 6,
-            [Description("keine")]
-            None = 0
-        }
-        private Dictionary<int, string> _ShiftCalendars = [];
+
+        private Dictionary<int, string> _ShiftCalendars = new() { { 0, "keine Berechnung" } };
         public Dictionary<int, string> ShiftCalendars => _ShiftCalendars;
         private Dictionary<int, string> _Stoppages = [];
         public Dictionary<int, string> Stoppages => _Stoppages;
+        public ICollectionView StoppagesView { get; private set; }
+        public ICollectionView ShiftCalendarView { get; private set; }
         private int _SelectedRadioButton;
         public int SelectedRadioButton
         {
@@ -174,6 +164,8 @@ namespace ModulePlanning.Planning
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     db.Ressources.First(x => x.RessourceId == _rId).ShiftCalendar = (_SelectedRadioButton == 0) ? null : _SelectedRadioButton;
                     db.SaveChanges();
+                    _shiftPlanService ??= new ShiftPlanService(Rid, _container);
+                    _shiftPlanService.ReloadShiftCalendar();
                 }
             }
         }
@@ -225,7 +217,7 @@ namespace ModulePlanning.Planning
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
             WorkArea = res.WorkArea;
             Name = res.RessName;
-            _SelectedRadioButton = res.ShiftCalendar ??=0;
+            _SelectedRadioButton = (res.ShiftCalendar == null) ? 0 : (int)res.ShiftCalendar;
             _title = res.Inventarnummer ?? string.Empty;
             Vis = res.Visability;
             Description = res.Info;
@@ -246,6 +238,8 @@ namespace ModulePlanning.Planning
             {
                 _Stoppages.Add(stop.Id, stop.Description);
             }
+            StoppagesView = CollectionViewSource.GetDefaultView(Stoppages);
+            ShiftCalendarView = CollectionViewSource.GetDefaultView(ShiftCalendars);
         }
 
         private void Initialize()
@@ -446,6 +440,10 @@ namespace ModulePlanning.Planning
         {
             return _SelectedRadioButton != 0;
         }
+        private void OnCalculateExecuted(object obj)
+        {
+            CalculateEndTime();
+        }
         private bool OnDelStoppageCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.DelStoppage);
@@ -460,6 +458,9 @@ namespace ModulePlanning.Planning
                 var stop = db.Stopages.Single(x => x.Id == id);
                 db.Stopages.Remove(stop);
                 db.SaveChanges();
+
+                StoppagesView.Refresh();
+                _shiftPlanService.ReloadStoppage();
             }
         }
 
@@ -479,18 +480,21 @@ namespace ModulePlanning.Planning
             if(result.Result == ButtonResult.OK)
             {
                 var stop = result.Parameters.GetValue<Stopage>("Stopage");
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                db.Stopages.Add(stop);
-                db.SaveChanges();
+                if (stop != null)
+                {
+                    stop.Rid = Rid;
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    db.Stopages.Add(stop);
+                    db.SaveChanges();
 
-                Stoppages.Add(stop.Id, stop.Description);
+                    Stoppages.Add(stop.Id, stop.Description);
+                    StoppagesView.Refresh();
+                    _shiftPlanService.ReloadStoppage();
+                }
             }
         }
 
-        private void OnCalculateExecuted(object obj)
-        {
-            CalculateEndTime();
-        }
+ 
         private bool OnCorrectionCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Correction);

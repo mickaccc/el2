@@ -175,7 +175,7 @@ namespace ModuleShift.ViewModels
 
         private void CalendarShiftWeeksChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            
+            SelectedCalendar.IsChanged = true;
         }
 
         private Byte[]? GetDefinition(ShiftPlan shiftPlanDb, int index)
@@ -204,6 +204,7 @@ namespace ModuleShift.ViewModels
             if (obj is ShiftWeek sw)
             {
                 SelectedCalendar.ShiftWeeks.Remove(sw);
+                SelectedCalendar.IsChanged = true;
             }
         }
 
@@ -216,9 +217,18 @@ namespace ModuleShift.ViewModels
         private void OnNewCalendarShiftExecuted(object obj)
         {
             var sw = (ShiftWeek)_ShiftWeekPlans.First().Clone();
-            sw.YearKW = string.Format("{0}{1}", DateTime.Now.Year,
-                       CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday));
+            var s = SelectedCalendar.ShiftWeeks.LastOrDefault();
+            int wo = 0;
+            var d = int.Parse(s.YearKW[..4]);
+            var dd = int.Parse(s.YearKW[4..]);
+            DateTime sdt = DateTime.Now;
+            if (s != null) { sdt = new DateTime(int.Parse(s.YearKW[..4]), 1, 1); wo = int.Parse(s.YearKW[4..]); }
+            sdt = CultureInfo.InvariantCulture.Calendar.AddWeeks(sdt, wo);
+            sw.YearKW = string.Format("{0}{1}", sdt.Year,
+                       CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(sdt, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday));
+            
             SelectedCalendar.ShiftWeeks.Add(sw);
+            SelectedCalendar.IsChanged = true;
         }
 
         private bool OnDelCalendarCanExecute(object arg)
@@ -445,16 +455,19 @@ namespace ModuleShift.ViewModels
 
         private bool OnSaveAllCanExecute(object arg)
         {
+            bool result = false;
             if(SelectedPlan != null)
-                return !SelectedPlan.Lock;
-            return false;
+                result = !SelectedPlan.Lock;
+            if(!result) result = shiftCalendars.Any(x => x.IsChanged && x.IsLocked == false);
+            return result;
         }
 
         private void OnSaveAllExecuted(object obj)
         {
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             if (obj is ShiftWeek shiftWeek)
             {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                
                 var planDb = db.ShiftPlans.SingleOrDefault(x => x.Id == shiftWeek.Id);
                 if (planDb != null)
                 {
@@ -464,18 +477,36 @@ namespace ModuleShift.ViewModels
                     planDb.Wed = shiftWeek.GetDayDefinition(3);
                     planDb.Thu = shiftWeek.GetDayDefinition(4);
                     planDb.Fre = shiftWeek.GetDayDefinition(5);
-                    planDb.Sat = shiftWeek.GetDayDefinition(6);
-                    
-                    db.SaveChanges();
+                    planDb.Sat = shiftWeek.GetDayDefinition(6);                  
                 }
                 else
                 {
                     var plan = shiftWeek.GetNewShiftPlan();
-                    db.ShiftPlans.Add(plan);
-                    db.SaveChanges();
+                    db.ShiftPlans.Add(plan);                 
                 }
             }
-            
+            foreach (var cal in shiftCalendars.Where(x => x.IsChanged && x.IsLocked == false))
+            {
+                var dbcal = db.ShiftCalendars.Include(x => x.ShiftCalendarShiftPlans).First(y => y.Id == cal.id);
+                dbcal.Repeat = cal.Repeat;
+                dbcal.CalendarName = cal.CalendarName;
+                cal.IsChanged = false;
+                for (int i =0; i > cal.ShiftWeeks.Count; i++)
+                {
+                    var c = dbcal.ShiftCalendarShiftPlans.ElementAtOrDefault(i);
+                    if (c != null)
+                    {
+                        c.PlanId = cal.ShiftWeeks[i].Id;
+                        c.YearKw = cal.ShiftWeeks[i].YearKW;
+                    }
+                    else
+                    {
+                        dbcal.ShiftCalendarShiftPlans.Add(new ShiftCalendarShiftPlan()
+                        { CalId = cal.id, PlanId = cal.ShiftWeeks[i].Id, YearKw = cal.ShiftWeeks[i].YearKW });
+                    }
+                }
+            }
+            db.SaveChanges();
         }
         public void DragOver(IDropInfo dropInfo)
         {
@@ -527,9 +558,10 @@ namespace ModuleShift.ViewModels
         public class ShiftWeek : IShiftWeekProtoType
         {
             public int Id { get; set; }
-            public string ShiftPlanName { get; set; }
+            public string ShiftPlanName { get; set; } = string.Empty;
             public bool Lock { get; set; } = false;
-            public string YearKW { get; set; }
+            public string YearKW { get; set; } = "200001";
+
             public List<ShiftDay> ShiftWeekDays { get; set; } = [];
 
             public ShiftPlan GetNewShiftPlan()
@@ -572,8 +604,18 @@ namespace ModuleShift.ViewModels
             public int id { get; set; }
             public string CalendarName { get; set; } = string.Empty;
             public bool IsLocked { get; set; }
-            public bool Repeat { get; set; }
+            private bool repeat;
+            public bool Repeat
+            {
+                get { return repeat; }
+                set
+                {
+                    repeat = value;
+                    IsChanged = true;
+                }
+            }
             public bool IsNotRepeat {  get {  return !Repeat; } }
+            public bool IsChanged { get; set; } = false;
             public ObservableCollection<ShiftWeek> ShiftWeeks { get; set; } = [];
         }
         void addshift()
