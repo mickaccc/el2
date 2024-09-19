@@ -232,7 +232,7 @@ namespace ModulePlanning.Planning
             {
                 _ShiftCalendars.Add(s.Id, s.CalendarName);
             }
-            foreach(var stop in db.Stopages.OrderBy(x => x.Starttime).AsNoTracking())
+            foreach(var stop in db.Stopages.Where(x => x.Rid == Rid).OrderBy(x => x.Starttime).AsNoTracking())
             {
                 _Stoppages.Add(stop.Id, stop.Description);
             }
