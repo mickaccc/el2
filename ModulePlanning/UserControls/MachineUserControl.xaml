@@ -299,7 +299,11 @@
                                 </ListBox.ContextMenu>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Value}" Foreground="Black" Background="BurlyWood"/>
+                                        <TextBlock Text="{Binding Value[0]}" Foreground="Black" Background="BurlyWood">
+                                            <TextBlock.ToolTip>
+                                                <TextBlock Text="{Binding Value[1]}"/>
+                                            </TextBlock.ToolTip>          
+                                        </TextBlock>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                         </ListBox>

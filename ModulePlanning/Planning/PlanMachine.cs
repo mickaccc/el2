@@ -148,8 +148,8 @@ namespace ModulePlanning.Planning
 
         private Dictionary<int, string> _ShiftCalendars = new() { { 0, "keine Berechnung" } };
         public Dictionary<int, string> ShiftCalendars => _ShiftCalendars;
-        private Dictionary<int, string> _Stoppages = [];
-        public Dictionary<int, string> Stoppages => _Stoppages;
+        private Dictionary<int, string[]> _Stoppages = [];
+        public Dictionary<int, string[]> Stoppages => _Stoppages;
         public ICollectionView StoppagesView { get; private set; }
         public ICollectionView ShiftCalendarView { get; private set; }
         private int _SelectedRadioButton;
@@ -232,9 +232,10 @@ namespace ModulePlanning.Planning
             {
                 _ShiftCalendars.Add(s.Id, s.CalendarName);
             }
-            foreach(var stop in db.Stopages.Where(x => x.Rid == Rid).OrderBy(x => x.Starttime).AsNoTracking())
+            foreach(var stop in db.Stopages.Where(x => x.Rid == Rid && x.Endtime > DateTime.Today).OrderBy(x => x.Starttime).AsNoTracking())
             {
-                _Stoppages.Add(stop.Id, stop.Description);
+                Stoppages.Add(stop.Id, [ stop.Description, string.Format("{0} - {1}",
+                        stop.Starttime.ToString("d.M H:mm"), stop.Endtime.ToString("d.M H:mm"))]);
             }
             StoppagesView = CollectionViewSource.GetDefaultView(Stoppages);
             ShiftCalendarView = CollectionViewSource.GetDefaultView(ShiftCalendars);
@@ -489,7 +490,8 @@ namespace ModulePlanning.Planning
                     db.Stopages.Add(stop);
                     db.SaveChanges();
 
-                    Stoppages.Add(stop.Id, stop.Description);
+                    Stoppages.Add(stop.Id, [ stop.Description, string.Format("{0} - {1}",
+                        stop.Starttime.ToString("d.M H:mm"), stop.Endtime.ToString("d.M H:mm"))]);
                     StoppagesView.Refresh();
                     _shiftPlanService.ReloadStoppage();
                 }
