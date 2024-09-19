@@ -124,7 +124,15 @@ namespace ModulePlanning.ViewModels
                 _DbCtx.SaveChanges();
             }
         }
+        private bool IsRelevant(string? ArbPl)
+        {
 
+            if (int.TryParse(ArbPl?[..3], out var cid))
+            {
+                return UserInfo.User.AccountCostUnits.Any(x => x.CostId == cid);
+            }
+            return false;
+        }
         private void MessageVorgangReceived(List<(string, string)?> list)
         {
             try
@@ -144,11 +152,27 @@ namespace ModulePlanning.ViewModels
                                 {
                                     Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
                                     _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
+                                    _Logger.LogInformation("pool pluged {message}-{0} rid{1}", vo.Aid, vo.Vnr, vo.Rid);
                                 }
                                 else
                                 {
                                     Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
                                     _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
+                                    _Logger.LogInformation("pool unplug {message}-{0} rid{1}", vo.Aid, vo.Vnr, vo.Rid);
+                                }
+                            }
+                            else
+                            {
+                                var vorg = _DbCtx.Vorgangs
+                                    .Include(x => x.AidNavigation)
+                                    .ThenInclude(x => x.MaterialNavigation)
+                                    .Include(x => x.RidNavigation)
+                                    .Single(x => x.VorgangId == item.Value.Item2);
+                                if (vorg.Aktuell && IsRelevant(vorg.ArbPlSap))
+                                {
+                                    Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vorg));
+                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vorg.VorgangId).State = EntityState.Detached;
+                                    _Logger.LogInformation("pool added {message}-{0}", vorg.Aid, vorg.Vnr);
                                 }
                             }
                         }

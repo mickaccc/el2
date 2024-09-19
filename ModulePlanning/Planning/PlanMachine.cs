@@ -172,8 +172,6 @@ namespace ModulePlanning.Planning
         public string? InventNo { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
-        //private ObservableCollection<ShiftStruct> _shifts = [];
-        //public ICollectionView ShiftsView { get; private set; }
         public ObservableCollection<Vorgang>? Processes { get; set; }
         public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
         public bool EnableRowDetails { get; private set; }
@@ -455,12 +453,15 @@ namespace ModulePlanning.Planning
             {
                 Stoppages.Remove(id);
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                var stop = db.Stopages.Single(x => x.Id == id);
-                db.Stopages.Remove(stop);
-                db.SaveChanges();
+                var stop = db.Stopages.SingleOrDefault(x => x.Id == id);
+                if (stop != null)
+                {
+                    db.Stopages.Remove(stop);
+                    db.SaveChanges();
 
-                StoppagesView.Refresh();
-                _shiftPlanService.ReloadStoppage();
+                    StoppagesView.Refresh();
+                    _shiftPlanService.ReloadStoppage();
+                }
             }
         }
 
@@ -826,32 +827,6 @@ namespace ModulePlanning.Planning
             //}
             //db.SaveChanges();
             
-        }
-
-        public class ShiftStruct : ViewModelBase
-        {
-            public ShiftStruct(WorkShift shf, bool isc)
-            {
-                this.Shift = shf;
-                this._isCheck = isc;
-            }
-            private bool _isCheck;
-            public bool IsChanged { get; set; }
-            public WorkShift Shift { get; }
-            public bool IsCheck
-            {
-                get { return _isCheck; }
-                set
-                {
-                    if (_isCheck != value)
-                    {
-                        _isCheck = value;
-                        IsChanged = !IsChanged;
-                        NotifyPropertyChanged(() => IsCheck);
-                        NotifyPropertyChanged(() => IsChanged);
-                    }
-                }
-            }
         }
     }
 }

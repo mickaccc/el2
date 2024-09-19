@@ -219,8 +219,6 @@ namespace ModuleShift.ViewModels
             var sw = (ShiftWeek)_ShiftWeekPlans.First().Clone();
             var s = SelectedCalendar.ShiftWeeks.LastOrDefault();
             int wo = 0;
-            var d = int.Parse(s.YearKW[..4]);
-            var dd = int.Parse(s.YearKW[4..]);
             DateTime sdt = DateTime.Now;
             if (s != null) { sdt = new DateTime(int.Parse(s.YearKW[..4]), 1, 1); wo = int.Parse(s.YearKW[4..]); }
             sdt = CultureInfo.InvariantCulture.Calendar.AddWeeks(sdt, wo);

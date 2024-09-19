@@ -81,8 +81,7 @@ namespace ModuleShift.Dialogs
         {
             IDialogParameters param = new DialogParameters();
 
-                param.Add("Cover", Cover);
- 
+            param.Add("Cover", Cover);
             RequestClose.Invoke(param, result);
         }
 
@@ -140,11 +139,12 @@ namespace ModuleShift.Dialogs
                         high = true;
                         start = i;
                     }
+                    if (i == bit.Length-1)
+                    {
+                        TimeList.Add(new TimeTuple(start / 60, start % 60, (i / 60), i%60));
+                    }
                 }
-                else if (i == bit.Length && high)
-                {
-                    TimeList.Add(new TimeTuple(start/60, start%60, i/60, i%60));
-                }
+
                 else if (high)
                 {
                     high = false;

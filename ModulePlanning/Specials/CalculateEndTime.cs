@@ -32,7 +32,25 @@ namespace ModulePlanning.Specials
             holidayLogic = container.Resolve<HolidayLogic>();
         }
 
-        
+        private bool[] GetManipulateMask(bool[] weekplan, DateTime start)
+        {
+            var stop = stoppages.FirstOrDefault(x => start < x.Endtime);
+            var ret = weekplan.ToArray();
+            if (stop != null)
+            {
+                if (stop.Starttime.Date <= start.Date)
+                {
+                    int begin = (stop.Starttime.Date == start.Date) ? Convert.ToInt32(start.TimeOfDay.TotalMinutes) : 0;
+                    int end = (stop.Endtime.Date == start.Date) ? Convert.ToInt32(stop.Endtime.TimeOfDay.TotalMinutes) : 1440;
+                    for (int i = begin; i < end; i++)
+                    {
+                        ret[i] = false;
+                    }
+                }
+            }
+            
+            return ret;
+        }
 
         //public bool InclusiveBetween(this IComparable a, IComparable b, IComparable c)
         //{
@@ -53,9 +71,6 @@ namespace ModulePlanning.Specials
             }
             else if (weekPlans.TryGetValue(key, out weekPlan) == false) return start;
             
-            var stop = stoppages.FirstOrDefault(x => x.Starttime < start && start < x.Endtime);
-            if (stop != null) { processLength += start.Subtract(stop.Starttime).TotalMinutes; start = stop.Endtime; }
-
             if (weekPlan.IsDefaultOrEmpty || processLength == 0) return start;
             bool[] tmpWeekPlan;
             int resultMinute = 0;
@@ -63,7 +78,7 @@ namespace ModulePlanning.Specials
             int startDay = (int)start.DayOfWeek;
             TimeSpan time = start.TimeOfDay;
             if (holidayLogic.IsHolyday(start)) { tmpWeekPlan = weekPlan[0]; } else tmpWeekPlan = weekPlan[startDay]; //set the start of the week
-
+            tmpWeekPlan = GetManipulateMask(tmpWeekPlan, start);
             for (int j = (int)time.TotalMinutes; j < tmpWeekPlan.Length; j++)
             {
                 if (tmpWeekPlan[j]) length--;
