@@ -175,7 +175,7 @@ namespace El2Core.Utils
 
                 FileStream fs = new FileStream(filename, FileMode.Open);
                 var filters = (PersonalFilter[])s.Deserialize(fs);
-
+                _filters.Add("_keine", null);
                 foreach (var filter in filters)
                 {
                     _filters.Add(filter.Name, filter);

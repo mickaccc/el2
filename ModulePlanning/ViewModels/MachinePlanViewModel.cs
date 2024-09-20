@@ -254,6 +254,7 @@ namespace ModulePlanning.ViewModels
               .ThenInclude(x => x.MaterialNavigation)
               .Include(x => x.AidNavigation.DummyMatNavigation)
               .Include(x => x.ArbPlSapNavigation)
+              .Include(x => x.Responses)
               .Include(x => x.RidNavigation.WorkArea)
               .Include(x => x.RidNavigation)
               .ThenInclude(x => x.RessourceWorkshifts)

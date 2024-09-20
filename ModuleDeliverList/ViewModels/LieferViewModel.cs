@@ -475,7 +475,7 @@ namespace ModuleDeliverList.ViewModels
                 if (accepted && _selectedPersonalFilter != null)
                 {
                     var b = PersonalFilterContainer.GetInstance();
-                    accepted = b[_selectedPersonalFilter].TestValue(ord, _container);
+                    accepted = (_selectedPersonalFilter != "_keine") ? b[_selectedPersonalFilter].TestValue(ord, _container) : true;
                 }
                 return accepted;
             }
@@ -741,7 +741,7 @@ namespace ModuleDeliverList.ViewModels
         {
             //_projects.Add(new Project() { ProjectPsp = "leer"});
 
-            if (!_sections.ContainsKey(0)) _sections.Add(0, string.Empty);
+            if (!_sections.ContainsKey(0)) _sections.Add(0, "_keine");
             var a = await DBctx.Vorgangs
                .Include(v => v.AidNavigation)
                .ThenInclude(x => x.MaterialNavigation)
@@ -759,7 +759,7 @@ namespace ModuleDeliverList.ViewModels
                 .ToArrayAsync();
             var filt = await DBctx.ProductionOrderFilters.AsNoTracking().ToArrayAsync();
             _ressources.AddRange(ress);
-            SortedSet<ProjectStruct> pl = [new(string.Empty, ProjectTypes.ProjectType.None, string.Empty)];
+            SortedSet<ProjectStruct> pl = [new("_keine", ProjectTypes.ProjectType.None, string.Empty)];
             await Task.Factory.StartNew(() =>
             {
                 HashSet<Vorgang> result = new();

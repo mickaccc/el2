@@ -161,11 +161,10 @@ namespace Lieferliste_WPF.ViewModels
             
         }
 
- 
-
         private void LoadFilters()
         {
             _filterContainer = PersonalFilterContainer.GetInstance();
+            _filterContainer.Remove("_keine");
             _filterContainerKeys = _filterContainer.Keys.ToObservableCollection();
             PersonalFilterView = CollectionViewSource.GetDefaultView(_filterContainerKeys);
             PersonalFilterView.MoveCurrentToFirst();
@@ -195,7 +194,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     PersonalFilterName = _filterContainer[pf].Name;
                     PersonalFilterField = _filterContainer[pf].Field.ToTuple();
-                    PersonalFilterRegex = _filterContainer[pf].Pattern;
+                    PersonalFilterRegex = _filterContainer[pf].Pattern;                  
                 }
             }
         }

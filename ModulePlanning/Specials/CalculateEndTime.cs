@@ -34,19 +34,19 @@ namespace ModulePlanning.Specials
 
         private bool[] GetManipulateMask(bool[] weekplan, DateTime start)
         {
-            var stop = stoppages.FirstOrDefault(x => start < x.Endtime);
+            var stopes = stoppages.Where(x => start < x.Endtime && start.Date == x.Endtime.Date);
             var ret = weekplan.ToArray();
-            if (stop != null)
+            foreach (var stop in stopes)
             {
-                if (stop.Starttime.Date <= start.Date)
+                int begin =0, end =0;
+
+                begin = (stop.Starttime >= start) ? Convert.ToInt32(stop.Starttime.TimeOfDay.TotalMinutes) : 0;
+                end = (stop.Endtime.Date == start.Date) ? Convert.ToInt32(stop.Endtime.TimeOfDay.TotalMinutes) : 1440;
+                
+                for (int i = begin; i < end; i++)
                 {
-                    int begin = (stop.Starttime.Date == start.Date) ? Convert.ToInt32(start.TimeOfDay.TotalMinutes) : 0;
-                    int end = (stop.Endtime.Date == start.Date) ? Convert.ToInt32(stop.Endtime.TimeOfDay.TotalMinutes) : 1440;
-                    for (int i = begin; i < end; i++)
-                    {
-                        ret[i] = false;
-                    }
-                }
+                    ret[i] = false;
+                }              
             }
             
             return ret;
