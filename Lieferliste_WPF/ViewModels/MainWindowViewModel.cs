@@ -125,6 +125,10 @@ namespace Lieferliste_WPF.ViewModels
                
                 _Logger = loggerFactory.CreateLogger<MainWindowViewModel>();
 
+                if (CoreFunction.PriorProcess == null)
+                {
+                     App.Current.Shutdown();
+                }
                 _ = RegisterMe();
                 SetTimer();
                 SetMsgDBTimer();
