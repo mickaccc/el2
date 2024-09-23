@@ -25,6 +25,7 @@
         <conv:CommentConverter x:Key="comment"/>
         <conv:PlusConverter x:Key="plus"/>
         <conv:KW_Converter x:Key="KW"/>
+        <conv:NullZeroToBool x:Key="zerobool"/>
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <System:DateTime x:Key="datetime"/>
@@ -273,6 +274,21 @@
                             <Binding Path="Correction" Mode="OneWay" UpdateSourceTrigger="PropertyChanged"/>
                         </MultiBinding>
                     </DataGridTextColumn.Binding>
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Correction, UpdateSourceTrigger=PropertyChanged,
+                                    Converter={StaticResource zerobool}}" Value="{StaticResource FalseValue}">
+                                    <Setter Property="Foreground" Value="black"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Correction, UpdateSourceTrigger=PropertyChanged,
+                                    Converter={StaticResource zerobool}}" Value="{StaticResource TrueValue}">
+                                    <Setter Property="Background" Value="LightGoldenrodYellow"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Ende Berechnet" Binding="{Binding Extends}" IsReadOnly="True">
                     <DataGridTextColumn.CellStyle>

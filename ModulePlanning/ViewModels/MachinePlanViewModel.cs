@@ -168,7 +168,7 @@ namespace ModulePlanning.ViewModels
                                     .ThenInclude(x => x.MaterialNavigation)
                                     .Include(x => x.RidNavigation)
                                     .Single(x => x.VorgangId == item.Value.Item2);
-                                if (vorg.Aktuell && IsRelevant(vorg.ArbPlSap))
+                                if (vorg.Aktuell && IsRelevant(vorg.ArbPlSap) && vorg.Rid == null && vorg.Text?.Contains("starten", StringComparison.CurrentCultureIgnoreCase) == false)
                                 {
                                     Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vorg));
                                     _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vorg.VorgangId).State = EntityState.Detached;

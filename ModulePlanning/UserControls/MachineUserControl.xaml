@@ -26,9 +26,7 @@
         <conv:BoolRowDetail x:Key="rowDetail"/>
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
 
-
-
-            <DataGrid x:Key="Setup1"  AutoGenerateColumns="False" 
+        <DataGrid x:Key="Setup1"  AutoGenerateColumns="False" 
 		  CanUserAddRows="False"
 		  CanUserDeleteRows="False"
 		  CanUserSortColumns="False"
