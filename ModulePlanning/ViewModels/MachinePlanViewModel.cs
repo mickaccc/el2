@@ -110,7 +110,7 @@ namespace ModulePlanning.ViewModels
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
-            //_ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
+            _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             _ea.GetEvent<ContextPlanMachineChanged>().Subscribe(ctxChanged);
             if (_settingsService.IsAutoSave) SetAutoSaveTimer();
@@ -161,23 +161,6 @@ namespace ModulePlanning.ViewModels
                                     _Logger.LogInformation("pool unplug {message}-{0} rid{1}", vo.Aid, vo.Vnr, vo.Rid);
                                 }
                             }
-                            else
-                            {
-                                var vorg = _DbCtx.Vorgangs
-                                    .Include(x => x.AidNavigation)
-                                    .ThenInclude(x => x.MaterialNavigation)
-                                    .Include(x => x.RidNavigation)
-                                    .Single(x => x.VorgangId == item.Value.Item2);
-                                if (vorg.Aktuell && IsRelevant(vorg.ArbPlSap) && vorg.Rid == null
-                                    && vorg.Text?.Contains("starten", StringComparison.CurrentCultureIgnoreCase) == false
-                                    && vorg.SysStatus.Contains("RÜCK") == false
-                                    && vorg.SysStatus.Contains("TABG") == false)
-                                {
-                                    Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vorg));
-                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vorg.VorgangId).State = EntityState.Detached;
-                                    _Logger.LogInformation("pool added {message}-{0}", vorg.Aid, vorg.Vnr);
-                                }
-                            }
                         }
                     }
                 }
@@ -189,18 +172,28 @@ namespace ModulePlanning.ViewModels
             }
         }
 
-        private void MessageOrderReceived(List<(string, string)> list)
+        private void MessageOrderReceived(List<(string, string)?> list)
         {
             try
             {
                 foreach (var item in list)
                 {
-                    if (Priv_processes?.Any(x => x.Aid == item.Item2) ?? false)
+                    if(item == null) continue;
+                    if (Priv_processes?.Any(x => x.Aid == item.Value.Item2) ?? false)
                     {
-                        Task.Factory.StartNew(async () =>
+                        _ = Task.Factory.StartNew(async () =>
                         {
-                            ///todo///
-                            ///Add New Order
+                            var proc = await GetVorgangsAsync(item.Value.Item2);
+                            foreach (var item2 in proc.Where(x => x.Aktuell))
+                            {
+                                if (IsRelevant(item2.ArbPlSap) && item2.Rid == null)
+                                {
+                                    _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
+                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
+                                    _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
+                                }
+
+                            }
                         });
                     }
                 }
@@ -266,7 +259,7 @@ namespace ModulePlanning.ViewModels
                 && y.SysStatus != null
                 && y.Text != null
                 && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
-                && y.Text.ToLower().Contains("starten") == false
+                && y.Text.ToLower().Contains("starten", StringComparison.CurrentCultureIgnoreCase) == false
                 && y.SysStatus.Contains("RÜCK") == false)
               .ToListAsync();
 
@@ -498,9 +491,12 @@ namespace ModulePlanning.ViewModels
                     }
                     else
                     {
+                        _Logger.LogInformation("{message} {0} unDrop machine", vrg.VorgangId, vrg.Rid);
                         vrg.Rid = null;
                         vrg.SortPos = null;
-                        _DbCtx.Vorgangs.First(x => x.VorgangId == vrg.VorgangId).Rid = vrg.Rid;
+                        var vdb = _DbCtx.Vorgangs.First(x => x.VorgangId == vrg.VorgangId);
+                        vdb.Rid = null;
+                        vdb.SortPos = null;                        
                     }
                     var source = ((ListCollectionView)dropInfo.DragInfo.SourceCollection);
                     if (source.IsAddingNew) { source.CommitNew(); }

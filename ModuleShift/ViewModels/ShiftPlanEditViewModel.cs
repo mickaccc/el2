@@ -406,7 +406,7 @@ namespace ModuleShift.ViewModels
                 ShiftWeekPlans.Refresh();
                 SelectedPlan = _ShiftWeekPlans.First();
                 var sp = db.ShiftPlans.Single(x => x.Id == plan.Id);
-                db.Remove(sp);
+                db.ShiftPlans.Remove(sp);
                 db.SaveChanges();
             }
         }
@@ -448,6 +448,7 @@ namespace ModuleShift.ViewModels
                 db.ShiftPlans.Add(shiftPlan);
 
                 db.SaveChanges();
+                week.Id = shiftPlan.Id;
             }
         }
 
