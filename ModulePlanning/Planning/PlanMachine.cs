@@ -395,7 +395,8 @@ namespace ModulePlanning.Planning
                                     }
                                 }
                             }
-                        }                      
+                        }
+                        db.SaveChanges();
                     }
                 });        
             }
