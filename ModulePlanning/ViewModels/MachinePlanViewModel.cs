@@ -148,17 +148,21 @@ namespace ModulePlanning.ViewModels
                             if (vo != null)
                             {
                                 _DbCtx.Entry(vo).Reload();
-                                if (vo.Rid != null)
+                                _Logger.LogInformation("maybe plug {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
+                                if (item.Value.Item1 == "EL2")
                                 {
-                                    Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
-                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
-                                    _Logger.LogInformation("pool pluged {message}-{0} rid{1}", vo.Aid, vo.Vnr, vo.Rid);
-                                }
-                                else
-                                {
-                                    Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
-                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
-                                    _Logger.LogInformation("pool unplug {message}-{0} rid{1}", vo.Aid, vo.Vnr, vo.Rid);
+                                    if (vo.Rid != null)
+                                    {
+                                        Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
+                                        _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
+                                        _Logger.LogInformation("pool pluged {message}-{0} rid {1}", vo.Aid, vo.Vnr, vo.Rid);
+                                    }
+                                    else
+                                    {
+                                        Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
+                                        _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
+                                        _Logger.LogInformation("pool unplug {message}-{0}", vo.Aid, vo.Vnr);
+                                    }
                                 }
                             }
                         }
@@ -178,7 +182,7 @@ namespace ModulePlanning.ViewModels
             {
                 foreach (var item in list)
                 {
-                    if(item == null) continue;
+                    if (item == null) continue;
                     if (Priv_processes?.Any(x => x.Aid == item.Value.Item2) ?? false)
                     {
                         _ = Task.Factory.StartNew(async () =>
@@ -259,7 +263,7 @@ namespace ModulePlanning.ViewModels
                 && y.SysStatus != null
                 && y.Text != null
                 && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
-                && y.Text.ToLower().Contains("starten", StringComparison.CurrentCultureIgnoreCase) == false
+                && y.Text.ToLower().Contains("starten") == false
                 && y.SysStatus.Contains("RÜCK") == false)
               .ToListAsync();
 
@@ -297,7 +301,7 @@ namespace ModulePlanning.ViewModels
             }
         }
 
-        private async Task<ICollectionView?> LoadMachinesAsync()
+        private async Task<ICollectionView> LoadMachinesAsync()
         {
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
  

@@ -366,11 +366,14 @@ namespace ModulePlanning.Planning
                         {
                             if(idTuple != null)
                             {
+                                
                                 var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                                 if (pr != null)
                                 {
+                                    _logger.LogInformation("PlanMachine - maybe remove {message} {1}", pr.VorgangId, pr.SysStatus);
                                     var proc = db.Vorgangs.Single(x => x.VorgangId == idTuple.Value.Item2);
                                     var v = db.Vorgangs.Local;
+                                    db.Entry(v).Reload();
                                     if ((proc.SysStatus?.Contains("RÜCK") ?? false) || proc.Rid == null)
                                     {
                                         proc.SortPos = "Z";
@@ -387,7 +390,7 @@ namespace ModulePlanning.Planning
                                         .Include(x => x.AidNavigation.DummyMatNavigation)
                                         .Include(x => x.RidNavigation)
                                         .First(x => x.VorgangId == idTuple.Value.Item2);
-
+                                    _logger.LogInformation("PlanMachine - maybe add {message}", vo.VorgangId);
                                     if (vo?.SysStatus?.Contains("RÜCK") == false)
                                     {
                                         Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));
