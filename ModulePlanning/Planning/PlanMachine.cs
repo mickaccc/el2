@@ -366,14 +366,13 @@ namespace ModulePlanning.Planning
                         {
                             if(idTuple != null)
                             {
-                                
                                 var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                                 if (pr != null)
                                 {
                                     _logger.LogInformation("PlanMachine - maybe remove {message} {1}", pr.VorgangId, pr.SysStatus);
                                     var proc = db.Vorgangs.Single(x => x.VorgangId == idTuple.Value.Item2);
-                                    var v = db.Vorgangs.Local;
-                                    db.Entry(v).Reload();
+
+                                    db.Entry(pr).Reload();
                                     if ((proc.SysStatus?.Contains("RÜCK") ?? false) || proc.Rid == null)
                                     {
                                         proc.SortPos = "Z";
@@ -745,7 +744,9 @@ namespace ModulePlanning.Planning
                 for (int i = 0; i < lst.Count; i++)
                 {
                     var vrg = p.First(x => x.Equals(lst[i]));
+                    _logger.LogInformation("old sort {message} {0}", vrg.VorgangId, vrg.SortPos);
                     vrg.SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
+                    _logger.LogInformation("new sort {message} {0}",vrg.VorgangId, vrg.SortPos);
                 }
                 Target.MoveCurrentTo(Item);
                 if (Item.AidNavigation.Material != null && WorkArea.CreateFolder)
@@ -787,7 +788,7 @@ namespace ModulePlanning.Planning
                     else if (dropInfo.Data is Vorgang vrg)
                     {
                         InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
-                        _logger.LogInformation("{message} {id}", "Drops", vrg.VorgangId);
+                        _logger.LogInformation("{message} {id} {sort}", "Drops" , vrg.VorgangId, vrg.SortPos);
                     }
  
                     ProcessesCV.Refresh();
