@@ -87,7 +87,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnChanged(object obj)
         {
-            if(obj is WorkArea w)
+            if (obj is WorkArea w)
             {
                 _dbctx.ChangeTracker.Entries().First(x => x.Entity.Equals(w)).State = EntityState.Modified;
             }
@@ -132,13 +132,13 @@ namespace Lieferliste_WPF.ViewModels
 
         private void callback(IDialogResult result)
         {
-            if(result.Result == ButtonResult.OK)
+            if (result.Result == ButtonResult.OK)
             {
                 _workAreas.Add(result.Parameters.GetValue<WorkArea>("new"));
                 _dbctx.WorkAreas.Add(result.Parameters.GetValue<WorkArea>("new"));
                 WorkAreas?.Refresh();
             }
-            
+
         }
 
         private bool OnDeleteCanExecute(object arg)
@@ -173,7 +173,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnEditExecuted(object obj)
         {
             EditMode = !EditMode;
-                       
+
         }
 
         private async Task<ICollectionView> LoadAsync()

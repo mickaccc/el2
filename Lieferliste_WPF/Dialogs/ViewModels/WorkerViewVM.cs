@@ -35,7 +35,7 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void OnDialogClosed()
         {
-           
+
         }
 
         public void OnDialogOpened(IDialogParameters parameters)

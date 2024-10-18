@@ -9,7 +9,7 @@ using System.Windows.Controls;
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
     internal class DocumentDialogVM : IDialogAware, IDropTarget
-    { 
+    {
         public DocumentDialogVM(IUserSettingsService userSettingsService)
         {
             settingservice = userSettingsService;
@@ -28,14 +28,14 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         private void OnMusterExecute(object obj)
         {
-            if(string.IsNullOrEmpty(Path))
+            if (string.IsNullOrEmpty(Path))
             {
                 OnError();
             }
-            else 
+            else
             {
                 FileInfo file = new FileInfo(Path);
-                if(file.Exists)
+                if (file.Exists)
                 {
                     //file.CopyTo(RuleInfo.Rules[0]);
                 }
@@ -58,23 +58,24 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             }
             else { }
         }
-        
+
         private void OnError()
         {
             MessageBox.Show("Pfadangabe ist leer!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         public bool CanCloseDialog()
         {
-            return true;        }
+            return true;
+        }
 
         public void OnDialogClosed()
         {
-            
+
         }
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-            
+
         }
 
         public void DragOver(IDropInfo dropInfo)

@@ -1,11 +1,6 @@
-﻿using GongSolutions.Wpf.DragDrop;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Drawing.Printing;
+﻿using System;
 using System.Printing;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Xps;
 

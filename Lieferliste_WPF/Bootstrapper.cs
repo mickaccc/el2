@@ -56,7 +56,7 @@ namespace Lieferliste_WPF
             App.GlobalFontSize = settingsService.FontSize;
 
 
-            log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config"));
+            log4net.Config.XmlConfigurator.Configure(new FileInfo("Log4Net.config"));
             return Container.Resolve<MainWindow>();
         }
 
@@ -68,7 +68,7 @@ namespace Lieferliste_WPF
 
         private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-              _Logger?.LogCritical("Unhandled exception: {message}", e.Exception.ToString());
+            _Logger?.LogCritical("Unhandled exception: {message}", e.Exception.ToString());
         }
 
 
@@ -85,9 +85,9 @@ namespace Lieferliste_WPF
             IConfiguration configuration = builder.Build();
             var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
-                .UseSqlServer(defaultconnection)            
+                .UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
-          
+
             containerRegistry.RegisterInstance(builderopt.Options);
             containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
             containerRegistry.RegisterSingleton<IHolidayLogic, HolidayLogic>();
@@ -131,9 +131,9 @@ namespace Lieferliste_WPF
 
             Globals gl = new(Container);
             containerRegistry.RegisterInstance(Globals.CreateUserInfo(Container));
-            RuleInfo rule = new RuleInfo(gl.Rules);
+            RuleInfo rule = new(gl.Rules);
             containerRegistry.RegisterInstance(rule);
- 
+
         }
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {

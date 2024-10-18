@@ -19,8 +19,7 @@ namespace El2Core.Utils
     }
     public sealed class PersonalFilterContainer
     {
-
-        Dictionary<string, PersonalFilter> _filters = [];
+        private readonly Dictionary<string, PersonalFilter> _filters = [];
         private static readonly PersonalFilterContainer Instance = new ();
         private PersonalFilterContainer()
         {

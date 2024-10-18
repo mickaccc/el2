@@ -42,11 +42,11 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnCopyClipBoardExecuted(object obj)
         {
-            if(obj is OrderViewModel o)
+            if (obj is OrderViewModel o)
             {
                 Clipboard.SetText(string.Format("Auftragsnummer: {0}\nMaterial: {1} {2}\nMenge: {3}\nTermin: {4:D}",
                     o.Aid, o.Material, o.Bezeichnung, o.Quantity, o.EckEnde));
-            }           
+            }
         }
 
         private void OnMessageReceived(List<(string, string)?> vorgangIdList)
@@ -336,7 +336,7 @@ namespace Lieferliste_WPF.ViewModels
         public DialogCloseListener RequestClose { get; }
 
         public ICommand SaveCommand;
-        
+
         public bool CanCloseDialog()
         {
             return true;
@@ -368,12 +368,12 @@ namespace Lieferliste_WPF.ViewModels
                 Ready = v.AidNavigation.Fertig;
                 EckEnde = v.AidNavigation.Eckende;
                 this.OrderGroup = v.AidNavigation.OrderGroup;
-                VorgangCV.Refresh(); 
+                VorgangCV.Refresh();
 
 
             }
             else
-                MessageBox.Show("keine Vorgänge vorhanden", Title,MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("keine Vorgänge vorhanden", Title, MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

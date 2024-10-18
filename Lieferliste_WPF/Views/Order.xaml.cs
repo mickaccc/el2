@@ -24,12 +24,12 @@ namespace Lieferliste_WPF.Views
 
         public void Close()
         {
-            
+
         }
 
         public void Show()
         {
-            
+
         }
 
         public bool? ShowDialog()

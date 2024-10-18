@@ -30,10 +30,10 @@ namespace Lieferliste_WPF.ViewModels
             set { _applicationCommands = value; }
         }
         private RelayCommand? _projectSearchCommand;
-    
+
         public ICommand ProjectSearchCommand => _projectSearchCommand ??= new RelayCommand(OnProjectSearch);
 
-        private readonly PspNode<Shape> Projects = new() { Node = new ("Projekte")};
+        private readonly PspNode<Shape> Projects = new() { Node = new("Projekte") };
         public ICollectionView? PSP_NodeCollectionView { get; private set; }
 
         private string _projectSearchText = string.Empty;
@@ -67,7 +67,7 @@ namespace Lieferliste_WPF.ViewModels
             _container = container;
             _applicationCommands = applicationCommands;
 
-            PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync());             
+            PspTask = new NotifyTaskCompletion<ICollectionView>(LoadPspDataAsync());
         }
 
 
@@ -80,7 +80,7 @@ namespace Lieferliste_WPF.ViewModels
                     PSP_NodeCollectionView?.Refresh();
             }
         }
-  
+
 
 
         private async Task<ICollectionView> LoadPspDataAsync()
@@ -101,9 +101,9 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     var p = item.ProjectPsp.Trim();
                     Regex regex = MyRegex();
-                    foreach(var scheme in RuleInfo.ProjectSchemes)
+                    foreach (var scheme in RuleInfo.ProjectSchemes)
                     {
-                        if(p.StartsWith(scheme.Key, StringComparison.OrdinalIgnoreCase))
+                        if (p.StartsWith(scheme.Key, StringComparison.OrdinalIgnoreCase))
                             regex = new Regex(scheme.Value.Regex);
                     }
                     Match match = regex.Match(p);
@@ -111,25 +111,25 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         string psp = string.Empty;
                         PspNode<Shape> stepNode = new();
-                        foreach(var m in match.Groups.Values.Skip(1))
+                        foreach (var m in match.Groups.Values.Skip(1))
                         {
                             if (m.Value == "") break;
                             psp += m.Value;
                             var node = Projects.Children.FirstOrDefault(x => psp.StartsWith(x.Node.ToString()));
                             if (node == null)
-                            {                                
-                                stepNode = Projects.Add(new Shape(psp), "Psp-Type");                              
+                            {
+                                stepNode = Projects.Add(new Shape(psp), "Psp-Type");
                             }
-                            else if(node.Node.ToString() == psp)
+                            else if (node.Node.ToString() == psp)
                             {
                                 stepNode = node;
                             }
                             else
                             {
-                                stepNode = node.Add(new Shape(psp), "Psp-Type");                             
+                                stepNode = node.Add(new Shape(psp), "Psp-Type");
                             }
                         }
- 
+
                         foreach (var o in item.OrderRbs)
                         {
                             var sh = new Shape(o.Aid)
@@ -137,20 +137,20 @@ namespace Lieferliste_WPF.ViewModels
                                 Description = string.Format("{0} {1}", o.Material, o.MaterialNavigation?.Bezeichng)
                             };
                             stepNode.Add(sh, "Order-Type");
-                            
+
                         }
-                        if(stepNode.HasOrder)
+                        if (stepNode.HasOrder)
                         {
                             stepNode.Node.Description = item.ProjectInfo;
                             stepNode.Node.ProjectType = (ProjectTypes.ProjectType)item.ProjectType;
                             stepNode.Node.PropertyChanged += Node_PropertyChanged;
-                            
+
                         }
                     }
                 }
 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
-            
+
             PSP_NodeCollectionView = CollectionViewSource.GetDefaultView(Projects.Children);
             PSP_NodeCollectionView.Filter += FilterPredicatePsp;
             return PSP_NodeCollectionView;
@@ -197,7 +197,7 @@ namespace Lieferliste_WPF.ViewModels
             string psp = reg.Replace(pspIn, "");
             return psp;
         }
- 
+
         private string ConvertPsp(string psp)
         {
             psp = ClearPsp(psp.ToUpper().Trim());
@@ -231,7 +231,7 @@ namespace Lieferliste_WPF.ViewModels
             foreach (var edit in EditResult)
             {
                 var current = pro.First(x => x.ProjectPsp == edit.Key);
-                if(current.ProjectInfo != edit.Value.Description) current.ProjectInfo = edit.Value.Description;
+                if (current.ProjectInfo != edit.Value.Description) current.ProjectInfo = edit.Value.Description;
                 if (current.ProjectType != (int)edit.Value.ProjectType) current.ProjectType = (int)edit.Value.ProjectType;
             }
             db.SaveChanges();
@@ -239,7 +239,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-            
+
         }
 
         [GeneratedRegex("")]

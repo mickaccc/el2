@@ -1,7 +1,4 @@
-﻿using El2Core.Utils;
-using System;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Lieferliste_WPF
 {
@@ -67,6 +64,6 @@ namespace Lieferliste_WPF
         }
 
     }
-    
+
 }
 

@@ -4,18 +4,14 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -68,7 +64,7 @@ namespace Lieferliste_WPF.ViewModels
             if (obj is Permission permission)
             {
                 var role = _roleCV.CurrentItem as IdmRole;
-                if(role.RolePermissions.Any(x => x.PermissKey == permission.PKey))
+                if (role.RolePermissions.Any(x => x.PermissKey == permission.PKey))
                     return false;
             }
             return true;
@@ -143,7 +139,7 @@ namespace Lieferliste_WPF.ViewModels
 
             if (obj is IdmRole us)
             {
- 
+
                 PermissionsAvail.Refresh();
 
             }
@@ -151,7 +147,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadData()
         {
-     
+
             var r = _Dbctx.IdmRoles
                 .Include(x => x.RolePermissions)
                 .ThenInclude(x => x.PermissKeyNavigation)
@@ -160,20 +156,21 @@ namespace Lieferliste_WPF.ViewModels
             foreach (var role in r)
             {
                 Roles.Add(role);
-     
+
             }
 
             var p = _Dbctx.Permissions.AsNoTracking();
 
             _permissionsAll.AddRange(p);
-            SyncronDiffs();        }
+            SyncronDiffs();
+        }
         private void SyncronDiffs()
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             bool ret;
             List<string> keys = [];
             FieldInfo[] prop = typeof(Permissions).GetFields();
-            foreach (var key in prop) 
+            foreach (var key in prop)
             {
                 if (key.GetValue(typeof(Permissions)) is string k && k[0] != '!')
                     keys.Add(k);
@@ -182,7 +179,7 @@ namespace Lieferliste_WPF.ViewModels
             var per = db.Permissions.Select(x => x.PKey.Trim()).ToList();
             dbPermiss.AddRange(per.Except(keys));
             appPermiss.AddRange(keys.Except(per));
-            
+
         }
         public void DragOver(IDropInfo dropInfo)
         {
@@ -204,7 +201,7 @@ namespace Lieferliste_WPF.ViewModels
 
                 if (r != null)
                 {
-                    r.RolePermissions.Add(new RolePermission() { Created = DateTime.Now,  PermissKey = p.PKey, RoleId = r.RoleId });
+                    r.RolePermissions.Add(new RolePermission() { Created = DateTime.Now, PermissKey = p.PKey, RoleId = r.RoleId });
                     PermissionsAvail.Refresh();
                 }
             }

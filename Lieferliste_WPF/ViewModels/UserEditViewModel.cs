@@ -143,13 +143,13 @@ namespace Lieferliste_WPF.ViewModels
         {
             return true;
         }
-  
+
 
         private void OnSaveExecuted(object obj)
         {
             try
             {
- 
+
                 _dbctx.SaveChangesAsync();
             }
             catch (Exception e)
@@ -276,7 +276,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (dropInfo.VisualTarget.GetValue(FrameworkElement.NameProperty) is string UiName &&
                     (dropInfo.Data is AccountCost || dropInfo.Data is AccountWorkArea))
                 {
- 
+
                     if (UiName.Contains("WORKAREA"))
                     {
 

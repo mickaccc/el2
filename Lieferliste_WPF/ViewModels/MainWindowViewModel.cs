@@ -122,12 +122,12 @@ namespace Lieferliste_WPF.ViewModels
                 _ea = ea;
                 _settingsService = settingsService;
                 var loggerFactory = _container.Resolve<Microsoft.Extensions.Logging.ILoggerFactory>();
-               
+
                 _Logger = loggerFactory.CreateLogger<MainWindowViewModel>();
 
                 if (CoreFunction.PriorProcess == null)
                 {
-                     App.Current.Shutdown();
+                    App.Current.Shutdown();
                 }
                 _ = RegisterMe();
                 SetTimer();
@@ -221,7 +221,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("HolidayEdit", UriKind.Relative));
         }
- 
+
         private bool OnOpenProjectCombineCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProjectCombine);
@@ -239,7 +239,7 @@ namespace Lieferliste_WPF.ViewModels
             bool accept = false;
             if (arg is Vorgang) { accept = true; }
             else if (arg is PspNode<Shape> shape) { accept = shape.HasOrder; }
-            
+
             return accept && PermissionsProvider.GetInstance().GetUserPermission(Permissions.OpenProject);
         }
         private void OnOpenProjectOverViewExecuted(object obj)
@@ -503,8 +503,8 @@ namespace Lieferliste_WPF.ViewModels
             {
                 docu = _workareaDocumentInfo.CreateDocumentInfos([orb.Material, orb.Aid, string.Empty]);
             }
-            else 
-            { 
+            else
+            {
                 var dic = obj as Dictionary<string, object>;
                 docu = _workareaDocumentInfo.CreateDocumentInfos([(string)dic["ttnr"], (string)dic["aid"], string.Empty]);
             }
@@ -525,9 +525,9 @@ namespace Lieferliste_WPF.ViewModels
         private bool OnMachinePrintCanExecute(object arg)
         {
             int wo = 0;
-            if (arg is PlanMachine plan) 
+            if (arg is PlanMachine plan)
             {
-                wo = plan.WorkArea?.WorkAreaId ?? 0;               
+                wo = plan.WorkArea?.WorkAreaId ?? 0;
             }
 
             if (wo != 0) { return PermissionsProvider.GetInstance().GetRelativeUserPermission(Permissions.MachPrint, wo); }
@@ -544,7 +544,7 @@ namespace Lieferliste_WPF.ViewModels
                 ticket.PageOrientation = PageOrientation.Landscape;
                 print.PrintTicket = ticket;
                 PrintingProxy printingProxy = new PrintingProxy();
-                if(obj is PlanMachine planMachine)
+                if (obj is PlanMachine planMachine)
                 {
                     printingProxy.PrintPreview(planMachine, ticket);
                 }
@@ -606,12 +606,12 @@ namespace Lieferliste_WPF.ViewModels
                         .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.Userid == UserInfo.User.UserId)
                         .ToListAsync();
                     if (m.Count > 0)
-                    {                     
+                    {
                         foreach (var item in m)
                         {
                             if (item != null && item.TableName == "Vorgang")
                             {
-                                if(item.OldValue != item.NewValue)
+                                if (item.OldValue != item.NewValue)
                                     msgListV.Add((item.Invoker, item.PrimaryKey));
                             }
                             if (item != null && item.TableName == "OrderRB")
@@ -620,7 +620,7 @@ namespace Lieferliste_WPF.ViewModels
                                     msgListO.Add((item.Invoker, item.PrimaryKey));
                             }
                         }
-                        
+
                         foreach (var msg in m)
                         {
                             await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
@@ -637,8 +637,8 @@ namespace Lieferliste_WPF.ViewModels
             }
             catch (Exception ex)
             {
-                _Logger.LogError("Auftrag:{msgo} -- Vorgang:{msgv}", [ msgListO.Count, msgListV.Count]);
-                _Logger.LogCritical("{message}", ex.ToString());               
+                _Logger.LogError("Auftrag:{msgo} -- Vorgang:{msgv}", [msgListO.Count, msgListV.Count]);
+                _Logger.LogCritical("{message}", ex.ToString());
             }
         }
 
@@ -662,7 +662,7 @@ namespace Lieferliste_WPF.ViewModels
                 _Logger.LogInformation("Startup {user}-{pc}--{version}", [UserInfo.User.UserId, UserInfo.PC, Assembly.GetExecutingAssembly().GetName().Version]);
             }
             catch (Exception e)
-            {              
+            {
                 _Logger.LogError("{message}", e.ToString());
             }
         }

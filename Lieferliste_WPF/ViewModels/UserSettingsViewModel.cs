@@ -3,13 +3,11 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.Extensions.Logging;
-using ModulePlanning.Specials;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
@@ -47,7 +45,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private Theme? selectedTheme;
-        public Theme? SelectedTheme 
+        public Theme? SelectedTheme
         {
             get { return selectedTheme; }
             set
@@ -79,7 +77,7 @@ namespace Lieferliste_WPF.ViewModels
         public VmpbDocumentInfo VmpbDocumentInfo { get; private set; }
         public WorkareaDocumentInfo WorkareaDocumentInfo { get; private set; }
         public MeasureDocumentInfo MeasureDocumentInfo { get; private set; }
-        public Document Fdocu {  get; private set; }
+        public Document Fdocu { get; private set; }
         public Document Vdocu { get; private set; }
         public Document Wdocu { get; private set; }
         public Document Mdocu { get; private set; }
@@ -95,7 +93,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_personalFilterName != value)
                 {
                     _personalFilterName = value;
-                    NotifyPropertyChanged(() => PersonalFilterName);          
+                    NotifyPropertyChanged(() => PersonalFilterName);
                 }
             }
         }
@@ -109,7 +107,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     _personalFilterRegex = value;
                     NotifyPropertyChanged(() => PersonalFilterRegex);
-                    if(_filterContainer.Keys.Contains(_personalFilterName))
+                    if (_filterContainer.Keys.Contains(_personalFilterName))
                         _filterContainer[_personalFilterName].Pattern = _personalFilterRegex;
                 }
             }
@@ -125,7 +123,7 @@ namespace Lieferliste_WPF.ViewModels
                     _personalFilterField = value;
                     NotifyPropertyChanged(() => PersonalFilterField);
                     if (_personalFilterField != null)
-                        if(_filterContainer.Keys.Contains(_personalFilterName))
+                        if (_filterContainer.Keys.Contains(_personalFilterName))
                             _filterContainer[_personalFilterName].Field = _personalFilterField.ToValueTuple();
                 }
             }
@@ -158,7 +156,7 @@ namespace Lieferliste_WPF.ViewModels
             MeasureDocumentInfo = new MeasureDocumentInfo(container);
             Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
             LoadFilters();
-            
+
         }
 
         private void LoadFilters()
@@ -182,8 +180,8 @@ namespace Lieferliste_WPF.ViewModels
             PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
             PropertyNames.Add(PropertyPair.MarkerCode.ToTuple());
         }
- 
- 
+
+
         private void OnPersonalFilterChanged(object? sender, EventArgs e)
         {
 
@@ -194,11 +192,11 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     PersonalFilterName = _filterContainer[pf].Name;
                     PersonalFilterField = _filterContainer[pf].Field.ToTuple();
-                    PersonalFilterRegex = _filterContainer[pf].Pattern;                  
+                    PersonalFilterRegex = _filterContainer[pf].Pattern;
                 }
             }
         }
- 
+
         private bool OnReloadCanExecute(object arg)
         {
             return true;
@@ -226,7 +224,7 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         private void OnSaveExecuted(object obj)
-        { 
+        {
             _settingsService.Save();
             FirstPartInfo.SaveDocumentData();
             VmpbDocumentInfo.SaveDocumentData();
@@ -344,7 +342,7 @@ namespace Lieferliste_WPF.ViewModels
             get { return _settingsService.IsSaveMessage; }
             set { _settingsService.IsSaveMessage = value; }
         }
-  
+
         public bool RowDetails
         {
             get { return _settingsService.IsRowDetails; }

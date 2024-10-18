@@ -48,10 +48,10 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
                 var by = workA?.Max(x => x.Sort) + 1;
                 var wa = new WorkArea() { Bereich = Section, Info = Info, Sort = (Convert.ToByte(by)) };
-                
+
                 parameters.Add("new", wa);
                 result = ButtonResult.OK;
-                
+
             }
             else if (parameter?.ToLower() == "false")
                 result = ButtonResult.Cancel;

@@ -36,7 +36,7 @@ namespace Lieferliste_WPF.Views
             if (e.PropertyName == "PermissKeyNavigation")
             {
                 var pr = e.PropertyType.GetField("Description");
-                
+
             }
         }
     }

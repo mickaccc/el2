@@ -97,7 +97,7 @@ namespace Lieferliste_WPF.Views
             {
                 string result = string.Empty;
                 // first, try to get the version string from the assembly.
-                
+
                 Version? version = Assembly.GetExecutingAssembly().GetName().Version;
                 if (version != null)
                 {
@@ -138,7 +138,7 @@ namespace Lieferliste_WPF.Views
         {
             get
             {
-    
+
                 return CalculatePropertyValue<AssemblyDescriptionAttribute>(propertyNameDescription, xPathDescription)
                     ?? String.Empty;
             }

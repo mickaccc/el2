@@ -186,7 +186,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            if(dropInfo.Data is IDataObject f)
+            if (dropInfo.Data is IDataObject f)
             {
                 var o = (string[])f.GetData(DataFormats.FileDrop);
                 if (o.Length > 0)
@@ -294,7 +294,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             var f = await AttachmentFactory.GetFilePickerPath();
             if (f != null)
-            { 
+            {
                 AddAttachment(f, true);
                 _logger.LogInformation("Att added as Link {message}", f);
             }
@@ -303,7 +303,7 @@ namespace Lieferliste_WPF.ViewModels
     internal class ProjDbAttachment : IDbAttachment
     {
         public string Link { get; set; }
-        public bool IsLink { get; set ; }
+        public bool IsLink { get; set; }
         public DateTime TimeStamp { get; set; }
         public byte[]? BinaryData { get; set; }
     }

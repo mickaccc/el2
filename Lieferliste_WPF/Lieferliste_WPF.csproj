@@ -178,6 +178,7 @@
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Prism.Wpf" Version="9.0.537" />
   </ItemGroup>
@@ -306,6 +307,11 @@
 		<DelaySign>True</DelaySign>
 		<AssemblyVersion>1.0.*</AssemblyVersion>
 		<FileVersion>1.0.*</FileVersion>
+		<RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+		<EnableNETAnalyzers>False</EnableNETAnalyzers>
+		<AnalysisLevel>5.0</AnalysisLevel>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<UserSecretsId>89393e76-c4e9-423b-a875-988090c78343</UserSecretsId>
 	</PropertyGroup>
   
   <!--<Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\TextTemplating\Microsoft.TextTemplating.targets" />-->

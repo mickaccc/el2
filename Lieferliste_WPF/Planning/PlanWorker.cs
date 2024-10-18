@@ -57,7 +57,7 @@ namespace Lieferliste_WPF.Planning
     public interface IPlanWorker
     {
         public int MessRId { get; }
-        
+
     }
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     internal class PlanWorker : DependencyObject, IPlanWorker, IDropTarget, IViewModel
@@ -184,7 +184,7 @@ namespace Lieferliste_WPF.Planning
 
         private void WorkerViewCallBack(IDialogResult result)
         {
-            
+
         }
 
         private bool OnDocumentAddCanExecute(object arg)
@@ -194,7 +194,7 @@ namespace Lieferliste_WPF.Planning
 
         private void OnDocumentAddExecuted(object obj)
         {
-            if(obj is Vorgang vrg)
+            if (obj is Vorgang vrg)
             {
                 _dialogService.Show("DocumentDialog", DocumentCallBack);
             }
@@ -202,7 +202,7 @@ namespace Lieferliste_WPF.Planning
 
         private void DocumentCallBack(IDialogResult result)
         {
-            
+
         }
 
         private bool OnKlimaPrintCanExecute(object arg)

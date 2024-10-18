@@ -30,7 +30,7 @@ namespace Lieferliste_WPF.Utilities
         void PrintPreview(List<Vorgang> vorgangs, PrintTicket ticket);
         void Print(List<Vorgang> vorgangs);
         void PrintPreview(IViewModel projects, PrintTicket ticket);
-        
+
     }
     public class PrintingProxy : IPrinting
     {
@@ -56,7 +56,7 @@ namespace Lieferliste_WPF.Utilities
 
         public void PrintPreview(IViewModel viewModel, PrintTicket ticket)
         {
-            
+
         }
 
         public void PrintPreview(List<Vorgang> vorgangs, PrintTicket ticket)
@@ -91,7 +91,7 @@ namespace Lieferliste_WPF.Utilities
 
             document.ColumnWidth = double.PositiveInfinity;
             docWriter.Write(paginator, ticket);
-            
+
         }
         private static FlowDocument CreateFlowDocument(string Name, string? Second, string? Description, List<Vorgang> proces, PrintTicket ticket)
         {
@@ -99,13 +99,13 @@ namespace Lieferliste_WPF.Utilities
 
             var printDlg = new PrintDialog();
             printDlg.PrintTicket = ticket;
- 
+
             FlowDocument fd = new FlowDocument();
             Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy HH:mm")));
             fd.PageWidth = printDlg.PrintableAreaWidth;
             fd.PageHeight = printDlg.PrintableAreaHeight;
-            fd.PagePadding = new Thickness(96/3);
-            double printSizeWidth = fd.PageWidth - 96/3*2;
+            fd.PagePadding = new Thickness(96 / 3);
+            double printSizeWidth = fd.PageWidth - 96 / 3 * 2;
             p1.FontStyle = FontStyles.Normal;
             p1.FontFamily = new FontFamily("Microsoft Sans Serif");
             p1.FontSize = 12;
@@ -213,7 +213,7 @@ namespace Lieferliste_WPF.Utilities
 
             var doc = CreateFlowDocument(name, second, description, proces, ticket);
             var fix = Get_Fixed_From_FlowDoc(doc, ticket);
-            
+
             var windows = new PrintWindow(fix);
             windows.ShowDialog();
 
@@ -301,7 +301,7 @@ namespace Lieferliste_WPF.Utilities
         //    }
         //}
         public static FixedDocument Get_Fixed_From_FlowDoc(FlowDocument flowDoc, PrintTicket ticket)
-        { 
+        {
             var fixedDocument = new FixedDocument();
             try
             {
@@ -316,7 +316,7 @@ namespace Lieferliste_WPF.Utilities
                     var page = dpPages.GetPage(iPages);
                     var pageContent = new PageContent();
                     var fixedPage = new FixedPage();
-                    
+
                     Canvas canvas = new Canvas();
 
                     VisualBrush vb = new VisualBrush(page.Visual);
@@ -357,14 +357,14 @@ namespace Lieferliste_WPF.Utilities
             document.PageWidth = 768;
             document.PageHeight = 554;
             document.PagePadding = new Thickness(96 / 3);
-            
+
             Paragraph p1 = new Paragraph();
             p1.FontSize = 16;
             p1.FontFamily = SystemFonts.CaptionFontFamily;
 
             p1.Inlines.Add(new Run("Auftrag: "));
             p1.Inlines.Add(new Bold(new Underline(new Run(vorgang.Aid))));
-            
+
             Paragraph p2 = new Paragraph();
             p2.FontSize = 16;
             p2.FontFamily = SystemFonts.CaptionFontFamily;
@@ -393,7 +393,7 @@ namespace Lieferliste_WPF.Utilities
             p5.Inlines.Add(new Run(vorgang.BemT));
 
             var h = int.Parse(RuleInfo.Rules["ClimaticWaitTime"].RuleValue);
-            var hh = (vorgang.KlimaPrint.HasValue) ? vorgang.KlimaPrint.Value.AddHours(h).ToString("dd/MM/yy HH:mm:ss") :null;
+            var hh = (vorgang.KlimaPrint.HasValue) ? vorgang.KlimaPrint.Value.AddHours(h).ToString("dd/MM/yy HH:mm:ss") : null;
 
             Paragraph p6 = new Paragraph(new Run(string.Format("Start messen frühestens {0}", hh)));
             p6.FontSize = 28;

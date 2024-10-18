@@ -1,9 +1,7 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
-using Lieferliste_WPF.Utilities;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -19,7 +17,7 @@ namespace Lieferliste_WPF.ViewModels
 {
     internal class HolidayEditViewModel : ViewModelBase
     {
-        public HolidayEditViewModel(IContainerExtension container) 
+        public HolidayEditViewModel(IContainerExtension container)
         {
             _container = container;
             var factory = _container.Resolve<ILoggerFactory>();
@@ -39,14 +37,14 @@ namespace Lieferliste_WPF.ViewModels
 
         private void onDelExecuted(object obj)
         {
-            if(obj is Holiday holi)
+            if (obj is Holiday holi)
             {
                 CloseHolidays.Remove(holi);
                 _isChanged = true;
             }
-            else if(obj is HolidayRule rule)
+            else if (obj is HolidayRule rule)
             {
-                if(rule.DayDistance != null)
+                if (rule.DayDistance != null)
                 {
                     FixHolidays.Remove(rule);
                     _isChanged = true;
@@ -60,7 +58,7 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         private bool onSaveCanExecute(object arg)
-        {         
+        {
             return _isChanged;
         }
 
@@ -141,7 +139,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _Logger.LogError("{message}", e.ToString());
             }
-            
+
         }
 
         private void onPropertyChanged(object? sender, PropertyChangedEventArgs e)

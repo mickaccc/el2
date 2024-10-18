@@ -1,6 +1,4 @@
-﻿using El2Core.Models;
-using MahApps.Metro.Controls;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Lieferliste_WPF.Views

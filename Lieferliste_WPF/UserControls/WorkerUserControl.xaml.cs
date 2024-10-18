@@ -21,7 +21,7 @@ namespace Lieferliste_WPF.Planning
         }
 
         private void HideDetails_Click(object sender, RoutedEventArgs e)
-        {  
+        {
             Planed.SelectedIndex = -1;
             e.Handled = true;
         }
