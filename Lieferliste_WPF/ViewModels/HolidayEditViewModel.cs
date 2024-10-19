@@ -122,7 +122,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 var xml = XmlSerializerHelper.GetSerializer(typeof(CloseAndHolidayRule));
 
-                TextReader reader = new StringReader(RuleInfo.Rules["Feiertage"].RuleData);
+                TextReader reader = new StringReader(RuleInfo.Rules["Holi"].RuleData);
                 CloseAndHolidayRule result;
                 result = (CloseAndHolidayRule)xml.Deserialize(reader);
 

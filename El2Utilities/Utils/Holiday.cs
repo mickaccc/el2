@@ -100,7 +100,6 @@ namespace El2Core.Utils
     public interface IHolidayLogic { }
     public class HolidayLogic : IHolidayLogic 
     {
-        IContainerExtension _container;
         private FrozenDictionary<DateOnly, Holiday> holydays;
         private int year;
         private String? locale;
@@ -133,9 +132,8 @@ namespace El2Core.Utils
             return "no Holiday";
         }
 
-        public HolidayLogic(IContainerExtension container)
+        public HolidayLogic()
         {
-            _container = container;
             this.year = DateTime.Now.Year;
             #region fillList
             Dictionary<DateOnly, Holiday> dict = new();

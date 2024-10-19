@@ -52,11 +52,6 @@ namespace ModulePlanning.Specials
             return ret;
         }
 
-        //public bool InclusiveBetween(this IComparable a, IComparable b, IComparable c)
-        //{
-        //    return a.CompareTo(b) >= 0 && a.CompareTo(c) <= 0;
-        //}
-
         public DateTime GetEndDateTime(double processLength, DateTime start)
         {
             int key = int.Parse(string.Concat(start.Year.ToString(),
@@ -77,7 +72,7 @@ namespace ModulePlanning.Specials
             double length = processLength;
             int startDay = (int)start.DayOfWeek;
             TimeSpan time = start.TimeOfDay;
-            if (holidayLogic.IsHolyday(start)) { tmpWeekPlan = weekPlan[0]; } else tmpWeekPlan = weekPlan[startDay]; //set the start of the week
+            if (holidayLogic.IsHolyday(start) && startDay < 6) { tmpWeekPlan = [.. weekPlan[0]]; } else tmpWeekPlan = [.. weekPlan[startDay]]; //set the start of the week
             tmpWeekPlan = GetManipulateMask(tmpWeekPlan, start);
             for (int j = (int)time.TotalMinutes; j < tmpWeekPlan.Length; j++)
             {

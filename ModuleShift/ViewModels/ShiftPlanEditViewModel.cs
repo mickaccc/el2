@@ -426,7 +426,7 @@ namespace ModuleShift.ViewModels
             if (result.Result == ButtonResult.OK)
             {
                 var input = result.Parameters.GetValue<string>("InputText");
-                ShiftWeek week = _SelectedPlan;
+                ShiftWeek week = (ShiftWeek)_SelectedPlan.Clone();
                 week.Lock = false;
                 week.ShiftPlanName = input;
 
@@ -455,36 +455,43 @@ namespace ModuleShift.ViewModels
         private bool OnSaveAllCanExecute(object arg)
         {
             bool result = false;
-            if(SelectedPlan != null)
-                result = !SelectedPlan.Lock;
-            if(!result) result = shiftCalendars.Any(x => x.IsChanged && x.IsLocked == false);
+            if (!PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc))
+            {
+                if (SelectedPlan != null)
+                {
+                    result = !SelectedPlan.Lock;
+                    result = shiftCalendars.All(x => x.IsLocked == false);
+                    result = shiftCalendars.Any(x => x.IsChanged);
+                }
+            }
+            else result = shiftCalendars.Any(x => x.IsChanged);
             return result;
         }
 
         private void OnSaveAllExecuted(object obj)
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            if (obj is ShiftWeek shiftWeek)
+            if (_SelectedPlan != null)
             {
                 
-                var planDb = db.ShiftPlans.SingleOrDefault(x => x.Id == shiftWeek.Id);
+                var planDb = db.ShiftPlans.SingleOrDefault(x => x.Id == _SelectedPlan.Id);
                 if (planDb != null)
                 {
-                    planDb.Sun = shiftWeek.GetDayDefinition(0);
-                    planDb.Mon = shiftWeek.GetDayDefinition(1);
-                    planDb.Tue = shiftWeek.GetDayDefinition(2);
-                    planDb.Wed = shiftWeek.GetDayDefinition(3);
-                    planDb.Thu = shiftWeek.GetDayDefinition(4);
-                    planDb.Fre = shiftWeek.GetDayDefinition(5);
-                    planDb.Sat = shiftWeek.GetDayDefinition(6);                  
+                    planDb.Sun = _SelectedPlan.GetDayDefinition(0);
+                    planDb.Mon = _SelectedPlan.GetDayDefinition(1);
+                    planDb.Tue = _SelectedPlan.GetDayDefinition(2);
+                    planDb.Wed = _SelectedPlan.GetDayDefinition(3);
+                    planDb.Thu = _SelectedPlan.GetDayDefinition(4);
+                    planDb.Fre = _SelectedPlan.GetDayDefinition(5);
+                    planDb.Sat = _SelectedPlan.GetDayDefinition(6);                  
                 }
                 else
                 {
-                    var plan = shiftWeek.GetNewShiftPlan();
+                    var plan = _SelectedPlan.GetNewShiftPlan();
                     db.ShiftPlans.Add(plan);                 
                 }
             }
-            foreach (var cal in shiftCalendars.Where(x => x.IsChanged && x.IsLocked == false))
+            foreach (var cal in shiftCalendars.Where(x => x.IsChanged))
             {
                 var dbcal = db.ShiftCalendars.Include(x => x.ShiftCalendarShiftPlans).First(y => y.Id == cal.id);
                 dbcal.Repeat = cal.Repeat;
