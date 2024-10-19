@@ -42,11 +42,7 @@ namespace ModulePlanning.Specials
 
                 begin = (stop.Starttime >= start) ? Convert.ToInt32(stop.Starttime.TimeOfDay.TotalMinutes) : 0;
                 end = (stop.Endtime.Date == start.Date) ? Convert.ToInt32(stop.Endtime.TimeOfDay.TotalMinutes) : 1440;
-                
-                for (int i = begin; i < end; i++)
-                {
-                    ret[i] = false;
-                }              
+                ret.AsSpan(begin, end).Clear();           
             }
             
             return ret;
