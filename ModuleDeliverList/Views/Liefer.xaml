@@ -94,9 +94,6 @@
                 <materialDesign:PackIcon Kind="DeleteEmpty" Width="30" />
             </Button>
 
- 
-
-
             <materialDesign:ColorZone DockPanel.Dock="Right"
             FontSize="14"
             FontWeight="Bold"
@@ -120,6 +117,16 @@
                             <Setter Property="Width" Value="200"/>
                             <Setter Property="Padding" Value="8"/>
                         </Style>
+                        <Style x:Key="advancedComboboxContainerStyle" TargetType="ComboBoxItem">
+                            <Style.Triggers>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                    <Setter Property="ItemsControl.Background" Value="White"/>
+                                </Trigger>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                    <Setter Property="ItemsControl.Background" Value="LightSalmon"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
                         <DataTemplate x:Key="advancedComboxItemDataTemplate">
                             <Grid Width="Auto">
                                 <Grid.ColumnDefinitions>
@@ -137,12 +144,15 @@
                     </StackPanel.Resources>
                     <TextBox x:Name="MarkerCode" MinWidth="40" Style="{DynamicResource MyFocusVisual}" 
                              Text="{Binding MarkerCode, Mode=TwoWay}"/>
-                    <ComboBox x:Name="ProjComboBox" Width="250" materialDesign:HintAssist.Hint="Projekte" 
+                    <ComboBox x:Name="ProjComboBox" Width="250" materialDesign:HintAssist.Hint="Projekte"
+                              MaxDropDownHeight="200"
+                              AlternationCount="2"
                           ItemsSource="{Binding Projects}"                        
                           SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           SelectedValuePath="ProjectPsp"
                           ItemTemplate="{StaticResource advancedComboxItemDataTemplate}"
-                          ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
+                          ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"
+                              ItemContainerStyle="{StaticResource advancedComboboxContainerStyle}"/>
 
                     <ComboBox x:Name="SectionComboBox" materialDesign:HintAssist.Hint="Bereiche"
                           ItemsSource="{Binding Sections}"
