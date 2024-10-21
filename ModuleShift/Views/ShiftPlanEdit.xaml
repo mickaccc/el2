@@ -23,8 +23,8 @@
             <conv:BooleanInverter x:Key="negate"/>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="400*"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="430*"/>
             <ColumnDefinition Width="100*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>

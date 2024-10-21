@@ -516,8 +516,12 @@ namespace ModuleShift.ViewModels
         }
         public void DragOver(IDropInfo dropInfo)
         {
-            dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-            dropInfo.Effects = DragDropEffects.All;
+            if (PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc) ||
+                _SelectedPlan.Lock == false)
+            { 
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.All;
+            }           
         }
 
         public void Drop(IDropInfo dropInfo)

@@ -8,8 +8,7 @@ using System.Globalization;
 namespace ModulePlanning.Specials
 {
     public interface IShiftPlan
-    {
-    }
+    { }
     public class ShiftPlanService : IShiftPlan
     {
         private ImmutableArray<bool[]> weekPlan;
@@ -42,7 +41,7 @@ namespace ModulePlanning.Specials
 
                 begin = (stop.Starttime >= start) ? Convert.ToInt32(stop.Starttime.TimeOfDay.TotalMinutes) : 0;
                 end = (stop.Endtime.Date == start.Date) ? Convert.ToInt32(stop.Endtime.TimeOfDay.TotalMinutes) : 1440;
-                ret.AsSpan(begin, end).Clear();           
+                ret.AsSpan(begin, end - begin).Fill(false);           
             }
             
             return ret;
@@ -61,14 +60,25 @@ namespace ModulePlanning.Specials
                 weekPlan = weekPlans[k];
             }
             else if (weekPlans.TryGetValue(key, out weekPlan) == false) return start;
-            
+
             if (weekPlan.IsDefaultOrEmpty || processLength == 0) return start;
             bool[] tmpWeekPlan;
             int resultMinute = 0;
             double length = processLength;
-            int startDay = (int)start.DayOfWeek;
+            
             TimeSpan time = start.TimeOfDay;
-            if (holidayLogic.IsHolyday(start) && startDay < 6) { tmpWeekPlan = [.. weekPlan[0]]; } else tmpWeekPlan = [.. weekPlan[startDay]]; //set the start of the week
+            if (holidayLogic.IsHolyday(start))
+            {
+                while (holidayLogic.IsHolyday(start.AddDays(1))) { start = start.AddDays(1); } //move the start to => tomorrow is not holiday
+            }
+            int startDay = (int)start.DayOfWeek;
+            tmpWeekPlan = [.. weekPlan[startDay]];
+            if (startDay != 0)
+            {
+                if (holidayLogic.IsHolyday(start)) {tmpWeekPlan.AsSpan(0, 1320).Fill(false);} //clear the shift unless nightshift_2
+                if (holidayLogic.IsHolyday(start.AddDays(1))) tmpWeekPlan.AsSpan(1320, 120).Fill(false); //clear the nightshift_2
+            }
+            else { if (holidayLogic.IsHolyday(start.AddDays(1))) tmpWeekPlan.AsSpan(1260, 180).Fill(false); } //clear the nightshift_sun
             tmpWeekPlan = GetManipulateMask(tmpWeekPlan, start);
             for (int j = (int)time.TotalMinutes; j < tmpWeekPlan.Length; j++)
             {
@@ -76,7 +86,7 @@ namespace ModulePlanning.Specials
                 if (length <= 0) { resultMinute = j; break; }
             }
             start = start.Date;
-            while (holidayLogic.IsHolyday(start.AddDays(1))) { start = start.AddDays(1); } //move the start to => tomorrow is not holiday
+
             if (length > 0)
             {
                 start = GetEndDateTime(length, start.AddDays(1));

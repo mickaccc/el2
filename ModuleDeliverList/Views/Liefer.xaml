@@ -145,7 +145,7 @@
                     <TextBox x:Name="MarkerCode" MinWidth="40" Style="{DynamicResource MyFocusVisual}" 
                              Text="{Binding MarkerCode, Mode=TwoWay}"/>
                     <ComboBox x:Name="ProjComboBox" Width="250" materialDesign:HintAssist.Hint="Projekte"
-                              MaxDropDownHeight="200"
+                              MaxDropDownHeight="650"
                               AlternationCount="2"
                           ItemsSource="{Binding Projects}"                        
                           SelectedValue="{Binding SelectedProjectFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
