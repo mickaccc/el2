@@ -591,8 +591,11 @@ namespace Lieferliste_WPF.ViewModels
                         MessageBoxResult.OK)
                     { Application.Current.Shutdown(); }
                 }
+                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET Login = {0} WHERE PcId = {1} AND Userid = {2}",
+                    DateTime.Now,
+                    UserInfo.PC,
+                    UserInfo.User.UserId);
             }), System.Windows.Threading.DispatcherPriority.Background);
-
         }
         private void SetMsgDBTimer()
         {
