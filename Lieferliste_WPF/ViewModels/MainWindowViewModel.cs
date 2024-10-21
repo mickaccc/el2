@@ -576,13 +576,23 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+  
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
+            
             Application.Current.Dispatcher.InvokeAsync(new Action(() =>
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 Onlines = db.InMemoryOnlines.Count();
+                if (db.InMemoryOnlines.All(x => x.Userid != UserInfo.User.UserId && x.PcId != UserInfo.PC))
+                {
+                    if (MessageBox.Show(Application.Current.MainWindow,
+                        "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
+                        MessageBoxResult.OK)
+                    { Application.Current.Shutdown(); }
+                }
             }), System.Windows.Threading.DispatcherPriority.Background);
+
         }
         private void SetMsgDBTimer()
         {
