@@ -610,6 +610,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             List<(string, string)?> msgListV = [];
             List<(string, string)?> msgListO = [];
+
             try
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
@@ -625,12 +626,15 @@ namespace Lieferliste_WPF.ViewModels
                             if (item != null && item.TableName == "Vorgang")
                             {
                                 if (item.OldValue != item.NewValue)
-                                    msgListV.Add((item.Invoker, item.PrimaryKey));
+                                    if(msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
+                                        msgListV.Add((item.Invoker, item.PrimaryKey));
+                                    
                             }
                             if (item != null && item.TableName == "OrderRB")
                             {
                                 if (item.OldValue != item.NewValue)
-                                    msgListO.Add((item.Invoker, item.PrimaryKey));
+                                    if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
+                                        msgListO.Add((item.Invoker, item.PrimaryKey));
                             }
                         }
 
