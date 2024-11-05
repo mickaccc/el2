@@ -346,8 +346,7 @@ namespace Lieferliste_WPF.ViewModels
                             if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
                         }
 
-                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.User.UserId.Equals(x.Userid)
-                         && UserInfo.PC == x.PcId);
+                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.Dbid.Equals(x.OnlId));                        
                         if (Dbctx.InMemoryMsgs.Any()) Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().OnlId)).ExecuteDelete();
                         del.ExecuteDelete();
                     }
@@ -578,23 +577,21 @@ namespace Lieferliste_WPF.ViewModels
         }
   
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
-        {
-            
+        {           
             Application.Current.Dispatcher.InvokeAsync(new Action(() =>
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 Onlines = db.InMemoryOnlines.Count();
-                if (db.InMemoryOnlines.All(x => x.Userid != UserInfo.User.UserId && x.PcId != UserInfo.PC))
+                if (db.InMemoryOnlines.All(x => x.OnlId != UserInfo.Dbid))
                 {
                     if (MessageBox.Show(Application.Current.MainWindow,
                         "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
                         MessageBoxResult.OK)
                     { Application.Current.Shutdown(); }
                 }
-                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET Login = {0} WHERE PcId = {1} AND Userid = {2}",
+                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET Login = {0} WHERE OnlId = {1}",
                     DateTime.Now,
-                    UserInfo.PC,
-                    UserInfo.User.UserId);
+                    UserInfo.Dbid);
             }), System.Windows.Threading.DispatcherPriority.Background);
         }
         private void SetMsgDBTimer()
@@ -617,7 +614,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     var m = await db.InMemoryMsgs.AsNoTracking()
                         .Include(x => x.Onl)
-                        .Where(x => x.Onl.PcId == UserInfo.PC && x.Onl.Userid == UserInfo.User.UserId)
+                        .Where(x => x.Onl.OnlId == UserInfo.Dbid)
                         .ToListAsync();
                     if (m.Count > 0)
                     {
@@ -676,7 +673,8 @@ namespace Lieferliste_WPF.ViewModels
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 await transaction.CommitAsync();
-                _Logger.LogInformation("Startup {user}-{pc}--{version}", [UserInfo.User.UserId, UserInfo.PC, Assembly.GetExecutingAssembly().GetName().Version]);
+                UserInfo.Dbid = db.InMemoryOnlines.Single(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC).OnlId;
+                _Logger.LogInformation("Startup {user}-{pc}-{id}--{version}", [UserInfo.User.UserId, UserInfo.PC, UserInfo.Dbid, Assembly.GetExecutingAssembly().GetName().Version]);
             }
             catch (Exception e)
             {

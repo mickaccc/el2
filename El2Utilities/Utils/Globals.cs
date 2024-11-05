@@ -117,7 +117,7 @@ namespace El2Core.Utils
     {
         public static string? PC => _PC ?? string.Empty;
         public static User User => _User;
-  
+        public static int Dbid;
         private static string? _PC;
         private static User _User;
 

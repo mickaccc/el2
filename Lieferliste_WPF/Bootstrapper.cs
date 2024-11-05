@@ -55,14 +55,14 @@ namespace Lieferliste_WPF
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
             App.GlobalFontSize = settingsService.FontSize;
 
-
             log4net.Config.XmlConfigurator.Configure(new FileInfo("Log4Net.config"));
             return Container.Resolve<MainWindow>();
         }
 
         private void Current_Exit(object sender, ExitEventArgs e)
         {
-            _Logger?.LogInformation("Exit: {pc}", UserInfo.PC);
+            
+            _Logger?.LogInformation("Exit: {pc}--{id} Exitcode:{ec}", UserInfo.PC, UserInfo.Dbid, e.ApplicationExitCode);
         }
 
 
