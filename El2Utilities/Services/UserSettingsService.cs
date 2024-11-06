@@ -109,21 +109,23 @@ namespace El2Core.Services
             if (isNetworkDeployed)
             {
                 var previous = Environment.GetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", EnvironmentVariableTarget.User);
-            if (previous != null)
-            {
-                var curFileInfo = new FileInfo(fp);
+                if (previous != null)
+                {
+                    var curFileInfo = new FileInfo(fp);
                     var preFileInfo = new FileInfo(previous);
-
-                    if (curFileInfo.DirectoryName != null)
+                    if (preFileInfo.Exists)
                     {
-                        var UrlhashNew = curFileInfo.Directory.Parent.Name;
-                        var UrlhashOld = preFileInfo.Directory.Parent.Name;
-                        var newFile = previous.Replace(UrlhashOld, UrlhashNew);
-                        var newDir = new FileInfo(newFile).Directory;
-                        if (newDir.Exists == false) { Directory.CreateDirectory(newDir.FullName); }
-                        if(previous.Equals(newFile) == false)
-                            File.Copy(previous, newFile, false);
-                    }              
+                        if (curFileInfo.DirectoryName != null)
+                        {
+                            var UrlhashNew = curFileInfo.Directory.Parent.Name;
+                            var UrlhashOld = preFileInfo.Directory.Parent.Name;
+                            var newFile = previous.Replace(UrlhashOld, UrlhashNew);
+                            var newDir = new FileInfo(newFile).Directory;
+                            if (newDir.Exists == false) { Directory.CreateDirectory(newDir.FullName); }
+                            if (previous.Equals(newFile) == false)
+                                File.Copy(previous, newFile, true);
+                        }
+                    }
                 }
                 Environment.SetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", fp, EnvironmentVariableTarget.User);
             }

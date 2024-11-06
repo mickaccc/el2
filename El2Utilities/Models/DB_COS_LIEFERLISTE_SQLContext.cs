@@ -267,6 +267,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .IsMemoryOptimized();
 
             entity.Property(e => e.OnlId).HasColumnName("OnlID");
+            entity.Property(e => e.LifeTime).HasColumnType("datetime");
             entity.Property(e => e.Login)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");

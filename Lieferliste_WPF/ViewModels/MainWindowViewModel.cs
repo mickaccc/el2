@@ -589,7 +589,7 @@ namespace Lieferliste_WPF.ViewModels
                         MessageBoxResult.OK)
                     { Application.Current.Shutdown(); }
                 }
-                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET Login = {0} WHERE OnlId = {1}",
+                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlId = {1}",
                     DateTime.Now,
                     UserInfo.Dbid);
             }), System.Windows.Threading.DispatcherPriority.Background);
@@ -668,9 +668,10 @@ namespace Lieferliste_WPF.ViewModels
                     db.Database.ExecuteSqlRaw("DELETE dbo.InMemoryMsg WHERE OnlId=@p0", onl.OnlId);
                     db.Database.ExecuteSqlRaw("DELETE dbo.InMemoryOnline WHERE OnlId=@p0", onl.OnlId);
                 }
-                db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.InMemoryOnline(Userid,PcId,Login) VALUES({0},{1},{2})",
+                db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.InMemoryOnline(Userid,PcId,Login, LifeTime) VALUES({0},{1},{2}, {3})",
                     UserInfo.User.UserId,
                     UserInfo.PC ?? string.Empty,
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 await transaction.CommitAsync();
                 UserInfo.Dbid = db.InMemoryOnlines.Single(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC).OnlId;
