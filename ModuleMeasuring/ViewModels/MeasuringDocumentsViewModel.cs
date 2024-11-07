@@ -403,8 +403,11 @@ namespace ModuleMeasuring.ViewModels
                 FileInfo vmFile;
                 switch (size)
                 {
-                    case "size1":
+                    case "size0":
                         vmFile = new FileInfo(docu[DocumentPart.Template]);
+                        break;
+                    case "size1":
+                        vmFile = new FileInfo(docu[DocumentPart.Template_Size1]);
                         break;
                     case "size2":
                         vmFile = new FileInfo(docu[DocumentPart.Template_Size2]);
@@ -415,10 +418,14 @@ namespace ModuleMeasuring.ViewModels
                     default:
                         throw new NotImplementedException();
                 }
-                var vmtarg = new FileInfo(docu[DocumentPart.File]);
+                var vmtarg = new FileInfo(Path.Combine(docu[DocumentPart.OriginalFolder], docu[DocumentPart.File]));
                 if (!vmtarg.Exists)
+                {
                     File.Copy(vmFile.FullName, vmtarg.FullName);
-
+                    File.CreateSymbolicLink(vmtarg.FullName, Path.Combine(
+                        docu[DocumentPart.RootPath],
+                        docu[DocumentPart.SavePath]));
+                }
                 _VmpbDocumentItems.Clear();
                 foreach (var d in vmtarg.Directory.GetFiles())
                 {

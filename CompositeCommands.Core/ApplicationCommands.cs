@@ -11,6 +11,7 @@ namespace CompositeCommands.Core
         CompositeCommand OpenProjectOverViewCommand { get; }
         CompositeCommand CloseCommand { get; }
         CompositeCommand MachinePrintCommand { get; }
+        CompositeCommand OpenMeasuringOperCommand { get; }
     }
 
     public class ApplicationCommands : IApplicationCommands
@@ -57,5 +58,7 @@ namespace CompositeCommands.Core
         {
             get { return _machinePrintCommand; }
         }
+        private CompositeCommand _openMeasuringOperCommand = new();
+        public CompositeCommand OpenMeasuringOperCommand => _openMeasuringOperCommand;
     }
 }

@@ -113,8 +113,8 @@
                 <materialDesign:PackIcon Kind="ColdAlert"/>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Command="{Binding DocumentAddCommand}"
-                 Header="Dokument anhängen">
+        <MenuItem Command="{Binding ApplicationCommands.OpenMeasuringOperCommand}"
+                 Header="Dokumente bearbeiten">
             <MenuItem.Icon>
                 <materialDesign:PackIcon Kind="FileDocument"/>
             </MenuItem.Icon>

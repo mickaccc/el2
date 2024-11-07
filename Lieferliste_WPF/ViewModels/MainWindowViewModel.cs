@@ -12,6 +12,7 @@ using ModulePlanning.Planning;
 using Prism.Dialogs;
 using Prism.Events;
 using Prism.Ioc;
+using Prism.Navigation;
 using Prism.Navigation.Regions;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMeasuringCommand { get; private set; }
         public ICommand OpenShiftCommand { get; private set; }
         public ICommand OpenHolidayCommand { get; private set; }
-        public ICommand OpenMeasureOperCommand { get; private set; }
+        
         public ICommand OpenReportCommand { get; private set; }
 
         private IApplicationCommands _applicationCommands;
@@ -63,6 +64,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        public ICommand OpenMeasureOperCommand { get; }
         public ICommand ExplorerCommand { get; }
         public ICommand OpenOrderCommand { get; }
         public ICommand ArchivateCommand { get; }
@@ -145,6 +147,8 @@ namespace Lieferliste_WPF.ViewModels
                 _applicationCommands.OpenProjectOverViewCommand.RegisterCommand(OpenProjectOverViewCommand);
                 MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
                 _applicationCommands.MachinePrintCommand.RegisterCommand(MachinePrintCommand);
+                OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
+                _applicationCommands.OpenMeasuringOperCommand.RegisterCommand(OpenMeasureOperCommand);
 
                 OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
                 OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
@@ -157,8 +161,7 @@ namespace Lieferliste_WPF.ViewModels
                 OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
                 OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
                 OpenHolidayCommand = new ActionCommand(OnOpenHolidayExecuted, OnOpenHolidayCanExecute);
-                OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);
-                OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
+                OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);                
                 OpenReportCommand = new ActionCommand(OnOpenReportExecuted, OnOpenReportCanExecute);
                 OpenProductViewCommand = new ActionCommand(OnOpenProductExecuted, OnOpenProductCanExecute);
 
@@ -200,7 +203,10 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnOpenMeasureOperExecuted(object obj)
         {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MeasuringDocuments", UriKind.Relative));
+            var navi = new NavigationParameters();
+            if (obj is string par) navi.Add("order", par);
+                 
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MeasuringDocuments", UriKind.Relative), navi);
         }
         private bool OnOpenShiftCanExecute(object arg)
         {
@@ -556,8 +562,8 @@ namespace Lieferliste_WPF.ViewModels
         #endregion
         private void SetTimer()
         {
-            // Create a timer with a 30 seconds interval.
-            _timer = new System.Timers.Timer(30000);
+            // Create a timer with a 59 seconds interval.
+            _timer = new System.Timers.Timer(59000);
             // Hook up the Elapsed event for the timer. 
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -587,7 +593,7 @@ namespace Lieferliste_WPF.ViewModels
                     if (MessageBox.Show(Application.Current.MainWindow,
                         "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
                         MessageBoxResult.OK)
-                    { Application.Current.Shutdown(); }
+                    { Application.Current.Shutdown(10); }
                 }
                 else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlId = {1}",
                     DateTime.Now,

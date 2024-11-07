@@ -154,11 +154,11 @@
                     <TabItem Header="Prüfdatenblatt">
                         <StackPanel>
                             <TextBlock Text="Root:"/>
-                            <TextBox Text="{Binding Fdocu[0]}"/>
-                            <TextBlock Text="Template:"/>
                             <TextBox Text="{Binding Fdocu[1]}"/>
-                            <TextBlock Text="RegEx:"/>
+                            <TextBlock Text="Template:"/>
                             <TextBox Text="{Binding Fdocu[2]}"/>
+                            <TextBlock Text="RegEx:"/>
+                            <TextBox Text="{Binding Fdocu[3]}"/>
                             <TextBlock Text="Sprungziel"/>
                             <TextBox Text="{Binding Fdocu[10]}"/>
                             <TextBlock Text="Raster Folder"/>
@@ -169,28 +169,28 @@
 
                         <StackPanel>
                             <TextBlock Text="Root:"/>
-                            <TextBox Text="{Binding Vdocu[0]}"/>
-                            <TextBlock Text="Template1:"/>
                             <TextBox Text="{Binding Vdocu[1]}"/>
-                            <TextBlock Text="Template2:"/>
-                            <TextBox Text="{Binding Vdocu[3]}"/>
-                            <TextBlock Text="Template3:"/>
-                            <TextBox Text="{Binding Vdocu[4]}"/>
-                            <TextBlock Text="Template4:"/>
-                            <TextBox Text="{Binding Vdocu[5]}"/>
-                            <TextBlock Text="Regex:"/>
+                            <TextBlock Text="Template1:"/>
                             <TextBox Text="{Binding Vdocu[2]}"/>
-                            <TextBlock Text="Sprungziel"/>
-                            <TextBox Text="{Binding Vdocu[10]}"/>
+                            <TextBlock Text="Template2:"/>
+                            <TextBox Text="{Binding Vdocu[4]}"/>
+                            <TextBlock Text="Template3:"/>
+                            <TextBox Text="{Binding Vdocu[5]}"/>
+                            <TextBlock Text="Template4:"/>
+                            <TextBox Text="{Binding Vdocu[6]}"/>
+                            <TextBlock Text="Regex:"/>
+                            <TextBox Text="{Binding Vdocu[3]}"/>
+                            <TextBlock Text="Original Ordner"/>
+                            <TextBox Text="{Binding Vdocu[15]}"/>
                         </StackPanel>
          
                     </TabItem>
                     <TabItem Header="Messen">
                         <StackPanel>
                             <TextBlock Text="Root:"/>
-                            <TextBox Text="{Binding Mdocu[0]}"/>
+                            <TextBox Text="{Binding Mdocu[1]}"/>
                             <TextBlock Text="Regex:"/>
-                            <TextBox Text="{Binding Mdocu[2]}"/>
+                            <TextBox Text="{Binding Mdocu[3]}"/>
                             <TextBlock Text="Ordner:"/>
                             <TextBox Text="{Binding Mdocu[11]}"/>
                             <TextBlock Text="Sprungziel:"/>
@@ -200,9 +200,9 @@
                     <TabItem Header="Bereich">
                         <StackPanel>
                             <TextBlock Text="Root:"/>
-                            <TextBox Text="{Binding Wdocu[0]}"/>
+                            <TextBox Text="{Binding Wdocu[1]}"/>
                             <TextBlock Text="Regex:"/>
-                            <TextBox Text="{Binding Wdocu[2]}"/>
+                            <TextBox Text="{Binding Wdocu[3]}"/>
                         </StackPanel>
                     </TabItem>
                 </TabControl>

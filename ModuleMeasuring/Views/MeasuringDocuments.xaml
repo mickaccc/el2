@@ -30,6 +30,9 @@
             <Button Content="Prüfdatenblatt" Command="{Binding PruefDataCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
         <StackPanel Grid.Column="2" Orientation="Horizontal">
+            <Button Content="Vmpb_30" Command="{Binding VmpbCommand}"
+                    CommandParameter="size0"
+                    Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
             <Button Content="Vmpb_93" Command="{Binding VmpbCommand}"
                     CommandParameter="size1"
                     Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>

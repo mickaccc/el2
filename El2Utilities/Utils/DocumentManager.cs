@@ -180,6 +180,7 @@ namespace El2Core.Utils
                 document[DocumentPart.Template_Size1] = string.Empty;
                 document[DocumentPart.Template_Size2] = string.Empty;
                 document[DocumentPart.Template_Size3] = string.Empty;
+                document[DocumentPart.OriginalFolder] = string.Empty;
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
                 var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
@@ -205,10 +206,7 @@ namespace El2Core.Utils
                         }
                     }
                     document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar).ToString();
-                    document[DocumentPart.File] = Path.Combine(
-                        document[DocumentPart.RootPath],
-                        document[DocumentPart.SavePath],
-                        folders[0] + "_VMPB.docx");
+                    document[DocumentPart.File] = folders[0] + "_VMPB.docx";
                 }
 
                 return document;
@@ -263,7 +261,7 @@ namespace El2Core.Utils
                 List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
                 foreach (var entry in doc)
                 {
-                    DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString());
+                    DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString().Trim());
                     document[DokuPart] = (string)entry.Value;
                 }
 
@@ -409,6 +407,7 @@ namespace El2Core.Utils
     }
     public enum DocumentPart
     {
+        Type,
         RootPath,
         Template,
         RegularEx,
@@ -418,12 +417,12 @@ namespace El2Core.Utils
         SavePath,
         TTNR,
         File,
-        Type,
         JumpTarget,
         Folder,
         RasterFolder1,
         RasterFolder2,
-        RasterFolder3
+        RasterFolder3,
+        OriginalFolder
     }
     public enum DocumentType
     {
