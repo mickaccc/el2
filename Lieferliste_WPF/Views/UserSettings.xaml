@@ -160,9 +160,9 @@
                             <TextBlock Text="RegEx:"/>
                             <TextBox Text="{Binding Fdocu[2]}"/>
                             <TextBlock Text="Sprungziel"/>
-                            <TextBox Text="{Binding Fdocu[9]}"/>
+                            <TextBox Text="{Binding Fdocu[10]}"/>
                             <TextBlock Text="Raster Folder"/>
-                            <TextBox Text="{Binding Fdocu[11]}"/>
+                            <TextBox Text="{Binding Fdocu[12]}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="Vormuster">
@@ -176,10 +176,12 @@
                             <TextBox Text="{Binding Vdocu[3]}"/>
                             <TextBlock Text="Template3:"/>
                             <TextBox Text="{Binding Vdocu[4]}"/>
+                            <TextBlock Text="Template4:"/>
+                            <TextBox Text="{Binding Vdocu[5]}"/>
                             <TextBlock Text="Regex:"/>
                             <TextBox Text="{Binding Vdocu[2]}"/>
                             <TextBlock Text="Sprungziel"/>
-                            <TextBox Text="{Binding Vdocu[9]}"/>
+                            <TextBox Text="{Binding Vdocu[10]}"/>
                         </StackPanel>
          
                     </TabItem>
@@ -190,9 +192,9 @@
                             <TextBlock Text="Regex:"/>
                             <TextBox Text="{Binding Mdocu[2]}"/>
                             <TextBlock Text="Ordner:"/>
-                            <TextBox Text="{Binding Mdocu[10]}"/>
+                            <TextBox Text="{Binding Mdocu[11]}"/>
                             <TextBlock Text="Sprungziel:"/>
-                            <TextBox Text="{Binding Mdocu[9]}"/>
+                            <TextBox Text="{Binding Mdocu[10]}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="Bereich">

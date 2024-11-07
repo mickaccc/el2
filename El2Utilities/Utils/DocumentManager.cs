@@ -37,7 +37,7 @@ namespace El2Core.Utils
         {
             using var db = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             Rule rule;
-            if(db.Rules.All(x => x.RuleValue != document[DocumentPart.Type]))
+            if(db.Rules.All(x => x.RuleValue.Trim() != document[DocumentPart.Type]))
             {
                 rule = new Rule()
                 { RuleValue = document[DocumentPart.Type], RuleName = document[DocumentPart.Type] };
@@ -177,6 +177,9 @@ namespace El2Core.Utils
                 document[DocumentPart.Template] = string.Empty;
                 document[DocumentPart.RegularEx] = string.Empty;
                 document[DocumentPart.JumpTarget] = string.Empty;
+                document[DocumentPart.Template_Size1] = string.Empty;
+                document[DocumentPart.Template_Size2] = string.Empty;
+                document[DocumentPart.Template_Size3] = string.Empty;
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
                 var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
@@ -409,6 +412,7 @@ namespace El2Core.Utils
         RootPath,
         Template,
         RegularEx,
+        Template_Size1,
         Template_Size2,
         Template_Size3,
         SavePath,
