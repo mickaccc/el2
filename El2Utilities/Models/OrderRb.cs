@@ -66,6 +66,8 @@ public partial class OrderRb : ModelBase
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
 
+    public virtual ICollection<OrderDocu> OrderDocus { get; set; } = new List<OrderDocu>();
+
     public virtual OrderGroup? OrderGroupNavigation { get; set; }
 
     public virtual Project? Pro { get; set; }

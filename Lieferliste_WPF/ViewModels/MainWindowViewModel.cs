@@ -204,7 +204,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnOpenMeasureOperExecuted(object obj)
         {
             var navi = new NavigationParameters();
-            if (obj is string par) navi.Add("order", par);
+            if (obj is Vorgang par) navi.Add("order", par);
                  
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("MeasuringDocuments", UriKind.Relative), navi);
         }

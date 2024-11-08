@@ -8,12 +8,9 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OpenXmlPowerTools;
-using Prism.Ioc;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing.Imaging;
-using System.Drawing.Printing;
 using System.IO;
 using System.IO.Packaging;
 using System.Windows;
@@ -24,7 +21,7 @@ using System.Xml.Linq;
 
 namespace ModuleMeasuring.ViewModels
 {
-    class MeasuringDocumentsViewModel : ViewModelBase, IDropTarget
+    class MeasuringDocumentsViewModel : ViewModelBase, IDropTarget, INavigationAware
     {
         public string Title { get; } = "Messdokumente";
         private MeasureFirstPartInfo FirstPartInfo { get; set; }
@@ -36,7 +33,9 @@ namespace ModuleMeasuring.ViewModels
             var factory = container.Resolve<ILoggerFactory>();
             _logger = factory.CreateLogger<MeasuringDocumentsViewModel>();
 
-            VmpbCommand = new ActionCommand(onVmpbExecuted, onVmpbCanExecute);
+            VmpbCreateCommand = new ActionCommand(onVmpbExecuted, onVmpbCanExecute);
+            VmpbDeleteCommand = new ActionCommand(onVmpbDelExecuted, onVmpbDelCanExecute);
+            VmpbCreatePdfCommand = new ActionCommand(onVmpbCreatePdfExecuted, onVmpbCreatePdfCanExecute);
             PruefDataCommand = new ActionCommand(onPruefExecuted, onPruefCanExecute);
             OpenFileCommand = new ActionCommand(onOpenFileExecuted, onOpenFileCanExecute);
             DeleteFileCommand = new ActionCommand(onDeleteFileExecuted, onDeleteFileCanExecute);
@@ -47,7 +46,7 @@ namespace ModuleMeasuring.ViewModels
             FirstPartInfo = new MeasureFirstPartInfo(_container);
             VmpbInfo = new VmpbDocumentInfo(_container);
             MeasureInfo = new MeasureDocumentInfo(_container);
-
+            
             _watcherFirst.Filter = "*.*";
             _watcherFirst.NotifyFilter = NotifyFilters.LastWrite;
             _watcherFirst.Changed += OnChanged;
@@ -59,11 +58,12 @@ namespace ModuleMeasuring.ViewModels
             _watcherPart.Changed += OnChanged;
         }
 
-
         IContainerExtension _container;
         private ILogger _logger;
 
-        public ICommand? VmpbCommand { get; private set; }
+        public ICommand? VmpbCreateCommand { get; private set; }
+        public ICommand? VmpbDeleteCommand { get; private set; }
+        public ICommand? VmpbCreatePdfCommand { get; private set; }
         public ICommand? PruefDataCommand { get; private set; }
         public ICommand? OpenFileCommand { get; private set; }
         public ICommand? DeleteFileCommand { get; private set; }
@@ -84,6 +84,7 @@ namespace ModuleMeasuring.ViewModels
         private FileSystemWatcher _watcherFirst = new();
         private OrderRb _SelectedItem;
 
+
         public OrderRb SelectedItem
         {
             get
@@ -95,6 +96,7 @@ namespace ModuleMeasuring.ViewModels
                 if (value != _SelectedItem)
                 {
                     _SelectedItem = value;
+                    InWork = _SelectedItem.OrderDocus.Any(x => x.InWork == true);
                     NotifyPropertyChanged(() => SelectedItem);                   
                 }
             }
@@ -116,6 +118,20 @@ namespace ModuleMeasuring.ViewModels
                 }
             }
         }
+        private bool _Inwork;
+
+        public bool InWork
+        {
+            get { return _Inwork; }
+            set
+            {
+                if (value != _Inwork)
+                {
+                    _Inwork = value;
+                    NotifyPropertyChanged(() => InWork);
+                }
+            }
+        }
 
         private void LoadData()
         {
@@ -125,6 +141,7 @@ namespace ModuleMeasuring.ViewModels
             var ord = db.OrderRbs
                 .Include(x => x.MaterialNavigation)
                 .Include(x => x.DummyMatNavigation)
+                .Include (x => x.OrderDocus)
                 .Where(x => x.Abgeschlossen == false);
             _orders.AddRange(ord);
             orderViewSource.Source = _orders;
@@ -388,7 +405,7 @@ namespace ModuleMeasuring.ViewModels
         private bool onVmpbCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddVmpb) &&
-                SelectedItem != null;
+                SelectedItem != null && InWork == false;
         }
         private void onVmpbExecuted(object obj)
         {
@@ -419,15 +436,25 @@ namespace ModuleMeasuring.ViewModels
                         throw new NotImplementedException();
                 }
                 var vmtarg = new FileInfo(Path.Combine(docu[DocumentPart.OriginalFolder], docu[DocumentPart.File]));
+                var docuItems = new DirectoryInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]));
+    
                 if (!vmtarg.Exists)
                 {
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     File.Copy(vmFile.FullName, vmtarg.FullName);
-                    File.CreateSymbolicLink(vmtarg.FullName, Path.Combine(
-                        docu[DocumentPart.RootPath],
-                        docu[DocumentPart.SavePath]));
+                    var doku = db.OrderRbs.Include(x => x.OrderDocus).Single(x => x.Aid == mes.Aid);
+                    doku.OrderDocus.Add(new OrderDocu() { VmpbOriginal = vmtarg.FullName, VmpbTemplate = vmFile.FullName, InWork = true });
+                    InWork = true;
+                    db.SaveChanges();
+                    var pi = new ProcessStartInfo(vmtarg.FullName)
+                    {
+                        UseShellExecute = true,
+                        Verb = "OPEN"
+                    };
+                    Process.Start(pi);
                 }
                 _VmpbDocumentItems.Clear();
-                foreach (var d in vmtarg.Directory.GetFiles())
+                foreach (var d in docuItems.GetFiles())
                 {
                     _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
                 }
@@ -443,6 +470,36 @@ namespace ModuleMeasuring.ViewModels
                 MessageBox.Show(ex.Message, "Error Vmpb", MessageBoxButton.OK, MessageBoxImage.Error);
             }
  
+        }
+        private bool onVmpbCreatePdfCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void onVmpbCreatePdfExecuted(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool onVmpbDelCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void onVmpbDelExecuted(object obj)
+        {
+            var oriFile = SelectedItem.OrderDocus;
+            foreach (var d in oriFile)
+            {
+                if(d.VmpbOriginal != null) File.Delete(d.VmpbOriginal);
+
+            }
+            
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            db.OrderDocus.RemoveRange(SelectedItem.OrderDocus);
+            db.SaveChanges();
+            SelectedItem.OrderDocus.Clear();
+            InWork = false;
         }
         private void OnOrderChanged(object? sender, EventArgs e)
         {
@@ -547,6 +604,25 @@ namespace ModuleMeasuring.ViewModels
                     }
 
                 }
+            }
+        }
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            throw new NotImplementedException();
+        }
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            var vrg = navigationContext.Parameters.GetValue<Vorgang>("order");
+            if (vrg != null)
+            {
+                SelectedItem = vrg.AidNavigation;
+                SelectedValue = _SelectedItem.Aid;
             }
         }
         public struct DocumentDisplay
