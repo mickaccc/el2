@@ -154,6 +154,7 @@
                     <ContextMenu>
                         <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
                                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                        <MenuItem Header="VMPB Original öffnen" Command="{Binding VmpbOriginalOpenCommand}"/>
                         <MenuItem Header="VMPB Original löschen" Command="{Binding VmpbDelCommand}"/>
                         <MenuItem Header="VMPB Pdf erzeugen" Command="{Binding VmpbCreatePdfCommand}"/>
                     </ContextMenu>

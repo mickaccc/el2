@@ -36,6 +36,7 @@ namespace ModuleMeasuring.ViewModels
             VmpbCreateCommand = new ActionCommand(onVmpbExecuted, onVmpbCanExecute);
             VmpbDeleteCommand = new ActionCommand(onVmpbDelExecuted, onVmpbDelCanExecute);
             VmpbCreatePdfCommand = new ActionCommand(onVmpbCreatePdfExecuted, onVmpbCreatePdfCanExecute);
+            VmpbOriginalOpenCommand = new ActionCommand(onVmpbOpenExecuted, onVmpbOpenCanExecute);
             PruefDataCommand = new ActionCommand(onPruefExecuted, onPruefCanExecute);
             OpenFileCommand = new ActionCommand(onOpenFileExecuted, onOpenFileCanExecute);
             DeleteFileCommand = new ActionCommand(onDeleteFileExecuted, onDeleteFileCanExecute);
@@ -64,6 +65,7 @@ namespace ModuleMeasuring.ViewModels
         public ICommand? VmpbCreateCommand { get; private set; }
         public ICommand? VmpbDeleteCommand { get; private set; }
         public ICommand? VmpbCreatePdfCommand { get; private set; }
+        public ICommand? VmpbOriginalOpenCommand { get; private set; }
         public ICommand? PruefDataCommand { get; private set; }
         public ICommand? OpenFileCommand { get; private set; }
         public ICommand? DeleteFileCommand { get; private set; }
@@ -96,12 +98,12 @@ namespace ModuleMeasuring.ViewModels
                 if (value != _SelectedItem)
                 {
                     _SelectedItem = value;
-                    InWork = _SelectedItem.OrderDocus.Any(x => x.InWork == true);
+                    InWork = _SelectedItem.OrderDocu?.InWork;
                     NotifyPropertyChanged(() => SelectedItem);                   
                 }
             }
         }
-        private string _SelectedValue;
+        private string? _SelectedValue;
 
         public string? SelectedValue
         {
@@ -118,9 +120,9 @@ namespace ModuleMeasuring.ViewModels
                 }
             }
         }
-        private bool _Inwork;
+        private bool? _Inwork;
 
-        public bool InWork
+        public bool? InWork
         {
             get { return _Inwork; }
             set
@@ -141,7 +143,7 @@ namespace ModuleMeasuring.ViewModels
             var ord = db.OrderRbs
                 .Include(x => x.MaterialNavigation)
                 .Include(x => x.DummyMatNavigation)
-                .Include (x => x.OrderDocus)
+                .Include (x => x.OrderDocu)
                 .Where(x => x.Abgeschlossen == false);
             _orders.AddRange(ord);
             orderViewSource.Source = _orders;
@@ -214,6 +216,14 @@ namespace ModuleMeasuring.ViewModels
             writer.WriteLine(html.ToString());
             writer.Dispose();
             Console.ReadLine();
+
+            //using GroupDocs.Conversion;
+            //using GroupDocs.Conversion.Options.Convert;
+
+            //var converter = new Converter(@"C:\Pfad\zu\Dokument.docx");
+            //var options = new PdfConvertOptions();
+            //converter.Convert(@"C:\Pfad\zu\Dokument.pdf", options);
+
 
             //var doc = new HtmlToPdfDocument()
             //{
@@ -405,7 +415,7 @@ namespace ModuleMeasuring.ViewModels
         private bool onVmpbCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddVmpb) &&
-                SelectedItem != null && InWork == false;
+                SelectedItem != null && InWork == null;
         }
         private void onVmpbExecuted(object obj)
         {
@@ -442,9 +452,11 @@ namespace ModuleMeasuring.ViewModels
                 {
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     File.Copy(vmFile.FullName, vmtarg.FullName);
-                    var doku = db.OrderRbs.Include(x => x.OrderDocus).Single(x => x.Aid == mes.Aid);
-                    doku.OrderDocus.Add(new OrderDocu() { VmpbOriginal = vmtarg.FullName, VmpbTemplate = vmFile.FullName, InWork = true });
-                    InWork = true;
+                    var doku = db.OrderRbs.Single(x => x.Aid == mes.Aid);
+                    doku.OrderDocu ??= new OrderDocu();
+                    doku.OrderDocu.VmpbOriginal = vmtarg.FullName;
+                    doku.OrderDocu.VmpbTemplate = vmFile.FullName;
+                    InWork = doku.OrderDocu.InWork = true;
                     db.SaveChanges();
                     var pi = new ProcessStartInfo(vmtarg.FullName)
                     {
@@ -471,6 +483,36 @@ namespace ModuleMeasuring.ViewModels
             }
  
         }
+        private bool onVmpbOpenCanExecute(object arg)
+        {
+            return SelectedItem.OrderDocu != null;
+        }
+
+        private void onVmpbOpenExecuted(object obj)
+        {
+            try
+            {
+                if (SelectedItem.OrderDocu?.VmpbOriginal != null)
+                {
+                    var pi = new ProcessStartInfo(SelectedItem.OrderDocu.VmpbOriginal)
+                    {
+                        UseShellExecute = true,
+                        Verb = "OPEN"
+                    };
+                    Process.Start(pi);
+                }
+            }
+            catch (FileNotFoundException e) 
+            {
+                MessageBox.Show(e.Message, "File IO", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _logger.LogWarning(e.ToString());
+            }
+            catch (Exception e)
+            { 
+                
+                _logger.LogError(e.ToString());
+            }
+        }
         private bool onVmpbCreatePdfCanExecute(object arg)
         {
             return true;
@@ -479,6 +521,19 @@ namespace ModuleMeasuring.ViewModels
         private void onVmpbCreatePdfExecuted(object obj)
         {
             throw new NotImplementedException();
+
+            //using Microsoft.Office.Interop.Word;
+
+            //Application wordApp = new Application();
+            //Document wordDoc = wordApp.Documents.Open(@"C:\Pfad\zu\Dokument.docx");
+            //wordDoc.ExportAsFixedFormat(@"C:\Pfad\zu\Dokument.pdf", WdExportFormat.wdExportFormatPDF);
+            //wordDoc.Close();
+            //wordApp.Quit();
+
+            //var doc = new Aspose.Words.Document(@"C:\Pfad\zu\Dokument.docx");
+            //doc.Save(@"C:\Pfad\zu\Dokument.pdf", Aspose.Words.SaveFormat.Pdf);
+
+
         }
 
         private bool onVmpbDelCanExecute(object arg)
@@ -488,18 +543,22 @@ namespace ModuleMeasuring.ViewModels
 
         private void onVmpbDelExecuted(object obj)
         {
-            var oriFile = SelectedItem.OrderDocus;
-            foreach (var d in oriFile)
-            {
-                if(d.VmpbOriginal != null) File.Delete(d.VmpbOriginal);
-
-            }
+ 
+            if(SelectedItem.OrderDocu?.VmpbOriginal != null) File.Delete(SelectedItem.OrderDocu.VmpbOriginal);
             
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            db.OrderDocus.RemoveRange(SelectedItem.OrderDocus);
-            db.SaveChanges();
-            SelectedItem.OrderDocus.Clear();
-            InWork = false;
+            var o = db.OrderDocus.SingleOrDefault(x => x.OrderId == SelectedValue);
+            if (o != null)
+            {
+                o.InWork = null;
+                o.VmpbOriginal = null;
+                o.VmpbTemplate = null;
+
+                db.SaveChanges();
+            }
+            InWork = null;
+            SelectedItem.OrderDocu = null;
+
         }
         private void OnOrderChanged(object? sender, EventArgs e)
         {
