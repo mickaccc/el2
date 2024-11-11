@@ -81,6 +81,14 @@ namespace Lieferliste_WPF.ViewModels
         public Document Vdocu { get; private set; }
         public Document Wdocu { get; private set; }
         public Document Mdocu { get; private set; }
+        private string _ruleInfoScan = RuleInfo.Rules["MeasureScan"].RuleValue;
+
+        public string RuleInfoScan
+        {
+            get { return _ruleInfoScan = RuleInfo.Rules["MeasureScan"].RuleValue; }
+            set { _ruleInfoScan = RuleInfo.Rules["MeasureScan"].RuleValue = value; }
+        }
+
         public List<Tuple<string, string, int>> PropertyNames { get; } = [];
         private PersonalFilterContainer _filterContainer;
         private ObservableCollection<string> _filterContainerKeys;
@@ -230,6 +238,8 @@ namespace Lieferliste_WPF.ViewModels
             VmpbDocumentInfo.SaveDocumentData();
             WorkareaDocumentInfo.SaveDocumentData();
             MeasureDocumentInfo.SaveDocumentData();
+            var gl = new Globals();
+
             _filterContainer.Save();
 
         }

@@ -13,7 +13,7 @@ public partial class OrderDocu
 
     public string? VmpbOriginal { get; set; }
 
-    public bool? InWork { get; set; }
+    public int InWorkState { get; set; }
 
     public virtual OrderRb Order { get; set; } = null!;
 }

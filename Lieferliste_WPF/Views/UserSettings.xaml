@@ -205,6 +205,11 @@
                             <TextBox Text="{Binding Wdocu[3]}"/>
                         </StackPanel>
                     </TabItem>
+                    <TabItem Header="ScanDokumente">
+                        <StackPanel>
+                            <TextBox Text="{Binding RuleInfoScan}"/>
+                        </StackPanel>
+                    </TabItem>
                 </TabControl>
             </TabItem>
         </TabControl>

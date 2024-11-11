@@ -137,15 +137,27 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <ItemsControl Grid.Column="1" Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" x:Name="vmpb"
-                dd:DragDrop.IsDropTarget="True" BorderThickness="4" BorderBrush="Gray"
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="250*"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="100*"/>
+                </Grid.RowDefinitions>
+            
+                <ItemsControl  Background="{DynamicResource MahApps.Brushes.Gray}" ItemsSource="{Binding VmpbDocumentItems}" x:Name="vmpb"
+                dd:DragDrop.IsDropTarget="True" BorderThickness="4"
                 dd:DragDrop.DropHandler="{Binding}">
                 <ItemsControl.Style>
                     <Style>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding InWork}" Value="true">
-
+                            <DataTrigger Binding="{Binding InWorkState}" Value="1">
                                 <Setter Property="ItemsControl.BorderBrush" Value="Yellow"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding InWorkState}" Value="2">
+                                <Setter Property="ItemsControl.BorderBrush" Value="Orange"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding InWorkState}" Value="3">
+                                <Setter Property="ItemsControl.BorderBrush" Value="Green"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -155,8 +167,9 @@
                         <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
                                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
                         <MenuItem Header="VMPB Original öffnen" Command="{Binding VmpbOriginalOpenCommand}"/>
-                        <MenuItem Header="VMPB Original löschen" Command="{Binding VmpbDelCommand}"/>
+                        <MenuItem Header="VMPB Original löschen" Command="{Binding VmpbDeleteCommand}"/>
                         <MenuItem Header="VMPB Pdf erzeugen" Command="{Binding VmpbCreatePdfCommand}"/>
+                        <MenuItem Header="VMPB abschliessen/rückgängig" Command="{Binding VmpbCloseCommand}"/>
                     </ContextMenu>
                 </ItemsControl.ContextMenu>
             <ItemsControl.ItemsPanel>
@@ -189,6 +202,20 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+                <GridSplitter Grid.Row="1"/>
+                <ItemsControl Grid.Row="2" Background="{DynamicResource MahApps.Brushes.Accent4}" ItemsSource="{Binding ScanDocuments}"
+                              dd:DragDrop.IsDragSource="True"
+                              dd:DragDrop.DragHandler="{Binding}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    
+                </ItemsControl>
+            </Grid>
             <ItemsControl Grid.Column="2" Background="{DynamicResource MahApps.Brushes.Accent2}" ItemsSource="{Binding PartDocumentItems}" x:Name="part"
             dd:DragDrop.IsDropTarget="True"
             dd:DragDrop.DropHandler="{Binding}">

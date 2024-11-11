@@ -82,14 +82,14 @@ namespace El2Core.Utils
         public void SaveRule(Rule rule)
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            if (db.Rules.All(x => x.RuleValue != rule.RuleValue))
+            if (db.Rules.All(x => x.RuleName != rule.RuleName))
             {
                 db.Rules.Add(rule);
             }
             else
             {
-                var r = db.Rules.First(x => x.RuleValue == rule.RuleValue);
-                r.RuleName = rule.RuleName;
+                var r = db.Rules.First(x => x.RuleName == rule.RuleName);
+                r.RuleValue = rule.RuleValue;
                 r.RuleData = rule.RuleData;
             }
             db.SaveChanges();
@@ -102,7 +102,7 @@ namespace El2Core.Utils
             serializer.Serialize(sw, projectSchemes);
 
                 Rule rule = new Rule();
-                rule.RuleName = "ProjectSchema";
+                rule.RuleName = "ProjStruct";
                 rule.RuleValue = "ProjStruct";
                 rule.RuleData = sw.ToString();
             SaveRule(rule);
@@ -150,6 +150,7 @@ namespace El2Core.Utils
                 ProjectSchemes = sc.ToImmutableDictionary();
             }
         }
+        
     }
     public class ProjectScheme
     {
