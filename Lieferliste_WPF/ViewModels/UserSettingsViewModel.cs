@@ -21,6 +21,7 @@ namespace Lieferliste_WPF.ViewModels
         private ObservableCollection<string> _ExplorerFilter = new();
         public ICollectionView ExplorerFilter { get; }
         private IUserSettingsService _settingsService;
+        private IContainerExtension _container;
         ILogger _logger;
         public ICommand SaveCommand { get; }
         public ICommand ResetCommand { get; }
@@ -144,6 +145,7 @@ namespace Lieferliste_WPF.ViewModels
         {
 
             _settingsService = settingsService;
+            _container = container;
             var factory = container.Resolve<ILoggerFactory>();
             _logger = factory.CreateLogger<UserSettingsViewModel>();
             var br = new BrushConverter();
@@ -238,8 +240,8 @@ namespace Lieferliste_WPF.ViewModels
             VmpbDocumentInfo.SaveDocumentData();
             WorkareaDocumentInfo.SaveDocumentData();
             MeasureDocumentInfo.SaveDocumentData();
-            var gl = new Globals();
-
+            var gl = new Globals(_container);
+            gl.SaveRule(RuleInfo.Rules["MeasureScan"]);
             _filterContainer.Save();
 
         }

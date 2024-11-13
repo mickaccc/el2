@@ -172,7 +172,7 @@ namespace ModulePlanning.ViewModels
             catch (Exception ex)
             {
                 _Logger.LogError("{message}", ex.ToString());
-                MessageBox.Show(ex.Message, "MessageVorgangReceved MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(ex.Message, "MessageVorgangReceved MachinePlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

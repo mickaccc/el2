@@ -76,7 +76,13 @@ namespace ModuleDeliverList.UserControls
 
         // Using a DependencyProperty as the backing store for DummyText.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DummyTextProperty =
-            DependencyProperty.Register("DummyText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata(""));
+            DependencyProperty.Register("DummyText", typeof(string), typeof(LieferlisteControl), new PropertyMetadata("", OnDummyTextChanged));
+
+        private static void OnDummyTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var lc = (LieferlisteControl)d;
+            lc.SetValue(MatTextProperty, e.NewValue);
+        }
 
 
         public static readonly DependencyProperty EndDateProperty

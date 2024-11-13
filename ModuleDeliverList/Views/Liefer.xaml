@@ -224,8 +224,8 @@
                     <userControls:LieferlisteControl x:Name="ucLiefer" GotFocus="ucLiefer_GotFocus"
                                                      
                             Aid="{Binding Aid}"
-                            MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
                             DummyText="{Binding AidNavigation.DummyMatNavigation.Mattext}"
+                            MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
                             TTNR="{Binding AidNavigation.Material}"
                             EndDate="{Binding SpaetEnd}"
                             EckEnd="{Binding AidNavigation.Eckende}"

@@ -109,24 +109,34 @@ namespace Lieferliste_WPF.ViewModels
                     Match match = regex.Match(p);
                     if (match.Success && match.Groups.Count > 1)
                     {
-                        string psp = string.Empty;
+                        string psp = string.Empty, prePsp = String.Empty;
                         PspNode<Shape> stepNode = new();
-                        foreach (var m in match.Groups.Values.Skip(1))
+                        PspNode<Shape>? node = Projects.Children.FirstOrDefault(x => x.Node.ToString().Equals(match.Groups[1].Value));
+                        if (node == null)
+                        {
+                            node = Projects.Add(new Shape(match.Groups[1].Value), "");
+                            psp = node.Node.ToString();
+                            stepNode = node;
+                        }
+                            foreach (var m in match.Groups.Values.Skip(1))
                         {
                             if (m.Value == "") break;
-                            psp += m.Value;
-                            var node = Projects.Children.FirstOrDefault(x => psp.StartsWith(x.Node.ToString()));
-                            if (node == null)
+                            if (psp == string.Empty) psp = node.Node.ToString();
+
+                            
+                            stepNode = Projects.Search(node, psp);
+                            if (m.Index > 0) psp += m.Value;
+
+                            if ((int.Parse(m.Name) == match.Groups.Count-1) || match.Groups[int.Parse(m.Name)+1].Value == "")
                             {
-                                stepNode = Projects.Add(new Shape(psp), "Psp-Type");
-                            }
-                            else if (node.Node.ToString() == psp)
-                            {
-                                stepNode = node;
+                                stepNode = stepNode.AddNext(int.Parse(m.Name), new Shape(psp), "Psp-Type");
+                                break;                
                             }
                             else
                             {
-                                stepNode = node.Add(new Shape(psp), "Psp-Type");
+                                if(stepNode.Node.ToString() != psp)
+                                    stepNode.AddNext(int.Parse(m.Name), new Shape(psp), "");
+                                    
                             }
                         }
 
@@ -228,6 +238,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var pro = db.Projects;
+            
             foreach (var edit in EditResult)
             {
                 var current = pro.First(x => x.ProjectPsp == edit.Key);

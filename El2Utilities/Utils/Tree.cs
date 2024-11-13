@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Documents;
+using System.Windows.Navigation;
 using Windows.Data.Xml.Dom;
 using static El2Core.Constants.ProjectTypes;
 
@@ -36,6 +38,27 @@ namespace El2Core.Utils
                 }
             }
         }
+        public PspNode<T> AddNext(int layer, T child, string nodeType)
+        {
+            PspNode<T>? newNode = null;
+            
+                newNode = new PspNode<T>
+                {
+                    Node = child,
+                    NodeType = nodeType
+                };
+  
+            PspNode<T> step = this;
+            for (int i=0; i<layer; i++)
+            {
+                foreach(var c in step.Children)
+                {
+                    if(child.ToString().StartsWith(c.Node.ToString())) step = c;
+                }
+            }
+            step.Children.Add(newNode);
+            return step.Children.Last();
+        }
         // Gets or sets the node
         public T Node { get; set; } = default!;
         // Gets treenode children
@@ -48,11 +71,15 @@ namespace El2Core.Utils
                 var n = Search(this, psp);
             return n;
         }
-        private PspNode<T>? Search(PspNode<T> node, string psp)
+        public PspNode<T>? Search(PspNode<T> node, string psp)
         {
-            var res = node.Children.Find(x => x.Node.ToString() == psp);
-            if(res != null) return res;
-            node.Children.ForEach(n => Search(n, psp));
+            if (node.Node.ToString() == psp) return node;
+            foreach (var c in node.Children)
+            {
+                node = Search(c, psp);
+                if(node != null) return node;
+            }
+            
             return null;
         }
         // Recursively displays node and its children 

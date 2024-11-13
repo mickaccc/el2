@@ -745,6 +745,7 @@ namespace ModuleDeliverList.ViewModels
             var a = await DBctx.Vorgangs
                .Include(v => v.AidNavigation)
                .ThenInclude(x => x.MaterialNavigation)
+               .Include(d => d.AidNavigation.DummyMatNavigation)
                .Include(r => r.RidNavigation)
                .Include(m => m.AidNavigation.DummyMatNavigation)
                .Include(p => p.AidNavigation.Pro)
@@ -849,25 +850,26 @@ namespace ModuleDeliverList.ViewModels
             {
                 bool returnValue = false;
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                var vrg = db.Vorgangs
+                    .Single(x => x.VorgangId.Trim() == income.Item2.Trim());
                 var vrgAdd = db.Vorgangs
-                    .Include(x => x.AidNavigation)
-                    .ThenInclude(x => x.MaterialNavigation)
-                    .Include(x => x.AidNavigation.DummyMatNavigation)
-                    .Include(x => x.AidNavigation.Pro)
-                    .Include(x => x.RidNavigation)
-                    .First(x => x.VorgangId.Trim() == income.Item2.Trim());
-
-                _Logger.LogInformation("relevant? {message} {1}-{2} {3}", vrgAdd.VorgangId, vrgAdd.Aid, vrgAdd.Vnr, vrgAdd.ArbPlSap);
-                if (vrgAdd.ArbPlSap?.Length >= 3)
+                    .Where(x => x.Aid == vrg.Aid);
+                _Logger.LogInformation("relevant? {message} {1}-{2} {3}", vrg.VorgangId, vrg.Aid, vrg.Vnr, vrg.ArbPlSap);
+                foreach (var item in vrgAdd)
                 {
-                    if (int.TryParse(vrgAdd.ArbPlSap[..3], out int c))
+
+                    if (item.ArbPlSap?.Length >= 3)
                     {
-                        if (UserInfo.User.AccountCostUnits.Any(y => y.CostId == c))
+                        if (int.TryParse(item.ArbPlSap[..3], out int c))
                         {
-                            _orders.Add(vrgAdd);
-                            _Logger.LogInformation("added {message}", vrgAdd.VorgangId);
- 
-                            returnValue = true;
+                            if (UserInfo.User.AccountCostUnits.Any(y => y.CostId == c))
+                            {
+                                _orders.Add(item);
+                                _Logger.LogInformation("added {message}", item.VorgangId);
+
+                                returnValue = true;
+                                break;
+                            }
                         }
                     }
                 }
