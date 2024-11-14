@@ -1,9 +1,13 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
+using log4net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using ModulePlanning.Planning;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 
 namespace ModulePlanning.Specials
 {
@@ -18,13 +22,15 @@ namespace ModulePlanning.Specials
         private HolidayLogic holidayLogic;
         private List<Stopage> stoppages;
         private bool repeat;
+        private ILogger logger;
 
         public ShiftPlanService(int rid, IContainerProvider container)
         {
             this.rid = rid;
 
             this.container = container;
-            
+            var factory = container.Resolve<ILoggerFactory>();
+            logger = factory.CreateLogger<ShiftPlanService>();
             ReloadStoppage();
             ReloadShiftCalendar();      
             
@@ -64,7 +70,6 @@ namespace ModulePlanning.Specials
             if (weekPlan.IsDefaultOrEmpty || processLength == 0) return start;
             bool[] tmpWeekPlan;
             int resultMinute = 0;
-            double length = processLength;
             
             TimeSpan time = start.TimeOfDay;
             if (holidayLogic.IsHolyday(start))
@@ -80,16 +85,17 @@ namespace ModulePlanning.Specials
             }
             else { if (holidayLogic.IsHolyday(start.AddDays(1))) tmpWeekPlan.AsSpan(1260, 180).Fill(false); } //clear the nightshift_sun
             tmpWeekPlan = GetManipulateMask(tmpWeekPlan, start);
+
             for (int j = (int)time.TotalMinutes; j < tmpWeekPlan.Length; j++)
             {
-                if (tmpWeekPlan[j]) length--;
-                if (length <= 0) { resultMinute = j; break; }
+                if (tmpWeekPlan[j]) --processLength;
+                if (processLength <= 0) { resultMinute = j; break; }
             }
             start = start.Date;
 
-            if (length > 0)
+            if (processLength > 0)
             {
-                start = GetEndDateTime(length, start.AddDays(1));
+                start = GetEndDateTime(processLength, start.AddDays(1));
             }
             else
             {

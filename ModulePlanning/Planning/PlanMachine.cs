@@ -268,7 +268,6 @@ namespace ModulePlanning.Planning
                 foreach (var p in Processes.OrderBy(x => x.SortPos))
                 {
                     var dur = GetProcessDuration(p);
-
                     var l = _shiftPlanService.GetEndDateTime(dur, start);
                     var diff = l.Subtract(start);
 
@@ -301,7 +300,7 @@ namespace ModulePlanning.Planning
                     var procT = vorgang.Beaze == null ? 0.0 : (short)vorgang.Beaze;
                     var quant = (short)vorgang.AidNavigation.Quantity;
                     var miss = vorgang.QuantityMissNeo == null ? 0.0 : (short)vorgang.QuantityMissNeo;
-                    duration = procT / quant * miss + r + c;
+                    duration = (procT + r + c)/quant * miss;
 
                 }
                 return duration;
