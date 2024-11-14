@@ -851,6 +851,10 @@ namespace ModuleDeliverList.ViewModels
                 bool returnValue = false;
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 var vrg = db.Vorgangs
+                    .Include(x => x.AidNavigation)
+                    .ThenInclude(x => x.MaterialNavigation)
+                    .Include(x => x.AidNavigation.DummyMatNavigation)
+                    .Include(x => x.RidNavigation)
                     .Single(x => x.VorgangId.Trim() == income.Item2.Trim());
                 var vrgAdd = db.Vorgangs
                     .Where(x => x.Aid == vrg.Aid);
@@ -864,8 +868,8 @@ namespace ModuleDeliverList.ViewModels
                         {
                             if (UserInfo.User.AccountCostUnits.Any(y => y.CostId == c))
                             {
-                                _orders.Add(item);
-                                _Logger.LogInformation("added {message}", item.VorgangId);
+                                _orders.Add(vrg);
+                                _Logger.LogInformation("added {message}", vrg.VorgangId);
 
                                 returnValue = true;
                                 break;

@@ -42,6 +42,7 @@
                 <DataGridTextColumn Width="Auto" Header="Bezeichnung" Binding="{Binding Description}" />
                 <DataGridTextColumn Width="Auto" Header="Auftrag" Binding="{Binding Order}" />
                 <DataGridTextColumn Width="Auto" Header="Vorg" Binding="{Binding ProcessNr, StringFormat=\{0:D4\}}"/>
+                <DataGridTextColumn Width="Auto" Header="Text" Binding="{Binding ShortText}"/>
                 <DataGridTextColumn Width="Auto" Header="Rückmeldung" Binding="{Binding Date_Time}"/>
                 <DataGridTextColumn Width="Auto" Header="Gut" Binding="{Binding Yield}" ElementStyle="{StaticResource RightAlign}"/>
                 <DataGridTextColumn Width="Auto" Header="Auss" Binding="{Binding Scrap}" ElementStyle="{StaticResource RightAlign}"/>

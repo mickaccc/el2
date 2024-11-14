@@ -115,6 +115,7 @@ namespace ModuleReport.ReportSources
                             result.Aid,
                             result.VorgangId,
                             result.Vnr,
+                            result.Text,
                             result.Rid,
                             item.Yield,
                             item.Scrap,
@@ -167,6 +168,7 @@ namespace ModuleReport.ReportSources
                                 result.Aid,
                                 result.VorgangId,
                                 result.Vnr,
+                                result.Text,
                                 result.ArbPlSapNavigation?.RessourceId,
                                 item.Yield,
                                 item.Scrap,
@@ -187,6 +189,6 @@ namespace ModuleReport.ReportSources
         }
 
     }
-    public record ReportMaterial(string TTNR, string? Description, string Order, string VID, int ProcessNr, int? Rid, int Yield, int Scrap, int Rework, DateTime Date_Time, string MachName);
+    public record ReportMaterial(string TTNR, string? Description, string Order, string VID, int ProcessNr, string? ShortText, int? Rid, int Yield, int Scrap, int Rework, DateTime Date_Time, string MachName);
 
 }
