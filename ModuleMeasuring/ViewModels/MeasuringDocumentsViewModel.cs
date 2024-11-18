@@ -546,14 +546,14 @@ namespace ModuleMeasuring.ViewModels
                     var vmpFile = new FileInfo(SelectedItem.OrderDocu.VmpbOriginal);
                     var path = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], Path.GetFileNameWithoutExtension(vmpFile.Name));
                                      
-                    Microsoft.Office.Interop.Word.Application wordApp = new ();
-                    Microsoft.Office.Interop.Word.Document wordDoc = wordApp.Documents.Open(SelectedItem.OrderDocu.VmpbOriginal);
-                    wordDoc.ExportAsFixedFormat(path + ".pdf", Microsoft.Office.Interop.Word.WdExportFormat.wdExportFormatPDF);
-                    wordDoc.Close();
-                    wordApp.Quit();
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    db.OrderDocus.Single(x => x.OrderId == _SelectedValue).InWorkState = (int)(InWorkState = 2);
-                    db.SaveChanges();
+                    //Microsoft.Office.Interop.Word.Application wordApp = new ();
+                    //Microsoft.Office.Interop.Word.Document wordDoc = wordApp.Documents.Open(SelectedItem.OrderDocu.VmpbOriginal);
+                    //wordDoc.ExportAsFixedFormat(path + ".pdf", Microsoft.Office.Interop.Word.WdExportFormat.wdExportFormatPDF);
+                    //wordDoc.Close();
+                    //wordApp.Quit();
+                    //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    //db.OrderDocus.Single(x => x.OrderId == _SelectedValue).InWorkState = (int)(InWorkState = 2);
+                    //db.SaveChanges();
                     //var doc = new Aspose.Words.Document(SelectedItem.OrderDocu.VmpbOriginal);
                     //doc.Save(path + ".pdf", Aspose.Words.SaveFormat.Pdf);
                     var docuItems = new DirectoryInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]));

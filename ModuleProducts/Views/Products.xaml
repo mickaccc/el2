@@ -37,9 +37,9 @@
                 <DataTemplate>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Background="Cyan" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                            <TextBlock Text="{Binding Ttnr, Converter={StaticResource TTNR}}" Margin="0,0,10,0" />
-                            <TextBlock Text="{Binding Bezeichng}"/>
-                            <TextBlock Text="{Binding OrderRbs.Count}" Margin="10,0,0,0"/>
+                            <TextBlock Text="{Binding TTNR, Converter={StaticResource TTNR}}" Margin="0,0,10,0" />
+                            <TextBlock Text="{Binding Description}"/>
+                            <TextBlock Text="{Binding ProductOrders.Count}" Margin="10,0,0,0"/>
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Explorer"  Command="{Binding PlacementTarget.Tag.ApplicationCommands.ExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
@@ -47,22 +47,22 @@
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>
-                        <DataGrid ItemsSource="{Binding OrderRbs}" IsReadOnly="True" AutoGenerateColumns="False" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <DataGrid ItemsSource="{Binding ProductOrders}" IsReadOnly="True" AutoGenerateColumns="False" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <DataGrid.InputBindings>
                                 <MouseBinding Command="{Binding DataContext.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                  CommandParameter="{Binding Path=SelectedItem.Aid,  RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                  CommandParameter="{Binding Path=SelectedItem.OrderNr,  RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                   MouseAction="LeftDoubleClick"/>
                             </DataGrid.InputBindings>
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Auftrag öffnen" Command="{Binding PlacementTarget.Tag.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem.Aid, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem.OrderNr, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <MenuItem Header="Explorer" Command="{Binding PlacementTarget.Tag.ApplicationCommands.ExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                               CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid}" >
+                                <DataGridTextColumn Header="Auftrag" Binding="{Binding OrderNr}" >
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Background" Value="{Binding Abgeschlossen, Converter={StaticResource Active}}"/>
@@ -73,6 +73,9 @@
                                 <DataGridTextColumn Header="Eckstart" Binding="{Binding Eckstart, StringFormat=\{0:d\}}"/>
                                 <DataGridTextColumn Header="Eckende" Binding="{Binding Eckende, StringFormat=\{0:d\}}"/>
                                 <DataGridTextColumn Header="Menge" Binding="{Binding Quantity}"/>
+                                <DataGridTextColumn Header="Geliefert" Binding="{Binding Delivered}"/>
+                                <DataGridTextColumn Header="Ausschuss" Binding="{Binding Scrap}"/>
+                                <DataGridTextColumn Header="Nacharbeit" Binding="{Binding Rework}"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>

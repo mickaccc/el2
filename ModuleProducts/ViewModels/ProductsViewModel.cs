@@ -25,7 +25,7 @@ namespace ModuleProducts.ViewModels
         ILogger _Logger;
         public ICollectionView ProductsView { get; private set; }
         private MeasureFirstPartInfo firstPartInfo;
-        private List<TblMaterial> _Materials;
+        private List<ProductMaterial> _Materials =[];
         private string? _SearchText;
         private RelayCommand? _SearchCommand;
         public RelayCommand SearchCommand => _SearchCommand ??= new RelayCommand(OnTextSearch);
@@ -65,10 +65,15 @@ namespace ModuleProducts.ViewModels
 
                 var mat = await db.TblMaterials.AsNoTracking()
                     .Include(x => x.OrderRbs)
+                    .ThenInclude(x => x.Vorgangs)
                     .Where(x => string.IsNullOrWhiteSpace(x.Ttnr) == false)
                     .ToListAsync();
 
-                _Materials = mat;
+                foreach(var m in mat)
+                {
+                    var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs]);
+                    _Materials.Add(p);
+                }
                 ProductsView = CollectionViewSource.GetDefaultView(_Materials);
                 ProductsView.Filter += OnFilterPredicate;
             }
@@ -82,13 +87,13 @@ namespace ModuleProducts.ViewModels
         private bool OnFilterPredicate(object obj)
         {
             bool accept = true;
-            if (obj is TblMaterial mat && _SearchText != null)
+            if (obj is ProductMaterial mat && _SearchText != null)
             {
-                accept = mat.Ttnr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
+                accept = mat.TTNR.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
                 if (!accept)
-                    accept = (mat.Bezeichng != null) && mat.Bezeichng.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
+                    accept = (mat.Description != null) && mat.Description.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
                 if (!accept)
-                    accept = mat.OrderRbs.Any(x => x.Aid.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase));
+                    accept = mat.ProdOrders.Any(x => x.OrderNr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase));
             }
             return accept;
         }
@@ -98,6 +103,48 @@ namespace ModuleProducts.ViewModels
             {
                 _SearchText = search;
                 ProductsView.Refresh();
+            }
+        }
+        public class ProductMaterial
+        {
+            public string TTNR { get; }
+            public string? Description { get; }
+ 
+            public List<ProductOrder> ProdOrders { get; } = [];
+            public ProductMaterial(string ttnr, string? description, List<OrderRb> orders)
+            {
+                TTNR = ttnr;
+                Description = description;
+                foreach (var order in orders)
+                {
+                    if (order.Vorgangs.Count > 0)
+                    {
+                        var d = order.Vorgangs.OrderBy(x => x.Vnr).Last().QuantityYield;
+                        var s = order.Vorgangs.Sum(x => x.QuantityScrap);
+                        var r = order.Vorgangs.Sum(x => x.QuantityRework);
+                        ProdOrders.Add(new ProductOrder(order.Aid, order.Quantity, order.Eckstart, order.Eckende, d, s, r));  
+                    }
+                }
+            }
+            public struct ProductOrder
+            {
+                public string OrderNr { get; }
+                public int Quantity {  get; }
+                public DateTime? Start { get; }
+                public DateTime? End { get; }
+                public int Delivered { get; }
+                public int Scrap { get; }
+                public int Rework { get; }
+                public ProductOrder(string OrderNr, int? Quantity, DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework)
+                {
+                    this.OrderNr = OrderNr;
+                    this.Quantity = Quantity ??= 0;
+                    this.Start = EckStart;
+                    this.End = EckEnd;
+                    this.Delivered = Delivered ??= 0;
+                    this.Scrap = Scrap ??= 0;
+                    this.Rework = Rework ??= 0;
+                }
             }
         }
     }
