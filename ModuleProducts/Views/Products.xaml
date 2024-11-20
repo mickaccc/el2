@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -16,6 +17,7 @@
             <conv:TTNR_Converter x:Key="TTNR"/>
             <conv:ActivateColorConverter ActiveColor="LightGreen" x:Key="Active"/>
             <conv:MultiObjectConverter x:Key="multi"/>
+            <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -32,14 +34,21 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-        <ListBox Grid.Row="1" ItemsSource="{Binding MaterialTask.Result}" >
+        <StackPanel Grid.Row="1" >
+
+            <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" IsActive="True" Foreground="{DynamicResource ActiveProcess}"
+                   Visibility="{Binding MaterialTask.IsNotCompleted, Converter={StaticResource BoolToVis}}"/>
+            <TextBlock Text="{Binding MaterialTask.ErrorMessage}" HorizontalAlignment="Center"
+                   Visibility="{Binding MaterialTask.IsFaulted, Converter={StaticResource BoolToVis}}"/>
+        </StackPanel>
+        <ListBox Grid.Row="1" ItemsSource="{Binding MaterialTask.Result}" Visibility="{Binding MaterialTask.IsSuccessfullyCompleted, Converter={StaticResource BoolToVis}}" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Background="Cyan" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <TextBlock Text="{Binding TTNR, Converter={StaticResource TTNR}}" Margin="0,0,10,0" />
                             <TextBlock Text="{Binding Description}"/>
-                            <TextBlock Text="{Binding ProductOrders.Count}" Margin="10,0,0,0"/>
+                            <TextBlock Text="{Binding ProdOrders.Count}" Margin="10,0,0,0"/>
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Explorer"  Command="{Binding PlacementTarget.Tag.ApplicationCommands.ExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
@@ -47,7 +56,7 @@
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>
-                        <DataGrid ItemsSource="{Binding ProductOrders}" IsReadOnly="True" AutoGenerateColumns="False" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <DataGrid ItemsSource="{Binding ProdOrders}" IsReadOnly="True" AutoGenerateColumns="False" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <DataGrid.InputBindings>
                                 <MouseBinding Command="{Binding DataContext.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                   CommandParameter="{Binding Path=SelectedItem.OrderNr,  RelativeSource={RelativeSource AncestorType=DataGrid}}"
@@ -58,20 +67,20 @@
                                     <MenuItem Header="Auftrag öffnen" Command="{Binding PlacementTarget.Tag.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                               CommandParameter="{Binding Path=PlacementTarget.SelectedItem.OrderNr, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <MenuItem Header="Explorer" Command="{Binding PlacementTarget.Tag.ApplicationCommands.ExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem.Link, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Auftrag" Binding="{Binding OrderNr}" >
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Background" Value="{Binding Abgeschlossen, Converter={StaticResource Active}}"/>
+                                            <Setter Property="Background" Value="{Binding Closed, Converter={StaticResource Active}}"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                     
                                 </DataGridTextColumn>
-                                <DataGridTextColumn Header="Eckstart" Binding="{Binding Eckstart, StringFormat=\{0:d\}}"/>
-                                <DataGridTextColumn Header="Eckende" Binding="{Binding Eckende, StringFormat=\{0:d\}}"/>
+                                <DataGridTextColumn Header="Eckstart" Binding="{Binding Start, StringFormat=\{0:d\}}"/>
+                                <DataGridTextColumn Header="Eckende" Binding="{Binding End, StringFormat=\{0:d\}}"/>
                                 <DataGridTextColumn Header="Menge" Binding="{Binding Quantity}"/>
                                 <DataGridTextColumn Header="Geliefert" Binding="{Binding Delivered}"/>
                                 <DataGridTextColumn Header="Ausschuss" Binding="{Binding Scrap}"/>

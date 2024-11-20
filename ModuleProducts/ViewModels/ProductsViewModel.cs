@@ -122,7 +122,8 @@ namespace ModuleProducts.ViewModels
                         var d = order.Vorgangs.OrderBy(x => x.Vnr).Last().QuantityYield;
                         var s = order.Vorgangs.Sum(x => x.QuantityScrap);
                         var r = order.Vorgangs.Sum(x => x.QuantityRework);
-                        ProdOrders.Add(new ProductOrder(order.Aid, order.Quantity, order.Eckstart, order.Eckende, d, s, r));  
+                        var dic = new Dictionary<string, string>() { ["ttnr"] = ttnr, ["aid"] = order.Aid };
+                        ProdOrders.Add(new ProductOrder(dic, order.Aid, order.Quantity, order.Eckstart, order.Eckende, d, s, r, order.Abgeschlossen));  
                     }
                 }
             }
@@ -130,15 +131,19 @@ namespace ModuleProducts.ViewModels
             {
                 public string OrderNr { get; }
                 public int Quantity {  get; }
+                public bool Closed { get; }
+                public Dictionary<string, string> Link {  get; }
                 public DateTime? Start { get; }
                 public DateTime? End { get; }
                 public int Delivered { get; }
                 public int Scrap { get; }
                 public int Rework { get; }
-                public ProductOrder(string OrderNr, int? Quantity, DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework)
+                public ProductOrder(Dictionary<string, string> Link, string OrderNr, int? Quantity, DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed)
                 {
+                    this.Link = Link;
                     this.OrderNr = OrderNr;
                     this.Quantity = Quantity ??= 0;
+                    this.Closed = closed;
                     this.Start = EckStart;
                     this.End = EckEnd;
                     this.Delivered = Delivered ??= 0;

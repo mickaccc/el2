@@ -490,7 +490,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void OnOpenExplorerExecuted(object obj)
         {
-            Document? docu;
+            Document? docu = null;
             if (obj is null) return;
             if (obj is OrderViewModel o)
             {
@@ -508,10 +508,13 @@ namespace Lieferliste_WPF.ViewModels
             {
                 docu = _workareaDocumentInfo.CreateDocumentInfos([orb.Material, orb.Aid, string.Empty]);
             }
+            else if (obj is Dictionary<string, string> dic)
+            {
+                docu = _workareaDocumentInfo.CreateDocumentInfos([(string)dic["ttnr"], (string)dic["aid"], string.Empty]);
+            }
             else
             {
-                var dic = obj as Dictionary<string, object>;
-                docu = _workareaDocumentInfo.CreateDocumentInfos([(string)dic["ttnr"], (string)dic["aid"], string.Empty]);
+
             }
             if (docu != null)
             {

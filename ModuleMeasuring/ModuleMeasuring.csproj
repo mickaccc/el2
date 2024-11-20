@@ -29,8 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspose.Cells" Version="24.10.0" />
-    <PackageReference Include="Aspose.Words" Version="24.10.0" />
     <PackageReference Include="DotNetKit.Wpf.AutoCompleteComboBox" Version="1.6.0" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="5.0.1" />
