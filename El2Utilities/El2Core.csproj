@@ -58,15 +58,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EfCore.SchemaCompare" Version="8.1.0" />
+    <PackageReference Include="EfCore.SchemaCompare" Version="8.2.0" />
     <PackageReference Include="FileAssociation2" Version="22.12.21.18" />
     <PackageReference Include="HtmlToXaml" Version="1.0.0" />
-    <PackageReference Include="log4net" Version="3.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+    <PackageReference Include="log4net" Version="3.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Prism.Core" Version="9.0.537" />
     <PackageReference Include="Prism.Plugin.Logging.Abstractions" Version="8.1.16" />
     <PackageReference Include="Prism.Unity" Version="9.0.537" />

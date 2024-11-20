@@ -739,15 +739,17 @@ namespace ModulePlanning.Planning
 
                     lst.Insert(Index, Item);
                 }
-
-                for (int i = 0; i < lst.Count; i++)
+                var larr = lst.ToArray();
+                Target.IsLiveSorting = false;
+                for (int i = 0; i < larr.Length; i++)
                 {
-                    var vrg = p.First(x => x.Equals(lst[i]));
+                    var vrg = p.First(x => x.Equals(larr[i]));
                     _logger.LogInformation("old sort {message} {0}", vrg.VorgangId, vrg.SortPos);
                     vrg.SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
                     _logger.LogInformation("new sort {message} {0}",vrg.VorgangId, vrg.SortPos);
                 }
                 Target.MoveCurrentTo(Item);
+                Target.IsLiveSorting = true;
                 if (Item.AidNavigation.Material != null && WorkArea.CreateFolder)
                 {
                     string[] oa = new[] { Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich };

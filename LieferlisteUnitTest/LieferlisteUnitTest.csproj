@@ -12,10 +12,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MSTest.TestAdapter">
-      <Version>3.6.1</Version>
+      <Version>3.6.3</Version>
     </PackageReference>
     <PackageReference Include="MSTest.TestFramework">
-      <Version>3.6.1</Version>
+      <Version>3.6.3</Version>
     </PackageReference>
   </ItemGroup>
 </Project>

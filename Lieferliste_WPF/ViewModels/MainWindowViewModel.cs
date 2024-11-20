@@ -25,6 +25,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using XmlDiffLib;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -632,9 +633,8 @@ namespace Lieferliste_WPF.ViewModels
                             if (item != null && item.TableName == "Vorgang")
                             {
                                 if (item.OldValue != item.NewValue)
-                                    if(msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
+                                    if (msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
                                         msgListV.Add((item.Invoker, item.PrimaryKey));
-                                    
                             }
                             if (item != null && item.TableName == "OrderRB")
                             {
@@ -642,6 +642,8 @@ namespace Lieferliste_WPF.ViewModels
                                     if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
                                         msgListO.Add((item.Invoker, item.PrimaryKey));
                             }
+                            var diff = new XmlDiff(item.OldValue, item.NewValue);
+                            _Logger.LogInformation("{0} Diff: {1} - {2}", item.TableName, diff.ToString(), item.Invoker);
                         }
 
                         foreach (var msg in m)

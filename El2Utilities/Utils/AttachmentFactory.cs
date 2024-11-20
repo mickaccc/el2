@@ -24,7 +24,7 @@ namespace El2Core.Utils
         {
             try
             {
-                Icon? icon = Icon.ExtractIcon(programIcon.Path, programIcon.Index, 32);
+                Icon? icon = Icon.ExtractAssociatedIcon(programIcon.Path);
                 if (icon != null)
                 {
                     return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
