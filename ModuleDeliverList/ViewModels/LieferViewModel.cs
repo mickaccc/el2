@@ -682,7 +682,7 @@ namespace ModuleDeliverList.ViewModels
             catch (InvalidOperationException e)
             {
                 _Logger.LogError("{message}", e.ToString());
-                MessageBox.Show(e.Message, "CanSave Liefer", MessageBoxButton.OK, MessageBoxImage.Error);
+                
             }
             return false;
         }

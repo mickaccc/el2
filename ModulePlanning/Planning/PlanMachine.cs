@@ -368,13 +368,14 @@ namespace ModulePlanning.Planning
                                 var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                                 if (pr != null)
                                 {
+                                    db.Entry<Vorgang>(pr).Reload();
                                     _logger.LogInformation("PlanMachine - maybe remove {message} {1}", pr.VorgangId, pr.SysStatus);
                                     var proc = db.Vorgangs.Single(x => x.VorgangId == idTuple.Value.Item2);
 
-                                    db.Entry(pr).Reload();
-                                    if ((proc.SysStatus?.Contains("RÜCK") ?? false) || proc.Rid == null)
+                                    
+                                    if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
                                     {
-                                        proc.SortPos = "Z";
+                                        pr.SortPos = "Z";
                                         Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
                                         _logger.LogInformation("PlanMachine - remove {message}", pr.VorgangId);
                                     }
@@ -712,6 +713,7 @@ namespace ModulePlanning.Planning
             {
                 Item.Rid = _rId;
                 List<Vorgang> lst = [];
+                Target.IsLiveSorting = false;
                 var p = Target.SourceCollection as Collection<Vorgang>;
                 lst.AddRange(p.OrderBy(x => x.SortPos));
                 int oldIndex = Target.IndexOf(Item);
@@ -740,7 +742,7 @@ namespace ModulePlanning.Planning
                     lst.Insert(Index, Item);
                 }
                 var larr = lst.ToArray();
-                Target.IsLiveSorting = false;
+                
                 for (int i = 0; i < larr.Length; i++)
                 {
                     var vrg = p.First(x => x.Equals(larr[i]));
@@ -749,7 +751,7 @@ namespace ModulePlanning.Planning
                     _logger.LogInformation("new sort {message} {0}",vrg.VorgangId, vrg.SortPos);
                 }
                 Target.MoveCurrentTo(Item);
-                Target.IsLiveSorting = true;
+                
                 if (Item.AidNavigation.Material != null && WorkArea.CreateFolder)
                 {
                     string[] oa = new[] { Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich };
@@ -757,6 +759,7 @@ namespace ModulePlanning.Planning
                     work.CreateDocumentInfos(oa);
                     work.Collect();
                 }
+                Target.IsLiveSorting = true;
             }
             catch (Exception ex)
             {

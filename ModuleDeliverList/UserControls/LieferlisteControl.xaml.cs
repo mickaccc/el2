@@ -66,8 +66,6 @@ namespace ModuleDeliverList.UserControls
             set { SetValue(MatTextProperty, value); }
         }
 
-
-
         public string DummyText
         {
             get { return (string)GetValue(DummyTextProperty); }
@@ -83,7 +81,6 @@ namespace ModuleDeliverList.UserControls
             var lc = (LieferlisteControl)d;
             lc.SetValue(MatTextProperty, e.NewValue);
         }
-
 
         public static readonly DependencyProperty EndDateProperty
             = DependencyProperty.Register("EndDate"
