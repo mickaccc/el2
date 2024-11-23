@@ -135,8 +135,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<Costunit>(entity =>
         {
-            entity.HasKey(e => e.CostunitId).HasAnnotation("SqlServer:FillFactor", 95);
-
             entity.ToTable("Costunit");
 
             entity.Property(e => e.CostunitId)
@@ -148,9 +146,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<IdmAccount>(entity =>
         {
-            entity.HasKey(e => e.AccountId)
-                .HasName("idm_accounts_pk")
-                .HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.AccountId).HasName("idm_accounts_pk");
 
             entity.ToTable("idm_accounts", tb => tb.HasTrigger("idm_accounts_modify_trg"));
 
@@ -186,9 +182,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasNoKey()
                 .ToTable("idm_relations", tb => tb.HasTrigger("idm_relations_modify_trg"));
 
-            entity.HasIndex(e => new { e.AccountId, e.RoleId }, "idm_relations_uq")
-                .IsUnique()
-                .HasFillFactor(95);
+            entity.HasIndex(e => new { e.AccountId, e.RoleId }, "idm_relations_uq").IsUnique();
 
             entity.Property(e => e.AccountId)
                 .HasMaxLength(80)
@@ -213,15 +207,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<IdmRole>(entity =>
         {
-            entity.HasKey(e => e.RoleId)
-                .HasName("idm_roles_pk")
-                .HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.RoleId).HasName("idm_roles_pk");
 
             entity.ToTable("idm_roles", tb => tb.HasTrigger("idm_roles_modify_trg"));
 
-            entity.HasIndex(e => e.RoleName, "idm_roles_uq")
-                .IsUnique()
-                .HasFillFactor(95);
+            entity.HasIndex(e => e.RoleName, "idm_roles_uq").IsUnique();
 
             entity.Property(e => e.RoleId)
                 .ValueGeneratedNever()
@@ -238,37 +228,31 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<InMemoryMsg>(entity =>
         {
-            entity.HasKey(e => e.MsgId)
-                .HasName("PK__InMemory__662358934B319009")
-                .IsClustered(false)
-                .HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.MsgId).IsClustered(false);
 
             entity
                 .ToTable("InMemoryMsg")
                 .IsMemoryOptimized();
 
-            entity.Property(e => e.MsgId).HasColumnName("MsgID");
             entity.Property(e => e.Invoker).HasMaxLength(255);
-            entity.Property(e => e.Operation).HasMaxLength(50);
-            entity.Property(e => e.TableName).HasMaxLength(50);
+            entity.Property(e => e.Timestamp).HasColumnName("timestamp");
 
             entity.HasOne(d => d.Onl).WithMany(p => p.InMemoryMsgs)
                 .HasForeignKey(d => d.OnlId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_InMemoryMsg_InMemoryOnline");
         });
 
         modelBuilder.Entity<InMemoryOnline>(entity =>
         {
             entity.HasKey(e => e.OnlId)
-                .HasName("PK__InMemory__A34E616341453DE5")
-                .IsClustered(false)
-                .HasAnnotation("SqlServer:FillFactor", 95);
+                .HasName("PK__InMemory__A34E6143FC465DD4")
+                .IsClustered(false);
 
             entity
                 .ToTable("InMemoryOnline")
                 .IsMemoryOptimized();
 
-            entity.Property(e => e.OnlId).HasColumnName("OnlID");
             entity.Property(e => e.LifeTime).HasColumnType("datetime");
             entity.Property(e => e.Login)
                 .HasDefaultValueSql("(getdate())")
@@ -343,7 +327,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<OrderDocu>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.OrderId);
 
             entity.ToTable("OrderDocu");
 
@@ -379,9 +363,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<OrderRb>(entity =>
         {
-            entity.HasKey(e => e.Aid)
-                .HasName("PK_Order")
-                .HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.Aid).HasAnnotation("SqlServer:FillFactor", 95);
 
             entity.ToTable("OrderRB", tb =>
                 {
@@ -431,16 +413,17 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("timestamp");
             entity.Property(e => e.Wbselement)
                 .HasMaxLength(50)
+                .IsFixedLength()
                 .HasColumnName("WBSElement");
 
             entity.HasOne(d => d.DummyMatNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.DummyMat)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Order_tblDummy");
+                .HasConstraintName("FK_OrderRB_tblDummy1");
 
             entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.Material)
-                .HasConstraintName("FK_Order_tblMaterial");
+                .HasConstraintName("FK_OrderRB_tblMaterial");
 
             entity.HasOne(d => d.OrderGroupNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.OrderGroup)
@@ -455,7 +438,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<Permission>(entity =>
         {
-            entity.HasKey(e => e.PKey).HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.PKey);
 
             entity.ToTable("Permission");
 
@@ -481,29 +464,27 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<Project>(entity =>
         {
             entity.HasKey(e => e.ProjectPsp)
-                .HasName("PK_ProjectPSP")
+                .HasName("PK_tblProject")
                 .HasAnnotation("SqlServer:FillFactor", 95);
 
             entity.ToTable("Project");
 
-            entity.Property(e => e.ProjectPsp)
-                .HasMaxLength(50)
-                .HasColumnName("ProjectPSP");
-            entity.Property(e => e.ProjectColor)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.ProjectPsp).HasMaxLength(50);
+            entity.Property(e => e.ProjectColor).HasMaxLength(10);
         });
 
         modelBuilder.Entity<ProjectAttachment>(entity =>
         {
-            entity.HasKey(e => e.AttachId).HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.AttachId);
 
             entity.ToTable("ProjectAttachment");
 
+            entity.Property(e => e.AttachmentBin).HasDefaultValueSql("((0))");
+            entity.Property(e => e.AttachmentLink).HasMaxLength(255);
             entity.Property(e => e.ProjectPsp).HasMaxLength(50);
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
+                .HasColumnName("timestamp");
 
             entity.HasOne(d => d.ProjectPspNavigation).WithMany(p => p.ProjectAttachments)
                 .HasForeignKey(d => d.ProjectPsp)
@@ -512,9 +493,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<Response>(entity =>
         {
-            entity.HasKey(e => e.ResponseId)
-                .HasName("PK_response")
-                .HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.ResponseId).HasName("PK_response");
 
             entity.ToTable("Response");
 
@@ -536,8 +515,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<Ressource>(entity =>
         {
-            entity.HasKey(e => e.RessourceId).HasAnnotation("SqlServer:FillFactor", 95);
-
             entity.ToTable("Ressource");
 
             entity.Property(e => e.RessourceId).HasColumnName("RessourceID");
@@ -550,7 +527,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.HasOne(d => d.ShiftCalendarNavigation).WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.ShiftCalendar)
-                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Ressource_ShiftCalendar");
 
             entity.HasOne(d => d.ShiftPlan).WithMany(p => p.Ressources)
@@ -560,13 +536,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.HasOne(d => d.WorkArea).WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.WorkAreaId)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Ressource_WorkArea");
         });
 
         modelBuilder.Entity<RessourceCostUnit>(entity =>
         {
-            entity.HasKey(e => new { e.Rid, e.CostId }).HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => new { e.Rid, e.CostId });
 
             entity.ToTable("RessourceCostUnit");
 
@@ -583,7 +559,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<RessourceWorkshift>(entity =>
         {
-            entity.HasKey(e => new { e.Rid, e.Sid }).HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => new { e.Rid, e.Sid });
 
             entity.ToTable("RessourceWorkshift");
 
@@ -787,7 +763,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<Vorgang>(entity =>
         {
-            entity.HasKey(e => e.VorgangId).HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.VorgangId)
+                .HasName("PK_tblVorgang")
+                .HasAnnotation("SqlServer:FillFactor", 95);
 
             entity.ToTable("Vorgang", tb =>
                 {
@@ -824,11 +802,10 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.BemT)
                 .IsUnicode(false)
                 .HasColumnName("Bem_T");
-            entity.Property(e => e.Bullet)
-                .HasMaxLength(9)
-                .HasDefaultValue("#FFFFFFFF");
+            entity.Property(e => e.Bullet).HasMaxLength(9);
             entity.Property(e => e.BulletTwo).HasMaxLength(9);
             entity.Property(e => e.CommentMach).IsUnicode(false);
+            entity.Property(e => e.KlimaPrint).HasColumnType("datetime");
             entity.Property(e => e.MarkCode).HasMaxLength(50);
             entity.Property(e => e.ProcessingUom)
                 .HasMaxLength(16)
@@ -871,13 +848,12 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.HasOne(d => d.RidNavigation).WithMany(p => p.Vorgangs)
                 .HasForeignKey(d => d.Rid)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Vorgang_Ressource");
         });
 
         modelBuilder.Entity<VorgangAttachment>(entity =>
         {
-            entity.HasKey(e => e.AttachId).HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.AttachId);
 
             entity.ToTable("VorgangAttachment");
 
@@ -911,21 +887,19 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<WorkSap>(entity =>
         {
-            entity.HasKey(e => e.WorkSapId).HasAnnotation("SqlServer:FillFactor", 95);
-
             entity.ToTable("WorkSap");
 
             entity.Property(e => e.WorkSapId)
                 .HasMaxLength(255)
                 .IsUnicode(false);
-            entity.Property(e => e.CostId).HasColumnName("CostID");
             entity.Property(e => e.Created)
                 .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
+                .HasColumnType("date")
                 .HasColumnName("created");
 
             entity.HasOne(d => d.Cost).WithMany(p => p.WorkSaps)
                 .HasForeignKey(d => d.CostId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_WorkSap_Costunit");
 
             entity.HasOne(d => d.Ressource).WithMany(p => p.WorkSaps)
@@ -936,7 +910,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
         modelBuilder.Entity<WorkShift>(entity =>
         {
-            entity.HasKey(e => e.Sid).HasAnnotation("SqlServer:FillFactor", 95);
+            entity.HasKey(e => e.Sid);
 
             entity.ToTable("WorkShift");
 
