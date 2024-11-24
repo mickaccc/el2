@@ -168,7 +168,7 @@ namespace Lieferliste_WPF.ViewModels
                 OpenProductViewCommand = new ActionCommand(OnOpenProductExecuted, OnOpenProductCanExecute);
 
                 _workareaDocumentInfo = new WorkareaDocumentInfo(container);
-                DbOperations();
+                //DbOperations();
             }
             catch (Exception ex)
             {
