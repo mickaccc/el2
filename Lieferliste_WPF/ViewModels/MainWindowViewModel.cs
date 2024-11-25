@@ -21,10 +21,12 @@ using System.IO;
 using System.Linq;
 using System.Printing;
 using System.Reflection;
+using System.Text;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -624,6 +626,7 @@ namespace Lieferliste_WPF.ViewModels
                     var m = await db.InMemoryMsgs.AsNoTracking()
                         .Include(x => x.Onl)
                         .Where(x => x.Onl.OnlId == UserInfo.Dbid)
+                        .OrderBy(x => x.Timestamp)
                         .ToListAsync();
                     if (m.Count > 0)
                     {
@@ -647,9 +650,18 @@ namespace Lieferliste_WPF.ViewModels
                                         _Logger.LogInformation("Order\n{0}\n{1}", item.OldValue, item.NewValue);
                                     }
                             }
-                            //var diff = Difference.ReferenceEquals(item.OldValue, item.NewValue);
-                            //var t = new XmlDifference.DiffExtensions();
-                            //_Logger.LogInformation("{0} Diff: {1} - {2}", item.TableName, diff.ToString(), item.Invoker);
+                            var xml1 = XElement.Parse(item.OldValue ??= string.Empty);
+                            var xml2 = XElement.Parse(item.NewValue ??= string.Empty);
+                            StringBuilder result = new StringBuilder();
+                            foreach (var x in xml1.Elements())
+                            {
+                                if (x.Value != xml2.Element(x.Name).Value)
+                                {
+                                    result.Append(x.Name).Append(": ").Append(x.Value).Append(" => ").Append(xml2.Element(x.Name).Value)
+                                        .Append(" | ");
+                                }
+                            }
+                            _Logger.LogInformation(item.TableName," id ", item.PrimaryKey, " : ", result);
                         }
 
                         foreach (var msg in m)
@@ -703,14 +715,16 @@ namespace Lieferliste_WPF.ViewModels
 
         private void DbOperations()
         {
-            var gl = new Globals(_container);
+            //var gl = new Globals(_container);
 
-            List<ProjectScheme> schemes = new List<ProjectScheme>();
-            schemes.Add(new ProjectScheme("DS", "(DS-[0-9]{6})(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?"));
-            schemes.Add(new ProjectScheme("SC-PR", "(SC-PR-[0-9]{9})([0-9]{2})?([0-9]{2})?([0-9]{2})?"));
-            schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(_[0-9]{3})(_[0-9]{8})?"));
+            //List<ProjectScheme> schemes = new List<ProjectScheme>();
+            //schemes.Add(new ProjectScheme("DS", "(DS-[0-9]{6})(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?"));
+            //schemes.Add(new ProjectScheme("SC-PR", "(SC-PR-[0-9]{9})([0-9]{2})?([0-9]{2})?([0-9]{2})?"));
+            //schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(_[0-9]{3})(_[0-9]{8})?"));
 
-            gl.SaveProjectSchemes(schemes);
+            //gl.SaveProjectSchemes(schemes);
+
+
             //var pcont = new PersonalFilterContainer();
             //var filt = new PersonalFilter("^F", PropertyNames.Auftragsnummer);
             //pcont.Add("name", filt);
@@ -724,6 +738,21 @@ namespace Lieferliste_WPF.ViewModels
             //    v.Responses.Add(res);
             //}
             //db.SaveChanges();
+
+            string string1 = "<row><VorgangID>0060082254</VorgangID><AID>G2024_0182</AID><VNR>80</VNR><ArbPlSAP>20120100</ArbPlSAP><Text>Zählen, Verpacken, Abliefern</Text><SpaetStart>2025-01-30T00:00:00</SpaetStart><SpaetEnd>2025-01-30T00:00:00</SpaetEnd><BEAZE>0.0000000e+000</BEAZE><SysStatus>FREI TRÜC RMST RMAN </SysStatus><SteuSchl>PPKB</SteuSchl><BasisMg>1</BasisMg><aktuell>1</aktuell><Quantity-scrap>0</Quantity-scrap><Quantity-yield>69</Quantity-yield><Quantity-miss>14</Quantity-miss><ProcessingUOM>MIN             </ProcessingUOM><Quantity-rework>0</Quantity-rework><Visability>1</Visability><ActualStartDate>2024-11-13T00:00:00</ActualStartDate><ActualEndDate>2024-11-20T00:00:00</ActualEndDate><Bullet>#FFFFFFFF</Bullet><Quantity-miss-neo>280</Quantity-miss-neo></row>";
+            string string2 = "<row><VorgangID>0060082254</VorgangID><AID>G2024_0182</AID><VNR>80</VNR><ArbPlSAP>20120100</ArbPlSAP><Text>Zählen, Verpacken, Abliefern</Text><SpaetStart>2025-01-30T00:00:00</SpaetStart><SpaetEnd>2025-01-30T00:00:00</SpaetEnd><BEAZE>0.0000000e+000</BEAZE><SysStatus>FREI TRÜC RMST RMAN </SysStatus><SteuSchl>PPKB</SteuSchl><BasisMg>1</BasisMg><aktuell>0</aktuell><Quantity-scrap>0</Quantity-scrap><Quantity-yield>83</Quantity-yield><Quantity-miss>0</Quantity-miss><ProcessingUOM>MIN             </ProcessingUOM><Quantity-rework>0</Quantity-rework><Visability>1</Visability><ActualStartDate>2024-11-13T00:00:00</ActualStartDate><ActualEndDate>2024-11-22T00:00:00</ActualEndDate><Bullet>#FFFFFFFF</Bullet><Quantity-miss-neo>266</Quantity-miss-neo></row>";
+
+            var xml1 = XElement.Parse(string1);
+            var xml2 = XElement.Parse(string2);
+            StringBuilder result = new StringBuilder();
+            foreach ( var x in xml1.Elements())
+            {
+                if ( x.Value != xml2.Element(x.Name).Value )
+                {
+                    result.Append(x.Name).Append(": ").Append(x.Value).Append(" => ").Append(xml2.Element(x.Name).Value);
+                }
+            }
+
         }
 
     }
