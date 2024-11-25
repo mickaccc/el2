@@ -633,13 +633,19 @@ namespace Lieferliste_WPF.ViewModels
                             {
                                 if (item.OldValue != item.NewValue)
                                     if (msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
+                                    {
                                         msgListV.Add((item.Invoker, item.PrimaryKey));
+                                        _Logger.LogInformation("Vorgang\n{0}\n{1}", item.OldValue, item.NewValue);
+                                    }
                             }
                             if (item != null && item.TableName == "OrderRB")
                             {
                                 if (item.OldValue != item.NewValue)
                                     if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
+                                    {
                                         msgListO.Add((item.Invoker, item.PrimaryKey));
+                                        _Logger.LogInformation("Order\n{0}\n{1}", item.OldValue, item.NewValue);
+                                    }
                             }
                             //var diff = Difference.ReferenceEquals(item.OldValue, item.NewValue);
                             //var t = new XmlDifference.DiffExtensions();

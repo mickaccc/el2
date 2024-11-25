@@ -17,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 
-
 namespace ModulePlanning.Planning
 {
     public interface IPlanMachineFactory
@@ -340,6 +339,7 @@ namespace ModulePlanning.Planning
                             foreach(var v in Processes?.Where(x => x.Aid == item.Value.Item2) )
                             {
                                 db.Entry<Vorgang>(v).Reload();
+                                v.RunPropertyChanged();
                                 _logger.LogInformation("Planmachine - reloaded {message}", v.VorgangId);
                             }
                         }
@@ -368,18 +368,18 @@ namespace ModulePlanning.Planning
                                 var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                                 if (pr != null)
                                 {
+                                    _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
                                     db.Entry<Vorgang>(pr).Reload();
-                                    _logger.LogInformation("PlanMachine - maybe remove {message} {1}", pr.VorgangId, pr.SysStatus);
-                                    var proc = db.Vorgangs.Single(x => x.VorgangId == idTuple.Value.Item2);
-
-                                    
+                                    pr.RunPropertyChanged();
+                                    _logger.LogInformation("PlanMachine - maybe remove {message} {1} {2} - {3}", pr.VorgangId, pr.SysStatus, pr.Aid,pr.Vnr);
+                                             
                                     if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
                                     {
                                         pr.SortPos = "Z";
                                         Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
-                                        _logger.LogInformation("PlanMachine - remove {message}", pr.VorgangId);
+                                        _logger.LogInformation("PlanMachine - removed {message} {1} - {2}", pr.VorgangId, pr.Aid, pr.Vnr);
                                     }
-                                    if (pr.Equals(proc) == false) { ChangedValues(idTuple.Value.Item1, pr, proc); }
+                                    
                                 }
                                 else if (db.Vorgangs.Find(idTuple.Value.Item2)?.Rid == Rid)
                                 {
@@ -389,11 +389,11 @@ namespace ModulePlanning.Planning
                                         .Include(x => x.AidNavigation.DummyMatNavigation)
                                         .Include(x => x.RidNavigation)
                                         .First(x => x.VorgangId == idTuple.Value.Item2);
-                                    _logger.LogInformation("PlanMachine - maybe add {message}", vo.VorgangId);
+                                    _logger.LogInformation("PlanMachine - maybe add {message} {1}-{2}", vo.VorgangId, vo.Aid, vo.Vnr);
                                     if (vo?.SysStatus?.Contains("RÜCK") == false)
                                     {
                                         Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));
-                                        _logger.LogInformation("PlanMachine - add {message}", vo.VorgangId);
+                                        _logger.LogInformation("PlanMachine - added {message} {1}-{2}", vo.VorgangId, vo.Aid, vo.Vnr);
                                     }
                                 }
                             }
