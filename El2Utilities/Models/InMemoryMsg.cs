@@ -9,8 +9,6 @@ public partial class InMemoryMsg
 {
     public int MsgId { get; set; }
 
-    public int OnlId { get; set; }
-
     public string? TableName { get; set; }
 
     public string? Operation { get; set; }
@@ -21,9 +19,11 @@ public partial class InMemoryMsg
 
     public string? NewValue { get; set; }
 
+    public int? OnlId { get; set; }
+
     public string? Invoker { get; set; }
 
-    public DateTime Timestamp { get; set; }
+    public DateTime? Timestamp { get; set; }
 
-    public virtual InMemoryOnline Onl { get; set; } = null!;
+    public virtual InMemoryOnline? Onl { get; set; }
 }

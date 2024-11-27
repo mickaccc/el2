@@ -54,13 +54,17 @@ public partial class OrderRb : ModelBase
 
     public string? OrderType { get; set; }
 
-    public string? OrderCategory { get; set; }
-
     public string? ProductionSupervisor { get; set; }
+
+    public string? OrderCategory { get; set; }
 
     public string? Wbselement { get; set; }
 
     public int? OrderGroup { get; set; }
+
+    public string? Msf { get; set; }
+
+    public bool MsfInWork { get; set; }
 
     public virtual TblDummy? DummyMatNavigation { get; set; }
 

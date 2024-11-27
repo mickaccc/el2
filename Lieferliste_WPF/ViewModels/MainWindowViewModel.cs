@@ -638,7 +638,6 @@ namespace Lieferliste_WPF.ViewModels
                                     if (msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
                                     {
                                         msgListV.Add((item.Invoker, item.PrimaryKey));
-                                        _Logger.LogInformation("Vorgang\n{0}\n{1}", item.OldValue, item.NewValue);
                                     }
                             }
                             if (item != null && item.TableName == "OrderRB")
@@ -647,21 +646,26 @@ namespace Lieferliste_WPF.ViewModels
                                     if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
                                     {
                                         msgListO.Add((item.Invoker, item.PrimaryKey));
-                                        _Logger.LogInformation("Order\n{0}\n{1}", item.OldValue, item.NewValue);
+                                        
                                     }
                             }
-                            var xml1 = XElement.Parse(item.OldValue ??= string.Empty);
-                            var xml2 = XElement.Parse(item.NewValue ??= string.Empty);
-                            StringBuilder result = new StringBuilder();
-                            foreach (var x in xml1.Elements())
-                            {
-                                if (x.Value != xml2.Element(x.Name).Value)
-                                {
-                                    result.Append(x.Name).Append(": ").Append(x.Value).Append(" => ").Append(xml2.Element(x.Name).Value)
-                                        .Append(" | ");
-                                }
-                            }
-                            _Logger.LogInformation(item.TableName," id ", item.PrimaryKey, " : ", result);
+                            //item.OldValue ??= "<row></row>";
+                            //item.NewValue ??= "<row></row>";
+                            //item.OldValue = item.OldValue.Replace(Convert.ToChar((byte)0x1D), ' ');
+                            //item.NewValue = item.NewValue.Replace(Convert.ToChar((byte)0x1D), ' ');
+                            //var xml1 = XElement.Parse(item.OldValue);
+                            //    var xml2 = XElement.Parse(item.NewValue);
+                            //    StringBuilder result = new();
+                            //    foreach (var x in xml2.Elements())
+                            //    {
+                            //        if (string.Equals(x.Value, xml1.Element(x.Name).Value ??= string.Empty)==false)
+                            //        {
+                            //            result.Append(x.Name).Append(": ").Append(xml1.Element(x.Name).Value).Append(" => ").Append(x.Value)
+                            //                .Append(" | ");
+                            //        }
+                            //    }
+                            //    _Logger.LogInformation(item.TableName, " id ", item.PrimaryKey, " : ", result.ToString()); 
+                            
                         }
 
                         foreach (var msg in m)
