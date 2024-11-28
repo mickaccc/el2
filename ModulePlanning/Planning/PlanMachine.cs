@@ -273,8 +273,8 @@ namespace ModulePlanning.Planning
                     if (diff.TotalMinutes == 0) p.Extends = "---";
                     else
                     {
-                        p.Extends = string.Format("{0}\n({1}){2:N2}h \n{3}",p.Responses.Max(x => x.Timestamp.ToString("d.MM.yy HH:mm"))
-                            , p.QuantityMissNeo, diff.TotalHours, l.ToString("dd.MM.yy - HH:mm"));
+                        p.Extends = string.Format("{0}\n({1}){2:N2}min \n{3}",p.Responses.Max(x => x.Timestamp.ToString("d.MM.yy HH:mm"))
+                            , p.QuantityMissNeo, dur, l.ToString("dd.MM.yy - HH:mm"));
                         p.Alert = (p.SpaetEnd != null) ? p.SpaetEnd.Value.Date < l.Date : false;
                     }
                     p.RunPropertyChanged();
@@ -299,7 +299,8 @@ namespace ModulePlanning.Planning
                     var procT = vorgang.Beaze == null ? 0.0 : (short)vorgang.Beaze;
                     var quant = (short)vorgang.AidNavigation.Quantity;
                     var miss = vorgang.QuantityMissNeo == null ? 0.0 : (short)vorgang.QuantityMissNeo;
-                    duration = (procT + r + c)/quant * miss;
+                    if (vorgang.Responses.Count == 0) { duration = (procT + r + c) / quant * miss; }
+                    else { duration = (procT + c) / quant * miss; }
 
                 }
                 return duration;

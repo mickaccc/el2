@@ -22,7 +22,7 @@ namespace El2Core.Utils
             set => parts[key] = value;
         }
         public int Count => parts.Count;
-        public HashSet<DocumentPart> Keys => parts.Keys.ToHashSet();
+        public HashSet<DocumentPart> Keys => [.. parts.Keys];
     }
     public class FirstPartDocument : Document { }
     public class VmpbDocument : Document { }
@@ -45,7 +45,7 @@ namespace El2Core.Utils
             }
             else rule = db.Rules.First(x => x.RuleValue == document[DocumentPart.Type]);
 
-            StringWriter sw = new StringWriter();
+            StringWriter sw = new();
             Serialize(sw, document);
             rule.RuleData = sw.ToString();
 
@@ -113,7 +113,7 @@ namespace El2Core.Utils
                     document[DocumentPart.TTNR] = folders[0];
                     Regex regex = new Regex(document[DocumentPart.RegularEx]);
                     Match match2 = regex.Match(folders[0]);
-                    StringBuilder nsb = new StringBuilder();
+                    StringBuilder nsb = new();
                     foreach (Group ma in match2.Groups.Values.Skip(1))
                     {
                         if (ma.Value != folders[0])
@@ -177,6 +177,7 @@ namespace El2Core.Utils
                 document[DocumentPart.Template] = string.Empty;
                 document[DocumentPart.RegularEx] = string.Empty;
                 document[DocumentPart.JumpTarget] = string.Empty;
+                document[DocumentPart.Folder] = string.Empty;
                 document[DocumentPart.Template_Size1] = string.Empty;
                 document[DocumentPart.Template_Size2] = string.Empty;
                 document[DocumentPart.Template_Size3] = string.Empty;
@@ -206,7 +207,7 @@ namespace El2Core.Utils
                         }
                     }
                     document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar).ToString();
-                    document[DocumentPart.File] = folders[0] + "_VMPB.docx";
+                    document[DocumentPart.File] = folders[1] + "_" + folders[0] + "_VMPB.docx";
                 }
 
                 return document;

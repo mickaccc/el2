@@ -34,20 +34,32 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
- 
+            <Slider Width="200" HorizontalContentAlignment="Right" Value="{Binding WorkerWidth}"></Slider>
         </StackPanel>
-        <ListBox Grid.Row="1" x:Name="worker" ItemsSource="{Binding MemberTask.Result}" VerticalContentAlignment="Stretch" >
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <uc:WorkerUserControl Height="{Binding Path=ActualHeight, ElementName=worker}"/>
-                </DataTemplate>
-            </ListBox.ItemTemplate>  
-        </ListBox>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition MaxWidth="100"/>
+            </Grid.ColumnDefinitions>
+        
+            <ListBox  x:Name="worker" ItemsSource="{Binding MemberTask.Result}" VerticalContentAlignment="Stretch" >
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>                                                                                                                                                                                                                                                                                                                                                                                                                 
+                        <uc:WorkerUserControl Width="250" Height="{Binding Path=ActualHeight, ElementName=worker}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>  
+            </ListBox>
+            <ListBox Grid.Column="1" Background="Firebrick"  ItemsSource="{Binding ViewMSF}"
+                     dd:DragDrop.IsDropTarget="True"
+                     dd:DragDrop.DropHandler="{Binding}">
+            
+            </ListBox>
+        </Grid>
         <DataGrid Grid.Row="2" ItemsSource="{Binding VorgangsView}" IsReadOnly="True" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"

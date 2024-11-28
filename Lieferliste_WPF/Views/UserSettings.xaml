@@ -182,6 +182,8 @@
                             <TextBox Text="{Binding Vdocu[3]}"/>
                             <TextBlock Text="Original Ordner"/>
                             <TextBox Text="{Binding Vdocu[15]}"/>
+                            <TextBlock Text="Speicher Ordner:"/>
+                            <TextBox Text="{Binding Vdocu[11]}"/>
                         </StackPanel>
          
                     </TabItem>

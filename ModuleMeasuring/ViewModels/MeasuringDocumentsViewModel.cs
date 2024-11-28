@@ -544,7 +544,8 @@ namespace ModuleMeasuring.ViewModels
                     var docu = VmpbInfo.CreateDocumentInfos(oa);
                     VmpbInfo.Collect();
                     var vmpFile = new FileInfo(SelectedItem.OrderDocu.VmpbOriginal);
-                    var path = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], Path.GetFileNameWithoutExtension(vmpFile.Name));
+                    var path = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath],
+                        docu[DocumentPart.Folder], Path.GetFileNameWithoutExtension(vmpFile.Name));
 
                     Microsoft.Office.Interop.Word.Application wordApp = new();
                     Microsoft.Office.Interop.Word.Document wordDoc = wordApp.Documents.Open(SelectedItem.OrderDocu.VmpbOriginal);
@@ -556,11 +557,11 @@ namespace ModuleMeasuring.ViewModels
                     db.OrderDocus.Single(x => x.OrderId == _SelectedValue).InWorkState = (int)(InWorkState = 2);
                     db.SaveChanges();
            
-                    var docuItems = new DirectoryInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]));
-                    _VmpbDocumentItems.Clear();
+                    var docuItems = new DirectoryInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], docu[DocumentPart.Folder]));
+                    _PartDocumentItems.Clear();
                     foreach (var d in docuItems.GetFiles())
                     {
-                        _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+                        _PartDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
                     }
                 }
             }
@@ -621,7 +622,7 @@ namespace ModuleMeasuring.ViewModels
                 string path = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]);
                 if (Directory.Exists(path))
                 {
-                    foreach (var d in Directory.GetFiles(path))
+                    foreach (var d in Directory.GetFiles(path).Where(x => x[0] != '~'))
                     {
                         FileInfo f = new FileInfo(d);
                         _FirstDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
@@ -633,7 +634,7 @@ namespace ModuleMeasuring.ViewModels
                 string vmpath = Path.Combine(docu[DocumentPart.RootPath], vmdocu[DocumentPart.SavePath]);
                 if (Directory.Exists(vmpath))
                 {
-                    foreach (var d in Directory.GetFiles(vmpath))
+                    foreach (var d in Directory.GetFiles(vmpath).Where(x => x[0] != '~'))
                     {
                         FileInfo f = new FileInfo(d);
                         _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
@@ -643,7 +644,7 @@ namespace ModuleMeasuring.ViewModels
                 string Mpath = Path.Combine(docu[DocumentPart.RootPath], Mdocu[DocumentPart.SavePath]);
                 if (Directory.Exists(Mpath))
                 {
-                    foreach (var d in Directory.GetFiles(Mpath))
+                    foreach (var d in Directory.GetFiles(Mpath).Where(x => x[0] != '~'))
                     {
                         FileInfo f = new FileInfo(d);
                         _PartDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });                       

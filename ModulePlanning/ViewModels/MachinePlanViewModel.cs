@@ -390,9 +390,9 @@ namespace ModulePlanning.ViewModels
                         {
                             work = wa.WorkAreaId;
                             _currentWorkArea = wa.WorkAreaId;
-                            ProcessCV.Refresh();
-                            ParkingCV.Refresh();
-                            RessCV.Refresh();
+                            ProcessCV?.Refresh();
+                            ParkingCV?.Refresh();
+                            RessCV?.Refresh();
                         }
                     } 
                 }
