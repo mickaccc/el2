@@ -144,7 +144,6 @@ namespace ModulePlanning.Planning
                 }
             }
         }
-
         private Dictionary<int, string> _ShiftCalendars = new() { { 0, "keine Berechnung" } };
         public Dictionary<int, string> ShiftCalendars => _ShiftCalendars;
         private Dictionary<int, string[]> _Stoppages = [];
@@ -276,6 +275,7 @@ namespace ModulePlanning.Planning
                         p.Extends = string.Format("{0}\n({1}){2:N2}min \n{3}",p.Responses.Max(x => x.Timestamp.ToString("d.MM.yy HH:mm"))
                             , p.QuantityMissNeo, dur, l.ToString("dd.MM.yy - HH:mm"));
                         p.Alert = (p.SpaetEnd != null) ? p.SpaetEnd.Value.Date < l.Date : false;
+                        
                     }
                     p.RunPropertyChanged();
                     start = l;
@@ -299,9 +299,18 @@ namespace ModulePlanning.Planning
                     var procT = vorgang.Beaze == null ? 0.0 : (short)vorgang.Beaze;
                     var quant = (short)vorgang.AidNavigation.Quantity;
                     var miss = vorgang.QuantityMissNeo == null ? 0.0 : (short)vorgang.QuantityMissNeo;
-                    if (vorgang.Responses.Count == 0) { duration = (procT + r + c) / quant * miss; }
-                    else { duration = (procT + c) / quant * miss; }
-
+                    if (vorgang.Responses.Count == 0) 
+                    {
+                        duration = (procT + r + c) / quant * miss;
+                        vorgang.Formula = string.Format("Formel: (Beaze + Rstze + Korrektur) / Menge * offen\n({0}+{1}+{2})/{3}*{4}",
+                            procT,r,c,quant,miss);
+                    }
+                    else
+                    {
+                        duration = (procT + c) / quant * miss;
+                        vorgang.Formula = string.Format("Formel: (Beaze + Korrektur) / Menge * offen\n({0}+{1})/{2}*{3}",
+                            procT, c, quant, miss);
+                    }
                 }
                 return duration;
             }

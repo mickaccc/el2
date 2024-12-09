@@ -21,8 +21,9 @@ namespace ModuleProducts.ViewModels
             MaterialTask = new NotifyTaskCompletion<ICollectionView>(OnLoadMaterialsAsync());
         }
         public string Title { get; } = "Produkt Übersicht";
-        IContainerExtension _container;
-        ILogger _Logger;
+
+        private readonly IContainerExtension _container;
+        private readonly ILogger _Logger;
         public ICollectionView ProductsView { get; private set; }
         private MeasureFirstPartInfo firstPartInfo;
         private List<ProductMaterial> _Materials =[];
@@ -69,7 +70,7 @@ namespace ModuleProducts.ViewModels
                     .Where(x => string.IsNullOrWhiteSpace(x.Ttnr) == false)
                     .ToListAsync();
 
-                foreach(var m in mat)
+                foreach(var m in mat.AsParallel())
                 {
                     var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs]);
                     _Materials.Add(p);
@@ -119,7 +120,7 @@ namespace ModuleProducts.ViewModels
                 {
                     if (order.Vorgangs.Count > 0)
                     {
-                        var d = order.Vorgangs.OrderBy(x => x.Vnr).Last().QuantityYield;
+                        var d = order.Vorgangs.MaxBy(static x => x.Vnr)?.QuantityYield;
                         var s = order.Vorgangs.Sum(x => x.QuantityScrap);
                         var r = order.Vorgangs.Sum(x => x.QuantityRework);
                         var dic = new Dictionary<string, string>() { ["ttnr"] = ttnr, ["aid"] = order.Aid };
@@ -127,29 +128,17 @@ namespace ModuleProducts.ViewModels
                     }
                 }
             }
-            public struct ProductOrder
+            public readonly struct ProductOrder(Dictionary<string, string> Link, string OrderNr, int? Quantity, DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed)
             {
-                public string OrderNr { get; }
-                public int Quantity {  get; }
-                public bool Closed { get; }
-                public Dictionary<string, string> Link {  get; }
-                public DateTime? Start { get; }
-                public DateTime? End { get; }
-                public int Delivered { get; }
-                public int Scrap { get; }
-                public int Rework { get; }
-                public ProductOrder(Dictionary<string, string> Link, string OrderNr, int? Quantity, DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed)
-                {
-                    this.Link = Link;
-                    this.OrderNr = OrderNr;
-                    this.Quantity = Quantity ??= 0;
-                    this.Closed = closed;
-                    this.Start = EckStart;
-                    this.End = EckEnd;
-                    this.Delivered = Delivered ??= 0;
-                    this.Scrap = Scrap ??= 0;
-                    this.Rework = Rework ??= 0;
-                }
+                public string OrderNr { get; } = OrderNr;
+                public int Quantity { get; } = Quantity ??= 0;
+                public bool Closed { get; } = closed;
+                public Dictionary<string, string> Link { get; } = Link;
+                public DateTime? Start { get; } = EckStart;
+                public DateTime? End { get; } = EckEnd;
+                public int Delivered { get; } = Delivered ??= 0;
+                public int Scrap { get; } = Scrap ??= 0;
+                public int Rework { get; } = Rework ??= 0;
             }
         }
     }

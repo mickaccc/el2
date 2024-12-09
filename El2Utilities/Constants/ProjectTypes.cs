@@ -12,7 +12,9 @@ namespace El2Core.Constants
             [Description("Entwicklungsmuster")]
             DevelopeSpecimen = 1,
             [Description("Verkaufsmuster")]
-            SaleSpecimen = 2
+            SaleSpecimen = 2,
+            [Description("Versuchsauftrag")]
+            TestOrder = 3
         }
     }
 }

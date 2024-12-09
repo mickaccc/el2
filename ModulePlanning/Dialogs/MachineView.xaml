@@ -301,8 +301,10 @@
                                     <Setter Property="Foreground" Value="Black"/>
                                 </DataTrigger>
                             </Style.Triggers>
+                            <Setter Property="ToolTip" Value="{Binding Formula}"/>
                         </Style>
                     </DataGridTextColumn.CellStyle>
+           
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>

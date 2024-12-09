@@ -14,6 +14,8 @@ public partial class Vorgang : ModelBase
     [NotMapped]
     public string? Extends { get; set; }
     [NotMapped]
+    public string? Formula { get; set; }
+    [NotMapped]
     public int AttCount { get; set; }
     public string VorgangId { get; set; } = null!;
 
