@@ -182,6 +182,7 @@ namespace El2Core.Utils
                 document[DocumentPart.Template_Size2] = string.Empty;
                 document[DocumentPart.Template_Size3] = string.Empty;
                 document[DocumentPart.OriginalFolder] = string.Empty;
+                document[DocumentPart.VNR] = string.Empty;
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
                 var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
@@ -196,6 +197,7 @@ namespace El2Core.Utils
                 {
 
                     document[DocumentPart.TTNR] = folders[0];
+                    document[DocumentPart.VNR] = folders[2];
                     Regex regex = new Regex(document[DocumentPart.RegularEx]);
                     Match match2 = regex.Match(folders[0]);
                     StringBuilder nsb = new StringBuilder();
@@ -207,7 +209,7 @@ namespace El2Core.Utils
                         }
                     }
                     document[DocumentPart.SavePath] = nsb.Append(folders[1]).Append(Path.DirectorySeparatorChar).ToString();
-                    document[DocumentPart.File] = folders[1] + "_" + folders[0] + "_VMPB.docx";
+                    document[DocumentPart.File] = string.Format("{0}_{1}_{2}.docx",folders[1], folders[2], folders[0]);
                 }
 
                 return document;
@@ -423,7 +425,8 @@ namespace El2Core.Utils
         RasterFolder1,
         RasterFolder2,
         RasterFolder3,
-        OriginalFolder
+        OriginalFolder,
+        VNR
     }
     public enum DocumentType
     {

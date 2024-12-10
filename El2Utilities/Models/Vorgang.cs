@@ -97,6 +97,10 @@ public partial class Vorgang : ModelBase
 
     public string? SortPos { get; set; }
 
+    public bool MsfInWork { get; set; }
+
+    public string? Msf { get; set; }
+
     public virtual OrderRb AidNavigation { get; set; } = null!;
 
     public virtual WorkSap? ArbPlSapNavigation { get; set; }

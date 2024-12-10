@@ -95,7 +95,7 @@ namespace ModuleMeasuring.ViewModels
         private FileSystemWatcher _watcherFirst = new();
         private FileSystemWatcher _watcherScan = new();
         private OrderRb _SelectedItem;
-
+        private string _VorgNr;
 
         public OrderRb SelectedItem
         {
@@ -317,7 +317,7 @@ namespace ModuleMeasuring.ViewModels
                         }
                         break;
                     case "vmpb":
-                        var VMdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        var VMdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid, _VorgNr]);
                         VmpbInfo.Collect();
                         if (string.IsNullOrEmpty(setting.PersonalFolder))
                         {
@@ -438,7 +438,7 @@ namespace ModuleMeasuring.ViewModels
             try
             {
                 var mes = _orders.First(x => x.Aid == _SelectedValue);
-                var oa = new string[] { mes.Material.Trim(), mes.Aid };
+                var oa = new string[] { mes.Material.Trim(), mes.Aid, _VorgNr };
                 var size = (string)obj;
       
                 var docu = VmpbInfo.CreateDocumentInfos(oa);
@@ -539,7 +539,7 @@ namespace ModuleMeasuring.ViewModels
                 if (SelectedItem.OrderDocu != null)
                 {
                     var mes = _orders.First(x => x.Aid == _SelectedValue);
-                    var oa = new string[] { mes.Material.Trim(), mes.Aid };
+                    var oa = new string[] { mes.Material.Trim(), mes.Aid, _VorgNr };
 
                     var docu = VmpbInfo.CreateDocumentInfos(oa);
                     VmpbInfo.Collect();
@@ -634,7 +634,7 @@ namespace ModuleMeasuring.ViewModels
                 }
 
                 
-                var vmdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                var vmdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid, _VorgNr]);
                 string vmpath = Path.Combine(docu[DocumentPart.RootPath], vmdocu[DocumentPart.SavePath]);
                 if (Directory.Exists(vmpath))
                 {
@@ -700,7 +700,7 @@ namespace ModuleMeasuring.ViewModels
                     }
                     if (t.Name == "vmpb")
                     {
-                        var docu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        var docu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid, _VorgNr]);
                         VmpbInfo.Collect();
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
@@ -737,6 +737,7 @@ namespace ModuleMeasuring.ViewModels
             {
                 SelectedItem = vrg.AidNavigation;
                 SelectedValue = _SelectedItem.Aid;
+                _VorgNr = string.Format("{0}", vrg.Vnr.ToString("D4"));
             }
         }
         public struct DocumentDisplay

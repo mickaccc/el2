@@ -416,10 +416,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("MRPController");
-            entity.Property(e => e.Msf)
-                .HasMaxLength(100)
-                .HasColumnName("MSF");
-            entity.Property(e => e.MsfInWork).HasColumnName("MSF-InWork");
             entity.Property(e => e.OrderCategory)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -838,6 +834,10 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.BulletTwo).HasMaxLength(9);
             entity.Property(e => e.CommentMach).IsUnicode(false);
             entity.Property(e => e.MarkCode).HasMaxLength(50);
+            entity.Property(e => e.Msf)
+                .HasMaxLength(50)
+                .HasColumnName("MSF");
+            entity.Property(e => e.MsfInWork).HasColumnName("MSF-InWork");
             entity.Property(e => e.ProcessingUom)
                 .HasMaxLength(16)
                 .IsFixedLength()

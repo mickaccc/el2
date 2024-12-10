@@ -62,10 +62,6 @@ public partial class OrderRb : ModelBase
 
     public int? OrderGroup { get; set; }
 
-    public string? Msf { get; set; }
-
-    public bool MsfInWork { get; set; }
-
     public virtual TblDummy? DummyMatNavigation { get; set; }
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
