@@ -89,6 +89,13 @@ namespace Lieferliste_WPF.ViewModels
             get { return _ruleInfoScan = RuleInfo.Rules["MeasureScan"].RuleValue; }
             set { _ruleInfoScan = RuleInfo.Rules["MeasureScan"].RuleValue = value; }
         }
+        private string _ruleMsfDomain = RuleInfo.Rules["MeasureMsfDomain"].RuleValue;
+
+        public string RuleMsfDomain
+        {
+            get { return _ruleMsfDomain = RuleInfo.Rules["MeasureMsfDomain"].RuleValue; }
+            set { _ruleMsfDomain = RuleInfo.Rules["MeasureMsfDomain"].RuleValue = value; }
+        }
 
         public List<Tuple<string, string, int>> PropertyNames { get; } = [];
         private PersonalFilterContainer _filterContainer;

@@ -85,6 +85,25 @@
                                 <DataGridTextColumn Header="Geliefert" Binding="{Binding Delivered}"/>
                                 <DataGridTextColumn Header="Ausschuss" Binding="{Binding Scrap}"/>
                                 <DataGridTextColumn Header="Nacharbeit" Binding="{Binding Rework}"/>
+                                <DataGridTemplateColumn Header="Mustersonderfreigabe">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ListBox ItemsSource="{Binding Tags}">
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding}">
+                                                    <TextBlock.InputBindings>
+                                                        <MouseBinding MouseAction="LeftDoubleClick"
+                             Command="{Binding DataContext.ApplicationCommands.FollowMsfCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                             CommandParameter="{Binding}"/>
+                                                    </TextBlock.InputBindings>
+                                                </TextBlock>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>

@@ -50,7 +50,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMeasuringCommand { get; private set; }
         public ICommand OpenShiftCommand { get; private set; }
         public ICommand OpenHolidayCommand { get; private set; }
-        
+        public ICommand FollowMsfCommand { get; private set; }
         public ICommand OpenReportCommand { get; private set; }
 
         private IApplicationCommands _applicationCommands;
@@ -151,6 +151,8 @@ namespace Lieferliste_WPF.ViewModels
                 _applicationCommands.MachinePrintCommand.RegisterCommand(MachinePrintCommand);
                 OpenMeasureOperCommand = new ActionCommand(OnOpenMeasureOperExecuted, OnOpenMeasureOperCanExecute);
                 _applicationCommands.OpenMeasuringOperCommand.RegisterCommand(OpenMeasureOperCommand);
+                FollowMsfCommand = new ActionCommand(OnFollowMsfExecuted, OnFollowMsfCanExecute);
+                _applicationCommands.FollowMsfCommand.RegisterCommand(FollowMsfCommand);
 
                 OpenLieferlisteCommand = new ActionCommand(OnOpenLieferlisteExecuted, OnOpenLieferlisteCanExecute);
                 OpenMachinePlanCommand = new ActionCommand(OnOpenMachinePlanExecuted, OnOpenMachinePlanCanExecute);
@@ -175,6 +177,17 @@ namespace Lieferliste_WPF.ViewModels
                 _Logger?.LogError("{message}", ex);
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        private bool OnFollowMsfCanExecute(object arg)
+        {
+            return true;
+        }
+
+        private void OnFollowMsfExecuted(object obj)
+        {
+            string m;
+            if ( RuleInfo.Rules.TryGetValue("MeasureMsfDomain", out Rule? msf)) m = msf.RuleValue;
         }
 
         private bool OnOpenProductCanExecute(object arg)

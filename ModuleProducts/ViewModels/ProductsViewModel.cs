@@ -5,6 +5,7 @@ using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Data;
 
 namespace ModuleProducts.ViewModels
@@ -124,21 +125,25 @@ namespace ModuleProducts.ViewModels
                         var s = order.Vorgangs.Sum(x => x.QuantityScrap);
                         var r = order.Vorgangs.Sum(x => x.QuantityRework);
                         var dic = new Dictionary<string, string>() { ["ttnr"] = ttnr, ["aid"] = order.Aid };
-                        ProdOrders.Add(new ProductOrder(dic, order.Aid, order.Quantity, order.Eckstart, order.Eckende, d, s, r, order.Abgeschlossen));  
+                        var msf = order.Vorgangs.Where(x => x.Msf != null).Select(x => x.Msf).ToArray();
+                        ProdOrders.Add(new ProductOrder(dic, order.Aid, order.Quantity, order.Eckstart, order.Eckende,
+                            d, s, r, order.Abgeschlossen, msf));  
                     }
                 }
             }
-            public readonly struct ProductOrder(Dictionary<string, string> Link, string OrderNr, int? Quantity, DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed)
+            public readonly struct ProductOrder(Dictionary<string, string> OrderLink, string OrderNr, int? Quantity,
+                DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed, string?[] tags)
             {
                 public string OrderNr { get; } = OrderNr;
                 public int Quantity { get; } = Quantity ??= 0;
                 public bool Closed { get; } = closed;
-                public Dictionary<string, string> Link { get; } = Link;
+                public Dictionary<string, string> OrderLink { get; } = OrderLink;
                 public DateTime? Start { get; } = EckStart;
                 public DateTime? End { get; } = EckEnd;
                 public int Delivered { get; } = Delivered ??= 0;
                 public int Scrap { get; } = Scrap ??= 0;
                 public int Rework { get; } = Rework ??= 0;
+                public string?[] Tags { get; } = tags;
             }
         }
     }

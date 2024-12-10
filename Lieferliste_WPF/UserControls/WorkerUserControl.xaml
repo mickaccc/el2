@@ -21,6 +21,7 @@
 		<conv:TTNR_Converter x:Key="TTNR"/>
 		<conv:TextCompareToColorConverter x:Key="txtColor"/>
 		<conv:BullettShapeConverter x:Key="BulletShape"/>
+        <conv:BoolRowDetail x:Key="RowDetail"/>
 
     </UserControl.Resources>
 
@@ -102,7 +103,7 @@
 				  IsSynchronizedWithCurrentItem="True"
 				  ItemsSource="{Binding ProcessesCV}"
 				  x:Name="Planed"
-				  RowDetailsVisibilityMode="VisibleWhenSelected">
+				  RowDetailsVisibilityMode="{Binding EnableRowDetails, Converter={StaticResource RowDetail}}">
             <DataGrid.ContextMenu>
                 <ContextMenu Width="Auto">
                     <ContextMenu.Resources>

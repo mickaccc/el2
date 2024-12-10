@@ -39,11 +39,13 @@ namespace Lieferliste_WPF.ViewModels
         private DB_COS_LIEFERLISTE_SQLContext _dbctx;
         private ObservableCollection<Vorgang> _vorgangsList = new();
         private ObservableCollection<PlanWorker> _emploeeList = new();
+        private ObservableCollection<Vorgang> _msfList = new();
         private string _searchText = string.Empty;
         private static System.Timers.Timer? _autoSaveTimer;
-
+        public double SizePercent { get; }
         public ICollectionView EmploeeList { get; private set; }
         public ICollectionView VorgangsView { get; private set; }
+        public ICollectionView MsfList { get; private set; }
 
         public MeasuringRoomViewModel(IContainerProvider container, IApplicationCommands applicationCommands, IUserSettingsService settingsService)
         {
@@ -53,11 +55,12 @@ namespace Lieferliste_WPF.ViewModels
             _dbctx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var factory = _container.Resolve<ILoggerFactory>();
             _logger = factory.CreateLogger<MeasuringRoomViewModel>();
-
+            SizePercent = 340 * _settingsService.SizePercent / 100;
             MemberTask = new NotifyTaskCompletion<ICollectionView>(LoadMemberAsync());
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
             VorgangsView = CollectionViewSource.GetDefaultView(_vorgangsList);
             VorgangsView.Filter += FilterPredicate;
+            MsfList = CollectionViewSource.GetDefaultView( _msfList);
             if (_settingsService.IsAutoSave) SetAutoSave();
         }
 
@@ -136,8 +139,10 @@ namespace Lieferliste_WPF.ViewModels
                     _emploeeList.Add(factory.CreatePlanWorker(item.MessRid, vorg));
                 }
 
-                _vorgangsList.AddRange(ord.ExceptBy(_dbctx.MeasureRessVorgangs.Select(x => x.VorgId), x => x.VorgangId));
+                _vorgangsList.AddRange(ord.ExceptBy(_dbctx.MeasureRessVorgangs.Select(x => x.VorgId), x => x.VorgangId)
+                    .Where(y => y.MsfInWork == false));
                 EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);
+                _msfList.AddRange(ord.Where(x => x.MsfInWork));
                 return EmploeeList;
             }
             catch (Exception e)
@@ -190,8 +195,16 @@ namespace Lieferliste_WPF.ViewModels
                     source.Remove(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
-                    _dbctx.MeasureRessVorgangs.RemoveRange(_dbctx.MeasureRessVorgangs.Where(x => x.VorgId.Trim() == vrg.VorgangId));
-                    _logger.LogInformation("drops {message}", vrg.VorgangId);
+                    var t = dropInfo.VisualTarget.GetType().GetProperty("NameProperty");
+                    if ("MSF".Equals(t?.GetValue(dropInfo.VisualTarget, null)))
+                    {
+                        vrg.MsfInWork = true;
+                    }
+                    else
+                    { 
+                        _dbctx.MeasureRessVorgangs.RemoveRange(_dbctx.MeasureRessVorgangs.Where(x => x.VorgId.Trim() == vrg.VorgangId));
+                        _logger.LogInformation("drops {message}", vrg.VorgangId);
+                    }
                 }
             }
             catch (Exception e)

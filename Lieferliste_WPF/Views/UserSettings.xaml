@@ -108,46 +108,44 @@
             </TabItem>
             <TabItem Header="Lieferliste">
                 <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="40"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40*"/>
-                                <ColumnDefinition Width="200*"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.ColumnSpan="2" Content="Personal Special Filter" Background="Aquamarine" HorizontalContentAlignment="Center"/>
-                            <ListBox Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding PersonalFilterView}" Margin="10" MinWidth="80" IsSynchronizedWithCurrentItem="True"
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="200*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.ColumnSpan="2" Content="Personal Special Filter" Background="Aquamarine" HorizontalContentAlignment="Center"/>
+                    <ListBox Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding PersonalFilterView}" Margin="10" MinWidth="80" IsSynchronizedWithCurrentItem="True"
                                      Background="AntiqueWhite">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}" TextWrapping="Wrap" MaxWidth="70"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" MaxWidth="70"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
 
 
-                                <TextBox Text="{Binding PersonalFilterName}" Margin="10,0,10,0" MinWidth="60" ToolTip="Name des Filters"/>
-                                <TextBox x:Name="RegExBox" Text="{Binding PersonalFilterRegex}" Margin="10,0,10,0" MinWidth="60"
+                        <TextBox Text="{Binding PersonalFilterName}" Margin="10,0,10,0" MinWidth="60" ToolTip="Name des Filters"/>
+                        <TextBox x:Name="RegExBox" Text="{Binding PersonalFilterRegex}" Margin="10,0,10,0" MinWidth="60"
                                      TextChanged="TestBox_TextChanged" ToolTip="Regular Expression"/>
-                                <TextBox x:Name="TestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
-                                <ComboBox ItemsSource="{Binding PropertyNames}" SelectedValue="{Binding PersonalFilterField}"
+                        <TextBox x:Name="TestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
+                        <ComboBox ItemsSource="{Binding PropertyNames}" SelectedValue="{Binding PersonalFilterField}"
                                       DisplayMemberPath="Item1" ToolTip="Feld in dem gesucht werden soll">
 
-                                </ComboBox>
-                                <Button Content="Neu" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                        </ComboBox>
+                        <Button Content="Neu" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
                                     Command="{Binding PersonalFilterNewCommand}"/>
-                                <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                        <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
                                     Command="{Binding PersonalFilterAddCommand}"/>
-                                <Button Content="Entfernen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                        <Button Content="Entfernen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
                                     Command="{Binding PersonalFilterRemoveCommand}"/>
-                            </StackPanel>
+                    </StackPanel>
 
-                        </Grid>
-       
-     
+                </Grid>
             </TabItem>
             <TabItem Header="Messraum">
                 <TabControl TabStripPlacement="Left">
@@ -212,7 +210,16 @@
                             <TextBox Text="{Binding RuleInfoScan}"/>
                         </StackPanel>
                     </TabItem>
+                    <TabItem Header="Muster">
+                        <StackPanel>
+                            <TextBlock Text="Domain für Sonderfreigabe"/>
+                            <TextBox Text="{Binding RuleMsfDomain}"/>
+                        </StackPanel>
+                    </TabItem>
                 </TabControl>
+            </TabItem>
+            <TabItem Header="Projekte">
+                
             </TabItem>
         </TabControl>
     </Grid>

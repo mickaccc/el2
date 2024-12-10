@@ -48,6 +48,7 @@ namespace Lieferliste_WPF.Planning
             this.ApplicationCommands = applicationCommands;
             this.SettingsService = settingsService;
             this.DialogService = dialogService;
+            
         }
         public PlanWorker CreatePlanWorker(int MessRid, List<Vorgang> processesAll)
         {
@@ -75,6 +76,7 @@ namespace Lieferliste_WPF.Planning
             _applicationCommands = applicationCommands;
             _settingsService = settingsService;
             _dialogService = dialogService;
+            EnableRowDetails = settingsService.IsRowDetails;
             var factory = _container.Resolve<ILoggerFactory>();
             logger = factory.CreateLogger<PlanWorker>();
             Initialize();
@@ -95,6 +97,7 @@ namespace Lieferliste_WPF.Planning
         public int MessRId => _messRid;
         public string? Name { get; private set; }
         public string UserId { get; private set; }
+        public bool EnableRowDetails { get; }
         public string? Description { get; private set; }
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
