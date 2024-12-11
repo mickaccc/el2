@@ -69,7 +69,7 @@ namespace ModuleProducts.ViewModels
                     .ThenInclude(x => x.Vorgangs)
                     .ToListAsync();
 
-                foreach(var m in mat)
+                foreach (var m in mat.AsParallel())
                 {
                     var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs]);
                     _Materials.Add(p);
