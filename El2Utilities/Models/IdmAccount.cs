@@ -23,5 +23,7 @@ public partial class IdmAccount
 
     public virtual ICollection<AccountWorkArea> AccountWorkAreas { get; set; } = new List<AccountWorkArea>();
 
+    public virtual ICollection<EmployeeNote> EmployeeNotes { get; set; } = new List<EmployeeNote>();
+
     public virtual ICollection<MeasureRess> MeasureResses { get; set; } = new List<MeasureRess>();
 }

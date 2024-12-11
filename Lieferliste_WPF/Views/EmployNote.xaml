@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="Lieferliste_WPF.Views.EmployNote"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/" 
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Lieferliste_WPF.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <TextBox Text="{Binding VorgangRef}"/>
+            <ComboBox ItemsSource="{Binding SelectRef}"/>
+            
+            <DatePicker Text="{Binding NoteDate}"/>
+            
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="User"/>
+            <TextBlock Text="U" Grid.Row="1"/>
+            <Label Content="Referenz" Grid.Column="1"/>
+            <TextBlock Text="R" Grid.Row="1" Grid.Column="1"/>
+            <Label Content="Kommentar" Grid.Column="2"/>
+            <TextBox Text="" Grid.Row="1" Grid.Column="2"/>
+            <Label Content="Datum" Grid.Column="3"/>
+            <TextBlock Text="D" Grid.Row="1" Grid.Column="3"/>
+            <Label Content="Stunden" Grid.Column="4"/>
+            <TextBlock Text="H" Grid.Row="1" Grid.Column="4"/>
+            <Button Content="eintragen" Grid.Row="1" Grid.Column="5"/>
+        </Grid>
+        <DataGrid Grid.Row="2">
+            
+        </DataGrid>
+    </Grid>
+</UserControl>

@@ -27,6 +27,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Employee_note]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[idm_accounts]",
          "ObjectType": 0
       },

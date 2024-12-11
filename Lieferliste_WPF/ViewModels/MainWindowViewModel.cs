@@ -52,6 +52,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenHolidayCommand { get; private set; }
         public ICommand FollowMsfCommand { get; private set; }
         public ICommand OpenReportCommand { get; private set; }
+        public ICommand OpenNoteCommand { get; private set; }
 
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands
@@ -168,6 +169,7 @@ namespace Lieferliste_WPF.ViewModels
                 OpenShiftCommand = new ActionCommand(OnOpenShiftExecuted, OnOpenShiftCanExecute);                
                 OpenReportCommand = new ActionCommand(OnOpenReportExecuted, OnOpenReportCanExecute);
                 OpenProductViewCommand = new ActionCommand(OnOpenProductExecuted, OnOpenProductCanExecute);
+                OpenNoteCommand = new ActionCommand(OnOpenNoteExecuted, OnOpenNoteCanExecute);
 
                 _workareaDocumentInfo = new WorkareaDocumentInfo(container);
                 //DbOperations();
@@ -177,6 +179,16 @@ namespace Lieferliste_WPF.ViewModels
                 _Logger?.LogError("{message}", ex);
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        private bool OnOpenNoteCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
+        }
+
+        private void OnOpenNoteExecuted(object obj)
+        {
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("EmployNote", UriKind.Relative));
         }
 
         private bool OnFollowMsfCanExecute(object arg)

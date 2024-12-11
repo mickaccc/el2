@@ -19,6 +19,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<Costunit> Costunits { get; set; }
 
+    public virtual DbSet<EmployeeNote> EmployeeNotes { get; set; }
+
     public virtual DbSet<IdmAccount> IdmAccounts { get; set; }
 
     public virtual DbSet<IdmRelation> IdmRelations { get; set; }
@@ -142,6 +144,39 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("costunitID");
             entity.Property(e => e.Description).HasMaxLength(50);
             entity.Property(e => e.PlanRelevance).HasColumnName("plan_relevance");
+        });
+
+        modelBuilder.Entity<EmployeeNote>(entity =>
+        {
+            entity.ToTable("Employee_note");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.AccId)
+                .HasMaxLength(80)
+                .IsUnicode(false)
+                .HasColumnName("acc_id");
+            entity.Property(e => e.Comment)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("comment");
+            entity.Property(e => e.Date)
+                .HasColumnType("date")
+                .HasColumnName("date");
+            entity.Property(e => e.Processingtime).HasColumnName("processingtime");
+            entity.Property(e => e.Reference)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("reference");
+            entity.Property(e => e.Timestamp)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp");
+
+            entity.HasOne(d => d.Acc).WithMany(p => p.EmployeeNotes)
+                .HasForeignKey(d => d.AccId)
+                .HasConstraintName("FK_Employee_note_idm_accounts");
         });
 
         modelBuilder.Entity<IdmAccount>(entity =>

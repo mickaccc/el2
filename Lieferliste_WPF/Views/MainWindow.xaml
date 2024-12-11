@@ -107,11 +107,11 @@
                                 <materialdesign:PackIcon Kind="UserAlert"/>
                             </MenuItem.Icon>
                         </MenuItem>
-
                     </MenuItem>
                     <MenuItem Header="Archiv" Command="{Binding OpenArchiveCommand}" />
-                    <MenuItem Header="Hilfe" >
-                        <MenuItem Header="Einstellungen" Command="{Binding OpenSettingsCommand}" />
+                    <MenuItem Header="Arbeitszeiten" Command="{Binding OpenNoteCommand}"/>
+                    <MenuItem Header="Hilfe">
+                        <MenuItem Header="Einstellungen" Command="{Binding OpenSettingsCommand}"/>
                         <MenuItem Header="About" Click="About_Click"/>
                     </MenuItem>
                 </Menu>
