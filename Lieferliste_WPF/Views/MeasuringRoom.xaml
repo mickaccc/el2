@@ -25,7 +25,7 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
+        <DockPanel >
             <Button Content="Speichern" Command="{Binding SaveCommand}" Margin="0,0,10,0" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
             <TextBox x:Name="searchTextBox" materialDesign:HintAssist.Hint="nach Auftragsnummer, Materialnummer oder Materialbezeichnung suchen">
             <i:Interaction.Triggers>
@@ -34,13 +34,13 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-            <Slider x:Name="slider" Width="200" Minimum="30" Maximum="340" Margin="10"
+            <Slider x:Name="slider" Width="200" Minimum="30" Maximum="340" Margin="10" DockPanel.Dock="Right"
                     Value="{Binding Path=SizePercent, Mode=OneWay}" HorizontalAlignment="Right" />
-        </StackPanel>
+        </DockPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition MaxWidth="100"/>
+                <ColumnDefinition MaxWidth="180"/>
             </Grid.ColumnDefinitions>
         
             <ListBox  x:Name="worker" ItemsSource="{Binding MemberTask.Result}" VerticalContentAlignment="Stretch" >
@@ -55,14 +55,14 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>  
             </ListBox>
-            <ListBox Grid.Column="1" Name="MSF" Background="Firebrick"  ItemsSource="{Binding MsfList}"
+            <ListBox Grid.Column="1" Name="MSF" Background="CadetBlue"  ItemsSource="{Binding MsfList}"
                      dd:DragDrop.IsDropTarget="True"
                      dd:DragDrop.DropHandler="{Binding}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Aid}" Margin="3"/>
-                            <TextBox Text="{Binding Msf}"/>
+                            <TextBlock Text="{Binding Aid}" Margin="0,0,10,0"/>
+                            <TextBox Text="{Binding Msf}" Background="Transparent"  MinWidth="50"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

@@ -80,7 +80,7 @@ namespace Lieferliste_WPF.Planning
             var factory = _container.Resolve<ILoggerFactory>();
             logger = factory.CreateLogger<PlanWorker>();
             Initialize();
-            Processes.AddRange(processes);
+            Processes.AddRange(processes.Where(x => x.MsfInWork == false));
             LoadData();
 
         }

@@ -46,8 +46,8 @@
                 <DataTemplate>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Background="Cyan" Tag="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                            <TextBlock Text="{Binding TTNR, Converter={StaticResource TTNR}}" Margin="0,0,10,0" />
-                            <TextBlock Text="{Binding Description}"/>
+                            <TextBlock Text="{Binding TTNR, Converter={StaticResource TTNR}}" Margin="0,0,10,0" FontSize="14" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Description}" FontSize="14" FontWeight="Bold" />
                             <TextBlock Text="{Binding ProdOrders.Count}" Margin="10,0,0,0"/>
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
@@ -67,7 +67,7 @@
                                     <MenuItem Header="Auftrag öffnen" Command="{Binding PlacementTarget.Tag.ApplicationCommands.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                               CommandParameter="{Binding Path=PlacementTarget.SelectedItem.OrderNr, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <MenuItem Header="Explorer" Command="{Binding PlacementTarget.Tag.ApplicationCommands.ExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem.Link, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                              CommandParameter="{Binding Path=PlacementTarget.SelectedItem.OrderLink, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
                             <DataGrid.Columns>
@@ -94,7 +94,7 @@
                                                         <TextBlock Text="{Binding}">
                                                     <TextBlock.InputBindings>
                                                         <MouseBinding MouseAction="LeftDoubleClick"
-                             Command="{Binding DataContext.ApplicationCommands.FollowMsfCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                             Command="{Binding DataContext.ApplicationCommands.FollowMsfCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                              CommandParameter="{Binding}"/>
                                                     </TextBlock.InputBindings>
                                                 </TextBlock>

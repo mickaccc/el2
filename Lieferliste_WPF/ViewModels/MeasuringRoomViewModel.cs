@@ -139,8 +139,7 @@ namespace Lieferliste_WPF.ViewModels
                     _emploeeList.Add(factory.CreatePlanWorker(item.MessRid, vorg));
                 }
 
-                _vorgangsList.AddRange(ord.ExceptBy(_dbctx.MeasureRessVorgangs.Select(x => x.VorgId), x => x.VorgangId)
-                    .Where(y => y.MsfInWork == false));
+                _vorgangsList.AddRange(ord.ExceptBy(_dbctx.MeasureRessVorgangs.Select(x => x.VorgId), x => x.VorgangId));
                 EmploeeList = CollectionViewSource.GetDefaultView(_emploeeList);
                 _msfList.AddRange(ord.Where(x => x.MsfInWork));
                 return EmploeeList;
@@ -195,7 +194,7 @@ namespace Lieferliste_WPF.ViewModels
                     source.Remove(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
-                    var t = dropInfo.VisualTarget.GetType().GetProperty("NameProperty");
+                    var t = dropInfo.VisualTarget.GetType().GetProperty("Name");
                     if ("MSF".Equals(t?.GetValue(dropInfo.VisualTarget, null)))
                     {
                         vrg.MsfInWork = true;

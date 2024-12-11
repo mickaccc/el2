@@ -186,8 +186,13 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnFollowMsfExecuted(object obj)
         {
-            string m;
-            if ( RuleInfo.Rules.TryGetValue("MeasureMsfDomain", out Rule? msf)) m = msf.RuleValue;
+            if (obj is string s)
+            {
+                if (RuleInfo.Rules.TryGetValue("MeasureMsfDomain", out Rule? msf))
+                {
+                    System.Diagnostics.Process.Start("explorer", msf.RuleValue + s);
+                }
+            }
         }
 
         private bool OnOpenProductCanExecute(object arg)

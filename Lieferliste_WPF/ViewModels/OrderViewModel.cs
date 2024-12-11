@@ -32,7 +32,7 @@ namespace Lieferliste_WPF.ViewModels
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(OnMessageReceived);
             CopyClipBoardCommand = new ActionCommand(OnCopyClipBoardExecuted, OnCopyClipBoardCanExecute);
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            OrderGroups = db.OrderGroups.ToObservableCollection();
+
         }
 
         private bool OnCopyClipBoardCanExecute(object arg)
@@ -246,35 +246,14 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        private int? _orderGroup;
-
-        public int? OrderGroup
+        private string[] _msflist;
+        public string[] MSFList
         {
-            get { return _orderGroup; }
-            set
+            get { return _msflist; }
+            private set
             {
-                if (_orderGroup != value)
-                {
-                    _orderGroup = value;
-                    NotifyPropertyChanged(() => OrderGroup);
-                }
-            }
-        }
-        private ObservableCollection<OrderGroup> _Ordergroups;
-
-        public ObservableCollection<OrderGroup> OrderGroups
-        {
-            get
-            {
-                return _Ordergroups;
-            }
-            set
-            {
-                if (value != _Ordergroups)
-                {
-                    _Ordergroups = value;
-                    NotifyPropertyChanged(() => OrderGroups);
-                }
+                _msflist = value;
+                NotifyPropertyChanged(() => MSFList);
             }
         }
 
@@ -367,13 +346,13 @@ namespace Lieferliste_WPF.ViewModels
                 SysStatus = v.AidNavigation.SysStatus;
                 Ready = v.AidNavigation.Fertig;
                 EckEnde = v.AidNavigation.Eckende;
-                this.OrderGroup = v.AidNavigation.OrderGroup;
+
                 VorgangCV.Refresh();
-
-
             }
             else
                 MessageBox.Show("keine Vorgänge vorhanden", Title, MessageBoxButton.OK, MessageBoxImage.Error);
+
+            MSFList = p.Where(x => string.IsNullOrEmpty(x.Msf) == false).Select(y => y.Msf).ToArray();
         }
     }
 }

@@ -5,7 +5,6 @@ using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Data;
 
 namespace ModuleProducts.ViewModels
@@ -68,10 +67,9 @@ namespace ModuleProducts.ViewModels
                 var mat = await db.TblMaterials.AsNoTracking()
                     .Include(x => x.OrderRbs)
                     .ThenInclude(x => x.Vorgangs)
-                    .Where(x => string.IsNullOrWhiteSpace(x.Ttnr) == false)
                     .ToListAsync();
 
-                foreach(var m in mat.AsParallel())
+                foreach(var m in mat)
                 {
                     var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs]);
                     _Materials.Add(p);
