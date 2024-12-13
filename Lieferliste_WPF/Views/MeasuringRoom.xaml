@@ -55,8 +55,15 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>  
             </ListBox>
-            <ListBox Grid.Column="1" Name="MSF" Background="CadetBlue"  ItemsSource="{Binding MsfList}"
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Content="Mustersonderfreigabe" Background="Bisque"/>
+                <ListBox Grid.Row="1" Name="MSF" Background="CadetBlue"  ItemsSource="{Binding MsfList}"
                      dd:DragDrop.IsDropTarget="True"
+                     dd:DragDrop.IsDragSource="True"
                      dd:DragDrop.DropHandler="{Binding}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -68,6 +75,7 @@
                 </ListBox.ItemTemplate>
             
             </ListBox>
+             </Grid>
         </Grid>
         <DataGrid Grid.Row="2" ItemsSource="{Binding VorgangsView}" IsReadOnly="True" AutoGenerateColumns="False"
                   dd:DragDrop.IsDragSource="True"

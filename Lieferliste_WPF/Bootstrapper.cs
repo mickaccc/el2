@@ -108,6 +108,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<ShiftPlanEdit>();
             containerRegistry.RegisterForNavigation<ReportMainView>();
             containerRegistry.RegisterForNavigation<Products>();
+            containerRegistry.RegisterForNavigation<EmployNote>();
 
 
             containerRegistry.RegisterSingleton<IPlanMachineFactory, PlanMachineFactory>();

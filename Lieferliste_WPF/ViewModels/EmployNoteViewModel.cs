@@ -21,7 +21,7 @@ namespace Lieferliste_WPF.ViewModels
         }
 
 
-
+        public string Title { get; } = "Arbeitszeiten";
         IContainerProvider container;
         public List<Vorgang> VorgangRef { get; private set; } = [];
         public ObservableCollection<EmployeeNote> EmployeeNotes { get; private set; } = [];
@@ -36,11 +36,9 @@ namespace Lieferliste_WPF.ViewModels
 
             EmployeeNotes.AddRange(db.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date));
         }
-        public enum SelectedRef
-        {
-            Reinigen,
-            Cip,
-            Anlernen
-        }
+        public string[] SelectedRef { get; } =
+        [
+            "Reinigen", "Cip", "Anlernen"
+        ];
     }
 }

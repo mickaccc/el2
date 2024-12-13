@@ -315,7 +315,7 @@ namespace Lieferliste_WPF.Planning
                 var t = dropInfo.TargetCollection as ListCollectionView;
                 if (s.CanRemove) s.Remove(vrg);
                 var v = dropInfo.InsertIndex;
-
+                if(vrg.MsfInWork) vrg.MsfInWork = false;
                 if (v > t?.Count)
                 {
                     ((IList)t.SourceCollection).Add(vrg);

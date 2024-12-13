@@ -195,12 +195,13 @@ namespace Lieferliste_WPF.ViewModels
                     ((ListCollectionView)dropInfo.TargetCollection).AddNewItem(vrg);
                     ((ListCollectionView)dropInfo.TargetCollection).CommitNew();
                     var t = dropInfo.VisualTarget.GetType().GetProperty("Name");
+                    
                     if ("MSF".Equals(t?.GetValue(dropInfo.VisualTarget, null)))
                     {
                         vrg.MsfInWork = true;
                     }
                     else
-                    { 
+                    {   vrg.MsfInWork = false;
                         _dbctx.MeasureRessVorgangs.RemoveRange(_dbctx.MeasureRessVorgangs.Where(x => x.VorgId.Trim() == vrg.VorgangId));
                         _logger.LogInformation("drops {message}", vrg.VorgangId);
                     }
