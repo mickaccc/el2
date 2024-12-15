@@ -4,23 +4,41 @@
              xmlns:prism="http://prismlibrary.com/" 
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+             xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:WpfControl="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
     <Grid>
+        <Grid.Resources>
+            <conv:EnumBooleanConverter x:Key="enumBool"/>
+
+        </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="40"/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <ComboBox ItemsSource="{Binding VorgangRef}"/>
+            <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRefView}" Width="150"/>
+
             <ComboBox ItemsSource="{Binding SelectedRef}"/>
-            
-            <DatePicker Text="{Binding NoteDate}"/>
-            
+
+            <StackPanel Orientation="Horizontal">
+                <RadioButton GroupName="WeekDays" Content="So" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Sunday}}"/>
+                <RadioButton GroupName="WeekDays" Content="Mo" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Monday}}"/>
+                <RadioButton GroupName="WeekDays" Content="Di" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Tuesday}}"/>
+                <RadioButton GroupName="WeekDays" Content="Mi" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Wednesday}}"/>
+                <RadioButton GroupName="WeekDays" Content="Do" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Thursday}}"/>
+                <RadioButton GroupName="WeekDays" Content="Fr" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Friday}}"/>
+                <RadioButton GroupName="WeekDays" Content="Sa" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Saturday}}"/>
+            </StackPanel>
+ 
+            <WpfControl:RollingTextBlock RollingRange="{Binding CalendarWeeks}" DefaultRollingPosition="Last"/>
+            <ComboBox ItemsSource="{Binding Users}" HorizontalContentAlignment="Right"/>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>

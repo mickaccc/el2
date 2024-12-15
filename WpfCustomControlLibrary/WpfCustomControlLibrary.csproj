@@ -33,6 +33,7 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="5.1.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup>
@@ -42,5 +43,8 @@
     <Page Update="Themes\LoadingSpinner.xaml">
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Icons\" />
   </ItemGroup>
 </Project>

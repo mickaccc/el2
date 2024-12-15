@@ -7,6 +7,8 @@
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/BullettControl.xaml"/>
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/CommentControl.xaml"/>
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/BitPicture1D.xaml"/>
+        <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/RollingTextBlock.xaml"/>
+        <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/SearchableComboBox.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
