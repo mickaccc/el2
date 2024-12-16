@@ -337,6 +337,7 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         item.Visability = true;
                     }
+                    _Logger.LogInformation("Archivated: {message}", v.Aid);
                     db.SaveChangesAsync();
                     _ea.GetEvent<MessageOrderArchivated>().Publish(v);
                 }

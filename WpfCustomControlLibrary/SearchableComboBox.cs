@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
@@ -32,19 +33,17 @@ namespace WpfCustomControlLibrary
                 _itemsList.ItemsSource = ItemsViewSource.View;
                 //ItemsViewSource = new CollectionViewSource() { Source = _itemsList.ItemsSource };
                 //ItemsViewSource.Filter += FilterEvent;
-                //_itemsList.SelectionChanged += Selected;
-                //_itemsList.AutoGeneratingColumn += AutoGenerating;
+                _itemsList.SelectionChanged += Selected;
+                _itemsList.AutoGeneratingColumn += AutoGenerating;
 
             }
         }
-        public override void EndInit()
-        {
-            base.EndInit();
-            
-        }
+
         private void AutoGenerating(object? sender, DataGridAutoGeneratingColumnEventArgs e)
         {
+            var dt = sender as DataGrid;
             var ty = e.PropertyName;
+            e.Column.Header = "TE";
         }
 
         private void Selected(object sender, SelectionChangedEventArgs e)
@@ -92,7 +91,7 @@ namespace WpfCustomControlLibrary
 
         internal ICollectionView ItemsView;
         internal CollectionViewSource ItemsViewSource;
-        private List<Tuple<string, string?>[]> _items = [];
+        private List<dynamic> _items = [];
         public IEnumerable<object> ItemsSource
         {
             get { return (IEnumerable<object>)GetValue(ItemsSourceProperty); }
@@ -110,16 +109,7 @@ namespace WpfCustomControlLibrary
             var dep = d as SearchableComboBox;
             foreach (var item in (IEnumerable<object>)e.NewValue)
             {
-                string iFieldName, iFieldValue;
-                List<Tuple<string, string?>> fields = [];
-                foreach (var item2 in item.GetType().GetFields())
-                {
-                    iFieldName = item2.Name;
-                    iFieldValue = item2.GetValue(item)?.ToString() ?? string.Empty;
-                    Tuple<string, string?> tuple = Tuple.Create(iFieldName, iFieldValue);
-                    fields.Add(tuple);
-                }
-                dep._items.Add(fields.ToArray());
+                dep._items.Add(item);
             }
             dep.ItemsViewSource = new CollectionViewSource() { Source = dep._items };
             dep.ItemsViewSource.Filter += new FilterEventHandler(FilterEvent);
@@ -130,9 +120,14 @@ namespace WpfCustomControlLibrary
         private static void FilterEvent(object sender, FilterEventArgs e)
         {
 
-            var fi = e.Item as Tuple<string, string?>[];
+            var fi = e.Item.GetType().GetFields().First().GetValue(e.Item).ToString();
             
-            e.Accepted = fi[0].Item2?.Contains(_searchBoxText) ?? false;
+            e.Accepted = fi.Contains(_searchBoxText);
+        }
+        public struct ListItem()
+        {
+            public string Header = string.Empty;
+            public string Value = string.Empty;
         }
     }
 }

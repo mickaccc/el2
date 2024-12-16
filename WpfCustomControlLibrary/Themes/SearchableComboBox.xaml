@@ -19,18 +19,13 @@
                             <DataGrid x:Name="PART_List"   
                                        CanUserAddRows="{TemplateBinding CanUserAddRows}"  
                                       CanUserDeleteRows="{TemplateBinding CanUserDeleteRows}"   
-                                      AutoGenerateColumns="{TemplateBinding AutoGenerateColumns}">
+                                      AutoGenerateColumns="True">
+
                                 <!--<DataGrid.ItemContainerStyle>
-                                    <Style TargetType="{x:Type DataGridRow}">
-                                        <Setter Property="Visibility">
-                                            <Setter.Value>
-                                                <MultiBinding Converter="{StaticResource SearchTextToVisibilityConverter}">
-                                                    <Binding ElementName="txtFullTextSearch" Path="Text"/>
-                                                    <Binding BindsDirectlyToSource="True"/>
-                                                </MultiBinding>
-                                            </Setter.Value>
-                                        </Setter>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="Content" Value="{Binding Header}"/>
                                     </Style>
+ 
                                 </DataGrid.ItemContainerStyle>-->
                             </DataGrid>
                         </StackPanel>

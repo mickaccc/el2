@@ -23,12 +23,8 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" EnableFullTextSearch="True" Width="150" AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Auftrag" Binding="{Binding Auftrag}"/>
-                    <DataGridTextColumn Header="Vorgang" Binding="{Binding Vorgang}"/>
-                    <DataGridTextColumn Header="Material" Binding="{Binding Material}"/>
-                </DataGrid.Columns>
+            <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" EnableFullTextSearch="True" Width="150" >
+
             </WpfControl:SearchableComboBox>
 
             <ComboBox ItemsSource="{Binding SelectedRef}"/>

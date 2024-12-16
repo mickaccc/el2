@@ -71,18 +71,18 @@ namespace Lieferliste_WPF.ViewModels
         private void LoadingData()
         {
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            VorgangRef = [.. db.Vorgangs.Take(20)
+            VorgangRef = [.. db.Vorgangs
                 .Include(x => x.AidNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Where(x => x.AidNavigation.Abgeschlossen == false)
+                .Where(x => x.AidNavigation.Abgeschlossen)
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
-                .Select(static s => new ListItem {
+                .Select(s => new VorgItem {
                     Auftrag =s.Aid,
                     Vorgang = s.Vnr.ToString(),
                     Material = s.AidNavigation.Material,
-                    Bezeichnung = s.AidNavigation.MaterialNavigation.Bezeichng })];
+                    Bezeichnung = s.AidNavigation.MaterialNavigation.Bezeichng }).Take(200)];
 
             EmployeeNotes.AddRange(db.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date));
             CalendarWeeks = ["KW30", "KW31", "KW32"];
@@ -103,7 +103,7 @@ namespace Lieferliste_WPF.ViewModels
         [
             "Reinigen", "Cip", "Anlernen"
         ];
-        public struct ListItem
+        public struct VorgItem
         {
             public string Auftrag;
             public string Vorgang;
