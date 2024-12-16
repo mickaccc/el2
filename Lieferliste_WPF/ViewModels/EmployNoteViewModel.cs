@@ -29,8 +29,10 @@ namespace Lieferliste_WPF.ViewModels
 
         public string Title { get; } = "Arbeitszeiten";
         IContainerProvider container;
-        public ListItem[] VorgangRef { get; private set; }
-        public ICollectionView VorgangRefView { get; private set; }
+        
+        public IEnumerable<dynamic> VorgangRef
+        {
+            get; set; }
         private string? _selectedVrg;
         public string? SelectedVrg
         {
@@ -40,7 +42,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_selectedVrg != value)
                 {
                     _selectedVrg = value;
-                    VorgangRefView.Refresh();
+                    
                 }
             }
         }
@@ -69,7 +71,7 @@ namespace Lieferliste_WPF.ViewModels
         private void LoadingData()
         {
             using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            VorgangRef = [.. db.Vorgangs
+            VorgangRef = [.. db.Vorgangs.Take(20)
                 .Include(x => x.AidNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
@@ -77,7 +79,7 @@ namespace Lieferliste_WPF.ViewModels
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
                 .Select(static s => new ListItem {
-                    Auftrag = s.Aid,
+                    Auftrag =s.Aid,
                     Vorgang = s.Vnr.ToString(),
                     Material = s.AidNavigation.Material,
                     Bezeichnung = s.AidNavigation.MaterialNavigation.Bezeichng })];
@@ -85,7 +87,6 @@ namespace Lieferliste_WPF.ViewModels
             EmployeeNotes.AddRange(db.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date));
             CalendarWeeks = ["KW30", "KW31", "KW32"];
             SelectedWeekDay = DateTime.Today.DayOfWeek;
-            VorgangRefView = CollectionViewSource.GetDefaultView(VorgangRef);
 
         }
 
