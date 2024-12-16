@@ -18,14 +18,15 @@
 
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="400"/>
+            <RowDefinition Height="40"/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" EnableFullTextSearch="True" Width="150" >
+            <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" Width="150"
+                                           SelectedValue="{Binding VorgangValue, Mode=OneWayToSource}" />
 
-            </WpfControl:SearchableComboBox>
+
 
             <ComboBox ItemsSource="{Binding SelectedRef}"/>
 

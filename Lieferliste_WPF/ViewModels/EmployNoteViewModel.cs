@@ -29,10 +29,9 @@ namespace Lieferliste_WPF.ViewModels
 
         public string Title { get; } = "Arbeitszeiten";
         IContainerProvider container;
-        
-        public IEnumerable<dynamic> VorgangRef
-        {
-            get; set; }
+
+        public IEnumerable<dynamic> VorgangRef { get; private set; }
+        public string VorgangValue { get; set; }
         private string? _selectedVrg;
         public string? SelectedVrg
         {
@@ -42,7 +41,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_selectedVrg != value)
                 {
                     _selectedVrg = value;
-                    
+
                 }
             }
         }
@@ -78,11 +77,8 @@ namespace Lieferliste_WPF.ViewModels
                 .Where(x => x.AidNavigation.Abgeschlossen)
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
-                .Select(s => new VorgItem {
-                    Auftrag =s.Aid,
-                    Vorgang = s.Vnr.ToString(),
-                    Material = s.AidNavigation.Material,
-                    Bezeichnung = s.AidNavigation.MaterialNavigation.Bezeichng }).Take(200)];
+                .Select(s => new VorgItem(s.Aid, s.Vnr.ToString(),
+                s.AidNavigation.Material, s.AidNavigation.MaterialNavigation.Bezeichng))];
 
             EmployeeNotes.AddRange(db.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date));
             CalendarWeeks = ["KW30", "KW31", "KW32"];
@@ -103,12 +99,20 @@ namespace Lieferliste_WPF.ViewModels
         [
             "Reinigen", "Cip", "Anlernen"
         ];
-        public struct VorgItem
+  
+    }
+    public class VorgItem
+    {
+        public string Auftrag { get; }
+        public string Vorgang { get; }
+        public string? Material { get; }
+        public string? Bezeichnung { get; }
+        public VorgItem(string Auftrag, string Vorgang, string? Material, string? Bezeichnung)
         {
-            public string Auftrag;
-            public string Vorgang;
-            public string? Material;
-            public string? Bezeichnung;
+            this.Auftrag = Auftrag;
+            this.Vorgang = Vorgang;
+            this.Material = Material;
+            this.Bezeichnung = Bezeichnung;
         }
     }
 }
