@@ -15,6 +15,7 @@ using El2Core.ViewModelBase;
 using System.Windows.Data;
 using System.ComponentModel;
 using System.Windows.Automation;
+using System.Reflection;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -31,15 +32,19 @@ namespace Lieferliste_WPF.ViewModels
         IContainerProvider container;
 
         public IEnumerable<dynamic> VorgangRef { get; private set; }
-        private object _SelectedVorgangItem;
-        public object SelectedVorgangItem
+        private VorgItem _SelectedVorgangItem;
+        public VorgItem SelectedVorgangItem
         {
             get { return _SelectedVorgangItem; }
             set
             {
+
                 _SelectedVorgangItem = value;
-                var obj = (VorgItem) _SelectedVorgangItem;
-                ReferencePre = string.Format("{0} - {1:D4}\n{2} {3}", obj.Auftrag, obj.Vorgang, obj.Material, obj.Bezeichnung);
+                if (value != null)
+                {
+                    ReferencePre = string.Format("{0} - {1:D4}\n{2} {3}",
+                        value.Auftrag, value.Vorgang, value.Material, value.Bezeichnung);
+                }
             }
         }
         private string _ReferencePre;
@@ -78,10 +83,25 @@ namespace Lieferliste_WPF.ViewModels
             get { return _SelectedVrgPath; }
             set { _SelectedVrgPath = value; }
         }
+        private IdmAccount _SelectedUser;
 
-        public ObservableCollection<EmployeeNote> EmployeeNotes { get; private set; } = [];
-        private List<string> CalendarWeeks { get; set; }
-        public ICollectionView CalendarWeeksView { get; private set; }
+        public IdmAccount SelectedUser
+        {
+            get { return _SelectedUser; }
+            set
+            {
+                if (_SelectedUser != value)
+                {
+                    _SelectedUser = value;
+                    EmployeeNotesView.Refresh();
+                }
+            }
+        }
+
+        private ObservableCollection<EmployeeNote> EmployeeNotes { get; } = [];
+        public ICollectionView EmployeeNotesView { get; private set; }
+        public List<string> CalendarWeeks { get; private set; }
+  
         private int _CalendarWeek;
 
         public int CalendarWeek
@@ -92,11 +112,12 @@ namespace Lieferliste_WPF.ViewModels
                 if (_CalendarWeek != value)
                 {
                     _CalendarWeek = value;
+                    EmployeeNotesView.Refresh();
                 }
             }
         }
 
-        public List<User> Users { get; private set; }
+        public List<IdmAccount> Users { get; private set; }
         private DayOfWeek _SelectedWeekDay;
 
         public DayOfWeek SelectedWeekDay
@@ -119,32 +140,45 @@ namespace Lieferliste_WPF.ViewModels
                 .Where(x => x.AidNavigation.Abgeschlossen)
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
-                .Select(s => new VorgItem(s.Aid, s.Vnr.ToString(),
+                .Select(s => new VorgItem(s.VorgangId, s.Aid, s.Vnr.ToString(),
                 s.AidNavigation.Material, s.AidNavigation.MaterialNavigation.Bezeichng))];
 
             EmployeeNotes.AddRange(db.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date));
-            CalendarWeeks = [.. GetKW_Array()];
-            CalendarWeeksView = CollectionViewSource.GetDefaultView(CalendarWeeks);
-            CalendarWeeksView.CurrentChanged += WeekChanged;
-            var test = db.IdmAccounts.Where(x => x.AccountCosts.Join(UserInfo.User.AccountCostUnits, x => x.CostId,);//.Select(x => new User(x.AccountId, x.Firstname, x.Lastname, null )).ToList();
+            EmployeeNotesView = CollectionViewSource.GetDefaultView(EmployeeNotes);
+            EmployeeNotesView.Filter += FilterPredicate;
+            CalendarWeeks = GetKW_Array();
+ 
+            Users = [];
+            foreach (var cost in UserInfo.User.AccountCostUnits)
+            {
+                Users.AddRange(db.IdmAccounts.Where(x => x.AccountCosts.Any(y => y.CostId == cost.CostId)));
+            }
+ 
             SelectedWeekDay = DateTime.Today.DayOfWeek;
-
         }
 
-        private void WeekChanged(object? sender, EventArgs e)
+        private bool FilterPredicate(object obj)
         {
-            
+            if(obj is EmployeeNote note)
+            {
+                int cw = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Today.AddDays(CalendarWeek), CalendarWeekRule.FirstFourDayWeek,
+                    DayOfWeek.Sunday);
+                return CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(note.Date, CalendarWeekRule.FirstFourDayWeek,
+                    DayOfWeek.Sunday) == cw
+                    && note.AccId == SelectedUser.AccountId;
+            }
+            return false;
         }
 
-        private string[] GetKW_Array()
+        private List<string> GetKW_Array()
         {
-            string[] ret = new string[3];
+            List<string> ret = [];
             var date = DateTime.Today.AddDays(-7*3);
 
-            for (int i = 0; i < ret.Length; i++)
+            for (int i = 0; i < 3; i++)
             {
-                ret[i] = string.Format("KW {0}", CultureInfo.CurrentCulture.Calendar
-                    .GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday));
+                ret.Add(string.Format("KW {0}", CultureInfo.CurrentCulture.Calendar
+                    .GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday)));
                 date = date.AddDays(7);
             }
             return ret;
@@ -152,12 +186,14 @@ namespace Lieferliste_WPF.ViewModels
     }
     public class VorgItem
     {
+        public string VorgangId { get; }
         public string Auftrag { get; }
         public string Vorgang { get; }
         public string? Material { get; }
         public string? Bezeichnung { get; }
-        public VorgItem(string Auftrag, string Vorgang, string? Material, string? Bezeichnung)
+        public VorgItem(string VorgangId, string Auftrag, string Vorgang, string? Material, string? Bezeichnung)
         {
+            this.VorgangId = VorgangId;
             this.Auftrag = Auftrag;
             this.Vorgang = Vorgang;
             this.Material = Material;

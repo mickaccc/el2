@@ -32,16 +32,22 @@ namespace WpfCustomControlLibrary
                 _itemsBox = Template.FindName("PART_ItemsBox", this) as Popup;
                 _itemsList = Template.FindName("PART_List", this) as DataGrid;
                 _itemsList.MouseDoubleClick += Row_DoubleClick;
-                _itemsList.ItemsSource = ItemsViewSource.View;
+                _itemsList.AutoGeneratingColumn += AutoGenerating;
+                _itemsList.ItemsSource = ItemsViewSource?.View;
 
             }
+        }
+
+        private void AutoGenerating(object? sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if(e.PropertyName.EndsWith("id", StringComparison.CurrentCultureIgnoreCase)) e.Cancel = true;
         }
 
         private TextBox? _searchBox;
         private Popup? _itemsBox;
         private DataGrid? _itemsList;
         private static string _searchBoxText = string.Empty;
-        internal CollectionViewSource ItemsViewSource;
+        internal CollectionViewSource? ItemsViewSource;
         public bool CanUserAddRows
         {
             get { return (bool)GetValue(CanUserAddRowsProperty); }
@@ -81,15 +87,15 @@ namespace WpfCustomControlLibrary
 
         private static void ItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var dep = d as SearchableComboBox;
+            var dep = (SearchableComboBox)d;
             dep.ItemsViewSource = new CollectionViewSource() { Source = e.NewValue };
             dep.ItemsViewSource.Filter += new FilterEventHandler(FilterEvent);
         }
 
 
-        public object? SelectedItem
+        public object SelectedItem
         {
-            get { return (object?)GetValue(SelectedItemProperty); }
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
@@ -103,30 +109,29 @@ namespace WpfCustomControlLibrary
 
             var ft = e.Item.GetType();
             var fis = ft.GetRuntimeFields();
-            var va = fis.First().GetValue(e.Item).ToString();
-
+            var va = fis.ElementAt(1).GetValue(e.Item).ToString();
+           
             e.Accepted = va.Contains(_searchBoxText);
             
         }
         private void Row_DoubleClick(object sender, MouseButtonEventArgs e)
         {
             // Ensure row was clicked and not empty space
-            var row = ItemsControl.ContainerFromElement((DataGrid)sender,
-                                                e.OriginalSource as DependencyObject) as DataGridRow;
 
-            if (row == null) return;
-            var field0 = row.Item.GetType().GetRuntimeFields().ElementAt(0);
-            var field1 = row.Item.GetType().GetRuntimeFields().ElementAt(1);
-            _searchBox.Text = field0.GetValue(row.Item).ToString();
+            if (ItemsControl.ContainerFromElement((DataGrid)sender,
+                    e.OriginalSource as DependencyObject) is not DataGridRow row) return;
+            var fields = row.Item.GetType().GetRuntimeFields();
+            var field1 = fields.ElementAt(0).GetValue(row.Item);
+            _searchBox.Text = field1.ToString();
             _itemsBox.IsOpen = false;
-            SelectedItem = row.Item;
+            SetValue(SelectedItemProperty, ItemsViewSource?.View.CurrentItem);
         }
 
         private void Searching(object sender, TextChangedEventArgs e)
         {
             _searchBoxText = _searchBox.Text;
             _itemsBox.IsOpen = true;
-            ItemsViewSource.View.Refresh();
+            ItemsViewSource?.View.Refresh();
         }
     }
 }

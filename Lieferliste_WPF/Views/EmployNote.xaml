@@ -18,8 +18,8 @@
 
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
@@ -38,8 +38,10 @@
                 <RadioButton GroupName="WeekDays" Content="Sa" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Saturday}}"/>
             </StackPanel>
  
-            <WpfControl:RollingTextBlock RollingRange="{Binding CalendarWeeksView}" DefaultRollingPosition="Last"/>
-            <ComboBox ItemsSource="{Binding Users}" HorizontalContentAlignment="Right"/>
+            <WpfControl:RollingTextBlock RollingRange="{Binding CalendarWeeks}" DefaultRollingPosition="Last"
+                                         SelectedIndex="{Binding CalendarWeek, Mode=OneWayToSource}"/>
+            <WpfControl:SearchableComboBox ItemsSource="{Binding Users}"
+                                           SelectedItem="{Binding SelectedUser}" HorizontalContentAlignment="Right"/>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>

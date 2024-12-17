@@ -44,16 +44,21 @@ namespace WpfCustomControlLibrary
             if (_buttonUp.Equals(e.OriginalSource))
             {
                 _TextBlock.Text = RollingRange.ElementAt(RollingRange.IndexOf(_TextBlock.Text) - 1);
+                SelectedIndex -= 1;
             }
             if (_buttonDown.Equals(e.OriginalSource))
             {
                 _TextBlock.Text = RollingRange.ElementAt(RollingRange.IndexOf(_TextBlock.Text) + 1);
+                SelectedIndex += 1;
             }
         }
         void UpDownCanExecute(object target, CanExecuteRoutedEventArgs e)
         {
-            if (_buttonUp.Equals(e.OriginalSource)) e.CanExecute = _TextBlock.Text != RollingRange.First();
-            if (_buttonDown.Equals(e.OriginalSource)) e.CanExecute = _TextBlock.Text != RollingRange.Last();
+            if (RollingRange != null)
+            {
+                if (_buttonUp.Equals(e.OriginalSource)) e.CanExecute = _TextBlock.Text != RollingRange.First();
+                if (_buttonDown.Equals(e.OriginalSource)) e.CanExecute = _TextBlock.Text != RollingRange.Last();
+            }
         }
 
         private TextBlock? _TextBlock;
@@ -82,6 +87,19 @@ namespace WpfCustomControlLibrary
         // Using a DependencyProperty as the backing store for DefaultRollingPosition.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DefaultRollingPositionProperty =
             DependencyProperty.Register("DefaultRollingPosition", typeof(RollingPosition), typeof(RollingTextBlock), new PropertyMetadata(RollingPosition.Last));
+
+
+        public int SelectedIndex
+        {
+            get { return (int)GetValue(SelectedIndexProperty); }
+            set { SetValue(SelectedIndexProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SelectedIndex.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedIndexProperty =
+            DependencyProperty.Register("SelectedIndex", typeof(int), typeof(RollingTextBlock), new PropertyMetadata(0));
+
+
         public enum RollingPosition
         {
             First,
