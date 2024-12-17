@@ -24,11 +24,9 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" Width="150"
-                                           SelectedValue="{Binding VorgangValue, Mode=OneWayToSource}" />
+                                           SelectedItem="{Binding SelectedVorgangItem, Mode=OneWayToSource}" />
 
-
-
-            <ComboBox ItemsSource="{Binding SelectedRef}"/>
+            <ComboBox ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=OneWay}"/>
 
             <StackPanel Orientation="Horizontal">
                 <RadioButton GroupName="WeekDays" Content="So" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Sunday}}"/>
@@ -40,7 +38,7 @@
                 <RadioButton GroupName="WeekDays" Content="Sa" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Saturday}}"/>
             </StackPanel>
  
-            <WpfControl:RollingTextBlock RollingRange="{Binding CalendarWeeks}" DefaultRollingPosition="Last"/>
+            <WpfControl:RollingTextBlock RollingRange="{Binding CalendarWeeksView}" DefaultRollingPosition="Last"/>
             <ComboBox ItemsSource="{Binding Users}" HorizontalContentAlignment="Right"/>
         </StackPanel>
         <Grid Grid.Row="1">
@@ -59,7 +57,7 @@
             <Label Content="User"/>
             <TextBlock Text="U" Grid.Row="1"/>
             <Label Content="Referenz" Grid.Column="1"/>
-            <TextBlock Text="R" Grid.Row="1" Grid.Column="1"/>
+            <TextBlock Text="{Binding ReferencePre}" Grid.Row="1" Grid.Column="1"/>
             <Label Content="Kommentar" Grid.Column="2"/>
             <TextBox Text="" Grid.Row="1" Grid.Column="2"/>
             <Label Content="Datum" Grid.Column="3"/>

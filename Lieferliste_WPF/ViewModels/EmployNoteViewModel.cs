@@ -31,20 +31,46 @@ namespace Lieferliste_WPF.ViewModels
         IContainerProvider container;
 
         public IEnumerable<dynamic> VorgangRef { get; private set; }
-        public string VorgangValue { get; set; }
-        private string? _selectedVrg;
-        public string? SelectedVrg
+        private object _SelectedVorgangItem;
+        public object SelectedVorgangItem
         {
-            get { return _selectedVrg; }
+            get { return _SelectedVorgangItem; }
             set
             {
-                if (_selectedVrg != value)
-                {
-                    _selectedVrg = value;
+                _SelectedVorgangItem = value;
+                var obj = (VorgItem) _SelectedVorgangItem;
+                ReferencePre = string.Format("{0} - {1:D4}\n{2} {3}", obj.Auftrag, obj.Vorgang, obj.Material, obj.Bezeichnung);
+            }
+        }
+        private string _ReferencePre;
 
+        public string ReferencePre
+        {
+            get { return _ReferencePre; }
+            set
+            {
+                if (_ReferencePre != value)
+                {
+                    _ReferencePre = value;
+                    NotifyPropertyChanged(()  => ReferencePre);
                 }
             }
         }
+
+        private string? _selectedRef;
+        public string? SelectedRef
+        {
+            get { return _selectedRef; }
+            set
+            {
+                if (_selectedRef != value)
+                {
+                    _selectedRef = value;
+                    ReferencePre = value ?? string.Empty;
+                }
+            }
+        }
+        public string[] SelectedRefs { get; } = [ "Reinigen", "Cip", "Anlernen" ];
         private string? _SelectedVrgPath;
 
         public string? SelectedVrgPath
@@ -54,7 +80,23 @@ namespace Lieferliste_WPF.ViewModels
         }
 
         public ObservableCollection<EmployeeNote> EmployeeNotes { get; private set; } = [];
-        public List<string> CalendarWeeks { get; private set; }
+        private List<string> CalendarWeeks { get; set; }
+        public ICollectionView CalendarWeeksView { get; private set; }
+        private int _CalendarWeek;
+
+        public int CalendarWeek
+        {
+            get { return _CalendarWeek; }
+            set
+            {
+                if (_CalendarWeek != value)
+                {
+                    _CalendarWeek = value;
+                }
+            }
+        }
+
+        public List<User> Users { get; private set; }
         private DayOfWeek _SelectedWeekDay;
 
         public DayOfWeek SelectedWeekDay
@@ -81,25 +123,32 @@ namespace Lieferliste_WPF.ViewModels
                 s.AidNavigation.Material, s.AidNavigation.MaterialNavigation.Bezeichng))];
 
             EmployeeNotes.AddRange(db.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date));
-            CalendarWeeks = ["KW30", "KW31", "KW32"];
+            CalendarWeeks = [.. GetKW_Array()];
+            CalendarWeeksView = CollectionViewSource.GetDefaultView(CalendarWeeks);
+            CalendarWeeksView.CurrentChanged += WeekChanged;
+            var test = db.IdmAccounts.Where(x => x.AccountCosts.Join(UserInfo.User.AccountCostUnits, x => x.CostId,);//.Select(x => new User(x.AccountId, x.Firstname, x.Lastname, null )).ToList();
             SelectedWeekDay = DateTime.Today.DayOfWeek;
 
         }
 
-        private bool FilterPredicate(object obj)
+        private void WeekChanged(object? sender, EventArgs e)
         {
-            if (obj is Vorgang v && SelectedVrg != null)
-            {
-                return v.Aid.Contains(SelectedVrg);
-            }
-            return true;
+            
         }
 
-        public string[] SelectedRef { get; } =
-        [
-            "Reinigen", "Cip", "Anlernen"
-        ];
-  
+        private string[] GetKW_Array()
+        {
+            string[] ret = new string[3];
+            var date = DateTime.Today.AddDays(-7*3);
+
+            for (int i = 0; i < ret.Length; i++)
+            {
+                ret[i] = string.Format("KW {0}", CultureInfo.CurrentCulture.Calendar
+                    .GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday));
+                date = date.AddDays(7);
+            }
+            return ret;
+        }
     }
     public class VorgItem
     {

@@ -87,15 +87,15 @@ namespace WpfCustomControlLibrary
         }
 
 
-        public string SelectedValue
+        public object? SelectedItem
         {
-            get { return (string)GetValue(SelectedValueProperty); }
-            set { SetValue(SelectedValueProperty, value); }
+            get { return (object?)GetValue(SelectedItemProperty); }
+            set { SetValue(SelectedItemProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for SelectedValue.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SelectedValueProperty =
-            DependencyProperty.Register("SelectedValue", typeof(string), typeof(SearchableComboBox), new PropertyMetadata(""));
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register("SelectedItem", typeof(object), typeof(SearchableComboBox), new PropertyMetadata());
 
 
         private static void FilterEvent(object sender, FilterEventArgs e)
@@ -119,7 +119,7 @@ namespace WpfCustomControlLibrary
             var field1 = row.Item.GetType().GetRuntimeFields().ElementAt(1);
             _searchBox.Text = field0.GetValue(row.Item).ToString();
             _itemsBox.IsOpen = false;
-            SelectedValue = string.Format("{0}-{1}",field0, field1);
+            SelectedItem = row.Item;
         }
 
         private void Searching(object sender, TextChangedEventArgs e)
