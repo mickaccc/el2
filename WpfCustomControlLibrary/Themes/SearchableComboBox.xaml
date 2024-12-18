@@ -12,10 +12,11 @@
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <StackPanel Orientation="Vertical" DataContext="{TemplateBinding DataContext}">
                             <TextBox x:Name="PART_SearchBox" Width="200" Margin="2" HorizontalAlignment="Left"/>
-                            <Popup x:Name="PART_ItemsBox" Width="450" Height="300">
+                            <Popup x:Name="PART_ItemsBox" Width="{TemplateBinding PopupWidth}" Height="300">
                                 <DataGrid x:Name="PART_List"   
                                      CanUserAddRows="{TemplateBinding CanUserAddRows}"  
-                                     CanUserDeleteRows="{TemplateBinding CanUserDeleteRows}"/>
+                                     CanUserDeleteRows="{TemplateBinding CanUserDeleteRows}"
+                                          IsReadOnly="True"/>
                             </Popup>
                         </StackPanel>
                     </Border>

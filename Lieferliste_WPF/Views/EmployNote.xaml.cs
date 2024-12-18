@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lieferliste_WPF.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,12 @@ namespace Lieferliste_WPF.Views
         public EmployNote()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            var dt = DataContext as EmployNoteViewModel;
+            dt.Closing();
         }
     }
 }

@@ -154,9 +154,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.ToTable("Employee_note");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AccId)
                 .HasMaxLength(80)
                 .IsUnicode(false)

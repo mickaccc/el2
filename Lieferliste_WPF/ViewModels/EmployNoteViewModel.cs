@@ -1,21 +1,17 @@
 ﻿using El2Core.Models;
 using El2Core.Utils;
-using El2Core.Constants;
+using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
-using El2Core.ViewModelBase;
-using System.Windows.Data;
+using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Windows.Automation;
-using System.Reflection;
+using System.Globalization;
+using System.Linq;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -24,13 +20,14 @@ namespace Lieferliste_WPF.ViewModels
         public EmployNoteViewModel(IContainerProvider containerProvider)
         {
             container = containerProvider;
+            _ctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             LoadingData();
+            SubmitCommand = new ActionCommand(OnSubmitExecuted, OnSubmitCanExecute);
         }
-
 
         public string Title { get; } = "Arbeitszeiten";
         IContainerProvider container;
-
+        private DB_COS_LIEFERLISTE_SQLContext _ctx;
         public IEnumerable<dynamic> VorgangRef { get; private set; }
         private VorgItem _SelectedVorgangItem;
         public VorgItem SelectedVorgangItem
@@ -38,12 +35,11 @@ namespace Lieferliste_WPF.ViewModels
             get { return _SelectedVorgangItem; }
             set
             {
-
                 _SelectedVorgangItem = value;
                 if (value != null)
                 {
-                    ReferencePre = string.Format("{0} - {1:D4}\n{2} {3}",
-                        value.Auftrag, value.Vorgang, value.Material, value.Bezeichnung);
+                    ReferencePre = string.Format("{0} - {1}\n{2} {3}",
+                        value.Auftrag, value.Vorgang, value.Material.Trim(), value.Bezeichnung);
                 }
             }
         }
@@ -75,6 +71,36 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private DateTime _SelectedDate;
+
+        public DateTime SelectedDate
+        {
+            get { return _SelectedDate; }
+            set
+            {
+                if (_SelectedDate != value)
+                {
+                    _SelectedDate = value;
+                    NotifyPropertyChanged(() => SelectedDate);
+                    EmployeeNotesView.Refresh();
+                }
+            }
+        }
+        private string _Comment = string.Empty;
+
+        public string Comment
+        {
+            get { return _Comment; }
+            set { _Comment = value; }
+        }
+        private TimeOnly _NoteTime;
+
+        public TimeOnly NoteTime
+        {
+            get { return _NoteTime; }
+            set { _NoteTime = value; }
+        }
+
         public string[] SelectedRefs { get; } = [ "Reinigen", "Cip", "Anlernen" ];
         private string? _SelectedVrgPath;
 
@@ -83,9 +109,9 @@ namespace Lieferliste_WPF.ViewModels
             get { return _SelectedVrgPath; }
             set { _SelectedVrgPath = value; }
         }
-        private IdmAccount _SelectedUser;
+        private UserItem _SelectedUser;
 
-        public IdmAccount SelectedUser
+        public UserItem SelectedUser
         {
             get { return _SelectedUser; }
             set
@@ -93,15 +119,16 @@ namespace Lieferliste_WPF.ViewModels
                 if (_SelectedUser != value)
                 {
                     _SelectedUser = value;
+                    NotifyPropertyChanged(() => SelectedUser);
                     EmployeeNotesView.Refresh();
                 }
             }
         }
 
-        private ObservableCollection<EmployeeNote> EmployeeNotes { get; } = [];
+        private ObservableCollection<EmployeeNote> EmployeeNotes;
         public ICollectionView EmployeeNotesView { get; private set; }
         public List<string> CalendarWeeks { get; private set; }
-  
+        public ICommand SubmitCommand { get; private set; }
         private int _CalendarWeek;
 
         public int CalendarWeek
@@ -112,12 +139,13 @@ namespace Lieferliste_WPF.ViewModels
                 if (_CalendarWeek != value)
                 {
                     _CalendarWeek = value;
-                    EmployeeNotesView.Refresh();
+                    SelectedDate = Get_DateFromKW();
+                    
                 }
             }
         }
 
-        public List<IdmAccount> Users { get; private set; }
+        public List<UserItem> Users { get; private set; }
         private DayOfWeek _SelectedWeekDay;
 
         public DayOfWeek SelectedWeekDay
@@ -126,54 +154,105 @@ namespace Lieferliste_WPF.ViewModels
             set
             {
                 _SelectedWeekDay = value;
-                NotifyPropertyChanged(() => SelectedWeekDay);
+                SelectedDate = Get_DateFromKW();
+            }
+        }
+        private double _SumTimes;
+
+        public double SumTimes
+        {
+            get { return _SumTimes; }
+            set
+            {
+                _SumTimes = value;
+                NotifyPropertyChanged(() => SumTimes);
             }
         }
 
         private void LoadingData()
         {
-            using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            VorgangRef = [.. db.Vorgangs
+
+            VorgangRef = [.. _ctx.Vorgangs.AsNoTracking()
                 .Include(x => x.AidNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .Where(x => x.AidNavigation.Abgeschlossen)
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
-                .Select(s => new VorgItem(s.VorgangId, s.Aid, s.Vnr.ToString(),
-                s.AidNavigation.Material, s.AidNavigation.MaterialNavigation.Bezeichng))];
+                .Select(s => new VorgItem(s.Aid, s.Vnr.ToString(), s.Text.Trim(),
+                s.AidNavigation.Material.Trim(), s.AidNavigation.MaterialNavigation.Bezeichng.Trim()))];
 
-            EmployeeNotes.AddRange(db.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date));
+            EmployeeNotes = _ctx.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date)
+                .ToObservableCollection<EmployeeNote>();
             EmployeeNotesView = CollectionViewSource.GetDefaultView(EmployeeNotes);
-            EmployeeNotesView.Filter += FilterPredicate;
-            CalendarWeeks = GetKW_Array();
+            
+            CalendarWeeks = GetKW_List();
  
             Users = [];
             foreach (var cost in UserInfo.User.AccountCostUnits)
             {
-                Users.AddRange(db.IdmAccounts.Where(x => x.AccountCosts.Any(y => y.CostId == cost.CostId)));
+                var us = _ctx.IdmAccounts.AsNoTracking().Where(x => x.AccountCosts.Any(y => y.CostId == cost.CostId))
+                    .Select(u => new UserItem(u.AccountId, u.Firstname, u.Lastname)).ToList();
+                foreach (var account in us)
+                {
+                    if (Users.All(x => x.User != account.User))
+                        Users.Add(account);
+                }
+                SelectedUser = Users.FirstOrDefault(x => x.User == UserInfo.User.UserId);
+                EmployeeNotesView.Filter += FilterPredicate;
+                EmployeeNotesView.CollectionChanged += CollectionHasChanged;
             }
  
             SelectedWeekDay = DateTime.Today.DayOfWeek;
+        }
+
+        private void CollectionHasChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (var o in e.OldItems)
+                {
+                    _ctx.EmployeeNotes.Remove((EmployeeNote)o);
+                }
+            }
+            SumTimes = EmployeeNotesView.Cast<EmployeeNote>().Sum(x => x.Processingtime ?? 0);
         }
 
         private bool FilterPredicate(object obj)
         {
             if(obj is EmployeeNote note)
             {
-                int cw = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Today.AddDays(CalendarWeek), CalendarWeekRule.FirstFourDayWeek,
+                int cw = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Today.AddDays(CalendarWeek*7), CalendarWeekRule.FirstFourDayWeek,
                     DayOfWeek.Sunday);
                 return CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(note.Date, CalendarWeekRule.FirstFourDayWeek,
                     DayOfWeek.Sunday) == cw
-                    && note.AccId == SelectedUser.AccountId;
+                    && note.AccId == SelectedUser.User;
             }
             return false;
         }
+        private bool OnSubmitCanExecute(object arg)
+        {
+            return true;
+        }
 
-        private List<string> GetKW_Array()
+        private void OnSubmitExecuted(object obj)
+        {
+            var emp = new EmployeeNote();
+            emp.AccId = SelectedUser.User;
+            emp.Reference = ReferencePre ?? string.Empty;
+            emp.Comment = Comment;
+            emp.Date = SelectedDate;
+            emp.Processingtime = NoteTime.ToTimeSpan().TotalMinutes;
+            _ctx.EmployeeNotes.Add(emp);
+
+            _ctx.SaveChanges();
+            EmployeeNotes.Add(emp);
+        }
+
+        private List<string> GetKW_List()
         {
             List<string> ret = [];
-            var date = DateTime.Today.AddDays(-7*3);
+            var date = DateTime.Today.AddDays(-7*(3-1));
 
             for (int i = 0; i < 3; i++)
             {
@@ -183,21 +262,30 @@ namespace Lieferliste_WPF.ViewModels
             }
             return ret;
         }
-    }
-    public class VorgItem
-    {
-        public string VorgangId { get; }
-        public string Auftrag { get; }
-        public string Vorgang { get; }
-        public string? Material { get; }
-        public string? Bezeichnung { get; }
-        public VorgItem(string VorgangId, string Auftrag, string Vorgang, string? Material, string? Bezeichnung)
+        private DateTime Get_DateFromKW()
         {
-            this.VorgangId = VorgangId;
-            this.Auftrag = Auftrag;
-            this.Vorgang = Vorgang;
-            this.Material = Material;
-            this.Bezeichnung = Bezeichnung;
+            var d = DateTime.Today.AddDays(CalendarWeek*7);
+            d = d.AddDays((int)SelectedWeekDay - (int)d.DayOfWeek);
+            return d;
         }
+        public void Closing()
+        {
+            var c = _ctx.ChangeTracker.HasChanges();         
+            _ctx.SaveChanges();
+        }
+    }
+    public class VorgItem(string Auftrag, string Vorgang, string? Kurztext, string? Material, string? Bezeichnung)
+    {
+        public string Auftrag { get; } = Auftrag;
+        public string Vorgang { get; } = Vorgang;
+        public string? Kurztext { get; } = Kurztext;
+        public string? Material { get; } = Material;
+        public string? Bezeichnung { get; } = Bezeichnung;
+    }
+    public class UserItem(string User, string Vorname, string Nachname)
+    {
+        public string User { get; } = User;
+        public string Vorname { get; } = Vorname;
+        public string Nachname { get; } = Nachname;
     }
 }

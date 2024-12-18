@@ -8,20 +8,22 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:RollingTextBlock}">
                     <ContentControl HorizontalContentAlignment="Stretch">
-                        <Grid>
+                        <Grid Background="BlanchedAlmond">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="20"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="PART_CalendarWeek" MinWidth="30"/>
-                            <StackPanel Grid.Column="1">
-                                <Button x:Name="PART_Up">
-                                    <icon:BootstrapIcons Kind="ArrowUp"/>
-                                </Button>
-                                <Button x:Name="PART_Down">
-                                    <icon:BootstrapIcons Kind="ArrowDown"/>
-                                </Button>
-                            </StackPanel>
+                            <TextBlock x:Name="PART_CalendarWeek" MinWidth="30" Margin="0,0,15,0" VerticalAlignment="Center" Padding="5"/>
+                            <Viewbox Grid.Column="1">
+                                <DockPanel >
+                                    <Button x:Name="PART_Up" Height="10" Padding="2" DockPanel.Dock="Top">
+                                        <icon:BootstrapIcons Kind="ArrowUp" />
+                                    </Button>
+                                    <Button x:Name="PART_Down" Height="10" Padding="2" DockPanel.Dock="Bottom">
+                                        <icon:BootstrapIcons Kind="ArrowDown" />
+                                    </Button>
+                                </DockPanel>
+                            </Viewbox>
                         </Grid>
                     </ContentControl>
                 </ControlTemplate>

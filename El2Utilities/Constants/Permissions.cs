@@ -80,6 +80,6 @@
         public const string DelStoppage = "DELSTOP";
         public const string AddShiftCalendar = "ADDSHIFTCAL";
         public const string DelShiftCalendar = "DELSHIFTCAL";
-
+        public const string EmployNoteOpen = "EMPNOTE";
     }
 }

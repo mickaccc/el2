@@ -11,7 +11,7 @@ public partial class EmployeeNote
 
     public string AccId { get; set; } = null!;
 
-    public string Reference { get; set; } = null!;
+    public string? Reference { get; set; }
 
     public string? Comment { get; set; }
 
@@ -19,7 +19,7 @@ public partial class EmployeeNote
 
     public DateTime Timestamp { get; set; }
 
-    public double Processingtime { get; set; }
+    public double? Processingtime { get; set; }
 
     public virtual IdmAccount Acc { get; set; } = null!;
 }

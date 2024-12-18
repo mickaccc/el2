@@ -11,24 +11,30 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Lieferliste_WPF.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}">
+             d:DesignHeight="450" d:DesignWidth="800" Tag="{Binding Title}" Unloaded="UserControl_Unloaded" >
     <Grid>
         <Grid.Resources>
             <conv:EnumBooleanConverter x:Key="enumBool"/>
-
+            <conv:DoubleToTimeConverter x:Key="TimeConverter"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="80"/>
             <RowDefinition/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" Width="150"
+            <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" Width="150" PopupWidth="600"
                                            SelectedItem="{Binding SelectedVorgangItem, Mode=OneWayToSource}" />
 
-            <ComboBox ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=OneWay}"/>
+            <ComboBox ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=OneWayToSource}"/>
 
             <StackPanel Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Margin" Value="10,0,5,0"/>
+                    </Style>
+                </StackPanel.Resources>
                 <RadioButton GroupName="WeekDays" Content="So" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Sunday}}"/>
                 <RadioButton GroupName="WeekDays" Content="Mo" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Monday}}"/>
                 <RadioButton GroupName="WeekDays" Content="Di" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Tuesday}}"/>
@@ -38,14 +44,14 @@
                 <RadioButton GroupName="WeekDays" Content="Sa" IsChecked="{Binding SelectedWeekDay, Converter={StaticResource enumBool}, ConverterParameter={x:Static sys:DayOfWeek.Saturday}}"/>
             </StackPanel>
  
-            <WpfControl:RollingTextBlock RollingRange="{Binding CalendarWeeks}" DefaultRollingPosition="Last"
+            <WpfControl:RollingTextBlock RollingRange="{Binding CalendarWeeks}" DefaultRollingPosition="Last" Width="80" VerticalContentAlignment="Center"
                                          SelectedIndex="{Binding CalendarWeek, Mode=OneWayToSource}"/>
-            <WpfControl:SearchableComboBox ItemsSource="{Binding Users}"
-                                           SelectedItem="{Binding SelectedUser}" HorizontalContentAlignment="Right"/>
+            <WpfControl:SearchableComboBox ItemsSource="{Binding Users}" PopupWidth="400"
+                                           SelectedItem="{Binding SelectedUser, Mode=TwoWay}" HorizontalContentAlignment="Right"/>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition/>
+                <RowDefinition Height="20"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -54,22 +60,35 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
+
             </Grid.ColumnDefinitions>
-            <Label Content="User"/>
-            <TextBlock Text="U" Grid.Row="1"/>
-            <Label Content="Referenz" Grid.Column="1"/>
-            <TextBlock Text="{Binding ReferencePre}" Grid.Row="1" Grid.Column="1"/>
-            <Label Content="Kommentar" Grid.Column="2"/>
-            <TextBox Text="" Grid.Row="1" Grid.Column="2"/>
-            <Label Content="Datum" Grid.Column="3"/>
-            <TextBlock Text="D" Grid.Row="1" Grid.Column="3"/>
-            <Label Content="Stunden" Grid.Column="4"/>
-            <TextBlock Text="H" Grid.Row="1" Grid.Column="4"/>
-            <Button Content="eintragen" Grid.Row="1" Grid.Column="5"/>
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="Padding" Value="2"/>
+                </Style>
+            </Grid.Resources>
+            <Label Content="Referenz" Grid.Column="0" />
+            <TextBox Text="{Binding ReferencePre}" Grid.Row="1" Grid.Column="0" MaxLines="2"/>
+            <Label Content="Kommentar" Grid.Column="1" />
+            <TextBox Text="{Binding Comment}" Grid.Row="1" Grid.Column="1"/>
+            <Label Content="Datum" Grid.Column="2" />
+            <TextBlock Text="{Binding SelectedDate, StringFormat=\{0:D\}}" Grid.Row="1" Grid.Column="2"/>
+            <Label Content="Stunden" Grid.Column="3" />
+            <TextBox Text="{Binding NoteTime}" Grid.Row="1" Grid.Column="3"/>
+            <Button Content="eintragen" Grid.Row="1" Grid.Column="4" Command="{Binding SubmitCommand}"/>
         </Grid>
-        <DataGrid Grid.Row="2">
-            
+        <DataGrid Grid.Row="2" ItemsSource="{Binding EmployeeNotesView}" AutoGenerateColumns="False" CanUserAddRows="False" >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Referenz" Binding="{Binding Reference}" Width="300" />
+                <DataGridTextColumn Header="Kommentar" Binding="{Binding Comment}" Width="250"/>
+                <DataGridTextColumn Header="Datum" Binding="{Binding Date, StringFormat=\{0:D\}}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime, Converter={StaticResource TimeConverter}}"/>
+            </DataGrid.Columns>
         </DataGrid>
+        <StackPanel Orientation="Horizontal" Grid.Row="3">
+            <TextBlock Text="Summe:" Margin="600,0,40,0"/>
+            <TextBlock  Text="{Binding SumTimes, Converter={StaticResource TimeConverter}}" FontWeight="ExtraBold"/>
+        </StackPanel>
+
     </Grid>
 </UserControl>

@@ -183,7 +183,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnOpenNoteCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.EmployNoteOpen);
         }
 
         private void OnOpenNoteExecuted(object obj)
