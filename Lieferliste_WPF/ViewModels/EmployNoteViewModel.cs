@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -93,12 +94,17 @@ namespace Lieferliste_WPF.ViewModels
             get { return _Comment; }
             set { _Comment = value; }
         }
-        private TimeOnly _NoteTime;
+        private double NoteTime;
+        private string _NoteTimePre;
 
-        public TimeOnly NoteTime
+        public string NoteTimePre
         {
-            get { return _NoteTime; }
-            set { _NoteTime = value; }
+            get { return _NoteTimePre; }
+            set
+            {
+                _NoteTimePre = ConvertInputValue(value.ToString());
+                NotifyPropertyChanged(() => NoteTimePre);
+            }
         }
 
         public string[] SelectedRefs { get; } = [ "Reinigen", "Cip", "Anlernen" ];
@@ -215,7 +221,7 @@ namespace Lieferliste_WPF.ViewModels
                     _ctx.EmployeeNotes.Remove((EmployeeNote)o);
                 }
             }
-            SumTimes = EmployeeNotesView.Cast<EmployeeNote>().Sum(x => x.Processingtime ?? 0);
+            SumTimes = EmployeeNotesView.Cast<EmployeeNote>().Sum(x => (double?)x.Processingtime ?? 0);
         }
 
         private bool FilterPredicate(object obj)
@@ -242,7 +248,7 @@ namespace Lieferliste_WPF.ViewModels
             emp.Reference = ReferencePre ?? string.Empty;
             emp.Comment = Comment;
             emp.Date = SelectedDate;
-            emp.Processingtime = NoteTime.ToTimeSpan().TotalMinutes;
+            emp.Processingtime = NoteTime;
             _ctx.EmployeeNotes.Add(emp);
 
             _ctx.SaveChanges();
@@ -267,6 +273,53 @@ namespace Lieferliste_WPF.ViewModels
             var d = DateTime.Today.AddDays(CalendarWeek*7);
             d = d.AddDays((int)SelectedWeekDay - (int)d.DayOfWeek);
             return d;
+        }
+        private string ConvertInputValue(string input)
+        {
+            int hour = 0 , minute = 0;
+            bool error = false;
+            input = input.Trim();
+            if (double.TryParse(input, out double t))
+            {
+                NoteTime = t;
+                hour = (int)t;
+                var m = t - Math.Truncate(t);
+                minute = (int)m*100;
+            }
+            else
+            {
+                Regex reg = new Regex(@"^(\d+)(\s*[a-zA-Z]+)?");
+                var test = reg.Match(input);
+                
+                for(int i = 0; i<2; i++)
+                {
+                    if (test.Success)
+                    {
+                        
+                        if (test.Groups.Count == 3)
+                        {
+                            var sec = test.Groups[2].Value.Trim();
+
+                            if (sec.StartsWith("s", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                hour += int.Parse(test.Groups[1].Value);
+                            }
+                            if (sec.StartsWith("m", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                minute += int.Parse(test.Groups[1].Value);
+                            }
+                        }
+                    }
+                    else { error = true; break; }
+                    if (test.Value.Length < input.Length) { test = reg.Match(input[test.Value.Length..]); } else break;
+                }
+            }
+            if (!error)
+            {
+                NoteTime = hour + minute / 60;
+                return string.Format("{0}:{1}", hour.ToString("D2"), minute.ToString("D2"));           
+            }
+            return input;
         }
         public void Closing()
         {

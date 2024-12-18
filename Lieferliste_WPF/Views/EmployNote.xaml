@@ -74,7 +74,7 @@
             <Label Content="Datum" Grid.Column="2" />
             <TextBlock Text="{Binding SelectedDate, StringFormat=\{0:D\}}" Grid.Row="1" Grid.Column="2"/>
             <Label Content="Stunden" Grid.Column="3" />
-            <TextBox Text="{Binding NoteTime}" Grid.Row="1" Grid.Column="3"/>
+            <TextBox Text="{Binding NoteTimePre}" Grid.Row="1" Grid.Column="3" />
             <Button Content="eintragen" Grid.Row="1" Grid.Column="4" Command="{Binding SubmitCommand}"/>
         </Grid>
         <DataGrid Grid.Row="2" ItemsSource="{Binding EmployeeNotesView}" AutoGenerateColumns="False" CanUserAddRows="False" >
