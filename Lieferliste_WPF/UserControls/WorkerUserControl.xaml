@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Lieferliste_WPF.Planning.WorkerUserControl"
+﻿<UserControl x:Class="Lieferliste_WPF.UserControls.WorkerUserControl"
 			 xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"

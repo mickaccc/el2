@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
-	  <!--<WindowsSdkPackageVersion>10.0.19041.47</WindowsSdkPackageVersion>-->
+	  <WindowsSdkPackageVersion>10.0.19041.54</WindowsSdkPackageVersion>
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -173,15 +173,10 @@
   <ItemGroup>
     <PackageReference Include="DotNetKit.Wpf.AutoCompleteComboBox" />
     <PackageReference Include="gong-wpf-dragdrop" />
-    <PackageReference Include="log4net" />
     <PackageReference Include="MahApps.Metro" />
     <PackageReference Include="MahApps.Metro.IconPacks" />
-    <PackageReference Include="MaterialDesignThemes.MahApps" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore"  />
-    <PackageReference Include="Prism.Wpf" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>

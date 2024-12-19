@@ -548,14 +548,14 @@ namespace ModuleMeasuring.ViewModels
                         docu[DocumentPart.Folder], Path.GetFileNameWithoutExtension(vmpFile.Name));
                     Type officeType = Type.GetTypeFromProgID("Word.Application");
 
-                    if (officeType != null)
-                    {
+                    #if (officeType != null)
+
                         Microsoft.Office.Interop.Word.Application wordApp = new();
                         Microsoft.Office.Interop.Word.Document wordDoc = wordApp.Documents.Open(SelectedItem.OrderDocu.VmpbOriginal);
                         wordDoc.ExportAsFixedFormat(path + ".pdf", Microsoft.Office.Interop.Word.WdExportFormat.wdExportFormatPDF);
                         wordDoc.Close();
                         wordApp.Quit();
-                    }
+                    #endif
 
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     db.OrderDocus.Single(x => x.OrderId == _SelectedValue).InWorkState = (int)(InWorkState = 2);
