@@ -177,7 +177,6 @@ namespace Lieferliste_WPF.ViewModels
 
         private void LoadingData()
         {
-
             VorgangRef = [.. _ctx.Vorgangs.AsNoTracking()
                 .Include(x => x.AidNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
@@ -279,17 +278,28 @@ namespace Lieferliste_WPF.ViewModels
             int hour = 0 , minute = 0;
             bool error = false;
             input = input.Trim();
+            Regex reg = new Regex(@"(\d+):(\d+)");
+            Match test = reg.Match(input);
             if (double.TryParse(input, out double t))
             {
                 NoteTime = t;
                 hour = (int)t;
                 var m = t - Math.Truncate(t);
-                minute = (int)m*100;
+                m = Math.Round(m, 2)*60;
+                minute = (int)m;
+            }
+            else if(test.Success)
+            {
+                if(test.Groups.Count == 3)
+                {
+                    hour = int.Parse(test.Groups[1].Value);
+                    minute = int.Parse((test.Groups[2].Value));
+                }
             }
             else
             {
-                Regex reg = new Regex(@"^(\d+)(\s*[a-zA-Z]+)?");
-                var test = reg.Match(input);
+                reg = new Regex(@"^(\d+)(\s*[a-zA-Z]+)?");
+                test = reg.Match(input);
                 
                 for(int i = 0; i<2; i++)
                 {
@@ -317,7 +327,7 @@ namespace Lieferliste_WPF.ViewModels
             if (!error)
             {
                 NoteTime = hour + minute / 60;
-                return string.Format("{0}:{1}", hour.ToString("D2"), minute.ToString("D2"));           
+                return string.Format("{0}:{1}", hour.ToString(), minute.ToString("D2"));           
             }
             return input;
         }

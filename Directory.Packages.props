@@ -1,0 +1,29 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <NoWarn>$(NoWarn);NU1507</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="DotNetKit.Wpf.AutoCompleteComboBox" Version="1.6.0" />
+    <PackageVersion Include="EfCore.SchemaCompare" Version="8.2.0" />
+    <PackageVersion Include="FileAssociation2" Version="22.12.21.18" />
+    <PackageVersion Include="gong-wpf-dragdrop" Version="4.0.0" />
+    <PackageVersion Include="HtmlToXaml" Version="1.0.0" />
+    <PackageVersion Include="LiveCharts.Wpf" Version="0.9.7" />
+    <PackageVersion Include="log4net" Version="3.0.3" />
+    <PackageVersion Include="MahApps.Metro" Version="2.4.10" />
+    <PackageVersion Include="MahApps.Metro.IconPacks" Version="5.1.0" />
+    <PackageVersion Include="MaterialDesignThemes.MahApps" Version="3.1.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="3.6.4" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.6.4" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageVersion Include="OpenXmlPowerTools" Version="4.5.3.2" />
+    <PackageVersion Include="Prism.Core" Version="9.0.537" />
+    <PackageVersion Include="Prism.Plugin.Logging.Abstractions" Version="8.1.16" />
+    <PackageVersion Include="Prism.Unity" Version="9.0.537" />
+    <PackageVersion Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  </ItemGroup>
+</Project>

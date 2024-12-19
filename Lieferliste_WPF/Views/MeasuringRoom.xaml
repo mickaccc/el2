@@ -68,7 +68,10 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Aid}" Margin="0,0,10,0"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Aid}" />
+                                    <TextBlock Text="{Binding AidNavigation.Material}" Width="100"/>
+                                </StackPanel>
                             <TextBox Text="{Binding Msf}" Background="Transparent"  MinWidth="50"/>
                         </StackPanel>
                     </DataTemplate>
