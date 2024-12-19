@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
-	  <WindowsSdkPackageVersion>10.0.19041.47</WindowsSdkPackageVersion>
+	  <!--<WindowsSdkPackageVersion>10.0.19041.47</WindowsSdkPackageVersion>-->
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -171,17 +171,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetKit.Wpf.AutoCompleteComboBox" Version="1.6.0" />
-    <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
-    <PackageReference Include="log4net" Version="3.0.3" />
-    <PackageReference Include="MahApps.Metro" Version="2.4.10" />
-    <PackageReference Include="MahApps.Metro.IconPacks" Version="5.1.0" />
-    <PackageReference Include="MaterialDesignThemes.MahApps" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
-    <PackageReference Include="Prism.Wpf" Version="9.0.537" />
+    <PackageReference Include="DotNetKit.Wpf.AutoCompleteComboBox" />
+    <PackageReference Include="gong-wpf-dragdrop" />
+    <PackageReference Include="log4net" />
+    <PackageReference Include="MahApps.Metro" />
+    <PackageReference Include="MahApps.Metro.IconPacks" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore"  />
+    <PackageReference Include="Prism.Wpf" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,8 +1,9 @@
-﻿using System.ComponentModel;
+﻿using Lieferliste_WPF.Planning;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Lieferliste_WPF.Planning
+namespace Lieferliste_WPF.UserControls
 {
     /// <summary>
     /// Interaction logic for MachineUserControl.xaml
@@ -28,7 +29,7 @@ namespace Lieferliste_WPF.Planning
 
         private void UserControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var dtx = this.DataContext as PlanWorker;
+            var dtx = DataContext as PlanWorker;
             if (dtx != null)
             {
                 dtx.ProcessesCV.SortDescriptions.Clear();

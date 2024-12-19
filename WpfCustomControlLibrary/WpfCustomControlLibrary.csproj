@@ -33,8 +33,8 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MahApps.Metro.IconPacks" Version="5.1.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageReference Include="MahApps.Metro.IconPacks" />
+    <PackageReference Include="NUnit3TestAdapter"/>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Themes\CommentControl.xaml">
