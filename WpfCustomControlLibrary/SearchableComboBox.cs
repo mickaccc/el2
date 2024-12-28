@@ -28,12 +28,13 @@ namespace WpfCustomControlLibrary
             if (this.Template != null)
             {
                 _searchBox = Template.FindName("PART_SearchBox", this) as TextBox;
-                _searchBox.Text = _PreSelect;
+                _searchBox.Text = SelectedText;
                 _searchBox.TextChanged += Searching;
                 _searchBox.GotFocus += SearchGotFocus;
                 _itemsBox = Template.FindName("PART_ItemsBox", this) as Popup;
                 _itemsList = Template.FindName("PART_List", this) as DataGrid;
                 _itemsList.MouseDoubleClick += Row_DoubleClick;
+                _itemsList.AutoGeneratingColumn += AutoGenerating;
                 _itemsList.ItemsSource = ItemsViewSource?.View;
 
             }
@@ -43,7 +44,6 @@ namespace WpfCustomControlLibrary
         {
             _searchBox.Text = string.Empty;
         }
-
 
         private TextBox? _searchBox;
         private Popup? _itemsBox;
@@ -101,7 +101,12 @@ namespace WpfCustomControlLibrary
         {
             var dep = (SearchableComboBox)d;
             dep.ItemsViewSource = new CollectionViewSource() { Source = e.NewValue };
-            dep.ItemsViewSource.Filter += new FilterEventHandler(FilterEvent);
+            dep.SetFilter();
+        }
+
+        private void SetFilter()
+        {
+            ItemsViewSource.Filter += FilterEvent;
         }
 
 
@@ -119,35 +124,60 @@ namespace WpfCustomControlLibrary
         {
             var dep = (SearchableComboBox)d;
 
-            dep._PreSelect = e.NewValue.GetType().GetRuntimeFields().ElementAt(0).GetValue(e.NewValue).ToString();
+            dep.SelectedText = e.NewValue.GetType().GetRuntimeProperties().FirstOrDefault(x => x.Name == dep.SearchFieldName)?
+                .GetValue(e.NewValue)?.ToString() ?? string.Empty;
         }
 
-        public int[] DisplayFieldNumbers
+
+        public string SelectedText
         {
-            get { return (int[])GetValue(DisplayFieldNumbersProperty); }
-            set { SetValue(DisplayFieldNumbersProperty, value); }
+            get { return (string)GetValue(SelectedTextProperty); }
+            set { SetValue(SelectedTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SelectedText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedTextProperty =
+            DependencyProperty.Register("SelectedText", typeof(string), typeof(SearchableComboBox), new PropertyMetadata(""));
+
+
+        public string DisplayFieldNames
+        {
+            get { return (string)GetValue(DisplayFieldNamesProperty); }
+            set { SetValue(DisplayFieldNamesProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for DisplayFieldNumbers.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty DisplayFieldNumbersProperty =
-            DependencyProperty.Register("DisplayFieldNumbers", typeof(int[]), typeof(SearchableComboBox), new PropertyMetadata(new int[1], DisplayNumbers));
+        public static readonly DependencyProperty DisplayFieldNamesProperty =
+            DependencyProperty.Register("DisplayFieldNames", typeof(string), typeof(SearchableComboBox), new PropertyMetadata(string.Empty));
 
 
-        private static void DisplayNumbers(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public string SearchFieldName
         {
-            throw new NotImplementedException();
+            get { return (string)GetValue(SearchFieldNameProperty); }
+            set { SetValue(SearchFieldNameProperty, value); }
         }
 
-        private static void FilterEvent(object sender, FilterEventArgs e)
+        // Using a DependencyProperty as the backing store for SearchFieldName.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SearchFieldNameProperty =
+            DependencyProperty.Register("SearchFieldName", typeof(string), typeof(SearchableComboBox), new PropertyMetadata(""));
+
+
+        private void FilterEvent(object sender, FilterEventArgs e)
         {
 
             var ft = e.Item.GetType();
-            var fis = ft.GetRuntimeFields();
-
-            var va = fis.ElementAt(0).GetValue(e.Item).ToString();
-           
-            e.Accepted = va.Contains(_searchBoxText, StringComparison.InvariantCultureIgnoreCase);
+            var fis = ft.GetRuntimeProperties();        
+            var va = fis.FirstOrDefault(y => SearchFieldName.Equals(y.Name))?.GetValue(e.Item)?.ToString();
+            e.Accepted = va?.Contains(_searchBoxText, StringComparison.InvariantCultureIgnoreCase) ?? false;
             
+        }
+        private void AutoGenerating(object? sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            var sp = DisplayFieldNames.Split(",");
+            if (sp.All(x => x != e.PropertyName))
+            {
+                e.Cancel = true;
+            }
         }
         private void Row_DoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -155,9 +185,10 @@ namespace WpfCustomControlLibrary
 
             if (ItemsControl.ContainerFromElement((DataGrid)sender,
                     e.OriginalSource as DependencyObject) is not DataGridRow row) return;
-            var fields = row.Item.GetType().GetRuntimeFields();
-            var field1 = fields.ElementAt(DisplayFieldNumbers[0]).GetValue(row.Item);
-            _searchBox.Text = field1.ToString();
+            var sp = DisplayFieldNames.Split(",");
+            var fields = row.Item.GetType().GetRuntimeProperties();
+            var field1 = fields.FirstOrDefault(y => SearchFieldName.Equals(y.Name))?.GetValue(row.Item);
+            _searchBox.Text = field1?.ToString();
             _itemsBox.IsOpen = false;
             SetValue(SelectedItemProperty, ItemsViewSource?.View.CurrentItem);
         }

@@ -43,7 +43,7 @@ namespace ModuleMeasuring.ViewModels
             OpenFileCommand = new ActionCommand(onOpenFileExecuted, onOpenFileCanExecute);
             DeleteFileCommand = new ActionCommand(onDeleteFileExecuted, onDeleteFileCanExecute);
             AddFileCommand = new ActionCommand(onAddFileExecuted, onAddFileCanExecute);
-            AddZngCommand = new ActionCommand(onAddZngExecuted, onAddZngCanExecute);
+            OpenZngCommand = new ActionCommand(onOpenZngExecuted, onOpenZngCanExecute);
             ConvertToPdfCommand = new ActionCommand(onConvertToPdfExecuted, onConvertToPdfCanExecute);
             LoadData();
             FirstPartInfo = new MeasureFirstPartInfo(_container);
@@ -77,27 +77,24 @@ namespace ModuleMeasuring.ViewModels
         public ICommand? OpenFileCommand { get; private set; }
         public ICommand? DeleteFileCommand { get; private set; }
         public ICommand? AddFileCommand { get; private set; }
-        public ICommand? AddZngCommand { get; private set; }
+        public ICommand? OpenZngCommand { get; private set; }
         public ICommand? ConvertToPdfCommand { get; private set; }
-        private List<OrderRb> _orders;
-        public ICollectionView OrderList { get { return orderViewSource.View; } }
-        private CollectionViewSource orderViewSource { get; } = new();
+        public IEnumerable<dynamic> ProcessList { get; private set; }
+        private ICollectionView ProcessListView { get; set; }
+        private CollectionViewSource processViewSource { get; } = new();
         private ObservableCollection<DocumentDisplay> _FirstDocumentItems = [];
         public ICollectionView FirstDocumentItems { get; private set; }
         private ObservableCollection<DocumentDisplay> _VmpbDocumentItems = [];
         public ICollectionView VmpbDocumentItems { get; private set; }
         private ObservableCollection<DocumentDisplay> _PartDocumentItems = [];
         public ICollectionView PartDocumentItems { get; private set; }
-        private ObservableCollection<DocumentDisplay> _ScanDocuments = [];
-        public ICollectionView ScanDocuments { get; private set; }
         private FileSystemWatcher _watcherPart = new();
         private FileSystemWatcher _watcherVmpb = new();
         private FileSystemWatcher _watcherFirst = new();
         private FileSystemWatcher _watcherScan = new();
-        private OrderRb _SelectedItem;
-        private string _VorgNr;
+        private VorgItem _SelectedItem;
 
-        public OrderRb SelectedItem
+        public VorgItem SelectedItem
         {
             get
             {
@@ -108,11 +105,13 @@ namespace ModuleMeasuring.ViewModels
                 if (value != _SelectedItem)
                 {
                     _SelectedItem = value;
-                    InWorkState = _SelectedItem.OrderDocu?.InWorkState;
+                    InWorkState = value.SourceVorgang.VorgangDocu?.InWorkState ?? 0;
                     NotifyPropertyChanged(() => SelectedItem);                   
                 }
             }
         }
+
+
         private string? _SelectedValue;
 
         public string? SelectedValue
@@ -149,56 +148,54 @@ namespace ModuleMeasuring.ViewModels
         {
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-            _orders = new();
-            var ord = db.OrderRbs
-                .Include(x => x.MaterialNavigation)
-                .Include(x => x.DummyMatNavigation)
-                .Include (x => x.OrderDocu)
-                .Where(x => x.Abgeschlossen == false);
-            _orders.AddRange(ord);
-            orderViewSource.Source = _orders;
-            OrderList.CurrentChanged += OnOrderChanged;
-            DirectoryInfo scan = new DirectoryInfo(RuleInfo.Rules["MeasureScan"].RuleValue);
-            foreach (var pdf in scan.GetFiles())
-            {
-                _ScanDocuments.Add(new DocumentDisplay() { FullName = pdf.FullName, Display=pdf.Name});
-            }
+            ProcessList = [.. db.Vorgangs.AsNoTracking()
+                .Include(x => x.AidNavigation)
+                .ThenInclude(x => x.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.VorgangDocu)
+                .Where(x => x.AidNavigation.Abgeschlossen == false)
+                .OrderBy(x => x.Aid)
+                .ThenBy(x => x.Vnr)
+                .Select(s => new VorgItem(s))];
+
+            //ProcessListView = CollectionViewSource.GetDefaultView(ProcessList);
+            //ProcessListView.CurrentChanged += OnOrderChanged;
             FirstDocumentItems = CollectionViewSource.GetDefaultView(_FirstDocumentItems);
             VmpbDocumentItems = CollectionViewSource.GetDefaultView(_VmpbDocumentItems);
             PartDocumentItems = CollectionViewSource.GetDefaultView(_PartDocumentItems);
-            ScanDocuments = CollectionViewSource.GetDefaultView(_ScanDocuments);
+            
         }
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
 
         }
-        private bool onAddZngCanExecute(object arg)
+        private bool onOpenZngCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc) &&
                 SelectedItem != null;
         }
 
-        private void onAddZngExecuted(object obj)
+        private void onOpenZngExecuted(object obj)
         {
             try
             {
-                var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
-                string source = Path.Combine(docu[DocumentPart.RasterFolder1], docu[DocumentPart.SavePath]);
-                source = source.TrimEnd(Path.DirectorySeparatorChar);
-                string target = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], docu[DocumentPart.TTNR]);
-                int i = 0;
-                do
-                {
-                    var so = source + i.ToString() + ".pdf";
-                    if (File.Exists(so))
-                    {
-                        var ta = target + "-" + i.ToString() + ".pdf";
-                        File.Copy(so, ta, true);
-                        _FirstDocumentItems.Add(new DocumentDisplay() { Display = docu[DocumentPart.TTNR], FullName = ta });
-                    }
-                    else { MessageBox.Show(string.Format("Datei {0} wurde nicht gefunden", source), "Raster Copy", MessageBoxButton.OK); }
-                    i++;
-                } while (File.Exists(source + i.ToString() + ".pdf"));                
+                //var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.AidNavigation.Material, SelectedItem.Aid]);
+                //string source = Path.Combine(docu[DocumentPart.RasterFolder1], docu[DocumentPart.SavePath]);
+                //source = source.TrimEnd(Path.DirectorySeparatorChar);
+                //string target = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], docu[DocumentPart.TTNR]);
+                //int i = 0;
+                //do
+                //{
+                //    var so = source + i.ToString() + ".pdf";
+                //    if (File.Exists(so))
+                //    {
+                //        var ta = target + "-" + i.ToString() + ".pdf";
+                //        File.Copy(so, ta, true);
+                //        _FirstDocumentItems.Add(new DocumentDisplay() { Display = docu[DocumentPart.TTNR], FullName = ta });
+                //    }
+                //    else { MessageBox.Show(string.Format("Datei {0} wurde nicht gefunden", source), "Raster Copy", MessageBoxButton.OK); }
+                //    i++;
+                //} while (File.Exists(source + i.ToString() + ".pdf"));                
             }
             catch (Exception ex)
             {
@@ -290,7 +287,7 @@ namespace ModuleMeasuring.ViewModels
                 switch (target.Name)
                 {
                     case "first":
-                        var Fdocu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        var Fdocu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
                         FirstPartInfo.Collect();
                         if (string.IsNullOrEmpty(setting.PersonalFolder))
                         {
@@ -317,7 +314,7 @@ namespace ModuleMeasuring.ViewModels
                         }
                         break;
                     case "vmpb":
-                        var VMdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid, _VorgNr]);
+                        var VMdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag, SelectedItem.Vorgang]);
                         VmpbInfo.Collect();
                         if (string.IsNullOrEmpty(setting.PersonalFolder))
                         {
@@ -343,7 +340,7 @@ namespace ModuleMeasuring.ViewModels
                         }
                     break;
                     case "part":
-                        var Mdocu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        var Mdocu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
                         MeasureInfo.Collect();
                         if (string.IsNullOrEmpty(setting.PersonalFolder))
                         {
@@ -413,8 +410,8 @@ namespace ModuleMeasuring.ViewModels
 
         private void onPruefExecuted(object obj)
         {
-            var mes = _orders.First(x => x.Aid == _SelectedValue);  
-            var docu = FirstPartInfo.CreateDocumentInfos([mes.Material, mes.Aid]);
+            var mes = ProcessList.First(x => x.Auftrag == _SelectedValue);  
+            var docu = FirstPartInfo.CreateDocumentInfos([mes.Material, mes.Auftrag]);
             FirstPartInfo.Collect();
             Directory.CreateDirectory(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], docu[DocumentPart.Folder]));
             FileInfo Firstfile = new FileInfo(docu[DocumentPart.Template]);
@@ -437,8 +434,8 @@ namespace ModuleMeasuring.ViewModels
         {
             try
             {
-                var mes = _orders.First(x => x.Aid == _SelectedValue);
-                var oa = new string[] { mes.Material.Trim(), mes.Aid, _VorgNr };
+                var mes = ProcessList.First(x => x.Auftrag == _SelectedValue) as VorgItem;
+                var oa = new string[] { mes.Material.Trim(), mes.Auftrag, mes.Vorgang };
                 var size = (string)obj;
       
                 var docu = VmpbInfo.CreateDocumentInfos(oa);
@@ -468,14 +465,14 @@ namespace ModuleMeasuring.ViewModels
                 {
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     File.Copy(vmFile.FullName, vmtarg.FullName.Trim());
-                    var doku = db.OrderRbs.Single(x => x.Aid == mes.Aid);
-                    doku.OrderDocu ??= new OrderDocu();
+                    var doku = db.Vorgangs.Single(x => x.Aid == mes.Auftrag);
+                    doku.VorgangDocu ??= new VorgangDocu();
                     
-                    doku.OrderDocu.VmpbOriginal = vmtarg.FullName.Trim();
-                    doku.OrderDocu.VmpbTemplate = vmFile.FullName.Trim();
-                    InWorkState = doku.OrderDocu.InWorkState = 1;
+                    doku.VorgangDocu.VmpbOriginal = vmtarg.Name.Trim();
+                    doku.VorgangDocu.VmpbTemplate = vmFile.FullName.Trim();
+                    InWorkState = doku.VorgangDocu.InWorkState = 1;
                     db.SaveChanges();
-                    SelectedItem.OrderDocu ??= doku.OrderDocu;
+                    
                     var pi = new ProcessStartInfo(vmtarg.FullName.Trim())
                     {
                         UseShellExecute = true,
@@ -498,16 +495,18 @@ namespace ModuleMeasuring.ViewModels
         }
         private bool onVmpbOpenCanExecute(object arg)
         {
-            return SelectedItem.OrderDocu?.VmpbOriginal != null;
+            return InWorkState > 0;
         }
 
         private void onVmpbOpenExecuted(object obj)
         {
             try
             {
-                if (SelectedItem.OrderDocu?.VmpbOriginal != null)
+                var oa = new string[] { SelectedItem.Material.Trim(), SelectedItem.Auftrag, SelectedItem.Vorgang };
+                var docu = VmpbInfo.CreateDocumentInfos(oa);
+                if (InWorkState > 0)
                 {
-                    var pi = new ProcessStartInfo(SelectedItem.OrderDocu.VmpbOriginal)
+                    var pi = new ProcessStartInfo(Path.Combine(docu[DocumentPart.OriginalFolder], docu[DocumentPart.File]))
                     {
                         UseShellExecute = true,
                         Verb = "OPEN"
@@ -528,7 +527,7 @@ namespace ModuleMeasuring.ViewModels
         }
         private bool onVmpbCreatePdfCanExecute(object arg)
         {
-            return (SelectedItem.OrderDocu?.VmpbOriginal != null) && InWorkState == 1;
+            return (SelectedItem.SourceVorgang.VorgangDocu?.VmpbOriginal != null) && InWorkState == 1;
         }
 
         private void onVmpbCreatePdfExecuted(object obj)
@@ -536,14 +535,14 @@ namespace ModuleMeasuring.ViewModels
 
             try
             {
-                if (SelectedItem.OrderDocu != null)
+                if (SelectedItem.SourceVorgang.VorgangDocu != null)
                 {
-                    var mes = _orders.First(x => x.Aid == _SelectedValue);
-                    var oa = new string[] { mes.Material.Trim(), mes.Aid, _VorgNr };
+                    var mes = ProcessList.First(x => x.Auftrag == _SelectedValue);
+                    var oa = new string[] { mes.Material.Trim(), mes.Auftrag, SelectedItem.Vorgang };
 
                     var docu = VmpbInfo.CreateDocumentInfos(oa);
                     VmpbInfo.Collect();
-                    var vmpFile = new FileInfo(SelectedItem.OrderDocu.VmpbOriginal);
+                    var vmpFile = new FileInfo(SelectedItem.SourceVorgang.VorgangDocu.VmpbOriginal);
                     var path = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath],
                         docu[DocumentPart.Folder], Path.GetFileNameWithoutExtension(vmpFile.Name));
                     Type officeType = Type.GetTypeFromProgID("Word.Application");
@@ -558,7 +557,7 @@ namespace ModuleMeasuring.ViewModels
                     #endif
 
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    db.OrderDocus.Single(x => x.OrderId == _SelectedValue).InWorkState = (int)(InWorkState = 2);
+                    db.VorgangDocus.Single(x => x.Vorgang.Aid == _SelectedValue).InWorkState = (int)(InWorkState = 2);
                     db.SaveChanges();
            
                     var docuItems = new DirectoryInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], docu[DocumentPart.Folder]));
@@ -578,8 +577,6 @@ namespace ModuleMeasuring.ViewModels
             {
                 _logger.LogError(e.ToString());
             }
-
-
         }
         private bool onVmpbCloseCanExecute(object arg)
         {
@@ -596,23 +593,23 @@ namespace ModuleMeasuring.ViewModels
         }
         private bool onVmpbDelCanExecute(object arg)
         {
-            return SelectedItem.OrderDocu != null;
+            return SelectedItem.SourceVorgang.VorgangDocu != null;
         }
 
         private void onVmpbDelExecuted(object obj)
         {
  
-            if(SelectedItem.OrderDocu?.VmpbOriginal != null) File.Delete(SelectedItem.OrderDocu.VmpbOriginal);
+            if(SelectedItem.SourceVorgang.VorgangDocu?.VmpbOriginal != null) File.Delete(SelectedItem.SourceVorgang.VorgangDocu.VmpbOriginal);
             
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            var o = db.OrderDocus.SingleOrDefault(x => x.OrderId == SelectedValue);
+            var o = db.VorgangDocus.SingleOrDefault(x => x.Vorgang.Aid == SelectedValue);
             if (o != null)
             {
-                db.OrderDocus.Remove(o);
+                db.VorgangDocus.Remove(o);
                 db.SaveChanges();
             }
             InWorkState = null;
-            SelectedItem.OrderDocu = null;
+            SelectedItem.SourceVorgang.VorgangDocu = null;
 
         }
         private void OnOrderChanged(object? sender, EventArgs e)
@@ -622,7 +619,7 @@ namespace ModuleMeasuring.ViewModels
             _PartDocumentItems.Clear();
             if (SelectedItem != null)
             {             
-                var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
                 string path = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]);
                 if (Directory.Exists(path))
                 {
@@ -634,7 +631,7 @@ namespace ModuleMeasuring.ViewModels
                 }
 
                 
-                var vmdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid, _VorgNr]);
+                var vmdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
                 string vmpath = Path.Combine(docu[DocumentPart.RootPath], vmdocu[DocumentPart.SavePath]);
                 if (Directory.Exists(vmpath))
                 {
@@ -644,7 +641,7 @@ namespace ModuleMeasuring.ViewModels
                         _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
                     }
                 }
-                var Mdocu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                var Mdocu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
                 string Mpath = Path.Combine(docu[DocumentPart.RootPath], Mdocu[DocumentPart.SavePath]);
                 if (Directory.Exists(Mpath))
                 {
@@ -691,7 +688,7 @@ namespace ModuleMeasuring.ViewModels
                     var t = (ItemsControl)dropInfo.VisualTarget;
                     if (t.Name == "first")
                     {
-                        var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
                         FirstPartInfo.Collect();
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
@@ -700,7 +697,7 @@ namespace ModuleMeasuring.ViewModels
                     }
                     if (t.Name == "vmpb")
                     {
-                        var docu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid, _VorgNr]);
+                        var docu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
                         VmpbInfo.Collect();
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
@@ -709,7 +706,7 @@ namespace ModuleMeasuring.ViewModels
                     }
                     if (t.Name == "part")
                     {
-                        var docu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Aid]);
+                        var docu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
                         MeasureInfo.Collect();
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
@@ -735,9 +732,8 @@ namespace ModuleMeasuring.ViewModels
             var vrg = navigationContext.Parameters.GetValue<Vorgang>("order");
             if (vrg != null)
             {
-                SelectedItem = vrg.AidNavigation;
-                SelectedValue = _SelectedItem.Aid;
-                _VorgNr = string.Format("{0}", vrg.Vnr.ToString("D4"));
+                SelectedItem = new VorgItem(vrg);
+                SelectedValue = _SelectedItem.Auftrag;
             }
         }
         public struct DocumentDisplay

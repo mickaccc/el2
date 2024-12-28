@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
+      xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
       xmlns:controlzex="urn:controlzex"
       xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -12,6 +13,7 @@
 
     <UserControl.Resources>
         <conv:MultiObjectConverter x:Key="multi"/>
+        <conv:PermissionConverter x:Key="permiss"/>
     </UserControl.Resources>
     <Grid Background="{DynamicResource MahApps.Brushes.Control.Background}" >
         <Grid.RowDefinitions>
@@ -61,6 +63,8 @@
                     <TextBox x:Name="ExpRoot" Text="{Binding Path=PersonalFolder}"/>
                     <Label Content="Schriftgröße"/>
                     <TextBox x:Name="FontSize" Text="{Binding Path=GlobalFontSize}"/>
+                    <Label Content="Kalenderwochen Rückblick (Arbeitszeiten)"/>
+                    <TextBox x:Name="KWReview" Text="{Binding Path=KWReview}"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Teamleiter">
@@ -219,7 +223,8 @@
                 </TabControl>
             </TabItem>
             <TabItem Header="Projekte">
-                
+                <DataGrid ItemsSource="{Binding ProjectSchemes}" IsEnabled="{Binding Converter={StaticResource permiss},
+							ConverterParameter={x:Static const:Permissions.ProjectScheme}}"  />
             </TabItem>
         </TabControl>
     </Grid>

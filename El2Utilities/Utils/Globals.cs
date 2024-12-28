@@ -79,8 +79,18 @@ namespace El2Core.Utils
                 Rules = db.Rules.ToList(); 
             }
         }
-        public void SaveRule(Rule rule)
+        public void SaveRule(string RuleKey)
         {
+            Rule rule;
+            if (RuleInfo.Rules.TryGetValue(RuleKey, out var outRule))
+            {
+                rule = outRule;
+            }
+            else { rule = new Rule() { RuleName = RuleKey, RuleValue = RuleKey }; }
+            SaveRule(rule);
+        }
+        public void SaveRule(Rule rule)
+        { 
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             if (db.Rules.All(x => x.RuleName != rule.RuleName))
             {

@@ -23,9 +23,10 @@
             <RowDefinition/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Background="Aqua">
             <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" Width="150" PopupWidth="600"
-                                           SelectedItem="{Binding SelectedVorgangItem, Mode=OneWayToSource}" />
+                                           SelectedItem="{Binding SelectedVorgangItem, Mode=OneWayToSource}"
+                                           SearchFieldName="Auftrag" DisplayFieldNames="Auftrag,Vorgang,Kurztext,Material,Bezeichnung"/>
 
             <ComboBox ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=OneWayToSource}"/>
 
@@ -46,10 +47,11 @@
  
             <WpfControl:RollingTextBlock RollingRange="{Binding CalendarWeeks}" DefaultRollingPosition="Last" Width="80" VerticalContentAlignment="Center"
                                          SelectedIndex="{Binding CalendarWeek, Mode=OneWayToSource}"/>
-            <WpfControl:SearchableComboBox ItemsSource="{Binding Users}" PopupWidth="400"
+            <WpfControl:SearchableComboBox ItemsSource="{Binding Users}" PopupWidth="400" DisplayFieldNames="User,Vorname,Nachname"
+                                           SearchFieldName="User"
                                            SelectedItem="{Binding SelectedUser, Mode=TwoWay}" HorizontalContentAlignment="Right"/>
         </StackPanel>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Background="Beige">
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"/>
                 <RowDefinition/>

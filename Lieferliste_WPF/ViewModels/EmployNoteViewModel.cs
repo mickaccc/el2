@@ -1,4 +1,5 @@
 ﻿using El2Core.Models;
+using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
@@ -18,9 +19,10 @@ namespace Lieferliste_WPF.ViewModels
 {
     internal class EmployNoteViewModel : ViewModelBase
     {
-        public EmployNoteViewModel(IContainerProvider containerProvider)
+        public EmployNoteViewModel(IContainerProvider containerProvider, UserSettingsService usrSettingsService)
         {
             container = containerProvider;
+            userSettingsService = usrSettingsService;
             _ctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             LoadingData();
             SubmitCommand = new ActionCommand(OnSubmitExecuted, OnSubmitCanExecute);
@@ -28,6 +30,7 @@ namespace Lieferliste_WPF.ViewModels
 
         public string Title { get; } = "Arbeitszeiten";
         IContainerProvider container;
+        UserSettingsService userSettingsService;
         private DB_COS_LIEFERLISTE_SQLContext _ctx;
         public IEnumerable<dynamic> VorgangRef { get; private set; }
         private VorgItem _SelectedVorgangItem;
@@ -40,7 +43,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (value != null)
                 {
                     ReferencePre = string.Format("{0} - {1}\n{2} {3}",
-                        value.Auftrag, value.Vorgang, value.Material.Trim(), value.Bezeichnung);
+                        value.Auftrag, value.Vorgang, value.Material?.Trim(), value.Bezeichnung);
                 }
             }
         }
@@ -181,11 +184,10 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.AidNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Where(x => x.AidNavigation.Abgeschlossen)
+                .Where(x => x.AidNavigation.Abgeschlossen == false)
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
-                .Select(s => new VorgItem(s.Aid, s.Vnr.ToString(), s.Text.Trim(),
-                s.AidNavigation.Material.Trim(), s.AidNavigation.MaterialNavigation.Bezeichng.Trim()))];
+                .Select(s => new VorgItem(s))];
 
             EmployeeNotes = _ctx.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date)
                 .ToObservableCollection<EmployeeNote>();
@@ -257,9 +259,9 @@ namespace Lieferliste_WPF.ViewModels
         private List<string> GetKW_List()
         {
             List<string> ret = [];
-            var date = DateTime.Today.AddDays(-7*(3-1));
+            var date = DateTime.Today.AddDays(-7*(userSettingsService.KWReview-1));
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < userSettingsService.KWReview; i++)
             {
                 ret.Add(string.Format("KW {0}", CultureInfo.CurrentCulture.Calendar
                     .GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday)));
@@ -337,14 +339,7 @@ namespace Lieferliste_WPF.ViewModels
             _ctx.SaveChanges();
         }
     }
-    public class VorgItem(string Auftrag, string Vorgang, string? Kurztext, string? Material, string? Bezeichnung)
-    {
-        public string Auftrag { get; } = Auftrag;
-        public string Vorgang { get; } = Vorgang;
-        public string? Kurztext { get; } = Kurztext;
-        public string? Material { get; } = Material;
-        public string? Bezeichnung { get; } = Bezeichnung;
-    }
+
     public class UserItem(string User, string Vorname, string Nachname)
     {
         public string User { get; } = User;

@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace El2Core.Models;
 
-public partial class OrderDocu
+public partial class VorgangDocu
 {
-    public string OrderId { get; set; } = null!;
+    public string VorgangId { get; set; } = null!;
 
     public string? VmpbTemplate { get; set; }
 
@@ -15,5 +15,5 @@ public partial class OrderDocu
 
     public int InWorkState { get; set; }
 
-    public virtual OrderRb Order { get; set; } = null!;
+    public virtual Vorgang Vorgang { get; set; } = null!;
 }

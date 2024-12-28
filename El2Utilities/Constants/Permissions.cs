@@ -81,5 +81,6 @@
         public const string AddShiftCalendar = "ADDSHIFTCAL";
         public const string DelShiftCalendar = "DELSHIFTCAL";
         public const string EmployNoteOpen = "EMPNOTE";
+        public const string ProjectScheme = "PROJ07";
     }
 }

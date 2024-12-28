@@ -82,19 +82,19 @@ namespace Lieferliste_WPF.ViewModels
         public Document Vdocu { get; private set; }
         public Document Wdocu { get; private set; }
         public Document Mdocu { get; private set; }
-        private string _ruleInfoScan = RuleInfo.Rules["MeasureScan"].RuleValue;
+        private string _ruleInfoScan;
 
         public string RuleInfoScan
         {
-            get { return _ruleInfoScan = RuleInfo.Rules["MeasureScan"].RuleValue; }
-            set { _ruleInfoScan = RuleInfo.Rules["MeasureScan"].RuleValue = value; }
+            get => _ruleInfoScan;
+            set { _ruleInfoScan = value; }
         }
-        private string _ruleMsfDomain = RuleInfo.Rules["MeasureMsfDomain"].RuleValue;
+        private string _ruleMsfDomain;
 
         public string RuleMsfDomain
         {
-            get { return _ruleMsfDomain = RuleInfo.Rules["MeasureMsfDomain"].RuleValue; }
-            set { _ruleMsfDomain = RuleInfo.Rules["MeasureMsfDomain"].RuleValue = value; }
+            get => _ruleMsfDomain; 
+            set { _ruleMsfDomain = value; }
         }
 
         public List<Tuple<string, string, int>> PropertyNames { get; } = [];
@@ -147,7 +147,8 @@ namespace Lieferliste_WPF.ViewModels
         public ImmutableArray<string> PlanedSetups { get; } =
             ImmutableArray.Create(new string[] { "Setup1", "Setup2" });
         public ICollectionView PersonalFilterView { get; private set; }
-
+        public ObservableCollection<ProjectScheme> ProjectSchemes { get; private set; }
+        
         public UserSettingsViewModel(IUserSettingsService settingsService, IContainerExtension container)
         {
 
@@ -173,7 +174,7 @@ namespace Lieferliste_WPF.ViewModels
             MeasureDocumentInfo = new MeasureDocumentInfo(container);
             Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
             LoadFilters();
-
+            LoadProjectSchemes();
         }
 
         private void LoadFilters()
@@ -197,7 +198,10 @@ namespace Lieferliste_WPF.ViewModels
             PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
             PropertyNames.Add(PropertyPair.MarkerCode.ToTuple());
         }
-
+        private void LoadProjectSchemes()
+        {
+            ProjectSchemes = RuleInfo.ProjectSchemes.Values.ToObservableCollection();
+        }
 
         private void OnPersonalFilterChanged(object? sender, EventArgs e)
         {
@@ -248,7 +252,9 @@ namespace Lieferliste_WPF.ViewModels
             WorkareaDocumentInfo.SaveDocumentData();
             MeasureDocumentInfo.SaveDocumentData();
             var gl = new Globals(_container);
-            gl.SaveRule(RuleInfo.Rules["MeasureScan"]);
+            gl.SaveRule("MeasureScan");
+            gl.SaveRule("MeasureMsfDomain");
+            gl.SaveProjectSchemes([.. ProjectSchemes]);
             _filterContainer.Save();
 
         }
@@ -371,6 +377,11 @@ namespace Lieferliste_WPF.ViewModels
         {
             get { return _settingsService.PlanedSetup; }
             set { _settingsService.PlanedSetup = value; }
+        }
+        public int KWReview
+        {
+            get { return _settingsService.KWReview; }
+            set { _settingsService.KWReview = value; }
         }
     }
 }

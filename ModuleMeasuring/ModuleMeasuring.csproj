@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\El2Utilities\El2Core.csproj" />
+    <ProjectReference Include="..\WpfCustomControlLibrary\WpfCustomControlLibrary.csproj" />
   </ItemGroup>
 
 </Project>

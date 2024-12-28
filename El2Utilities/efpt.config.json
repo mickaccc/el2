@@ -63,10 +63,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[OrderDocu]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[OrderGroup]",
          "ObjectType": 0
       },
@@ -151,6 +147,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[VorgangDocu]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[WorkArea]",
          "ObjectType": 0
       },
@@ -168,6 +168,7 @@
    "UseAsyncStoredProcedureCalls": true,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
    "UseDateOnlyTimeOnly": false,
    "UseDbContextSplitting": false,
    "UseDecimalDataAnnotationForSprocResult": true,

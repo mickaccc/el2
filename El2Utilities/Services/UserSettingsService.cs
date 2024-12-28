@@ -16,6 +16,7 @@ namespace El2Core.Services
         double FontSize { get; set; }
         string PlanedSetup { get; set; }
         double SizePercent { get; set; }
+        int KWReview {  get; set; }
         bool IsDefaults();
         bool IsChanged { get; }
         void Save();
@@ -84,6 +85,12 @@ namespace El2Core.Services
         {
             get => Properties.Settings.Default.PlanedSetup;
             set { Properties.Settings.Default[nameof(PlanedSetup)] = value; _isChanged = true; }
+        }
+
+        public int KWReview
+        {
+            get => Properties.Settings.Default.KWReview;
+            set { Properties.Settings.Default[nameof(KWReview)] = value; _isChanged = true; }
         }
 
         public void Save()
