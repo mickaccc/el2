@@ -68,7 +68,17 @@ namespace Lieferliste_WPF.ViewModels
             set
             {
                 _settingsService.FontSize = value;
-                App.GlobalFontSize = value;
+                if (FontSizeValidationRule(_settingsService.FontSize, out string? errorMessage))
+                {
+                    _errors.Clear();
+                    App.GlobalFontSize = value;
+                }
+                else
+                {
+                    _errors[nameof(GlobalFontSize)] = [errorMessage];
+                }
+                if (ErrorsChanged != null)
+                    ErrorsChanged(this, new DataErrorsChangedEventArgs(nameof(GlobalFontSize)));               
             }
         }
 
@@ -421,6 +431,17 @@ namespace Lieferliste_WPF.ViewModels
             if (KW < 0 || KW > 50)
             {
                 errorMessage = "Der Wert muss zwischen 0 und 50 liegen";
+                IsValid = false;
+            }
+            return IsValid;
+        }
+        private bool FontSizeValidationRule(double FontSize, out string? errorMessage)
+        {
+            errorMessage = string.Empty;
+            bool IsValid = true;
+            if (FontSize < 10 || FontSize > 30)
+            {
+                errorMessage = "Der Wert muss zwischen 10 und 30 liegen";
                 IsValid = false;
             }
             return IsValid;

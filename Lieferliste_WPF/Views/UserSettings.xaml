@@ -62,7 +62,7 @@
                     <Label Content="Personal Path"/>
                     <TextBox x:Name="ExpRoot" Text="{Binding Path=PersonalFolder}"/>
                     <Label Content="Schriftgröße"/>
-                    <TextBox x:Name="FontSize" Text="{Binding Path=GlobalFontSize}"/>
+                    <TextBox x:Name="FontSize" Text="{Binding Path=GlobalFontSize, ValidatesOnNotifyDataErrors=True}" />
                     <Label Content="Kalenderwochen Rückblick (Arbeitszeiten)"/>
                     <TextBox x:Name="KWReview" >
                         <Binding Path="KWReview" UpdateSourceTrigger="PropertyChanged">
