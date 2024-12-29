@@ -5,18 +5,21 @@ using El2Core.ViewModelBase;
 using Microsoft.Extensions.Logging;
 using Prism.Ioc;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Lieferliste_WPF.ViewModels
 {
-    internal class UserSettingsViewModel : ViewModelBase
+    internal class UserSettingsViewModel : ViewModelBase, INotifyDataErrorInfo
     {
         private ObservableCollection<string> _ExplorerFilter = new();
         public ICollectionView ExplorerFilter { get; }
@@ -129,6 +132,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private Tuple<string, string, int>? _personalFilterField;
+
         public Tuple<string, string, int>? PersonalFilterField
         {
             get { return _personalFilterField; }
@@ -381,7 +385,45 @@ namespace Lieferliste_WPF.ViewModels
         public int KWReview
         {
             get { return _settingsService.KWReview; }
-            set { _settingsService.KWReview = value; }
+            set
+            {
+                _settingsService.KWReview = value;
+                if (KwValidationRule(_settingsService.KWReview, out string? errorMessage))
+                {
+                    _errors.Clear();
+                }
+                else
+                {
+                    _errors[nameof(KWReview)] = [errorMessage];
+                }
+                if (ErrorsChanged != null)
+                    ErrorsChanged(this, new DataErrorsChangedEventArgs(nameof(KWReview)));
+            }
+        }
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+        public IEnumerable GetErrors(string? propertyName)
+        {
+            if (propertyName != null)
+            {
+                if (_errors.ContainsKey(propertyName))
+                    return _errors[propertyName];
+            }
+            return null;
+
+        }
+        public bool HasErrors { get {  return _errors.Count > 0; } }
+        Dictionary<string, List<string>> _errors = [];
+        private bool KwValidationRule(int KW, out string ? errorMessage)
+        {
+            errorMessage = "";
+            bool IsValid = true;
+
+            if (KW < 0 || KW > 50)
+            {
+                errorMessage = "Der Wert muss zwischen 0 und 50 liegen";
+                IsValid = false;
+            }
+            return IsValid;
         }
     }
 }

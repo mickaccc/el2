@@ -64,7 +64,14 @@
                     <Label Content="Schriftgröße"/>
                     <TextBox x:Name="FontSize" Text="{Binding Path=GlobalFontSize}"/>
                     <Label Content="Kalenderwochen Rückblick (Arbeitszeiten)"/>
-                    <TextBox x:Name="KWReview" Text="{Binding Path=KWReview}"/>
+                    <TextBox x:Name="KWReview" >
+                        <Binding Path="KWReview" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <NotifyDataErrorValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+        
+                    </TextBox>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Teamleiter">
