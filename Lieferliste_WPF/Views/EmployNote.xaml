@@ -51,7 +51,7 @@
                                            SearchFieldName="User"
                                            SelectedItem="{Binding SelectedUser, Mode=TwoWay}" HorizontalContentAlignment="Right"/>
         </StackPanel>
-        <Grid Grid.Row="1" Background="Beige">
+        <Grid Grid.Row="1" Background="Beige" ShowGridLines="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"/>
                 <RowDefinition/>
@@ -70,7 +70,7 @@
                 </Style>
             </Grid.Resources>
             <Label Content="Referenz" Grid.Column="0" />
-            <TextBox Text="{Binding ReferencePre}" Grid.Row="1" Grid.Column="0" MaxLines="2"/>
+            <TextBox Text="{Binding ReferencePre}" Grid.Row="1" Grid.Column="0" MaxLines="2" IsReadOnly="True" />
             <Label Content="Kommentar" Grid.Column="1" />
             <TextBox Text="{Binding Comment}" Grid.Row="1" Grid.Column="1"/>
             <Label Content="Datum" Grid.Column="2" />
@@ -79,9 +79,10 @@
             <TextBox Text="{Binding NoteTimePre}" Grid.Row="1" Grid.Column="3" />
             <Button Content="eintragen" Grid.Row="1" Grid.Column="4" Command="{Binding SubmitCommand}"/>
         </Grid>
-        <DataGrid Grid.Row="2" ItemsSource="{Binding EmployeeNotesView}" AutoGenerateColumns="False" CanUserAddRows="False" >
+        <DataGrid Grid.Row="2" ItemsSource="{Binding EmployeeNotesView}" AutoGenerateColumns="False" CanUserAddRows="False"
+                  AlternatingRowBackground="LightGray"  AlternationCount="2">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Referenz" Binding="{Binding Reference}" Width="300" />
+                <DataGridTextColumn Header="Referenz" Binding="{Binding Reference}" Width="300" IsReadOnly="True" />
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding Comment}" Width="250"/>
                 <DataGridTextColumn Header="Datum" Binding="{Binding Date, StringFormat=\{0:D\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime, Converter={StaticResource TimeConverter}}"/>

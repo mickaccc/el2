@@ -110,7 +110,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public string[] SelectedRefs { get; } = [ "Reinigen", "Cip", "Anlernen" ];
+        public string[] SelectedRefs { get; private set; }
         private string? _SelectedVrgPath;
 
         public string? SelectedVrgPath
@@ -196,19 +196,19 @@ namespace Lieferliste_WPF.ViewModels
             CalendarWeeks = GetKW_List();
  
             Users = [];
-            foreach (var cost in UserInfo.User.AccountCostUnits.AsQueryable())
+            foreach (var cost in UserInfo.User.AccountCostUnits)
             {
-                var us = _ctx.IdmAccounts.AsNoTracking().IntersectBy(cost, x => x.AccountCosts));
+                var us = _ctx.AccountCosts.Include(x => x.Account).Where(x => x.CostId == cost.CostId).AsNoTracking();
                 foreach (var account in us)
                 {
-                    if (Users.All(x => x.User != account.User))
-                        Users.Add(account);
+                    if (Users.All(x => x.User != account.AccountId))
+                        Users.Add(new UserItem(account.AccountId, account.Account.Firstname, account.Account.Lastname));
                 }
                 SelectedUser = Users.FirstOrDefault(x => x.User == UserInfo.User.UserId);
                 EmployeeNotesView.Filter += FilterPredicate;
                 EmployeeNotesView.CollectionChanged += CollectionHasChanged;
             }
- 
+            SelectedRefs = [.. _ctx.EmploySelections.Where(y => y.Active).OrderBy(o => o.Description).Select(x => x.Description)];
             SelectedWeekDay = DateTime.Today.DayOfWeek;
         }
 
@@ -238,7 +238,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnSubmitCanExecute(object arg)
         {
-            return true;
+            return ReferencePre != null;
         }
 
         private void OnSubmitExecuted(object obj)
