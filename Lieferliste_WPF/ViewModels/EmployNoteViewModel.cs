@@ -196,10 +196,9 @@ namespace Lieferliste_WPF.ViewModels
             CalendarWeeks = GetKW_List();
  
             Users = [];
-            foreach (var cost in UserInfo.User.AccountCostUnits)
+            foreach (var cost in UserInfo.User.AccountCostUnits.AsQueryable())
             {
-                var us = _ctx.IdmAccounts.AsNoTracking().Where(x => x.AccountCosts.Any(y => y.CostId == cost.CostId))
-                    .Select(u => new UserItem(u.AccountId, u.Firstname, u.Lastname)).ToList();
+                var us = _ctx.IdmAccounts.AsNoTracking().IntersectBy(cost, x => x.AccountCosts));
                 foreach (var account in us)
                 {
                     if (Users.All(x => x.User != account.User))
