@@ -18,14 +18,21 @@ namespace El2Core.Converters
             {
 
                 string[] val = strVal.Split((char)29);
-                if ((bool)parameter)
+                if (int.TryParse(parameter.ToString(), out int ind))
                 {
-                    return val[0];
+                    if (val.Length >= ind)
+                        return val[ind];
                 }
-                else
-                {
-                    return val[1];
-                }
+                if (bool.TryParse(parameter.ToString(), out bool b))
+                    if (b)
+                    {
+                        return val[0];
+                    }
+                    else
+                    {
+                        return val[1];
+                    }
+
             }
             return string.Empty;
         }

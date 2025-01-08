@@ -16,6 +16,7 @@
         <Grid.Resources>
             <conv:EnumBooleanConverter x:Key="enumBool"/>
             <conv:DoubleToTimeConverter x:Key="TimeConverter"/>
+            <conv:CommentConverter x:Key="RefConvert"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -28,7 +29,8 @@
                                            SelectedItem="{Binding SelectedVorgangItem, Mode=OneWayToSource}"
                                            SearchFieldName="Auftrag" DisplayFieldNames="Auftrag,Vorgang,Kurztext,Material,Bezeichnung"/>
 
-            <ComboBox ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=OneWayToSource}"/>
+            <ComboBox ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=OneWayToSource}"
+                      DisplayMemberPath="Description"/>
 
             <StackPanel Orientation="Horizontal">
                 <StackPanel.Resources>
@@ -70,7 +72,7 @@
                 </Style>
             </Grid.Resources>
             <Label Content="Referenz" Grid.Column="0" />
-            <TextBox Text="{Binding ReferencePre}" Grid.Row="1" Grid.Column="0" MaxLines="2" IsReadOnly="True" />
+            <TextBox Text="{Binding ReferencePre.Description}" Grid.Row="1" Grid.Column="0" MaxLines="2" IsReadOnly="True" />
             <Label Content="Kommentar" Grid.Column="1" />
             <TextBox Text="{Binding Comment}" Grid.Row="1" Grid.Column="1"/>
             <Label Content="Datum" Grid.Column="2" />
@@ -82,7 +84,8 @@
         <DataGrid Grid.Row="2" ItemsSource="{Binding EmployeeNotesView}" AutoGenerateColumns="False" CanUserAddRows="False"
                   AlternatingRowBackground="LightGray"  AlternationCount="2">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Referenz" Binding="{Binding Reference}" Width="300" IsReadOnly="True" />
+                <DataGridTextColumn Header="Referenz" Binding="{Binding Reference, Converter={StaticResource RefConvert},
+                    ConverterParameter=2}" Width="300" IsReadOnly="True" />
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding Comment}" Width="250"/>
                 <DataGridTextColumn Header="Datum" Binding="{Binding Date, StringFormat=\{0:D\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime, Converter={StaticResource TimeConverter}}"/>

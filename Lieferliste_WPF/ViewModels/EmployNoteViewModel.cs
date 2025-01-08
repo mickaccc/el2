@@ -42,36 +42,36 @@ namespace Lieferliste_WPF.ViewModels
                 _SelectedVorgangItem = value;
                 if (value != null)
                 {
-                    ReferencePre = string.Format("{0} - {1}\n{2} {3}",
-                        value.Auftrag, value.Vorgang, value.Material?.Trim(), value.Bezeichnung);
+                    ReferencePre = new RefItem("Vorgang;", value.SourceVorgang.VorgangId, string.Format("{0} - {1}\n{2} {3}",
+                        value.Auftrag, value.Vorgang, value.Material?.Trim(), value.Bezeichnung));
                 }
             }
         }
-        private string _ReferencePre;
+        private RefItem? _ReferencePre;
 
-        public string ReferencePre
+        public RefItem? ReferencePre
         {
             get { return _ReferencePre; }
             set
             {
-                if (_ReferencePre != value)
+                if (_ReferencePre.Equals(value) == false)
                 {
                     _ReferencePre = value;
-                    
+                    NotifyPropertyChanged(() => ReferencePre);
                 }
             }
         }
 
-        private string? _selectedRef;
-        public string? SelectedRef
+        private RefItem _selectedRef;
+        public RefItem SelectedRef
         {
             get { return _selectedRef; }
             set
             {
-                if (_selectedRef != value)
+                if (_selectedRef.Equals(value) == false)
                 {
                     _selectedRef = value;
-                    ReferencePre = value ?? string.Empty;
+                    ReferencePre = value;
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        public string[] SelectedRefs { get; private set; }
+        public List<RefItem> SelectedRefs { get; private set; }
         private string? _SelectedVrgPath;
 
         public string? SelectedVrgPath
@@ -189,8 +189,8 @@ namespace Lieferliste_WPF.ViewModels
                 .ThenBy(x => x.Vnr)
                 .Select(s => new VorgItem(s))];
 
-            EmployeeNotes = _ctx.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date)
-                .ToObservableCollection<EmployeeNote>();
+            EmployeeNotes = _ctx.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date).ToObservableCollection();
+
             EmployeeNotesView = CollectionViewSource.GetDefaultView(EmployeeNotes);
             
             CalendarWeeks = GetKW_List();
@@ -205,10 +205,16 @@ namespace Lieferliste_WPF.ViewModels
                         Users.Add(new UserItem(account.AccountId, account.Account.Firstname, account.Account.Lastname));
                 }
                 SelectedUser = Users.FirstOrDefault(x => x.User == UserInfo.User.UserId);
-                EmployeeNotesView.Filter += FilterPredicate;
-                EmployeeNotesView.CollectionChanged += CollectionHasChanged;
+
             }
-            SelectedRefs = [.. _ctx.EmploySelections.Where(y => y.Active).OrderBy(o => o.Description).Select(x => x.Description)];
+            EmployeeNotesView.Filter += FilterPredicate;
+            EmployeeNotesView.CollectionChanged += CollectionHasChanged;
+            var sel = _ctx.EmploySelections.Where(y => y.Active).OrderBy(o => o.Description);
+            SelectedRefs = [];
+            foreach (var s in sel)
+            {
+                SelectedRefs.Add(new RefItem("EmploySelection", s.Id.ToString(), s.Description));
+            }
             SelectedWeekDay = DateTime.Today.DayOfWeek;
         }
 
@@ -219,6 +225,7 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var o in e.OldItems)
                 {
                     _ctx.EmployeeNotes.Remove((EmployeeNote)o);
+                    
                 }
             }
             SumTimes = EmployeeNotesView.Cast<EmployeeNote>().Sum(x => (double?)x.Processingtime ?? 0);
@@ -238,14 +245,15 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnSubmitCanExecute(object arg)
         {
-            return ReferencePre != null;
+            return ReferencePre.HasValue;
         }
 
         private void OnSubmitExecuted(object obj)
         {
             var emp = new EmployeeNote();
             emp.AccId = SelectedUser.User;
-            emp.Reference = ReferencePre ?? string.Empty;
+            emp.Reference = string.Format("{0}{1}{2}{3}{4}",
+                ReferencePre.Value.Table, (char)29, ReferencePre.Value.Id, (char)29, ReferencePre.Value.Description);
             emp.Comment = Comment;
             emp.Date = SelectedDate;
             emp.Processingtime = NoteTime;
@@ -345,4 +353,11 @@ namespace Lieferliste_WPF.ViewModels
         public string Vorname { get; } = Vorname;
         public string Nachname { get; } = Nachname;
     }
+    public struct RefItem(string Table, string Id, string Description)
+    {
+        public string Table { get; } = Table;
+        public string Id { get; } = Id;
+        public string Description { get; set; } = Description;
+    }
+
 }
