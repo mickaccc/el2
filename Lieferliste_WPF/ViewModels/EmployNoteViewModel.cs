@@ -57,7 +57,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_ReferencePre != value)
                 {
                     _ReferencePre = value;
-                    NotifyPropertyChanged(()  => ReferencePre);
+                    
                 }
             }
         }
