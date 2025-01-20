@@ -11,7 +11,7 @@ public partial class EmployeeNote
 
     public string AccId { get; set; } = null!;
 
-    public string? Reference { get; set; }
+    public string Reference { get; set; } = null!;
 
     public string? Comment { get; set; }
 

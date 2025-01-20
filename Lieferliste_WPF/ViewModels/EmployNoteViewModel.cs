@@ -188,8 +188,8 @@ namespace Lieferliste_WPF.ViewModels
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
                 .Select(s => new VorgItem(s))];
-
-            EmployeeNotes = _ctx.EmployeeNotes.Where(x => x.AccId.Equals(UserInfo.User.UserId)).OrderBy(x => x.Date).ToObservableCollection();
+            var D = DateTime.Today.AddYears(-1);
+            EmployeeNotes = _ctx.EmployeeNotes.Where(x => x.Date > D).OrderBy(x => x.Date).ToObservableCollection();
 
             EmployeeNotesView = CollectionViewSource.GetDefaultView(EmployeeNotes);
             
@@ -284,7 +284,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private string ConvertInputValue(string input)
         {
-            int hour = 0 , minute = 0;
+            int hour = 0, minute = 0;
             bool error = false;
             input = input.Trim();
             Regex reg = new Regex(@"(\d+):(\d+)");
@@ -335,7 +335,8 @@ namespace Lieferliste_WPF.ViewModels
             }
             if (!error)
             {
-                NoteTime = hour + minute / 60;
+                if (test.Success)
+                    NoteTime = hour + Convert.ToDouble(minute) / 60;
                 return string.Format("{0}:{1}", hour.ToString(), minute.ToString("D2"));           
             }
             return input;
