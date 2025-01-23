@@ -27,11 +27,11 @@
             <TabItem Header="Schließtage">
                 <DataGrid ItemsSource="{Binding CloseHolidays}" AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}" />
                         <DataGridTemplateColumn Header="Datum">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <DatePicker SelectedDate="{Binding Datum, Mode=TwoWay}"
+                                    <DatePicker SelectedDate="{Binding Datum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                 DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

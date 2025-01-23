@@ -78,6 +78,7 @@ namespace Lieferliste_WPF.ViewModels
                 xml.Serialize(sw, data);
                 holi.RuleData = sw.ToString();
                 db.SaveChanges();
+                RuleInfo.Rules["Holi"].RuleData = holi.RuleData;
                 _isChanged = false;
                 _Logger.LogInformation("{message}", holi.RuleData);
             }
