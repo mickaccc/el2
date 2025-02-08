@@ -762,12 +762,23 @@ namespace ModulePlanning.Planning
                 }
                 Target.MoveCurrentTo(Item);
                 
-                if (Item.AidNavigation.Material != null && WorkArea.CreateFolder)
+                if (WorkArea != null && WorkArea.CreateFolder)
                 {
-                    string[] oa = new[] { Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich };
                     var work = _container.Resolve<WorkareaDocumentInfo>();
-                    work.CreateDocumentInfos(oa);
-                    work.Collect();
+                    if (Item.AidNavigation.Material != null)
+                    {
+                        string?[] oa = [Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich];
+
+                        _ = work.CreateDocumentInfos(oa);
+                        work.Collect();
+                    }
+                    else if(Item.AidNavigation.DummyMat != null)
+                    {
+                        string?[] oa = [Item.AidNavigation.DummyMatNavigation?.Mattext, Item.Aid, WorkArea.Bereich];
+
+                        _ = work.CreateDocumentInfos(oa);
+                        work.Collect();
+                    }
                 }
                 Target.IsLiveSorting = true;
             }

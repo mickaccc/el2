@@ -394,19 +394,10 @@ namespace El2Core.Utils
     }
 
 
-    public class Entry
+    public class Entry(object key, object value)
     {
-        public object Key;
-        public object Value;
-        public Entry()
-        {
-        }
-
-        public Entry(object key, object value)
-        {
-            Key = key;
-            Value = value;
-        }
+        public object Key = key;
+        public object Value = value;
     }
     public enum DocumentPart
     {
