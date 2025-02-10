@@ -212,8 +212,10 @@
                         <StackPanel>
                             <TextBlock Text="Root:"/>
                             <TextBox Text="{Binding Wdocu[1]}"/>
-                            <TextBlock Text="Regex:"/>
+                            <TextBlock Text="Material Regular Expression:"/>
                             <TextBox Text="{Binding Wdocu[3]}"/>
+                            <TextBlock Text="Dummy Regular Expression:"/>
+                            <TextBox Text="{Binding Wdocu[17]}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="ScanDokumente">

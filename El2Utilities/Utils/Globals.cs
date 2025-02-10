@@ -1,6 +1,5 @@
 ﻿using El2Core.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -69,9 +68,6 @@ namespace El2Core.Utils
         }
         private void LoadData()
         {
-
-            //user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-            string us = Environment.UserName;
 
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {

@@ -94,7 +94,7 @@ namespace El2Core.Utils
                 document[DocumentPart.Type] = "FirstPart";
                 document[DocumentPart.RootPath] = string.Empty;
                 document[DocumentPart.Template] = string.Empty;
-                document[DocumentPart.RegularEx] = string.Empty;
+                document[DocumentPart.MaterialRegularEx] = string.Empty;
                 document[DocumentPart.JumpTarget] = string.Empty;
                 document[DocumentPart.RasterFolder1] = string.Empty;
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
@@ -111,7 +111,7 @@ namespace El2Core.Utils
                 {
 
                     document[DocumentPart.TTNR] = folders[0];
-                    Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                    Regex regex = new Regex(document[DocumentPart.MaterialRegularEx]);
                     Match match2 = regex.Match(folders[0]);
                     StringBuilder nsb = new();
                     foreach (Group ma in match2.Groups.Values.Skip(1))
@@ -175,7 +175,7 @@ namespace El2Core.Utils
                 document[DocumentPart.Type] = "VmpbPart";
                 document[DocumentPart.RootPath] = string.Empty;
                 document[DocumentPart.Template] = string.Empty;
-                document[DocumentPart.RegularEx] = string.Empty;
+                document[DocumentPart.MaterialRegularEx] = string.Empty;
                 document[DocumentPart.JumpTarget] = string.Empty;
                 document[DocumentPart.Folder] = string.Empty;
                 document[DocumentPart.Template_Size1] = string.Empty;
@@ -198,7 +198,7 @@ namespace El2Core.Utils
 
                     document[DocumentPart.TTNR] = folders[0];
                     document[DocumentPart.VNR] = folders[2];
-                    Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                    Regex regex = new Regex(document[DocumentPart.MaterialRegularEx]);
                     Match match2 = regex.Match(folders[0]);
                     StringBuilder nsb = new StringBuilder();
                     foreach (Group ma in match2.Groups.Values.Skip(1))
@@ -256,7 +256,8 @@ namespace El2Core.Utils
                 document = new FirstPartDocument();
                 document[DocumentPart.Type] = "WorkPart";
                 document[DocumentPart.RootPath] = string.Empty;
-                document[DocumentPart.RegularEx] = string.Empty;
+                document[DocumentPart.MaterialRegularEx] = string.Empty;
+                document[DocumentPart.DummyRegualarEx] = string.Empty;
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
                 var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
@@ -272,7 +273,8 @@ namespace El2Core.Utils
                 {
 
                     document[DocumentPart.TTNR] = folders[0];
-                    Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                    Regex regex = new(document[DocumentPart.MaterialRegularEx]);
+                    if(!regex.IsMatch(folders[0])) regex = new(document[DocumentPart.DummyRegualarEx]);
                     Match match2 = regex.Match(folders[0]);
                     StringBuilder nsb = new StringBuilder();
                     foreach (Group ma in match2.Groups.Values.Skip(1))
@@ -333,7 +335,7 @@ namespace El2Core.Utils
                 document = new FirstPartDocument();
                 document[DocumentPart.Type] = "MeasurePart";
                 document[DocumentPart.RootPath] = string.Empty;
-                document[DocumentPart.RegularEx] = string.Empty;
+                document[DocumentPart.MaterialRegularEx] = string.Empty;
                 document[DocumentPart.JumpTarget] = string.Empty;
                 document[DocumentPart.Folder] = string.Empty;
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
@@ -351,7 +353,7 @@ namespace El2Core.Utils
                 {
 
                     document[DocumentPart.TTNR] = folders[0];
-                    Regex regex = new Regex(document[DocumentPart.RegularEx]);
+                    Regex regex = new Regex(document[DocumentPart.MaterialRegularEx]);
                     Match match2 = regex.Match(folders[0]);
                     StringBuilder nsb = new StringBuilder();
                     foreach (Group ma in match2.Groups.Values.Skip(1))
@@ -404,7 +406,7 @@ namespace El2Core.Utils
         Type,
         RootPath,
         Template,
-        RegularEx,
+        MaterialRegularEx,
         Template_Size1,
         Template_Size2,
         Template_Size3,
@@ -417,7 +419,8 @@ namespace El2Core.Utils
         RasterFolder2,
         RasterFolder3,
         OriginalFolder,
-        VNR
+        VNR,
+        DummyRegualarEx
     }
     public enum DocumentType
     {

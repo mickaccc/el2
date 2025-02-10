@@ -190,6 +190,19 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private string? _dummy;
+        public string? Dummy
+        {
+            get { return _dummy; }
+            set
+            {
+                if (_dummy != value)
+                {
+                    _dummy = value;
+                    NotifyPropertyChanged(() => Dummy);
+                }
+            }
+        }
         private string? _bezeichnung;
         public string? Bezeichnung
         {
@@ -339,6 +352,7 @@ namespace Lieferliste_WPF.ViewModels
                 var v = p.First();
                 Aid = v.Aid;
                 Material = v.AidNavigation.Material ?? "DUMMY";
+                if (Material == "DUMMY") Dummy = v.AidNavigation.DummyMatNavigation.Mattext;
                 Bezeichnung = (string.IsNullOrEmpty(v.AidNavigation.Material)) ? v.AidNavigation.DummyMatNavigation?.Mattext : v.AidNavigation.MaterialNavigation?.Bezeichng;
                 Quantity = v.AidNavigation.Quantity;
                 Pro = v.AidNavigation.ProId;

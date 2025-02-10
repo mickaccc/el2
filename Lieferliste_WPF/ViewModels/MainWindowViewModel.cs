@@ -527,11 +527,15 @@ namespace Lieferliste_WPF.ViewModels
             if (obj is null) return;
             if (obj is OrderViewModel o)
             {
-                docu = _workareaDocumentInfo.CreateDocumentInfos([o.Material, o.Aid, string.Empty]);
+                var tt = (o.Material != null) ? o.Material : o.Dummy;
+                if (tt == null) { tt = string.Empty; }
+                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, o.Aid, string.Empty]);
             }
             else if (obj is Vorgang v)
             {
-                docu = _workareaDocumentInfo.CreateDocumentInfos([v.AidNavigation.Material, v.Aid, string.Empty]);
+                var tt = (v.AidNavigation.Material != null) ? v.AidNavigation.Material : v.AidNavigation.DummyMatNavigation?.Mattext;
+                if (tt == null) { tt = string.Empty; }
+                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, v.Aid, string.Empty]);
             }
             else if (obj is TblMaterial m)
             {
@@ -539,7 +543,9 @@ namespace Lieferliste_WPF.ViewModels
             }
             else if (obj is OrderRb orb)
             {
-                docu = _workareaDocumentInfo.CreateDocumentInfos([orb.Material, orb.Aid, string.Empty]);
+                var tt = (orb.Material != null) ? orb.Material : orb.DummyMatNavigation?.Mattext;
+                if (tt == null) { tt = string.Empty; }
+                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, orb.Aid, string.Empty]);
             }
             else if (obj is Dictionary<string, string> dic)
             {
