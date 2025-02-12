@@ -258,11 +258,13 @@ namespace El2Core.Utils
                 document[DocumentPart.RootPath] = string.Empty;
                 document[DocumentPart.MaterialRegularEx] = string.Empty;
                 document[DocumentPart.DummyRegualarEx] = string.Empty;
+                document[DocumentPart.IsMaterialRegEx] = string.Empty;
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
                 var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
                 TextReader reader = new StringReader(RuleInfo.Rules[document[DocumentPart.Type]].RuleData);
                 List<Entry> doc = (List<Entry>)xml.Deserialize(reader);
+                RegexOptions options = RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace;
                 foreach (var entry in doc)
                 {
                     DocumentPart DokuPart = (DocumentPart)Enum.Parse(typeof(DocumentPart), entry.Key.ToString().Trim());
@@ -273,8 +275,13 @@ namespace El2Core.Utils
                 {
 
                     document[DocumentPart.TTNR] = folders[0];
-                    Regex regex = new(document[DocumentPart.MaterialRegularEx]);
-                    if(!regex.IsMatch(folders[0])) regex = new(document[DocumentPart.DummyRegualarEx]);
+                    Regex regex;
+                    if (Regex.IsMatch(folders[0], document[DocumentPart.IsMaterialRegEx], options))
+                        regex = new(document[DocumentPart.MaterialRegularEx]);
+                    else
+                        regex = new(document[DocumentPart.DummyRegualarEx]);
+
+                    regex.Options.CompareTo(RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
                     Match match2 = regex.Match(folders[0]);
                     StringBuilder nsb = new StringBuilder();
                     foreach (Group ma in match2.Groups.Values.Skip(1))
@@ -396,10 +403,17 @@ namespace El2Core.Utils
     }
 
 
-    public class Entry(object key, object value)
+    public class Entry
     {
-        public object Key = key;
-        public object Value = value;
+        public object Key;
+        public object Value;
+        public Entry(object key, object value)
+        {
+            this.Key = key;
+            this.Value = value;
+        }
+
+        public Entry() { this.Key = new(); this.Value = new(); }
     }
     public enum DocumentPart
     {
@@ -420,7 +434,8 @@ namespace El2Core.Utils
         RasterFolder3,
         OriginalFolder,
         VNR,
-        DummyRegualarEx
+        DummyRegualarEx,
+        IsMaterialRegEx
     }
     public enum DocumentType
     {
