@@ -24,7 +24,8 @@
         <conv:ScrollIntoViewConverter x:Key="scrollInto"/>
         <conv:BoolRowDetail x:Key="rowDetail"/>
         <conv:EnumToCollectionConverter x:Key="EnumConv"/>
-
+        <conv:IfNullConverter x:Key="IfNull"/>
+        
         <DataGrid x:Key="Setup1"  AutoGenerateColumns="False" 
 		  CanUserAddRows="False"
 		  CanUserDeleteRows="False"
@@ -66,8 +67,23 @@
                         <Grid Background="LightBlue">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock x:Name="Row0" Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
-                                    <TextBlock x:Name="Row1" Margin="10,0,5,0" Text="{Binding AidNavigation.MaterialNavigation.Bezeichng}"/>
+                                <TextBlock x:Name="Row0" >
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource IfNull}">
+                                            <Binding Path="AidNavigation.Material"/>
+                                            <Binding Path="AidNavigation.DummyMat"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                    
+                                </TextBlock>
+                                <TextBlock x:Name="Row1" Margin="10,0,5,0">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource IfNull}">
+                                            <Binding Path="AidNavigation.MaterialNavigation.Bezeichng"/>
+                                            <Binding Path="AidNavigation.dummyNavigation.MatText"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock> 
                                 </StackPanel>
                                 <TextBlock x:Name="Row2" TextWrapping="Wrap" Text="{Binding Text}"/>
                             </StackPanel>

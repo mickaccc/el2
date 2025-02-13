@@ -765,7 +765,7 @@ namespace ModulePlanning.Planning
                 if (WorkArea != null && WorkArea.CreateFolder)
                 {
                     var work = _container.Resolve<WorkareaDocumentInfo>();
-                    if (Item.AidNavigation.Material != null)
+                    if (!string.IsNullOrEmpty(Item.AidNavigation.Material))
                     {
                         string?[] oa = [Item.AidNavigation.Material, Item.Aid, WorkArea.Bereich];
 
