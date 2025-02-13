@@ -290,7 +290,7 @@ namespace El2Core.Utils
                     {
                         if (ma.Value != folders[0])
                         {
-                            nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
+                            if (!string.IsNullOrEmpty(ma.Value)) nsb.Append(ma.Value).Append(Path.DirectorySeparatorChar);
                         }
                     }
                     foreach (var s in folders.Skip(1))

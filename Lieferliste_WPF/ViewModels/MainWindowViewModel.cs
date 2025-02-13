@@ -533,7 +533,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             else if (obj is Vorgang v)
             {
-                var tt = (v.AidNavigation.Material != null) ? v.AidNavigation.Material : v.AidNavigation.DummyMat;
+                var tt = string.IsNullOrEmpty(v.AidNavigation.Material) ? v.AidNavigation.DummyMat : v.AidNavigation.Material;
                 if (tt == null) { tt = string.Empty; }
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, v.Aid, string.Empty], string.IsNullOrEmpty(v.AidNavigation.Material));
             }
@@ -543,7 +543,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             else if (obj is OrderRb orb)
             {
-                var tt = (orb.Material != null) ? orb.Material : orb.DummyMat;
+                var tt = string.IsNullOrEmpty(orb.Material) ? orb.DummyMat : orb.Material;
                 if (tt == null) { tt = string.Empty; }
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, orb.Aid, string.Empty], string.IsNullOrEmpty(orb.Material));
             }
