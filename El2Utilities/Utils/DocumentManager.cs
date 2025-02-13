@@ -31,7 +31,7 @@ namespace El2Core.Utils
     {
         private IContainerExtension Container => container;
         public abstract Document CreateDocumentInfos();
-        public abstract Document CreateDocumentInfos(string[] folders);
+        public abstract Document CreateDocumentInfos(string[] folders, bool isDummy);
         public abstract Document GetDocument();
         public void SaveDocumentData(Document document)
         {
@@ -53,6 +53,7 @@ namespace El2Core.Utils
         }
         public void Collect(Document document)
         {
+            if (string.IsNullOrEmpty(document[DocumentPart.SavePath])) { return; }
             if (!Directory.Exists(document[DocumentPart.RootPath])) return;
             string path = document[DocumentPart.RootPath];
             foreach(var s in document[DocumentPart.SavePath].Split(Path.DirectorySeparatorChar))
@@ -86,7 +87,7 @@ namespace El2Core.Utils
             logger = factory.CreateLogger<MeasureFirstPartInfo>();
         }
 
-        public override Document CreateDocumentInfos(string[]? folders)
+        public override Document CreateDocumentInfos(string[]? folders, bool isDummy = false)
         {
             try
             {
@@ -167,7 +168,7 @@ namespace El2Core.Utils
             logger = factory.CreateLogger<VmpbDocumentInfo>();
         }
 
-        public override Document CreateDocumentInfos(string[]? folders)
+        public override Document CreateDocumentInfos(string[]? folders, bool isDummy = false)
         {
             try
             {
@@ -249,7 +250,7 @@ namespace El2Core.Utils
             logger = factory.CreateLogger<WorkareaDocumentInfo>();
         }
 
-        public override Document CreateDocumentInfos(string[]? folders)
+        public override Document CreateDocumentInfos(string[]? folders, bool isDummy = false)
         {
             try
             {
@@ -258,7 +259,7 @@ namespace El2Core.Utils
                 document[DocumentPart.RootPath] = string.Empty;
                 document[DocumentPart.MaterialRegularEx] = string.Empty;
                 document[DocumentPart.DummyRegualarEx] = string.Empty;
-                document[DocumentPart.IsMaterialRegEx] = string.Empty;
+                document[DocumentPart.SavePath] = string.Empty;
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
                 var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
@@ -276,14 +277,15 @@ namespace El2Core.Utils
 
                     document[DocumentPart.TTNR] = folders[0];
                     Regex regex;
-                    if (Regex.IsMatch(folders[0], document[DocumentPart.IsMaterialRegEx], options))
-                        regex = new(document[DocumentPart.MaterialRegularEx]);
-                    else
+                    if (isDummy)
                         regex = new(document[DocumentPart.DummyRegualarEx]);
+                    else
+                        regex = new(document[DocumentPart.MaterialRegularEx]);
 
                     regex.Options.CompareTo(RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
                     Match match2 = regex.Match(folders[0]);
-                    StringBuilder nsb = new StringBuilder();
+                    if (!match2.Success) { return document; }
+                    StringBuilder nsb = new();
                     foreach (Group ma in match2.Groups.Values.Skip(1))
                     {
                         if (ma.Value != folders[0])
@@ -335,7 +337,7 @@ namespace El2Core.Utils
             logger = factory.CreateLogger<MeasureDocumentInfo>();
         }
 
-        public override Document CreateDocumentInfos(string[]? folders)
+        public override Document CreateDocumentInfos(string[]? folders, bool isDummy = false)
         {
             try
             {
@@ -434,8 +436,7 @@ namespace El2Core.Utils
         RasterFolder3,
         OriginalFolder,
         VNR,
-        DummyRegualarEx,
-        IsMaterialRegEx
+        DummyRegualarEx
     }
     public enum DocumentType
     {

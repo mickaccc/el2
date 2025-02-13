@@ -227,6 +227,7 @@
                             DummyText="{Binding AidNavigation.DummyMatNavigation.Mattext}"
                             MatText="{Binding AidNavigation.MaterialNavigation.Bezeichng}"
                             TTNR="{Binding AidNavigation.Material}"
+                            DummyMat="{Binding AidNavigation.DummyMat}"
                             EndDate="{Binding SpaetEnd}"
                             EckEnd="{Binding AidNavigation.Eckende}"
                             LieferTermin="{Binding AidNavigation.LieferTermin, Mode=TwoWay}"

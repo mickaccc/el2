@@ -39,7 +39,8 @@ namespace ModuleDeliverList.UserControls
         private static object OnTrim(DependencyObject d, object baseValue)
         {
             var bsv = baseValue as string;
-            return (string.IsNullOrEmpty(bsv)) ? "DUMMY" : bsv.Trim();           
+            var lc = (LieferlisteControl)d;
+            return (string.IsNullOrEmpty(bsv)) ? lc.GetValue(DummyMatProperty) : bsv.Trim();           
         }
 
         public string TTNR
@@ -59,6 +60,21 @@ namespace ModuleDeliverList.UserControls
             var lc = (LieferlisteControl)d;
             return (string.IsNullOrEmpty(bsv)) ? lc.GetValue(DummyTextProperty) : bsv;
         }
+
+
+        public string DummyMat
+        {
+            get { return (string)GetValue(DummyMatProperty); }
+            set { SetValue(DummyMatProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for DummyMat.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DummyMatProperty =
+            DependencyProperty.Register("DummyMat"
+                , typeof(string)
+                , typeof(LieferlisteControl)
+                , new PropertyMetadata("DUMMY", OnPropertyChanged));
+
 
         public string MatText
         {

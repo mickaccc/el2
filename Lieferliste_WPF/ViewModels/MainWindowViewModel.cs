@@ -527,15 +527,15 @@ namespace Lieferliste_WPF.ViewModels
             if (obj is null) return;
             if (obj is OrderViewModel o)
             {
-                var tt = (o.Material != null) ? o.Material : o.Dummy;
+                var tt = (o.Material == "DUMMY") ? o.DummyMat : o.Material;
                 if (tt == null) { tt = string.Empty; }
-                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, o.Aid, string.Empty]);
+                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, o.Aid, string.Empty], o.Material == "DUMMY");
             }
             else if (obj is Vorgang v)
             {
-                var tt = (v.AidNavigation.Material != null) ? v.AidNavigation.Material : v.AidNavigation.DummyMatNavigation?.Mattext;
+                var tt = (v.AidNavigation.Material != null) ? v.AidNavigation.Material : v.AidNavigation.DummyMat;
                 if (tt == null) { tt = string.Empty; }
-                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, v.Aid, string.Empty]);
+                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, v.Aid, string.Empty], string.IsNullOrEmpty(v.AidNavigation.Material));
             }
             else if (obj is TblMaterial m)
             {
@@ -543,17 +543,22 @@ namespace Lieferliste_WPF.ViewModels
             }
             else if (obj is OrderRb orb)
             {
-                var tt = (orb.Material != null) ? orb.Material : orb.DummyMatNavigation?.Mattext;
+                var tt = (orb.Material != null) ? orb.Material : orb.DummyMat;
                 if (tt == null) { tt = string.Empty; }
-                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, orb.Aid, string.Empty]);
+                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, orb.Aid, string.Empty], string.IsNullOrEmpty(orb.Material));
             }
             else if (obj is Dictionary<string, string> dic)
             {
                 docu = _workareaDocumentInfo.CreateDocumentInfos([(string)dic["ttnr"], (string)dic["aid"], string.Empty]);
             }
-            else if(obj is Dictionary<string, object> dicobj)
+            else if (obj is Dictionary<string, object> dicobj)
             {
-                docu = _workareaDocumentInfo.CreateDocumentInfos([(string)dicobj["ttnr"], (string)dicobj["aid"], string.Empty]);
+
+                string tt;
+
+                tt = (string)(((string?)dicobj["ttnr"] == "DUMMY") ? string.Empty : dicobj["ttnr"]);
+
+                docu = _workareaDocumentInfo.CreateDocumentInfos([tt, (string)dicobj["aid"], string.Empty], (string?)dicobj["ttnr"] == "DUMMY");
             }
             if (docu != null)
             {

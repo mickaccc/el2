@@ -774,11 +774,9 @@ namespace ModulePlanning.Planning
                     }
                     else if(Item.AidNavigation.DummyMat != null)
                     {
-                        char charToRemove = '.';
-                        var mattext = Item.AidNavigation.DummyMatNavigation?.Mattext?.Replace(charToRemove.ToString(), "");
-                        string?[] oa = [mattext, Item.Aid, WorkArea.Bereich];
+                        string?[] oa = [Item.AidNavigation.DummyMat, Item.Aid, WorkArea.Bereich];
 
-                        _ = work.CreateDocumentInfos(oa);
+                        _ = work.CreateDocumentInfos(oa, true);
                         work.Collect();
                     }
                 }
