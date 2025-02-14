@@ -80,7 +80,7 @@
                                     <TextBlock.Text>
                                         <MultiBinding Converter="{StaticResource IfNull}">
                                             <Binding Path="AidNavigation.MaterialNavigation.Bezeichng"/>
-                                            <Binding Path="AidNavigation.dummyNavigation.MatText"/>
+                                            <Binding Path="AidNavigation.DummyMatNavigation.Mattext"/>
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock> 
@@ -171,9 +171,23 @@
                         <Grid Background="LightBlue">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock  Text="{Binding AidNavigation.Material, Converter={StaticResource TTNR}}"/>
-                                    <TextBlock  Margin="10,0,5,0" Text="{Binding AidNavigation.MaterialNavigation.Bezeichng}"/>
-                                </StackPanel>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource IfNull}">
+                                            <Binding Path="AidNavigation.Material"/>
+                                            <Binding Path="AidNavigation.DummyMat"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <TextBlock  Margin="10,0,5,0">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource IfNull}">
+                                            <Binding Path="AidNavigation.MaterialNavigation.Bezeichng"/>
+                                            <Binding Path="AidNavigation.DummyMatNavigation.Mattext"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </StackPanel>
                                 <TextBlock  TextWrapping="Wrap" Text="{Binding Text}"/>
                             </StackPanel>
                         </Grid>

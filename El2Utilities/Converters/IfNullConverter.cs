@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace El2Core.Converters
@@ -11,7 +12,7 @@ namespace El2Core.Converters
         {
             foreach (var item in value)
             {
-                if (!string.IsNullOrEmpty((string?)item)) return item;
+                if (item != DependencyProperty.UnsetValue) return item;
                 
             }
             return string.Empty;

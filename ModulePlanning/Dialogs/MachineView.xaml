@@ -26,6 +26,7 @@
         <conv:PlusConverter x:Key="plus"/>
         <conv:KW_Converter x:Key="KW"/>
         <conv:NullZeroToBool x:Key="zerobool"/>
+        <conv:IfNullConverter x:Key="IfNull"/>
         <System:Boolean x:Key="TrueValue">True</System:Boolean>
         <System:Boolean x:Key="FalseValue">False</System:Boolean>
         <System:DateTime x:Key="datetime"/>
@@ -199,8 +200,22 @@
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Auftrag" Binding="{Binding Aid}" IsReadOnly="True" />
                 <DataGridTextColumn Header="Vrg" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Bezeichnung" Binding="{Binding AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Material" IsReadOnly="True">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding Converter="{StaticResource IfNull}">
+                            <Binding Path="AidNavigation.Material"/>
+                            <Binding Path="AidNavigation.DummyMat"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Bezeichnung" IsReadOnly="True">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding Converter="{StaticResource IfNull}">
+                            <Binding Path="AidNavigation.MaterialNavigation.Bezeichng"/>
+                            <Binding Path="AidNavigation.DummyMatNavigation.Mattext"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="SpätStart" Binding="{Binding SpaetStart, Converter={StaticResource KW},
                     ConverterParameter=2}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="SpätEnd" Binding="{Binding SpaetEnd, Converter={StaticResource KW},
