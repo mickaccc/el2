@@ -17,7 +17,7 @@
     </UserControl.Resources>
     <Grid Background="{DynamicResource MahApps.Brushes.Control.Background}" >
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="3">
@@ -42,15 +42,22 @@
                         <StackPanel Orientation="Horizontal" >
                             <Label Content="AutoSave"/>
                             <ToggleButton IsChecked="{Binding AutoSave}" ToolTip="automatisch speichern" />
+                            <materialDesign:PackIcon Kind="User"/>
                         </StackPanel>
                     </materialDesign:Chip>
                     <materialDesign:Chip>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Save Message"/>
                             <ToggleButton IsChecked="{Binding SaveMessage}" ToolTip="beim schliessen nachfragen" />
-
+                            <materialDesign:PackIcon Kind="User"/>
                         </StackPanel>
                     </materialDesign:Chip>
+                    <Label>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Thema"/>
+                            <materialDesign:PackIcon Kind="User"/>
+                        </StackPanel>
+                    </Label>
                     <ComboBox x:Name="AccentSelector"
                           Margin="0 0 2 0"
                           VerticalAlignment="Center"
@@ -59,9 +66,19 @@
                           DisplayMemberPath="Name"
                           SelectedValue="{Binding DataContext.SelectedTheme, RelativeSource={RelativeSource AncestorType=UserControl}}"
                           ItemsSource="{Binding Source={StaticResource Themes}}" />
-                    <Label Content="Personal Path"/>
+                    <Label>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Personal Path"/>
+                            <materialDesign:PackIcon Kind="User"/>
+                        </StackPanel>
+                    </Label>
                     <TextBox x:Name="ExpRoot" Text="{Binding Path=PersonalFolder}"/>
-                    <Label Content="Schriftgröße"/>
+                    <Label>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Schriftgröße"/>
+                            <materialDesign:PackIcon Kind="User"/>
+                        </StackPanel>
+                    </Label>
                     <TextBox x:Name="FontSize" Text="{Binding Path=GlobalFontSize, ValidatesOnNotifyDataErrors=True}" />
                     <Label Content="Kalenderwochen Rückblick (Arbeitszeiten)"/>
                     <TextBox x:Name="KWReview" >
@@ -93,7 +110,12 @@
                         <TextBlock Grid.Column="4" Text="THEMES" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
                         <StackPanel Grid.Row="1">
 
-                            <Label Content="Haupt:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Layout"/>
+                                    <materialDesign:PackIcon Kind="User"/>
+                                </StackPanel>
+                            </Label>
                             <ComboBox ItemsSource="{Binding DataContext.PlanedSetups, RelativeSource={RelativeSource AncestorType=UserControl}}"                                                    
                                       SelectedValue="{Binding DataContext.PlanedSetup, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       x:Name="column"/>
@@ -106,10 +128,15 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="RowDetails"/>
                                     <ToggleButton IsChecked="{Binding RowDetails}" ToolTip="Details anzeigen" />
-
+                                    <materialDesign:PackIcon Kind="User"/>
                                 </StackPanel>
                             </materialDesign:Chip>
-                            <Label Content="Maschinenbreite in Prozent"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Maschinenbreite in Prozent"/>
+                                    <materialDesign:PackIcon Kind="User"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Path=SizePercent}"/>
                         </StackPanel>
     
@@ -128,7 +155,14 @@
                         <ColumnDefinition Width="40*"/>
                         <ColumnDefinition Width="200*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.ColumnSpan="2" Content="Personal Special Filter" Background="Aquamarine" HorizontalContentAlignment="Center"/>
+                    <Label Grid.ColumnSpan="2" Background="Aquamarine" HorizontalContentAlignment="Center">
+    
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Personal Special Filter"/>
+                            <materialDesign:PackIcon Kind="User"/>
+                        </StackPanel>
+             
+                    </Label>
                     <ListBox Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding PersonalFilterView}" Margin="10" MinWidth="80" IsSynchronizedWithCurrentItem="True"
                                      Background="AntiqueWhite">
                         <ListBox.ItemTemplate>
@@ -162,59 +196,159 @@
                 <TabControl TabStripPlacement="Left">
                     <TabItem Header="Prüfdatenblatt">
                         <StackPanel>
-                            <TextBlock Text="Root:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Root"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Fdocu[1]}"/>
-                            <TextBlock Text="Template:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Template"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Fdocu[2]}"/>
-                            <TextBlock Text="RegEx:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="RegEx"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Fdocu[3]}"/>
-                            <TextBlock Text="Sprungziel"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Sprungziel"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Fdocu[10]}"/>
-                            <TextBlock Text="Raster Folder"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Raster Folder"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Fdocu[12]}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="Vormuster">
 
                         <StackPanel>
-                            <TextBlock Text="Root:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Root:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Vdocu[1]}"/>
-                            <TextBlock Text="Template1:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Template1:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Vdocu[2]}"/>
-                            <TextBlock Text="Template2:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Template2:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Vdocu[4]}"/>
-                            <TextBlock Text="Template3:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Template3:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Vdocu[5]}"/>
-                            <TextBlock Text="Template4:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Template4:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Vdocu[6]}"/>
-                            <TextBlock Text="Regex:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="RegEx:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Vdocu[3]}"/>
-                            <TextBlock Text="Original Ordner"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Original Ordner:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Vdocu[15]}"/>
-                            <TextBlock Text="Speicher Ordner:"/>
-                            <TextBox Text="{Binding Vdocu[11]}"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Speicher Ordner:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                                </Label>
+                                <TextBox Text="{Binding Vdocu[11]}"/>
                         </StackPanel>
          
                     </TabItem>
                     <TabItem Header="Messen">
                         <StackPanel>
-                            <TextBlock Text="Root:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Root"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Mdocu[1]}"/>
-                            <TextBlock Text="Regex:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="RegEx:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Mdocu[3]}"/>
-                            <TextBlock Text="Ordner:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Ordner:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Mdocu[11]}"/>
-                            <TextBlock Text="Sprungziel:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Sprungziel:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Mdocu[10]}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Header="Bereich">
                         <StackPanel>
-                            <TextBlock Text="Root:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Root:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Wdocu[1]}"/>
-                            <TextBlock Text="Material Regular Expression:"/>
-                            <TextBox Text="{Binding Wdocu[3]}"/>
-                            <TextBlock Text="Dummy Regular Expression:"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Material Regular Expression:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                                </Label>
+                                <TextBox Text="{Binding Wdocu[3]}"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Dummy Regular Expression:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding Wdocu[17]}"/>
                         </StackPanel>
                     </TabItem>
@@ -225,7 +359,12 @@
                     </TabItem>
                     <TabItem Header="Muster">
                         <StackPanel>
-                            <TextBlock Text="Domain für Sonderfreigabe"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Domain für Muster Sonder Freigabe"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
                             <TextBox Text="{Binding RuleMsfDomain}"/>
                         </StackPanel>
                     </TabItem>

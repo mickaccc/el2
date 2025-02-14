@@ -556,7 +556,7 @@ namespace Lieferliste_WPF.ViewModels
 
                 string tt;
 
-                tt = (string)(((string?)dicobj["ttnr"] == "DUMMY") ? string.Empty : dicobj["ttnr"]);
+                tt = (string)(((string?)dicobj["ttnr"] == "DUMMY") ? dicobj["dummymat"] : dicobj["ttnr"]);
 
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, (string)dicobj["aid"], string.Empty], (string?)dicobj["ttnr"] == "DUMMY");
             }
