@@ -5,9 +5,19 @@ namespace El2Core.ViewModelBase
     public abstract class ModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-        public void RunPropertyChanged()
+        public void RunPropertyChanged((string, string)? focused = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(""));
+            if (focused == null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(""));
+            }
+            else
+            {
+                foreach (var item in this.GetType().GetProperties())
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(item.Name));
+                }
+            }
         }
     }
 }

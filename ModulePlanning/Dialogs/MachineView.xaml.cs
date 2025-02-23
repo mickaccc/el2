@@ -1,9 +1,11 @@
 ﻿using El2Core.Converters;
 using El2Core.Models;
+using ModulePlanning.Planning;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 
 namespace ModulePlanning.Dialogs
 {
@@ -57,5 +59,18 @@ namespace ModulePlanning.Dialogs
             if (vrg != null) { vrg.Termin = dp?.SelectedDate; }
         }
 
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var tx = sender as TextBox;
+            var vrg = tx?.DataContext as Vorgang;
+            var ctx = DataContext as PlanMachine;
+            if (vrg != null) { ctx.Focused = new (vrg.VorgangId, TextBox.TextProperty.Name); }
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var ctx = DataContext as PlanMachine;
+            ctx.Focused = null;
+        }
     }
 }
