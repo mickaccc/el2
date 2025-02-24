@@ -8,6 +8,7 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ModulePlanning.Specials;
+using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -411,6 +412,29 @@ namespace ModulePlanning.Planning
                         db.SaveChanges();
                     }
                 });        
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                //The code from Microsoft - Resolving concurrency conflicts 
+                foreach (var entry in ex.Entries)
+                {
+ 
+                    var proposedValues = entry.CurrentValues; //Your proposed changes
+                    var databaseValues = entry.GetDatabaseValues(); //Values in the Db
+
+                    foreach (var property in proposedValues.Properties)
+                    {
+                        var proposedValue = proposedValues[property];
+                        var databaseValue = databaseValues[property];
+                        _logger.LogError("{message} {0} => DB {1}", ex.Message, proposedValue, databaseValue);
+                        // TODO: decide which value should be written to database
+                        // proposedValues[property] = <value to be saved>;
+                    }
+
+                    // Refresh original values to bypass next concurrency check
+                    entry.OriginalValues.SetValues(databaseValues);
+
+                }
             }
             catch (Exception ex)
             {
@@ -820,6 +844,28 @@ namespace ModulePlanning.Planning
                     _eventAggregator.GetEvent<ContextPlanMachineChanged>().Publish(Rid);
                     
                 }               
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                //The code from Microsoft - Resolving concurrency conflicts 
+                foreach (var entry in ex.Entries)
+                {
+                    var proposedValues = entry.CurrentValues; //Your proposed changes
+                    var databaseValues = entry.GetDatabaseValues(); //Values in the Db
+
+                    foreach (var property in proposedValues.Properties)
+                    {
+                        var proposedValue = proposedValues[property];
+                        var databaseValue = databaseValues[property];
+                        _logger.LogError("{message} {0} => DB {1}", ex.Message, proposedValue, databaseValue);
+                        // TODO: decide which value should be written to database
+                        // proposedValues[property] = <value to be saved>;
+                    }
+
+                    // Refresh original values to bypass next concurrency check
+                    entry.OriginalValues.SetValues(databaseValues);
+ 
+                }
             }
             catch (Exception e)
             {
