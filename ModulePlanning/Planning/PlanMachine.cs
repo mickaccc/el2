@@ -62,6 +62,7 @@ namespace ModulePlanning.Planning
     public interface IPlanMachine
     {
         public int Rid { get; }
+        public (string, string)? Focused { get; set;}
     }
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public class PlanMachine : ViewModelBase, IPlanMachine, IDropTarget, IViewModel
@@ -209,6 +210,8 @@ namespace ModulePlanning.Planning
             }
         }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
+        public (string, string)? Focused { get; set; }
+
         private void LoadData(Ressource res)
         { 
             CostUnits.AddRange(res.RessourceCostUnits.Select(x => x.CostId));
@@ -350,7 +353,7 @@ namespace ModulePlanning.Planning
                             foreach(var v in Processes?.Where(x => x.Aid == item.Value.Item2) )
                             {
                                 db.Entry<Vorgang>(v).Reload();
-                                v.RunPropertyChanged();
+                                v.RunPropertyChanged(Focused);
                                 _logger.LogInformation("Planmachine - reloaded {message}", v.VorgangId);
                             }
                         }
@@ -381,7 +384,7 @@ namespace ModulePlanning.Planning
                                 {
                                     _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
                                     db.Entry<Vorgang>(pr).Reload();
-                                    pr.RunPropertyChanged();
+                                    pr.RunPropertyChanged(Focused);
                                     _logger.LogInformation("PlanMachine - maybe remove {message} {1} {2} - {3}", pr.VorgangId, pr.SysStatus, pr.Aid,pr.Vnr);
                                              
                                     if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
@@ -457,7 +460,7 @@ namespace ModulePlanning.Planning
                 if (local.SortPos != remote.SortPos) { local.SortPos = remote.SortPos; changed = true; }
                 if (local.Termin != remote.Termin) { local.Termin = remote.Termin; changed = true; }
 
-                if (changed) local.RunPropertyChanged();
+                if (changed) local.RunPropertyChanged(Focused);
             }
             else
             { 
@@ -469,7 +472,7 @@ namespace ModulePlanning.Planning
                 local.Aktuell = remote.Aktuell;
                 local.QuantityYield = remote.QuantityYield;
 
-                local.RunPropertyChanged();
+                local.RunPropertyChanged(Focused);
             }
             
         }
@@ -560,7 +563,7 @@ namespace ModulePlanning.Planning
                 var corr = result.Parameters.GetValue<double?>("correct");
                 var v = Processes.First(x => x.VorgangId == vrg.VorgangId);
                 v.Correction = (float?)corr;
-                v.RunPropertyChanged();
+                v.RunPropertyChanged(Focused);
                 _logger.LogInformation("{message} {1}", "Set Correction:", v.Correction);
             }          
         }
@@ -621,7 +624,7 @@ namespace ModulePlanning.Planning
                         {
                             pr.BemT = String.Format("[{0}-{1}]{2}{3}",
                             UserInfo.User.UserId, DateTime.Now.ToShortDateString(), (char)29, bemt[1]);
-                            pr.RunPropertyChanged();
+                            pr.RunPropertyChanged(Focused);
                         }
                     }
                     _logger.LogInformation("{message} {1}", "History Callback:", bemt.ToString());
