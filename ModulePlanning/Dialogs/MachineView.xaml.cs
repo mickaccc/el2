@@ -1,5 +1,6 @@
 ﻿using El2Core.Converters;
 using El2Core.Models;
+using ModulePlanning.Dialogs.ViewModels;
 using ModulePlanning.Planning;
 using System;
 using System.Windows;
@@ -14,7 +15,6 @@ namespace ModulePlanning.Dialogs
     /// </summary>
     public partial class MachineView : UserControl
     {
-
 
         public string BemTInfo
         {
@@ -31,7 +31,6 @@ namespace ModulePlanning.Dialogs
         {
             InitializeComponent();
         }
-
 
         private void Process_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
@@ -59,18 +58,19 @@ namespace ModulePlanning.Dialogs
             if (vrg != null) { vrg.Termin = dp?.SelectedDate; }
         }
 
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             var tx = sender as TextBox;
             var vrg = tx?.DataContext as Vorgang;
-            var ctx = DataContext as PlanMachine;
-            if (vrg != null) { ctx.Focused = new (vrg.VorgangId, TextBox.TextProperty.Name); }
+            var ctx = DataContext as MachineViewVM;
+            var bind = BindingOperations.GetBinding(tx, TextBox.TextProperty);
+            if (vrg != null && !tx.IsReadOnly) { ctx.PlanMachine.Focused = new (vrg.VorgangId, bind.Path.Path); }
         }
 
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            var ctx = DataContext as PlanMachine;
-            ctx.Focused = null;
+            var ctx = DataContext as MachineViewVM;
+            ctx.PlanMachine.Focused = null;
         }
     }
 }

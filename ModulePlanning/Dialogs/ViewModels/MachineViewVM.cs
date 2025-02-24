@@ -24,6 +24,7 @@ namespace ModulePlanning.Dialogs.ViewModels
                 }
             }
         }
+        public SynchronizationContext ViewContext { get; set; }
         public ICommand? SetMarkerCommand { get; private set; }
         public ICommand? HistoryCommand { get; private set; }
         public ICommand? FastCopyCommand { get; private set; }
