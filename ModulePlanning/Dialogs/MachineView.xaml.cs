@@ -47,7 +47,8 @@ namespace ModulePlanning.Dialogs
             {
                 DataGridTextColumn? dgtc = e.Column as DataGridTextColumn;
                 DateConverter con = new();
-                (dgtc.Binding as Binding).Converter = con;
+                if (dgtc != null)
+                    ((Binding)dgtc.Binding).Converter = con;
             }
         }
 
