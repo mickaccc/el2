@@ -1,10 +1,11 @@
 ﻿using El2Core.Converters;
 using El2Core.Models;
-using ModulePlanning.Dialogs.ViewModels;
+using ModulePlanning.Planning;
+using System;
 using System.Windows;
-using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 
 namespace ModulePlanning.Dialogs
 {
@@ -14,10 +15,23 @@ namespace ModulePlanning.Dialogs
     public partial class MachineView : UserControl
     {
 
+
+        public string BemTInfo
+        {
+            get { return (string)GetValue(BemTInfoProperty); }
+            set { SetValue(BemTInfoProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BemTInfo.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BemTInfoProperty =
+            DependencyProperty.Register("BemTInfo", typeof(string), typeof(MachineView), new PropertyMetadata(""));
+
+
         public MachineView()
         {
             InitializeComponent();
         }
+
 
         private void Process_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
@@ -33,11 +47,7 @@ namespace ModulePlanning.Dialogs
             {
                 DataGridTextColumn? dgtc = e.Column as DataGridTextColumn;
                 DateConverter con = new();
-                if (dgtc != null)
-                {
-                    if (dgtc.Binding is Binding bind)
-                        bind.Converter = con;
-                }
+                (dgtc.Binding as Binding).Converter = con;
             }
         }
 
@@ -48,21 +58,16 @@ namespace ModulePlanning.Dialogs
             if (dp?.DataContext is Vorgang vrg) { vrg.Termin = dp?.SelectedDate; }
         }
 
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            //if (DataContext is MachineViewVM ctx && sender is TextBox tx)
-            //{
-            //    var bind = BindingOperations.GetBinding(tx, TextBox.TextProperty);
-            //    if (tx.DataContext is Vorgang vrg && !tx.IsReadOnly && ctx.PlanMachine != null && bind != null)
-            //    { ctx.PlanMachine.Focused = new(vrg.VorgangId, bind.Path.Path); }
-            //}
-        }
-
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            //if (DataContext is MachineViewVM ctx && ctx.PlanMachine != null)
-            //    ctx.PlanMachine.Focused = null;
+            var tx = sender as TextBox;
+            if (tx?.DataContext is Vorgang vrg && DataContext is PlanMachine ctx)
+            { ctx.Focused = new(vrg.VorgangId, TextBox.TextProperty.Name); }
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is PlanMachine ctx) ctx.Focused = null;
         }
     }
-
 }
