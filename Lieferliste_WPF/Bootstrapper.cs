@@ -28,6 +28,7 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Navigation.Regions;
 using Prism.Unity;
+using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
@@ -60,15 +61,17 @@ namespace Lieferliste_WPF
         }
 
         private void Current_Exit(object sender, ExitEventArgs e)
-        {
-            
+        {           
             _Logger?.LogInformation("Exit: {pc}--{id} Exitcode:{ec}", UserInfo.PC, UserInfo.Dbid, e.ApplicationExitCode);
         }
 
 
         private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            _Logger?.LogCritical("Unhandled exception: {message}", e.Exception.ToString());
+            string para = string.Empty;
+            var ex = e.Exception as ArgumentNullException;
+            if (ex != null) para = ex.ParamName + " Source: " + ex.Source;
+            _Logger?.LogCritical("Unhandled exception: {message} Parameter: {p}", e.Exception.ToString(), para);
         }
         protected override void OnInitialized()
         {

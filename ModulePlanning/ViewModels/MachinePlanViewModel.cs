@@ -9,7 +9,6 @@ using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ModulePlanning.Planning;
-using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -113,18 +112,10 @@ namespace ModulePlanning.ViewModels
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
-            _ea.GetEvent<ContextPlanMachineChanged>().Subscribe(ctxChanged);
             if (_settingsService.IsAutoSave) SetAutoSaveTimer();
 
         }
 
-        private void ctxChanged(int obj)
-        {
-            lock (_lock)
-            {             
-                _DbCtx.SaveChanges();
-            }
-        }
         private bool IsRelevant(string? ArbPl)
         {
 

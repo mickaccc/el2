@@ -21,12 +21,10 @@ using System.IO;
 using System.Linq;
 using System.Printing;
 using System.Reflection;
-using System.Text;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Xml.Linq;
 
 namespace Lieferliste_WPF.ViewModels
 {
@@ -690,24 +688,7 @@ namespace Lieferliste_WPF.ViewModels
                                         msgListO.Add((item.Invoker, item.PrimaryKey));
                                         
                                     }
-                            }
-                            //item.OldValue ??= "<row></row>";
-                            //item.NewValue ??= "<row></row>";
-                            //item.OldValue = item.OldValue.Replace(Convert.ToChar((byte)0x1D), ' ');
-                            //item.NewValue = item.NewValue.Replace(Convert.ToChar((byte)0x1D), ' ');
-                            //var xml1 = XElement.Parse(item.OldValue);
-                            //    var xml2 = XElement.Parse(item.NewValue);
-                            //    StringBuilder result = new();
-                            //    foreach (var x in xml2.Elements())
-                            //    {
-                            //        if (string.Equals(x.Value, xml1.Element(x.Name).Value ??= string.Empty)==false)
-                            //        {
-                            //            result.Append(x.Name).Append(": ").Append(xml1.Element(x.Name).Value).Append(" => ").Append(x.Value)
-                            //                .Append(" | ");
-                            //        }
-                            //    }
-                            //    _Logger.LogInformation(item.TableName, " id ", item.PrimaryKey, " : ", result.ToString()); 
-                            
+                            }                            
                         }
 
                         foreach (var msg in m)

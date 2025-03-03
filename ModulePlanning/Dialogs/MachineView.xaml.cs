@@ -1,12 +1,9 @@
 ﻿using El2Core.Converters;
 using El2Core.Models;
 using ModulePlanning.Dialogs.ViewModels;
-using ModulePlanning.Planning;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 
 namespace ModulePlanning.Dialogs
 {
@@ -46,7 +43,11 @@ namespace ModulePlanning.Dialogs
             {
                 DataGridTextColumn? dgtc = e.Column as DataGridTextColumn;
                 DateConverter con = new();
-                (dgtc.Binding as Binding).Converter = con;
+                if (dgtc != null)
+                {
+                    if (dgtc.Binding is Binding bind)
+                        bind.Converter = con;
+                }
             }
         }
 
@@ -54,23 +55,23 @@ namespace ModulePlanning.Dialogs
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             var dp = sender as DatePicker;
-            var vrg = dp?.DataContext as Vorgang;
-            if (vrg != null) { vrg.Termin = dp?.SelectedDate; }
+            if (dp?.DataContext is Vorgang vrg) { vrg.Termin = dp?.SelectedDate; }
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            var tx = sender as TextBox;
-            var vrg = tx?.DataContext as Vorgang;
-            var ctx = DataContext as MachineViewVM;
-            var bind = BindingOperations.GetBinding(tx, TextBox.TextProperty);
-            if (vrg != null && !tx.IsReadOnly) { ctx.PlanMachine.Focused = new (vrg.VorgangId, bind.Path.Path); }
+            if (DataContext is MachineViewVM ctx && sender is TextBox tx)
+            {
+                var bind = BindingOperations.GetBinding(tx, TextBox.TextProperty);
+                if (tx.DataContext is Vorgang vrg && !tx.IsReadOnly && ctx.PlanMachine != null)
+                { ctx.PlanMachine.Focused = new(vrg.VorgangId, bind.Path.Path); }
+            }
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            var ctx = DataContext as MachineViewVM;
-            ctx.PlanMachine.Focused = null;
+            if (DataContext is MachineViewVM ctx && ctx.PlanMachine != null)
+                ctx.PlanMachine.Focused = null;
         }
     }
 }

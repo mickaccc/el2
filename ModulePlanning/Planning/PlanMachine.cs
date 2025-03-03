@@ -783,9 +783,10 @@ namespace ModulePlanning.Planning
                 for (int i = 0; i < larr.Length; i++)
                 {
                     var vrg = p.First(x => x.Equals(larr[i]));
-                    _logger.LogInformation("old sort {message} {0}", vrg.VorgangId, vrg.SortPos);
+                    var oldSort = vrg.SortPos;
+                    
                     vrg.SortPos = string.Format("{0,4:0}_{1,3:0}", Rid.ToString("D3"), i.ToString("D3"));
-                    _logger.LogInformation("new sort {message} {0}",vrg.VorgangId, vrg.SortPos);
+                    _logger.LogInformation("new sort {message} {0} ==> {1}",vrg.VorgangId, oldSort, vrg.SortPos);
                 }
                 Target.MoveCurrentTo(Item);
                 
@@ -819,33 +820,35 @@ namespace ModulePlanning.Planning
 
             try
             {
+                lock(_lock)
+                {
                 var s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
                 var t = dropInfo.TargetCollection as ListCollectionView;
                 
                 var v = dropInfo.InsertIndex;
-                if (s != null && t != null)
-                {
-                    ListCollectionView lv = ProcessesCV as ListCollectionView;
-                    if (lv.IsAddingNew) { lv.CommitNew(); }
-                    if (lv.IsEditingItem) { lv.CommitEdit(); }
-                    if (dropInfo.Data is List<dynamic> vrgList)
+                    if (s != null && t != null)
                     {
-                        foreach (var vrg in vrgList)
+                        ListCollectionView? lv = ProcessesCV as ListCollectionView;
+                        if (lv == null) return;
+                        if (lv.IsAddingNew) { lv.CommitNew(); }
+                        if (lv.IsEditingItem) { lv.CommitEdit(); }
+                        if (dropInfo.Data is List<dynamic> vrgList)
                         {
-                            InsertItems(vrg, s, t, v, false);
- 
+                            foreach (var vrg in vrgList)
+                            {
+                                InsertItems(vrg, s, t, v, false);
+
+                            }
+                            _logger.LogInformation("{message} {id}", "Drops", vrgList.ToString());
                         }
-                        _logger.LogInformation("{message} {id}", "Drops", vrgList.ToString());
+                        else if (dropInfo.Data is Vorgang vrg)
+                        {
+                            InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
+                            _logger.LogInformation("{message} {id} {sort}", "Drops", vrg.VorgangId, vrg.SortPos);
+                        }
+
+                        ProcessesCV.Refresh();
                     }
-                    else if (dropInfo.Data is Vorgang vrg)
-                    {
-                        InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
-                        _logger.LogInformation("{message} {id} {sort}", "Drops" , vrg.VorgangId, vrg.SortPos);
-                    }
- 
-                    ProcessesCV.Refresh();
-                    _eventAggregator.GetEvent<ContextPlanMachineChanged>().Publish(Rid);
-                    
                 }               
             }
             catch (DbUpdateConcurrencyException ex)
@@ -855,20 +858,26 @@ namespace ModulePlanning.Planning
                 {
                     var proposedValues = entry.CurrentValues; //Your proposed changes
                     var databaseValues = entry.GetDatabaseValues(); //Values in the Db
-
-                    foreach (var property in proposedValues.Properties)
+                    if (databaseValues != null)
                     {
-                        var proposedValue = proposedValues[property];
-                        var databaseValue = databaseValues[property];
-                        _logger.LogError("{message} {0} => DB {1}", ex.Message, proposedValue, databaseValue);
-                        // TODO: decide which value should be written to database
-                        // proposedValues[property] = <value to be saved>;
-                    }
+                        foreach (var property in proposedValues.Properties)
+                        {
+                            var proposedValue = proposedValues[property];
+                            var databaseValue = databaseValues[property];
+                            _logger.LogError("{message} {0} => DB {1}", ex.Message, proposedValue, databaseValue);
+                            // TODO: decide which value should be written to database
+                            // proposedValues[property] = <value to be saved>;
+                        }
 
-                    // Refresh original values to bypass next concurrency check
-                    entry.OriginalValues.SetValues(databaseValues);
- 
-                }
+                        // Refresh original values to bypass next concurrency check
+                        entry.OriginalValues.SetValues(databaseValues);
+                    }
+                    else { _logger.LogError("databaseValues == null Planmachine Drop DbUpdateConcurrencyException"); }
+                    }
+            }
+            catch (ArgumentNullException e)
+            {
+                _logger.LogError("{message} \nSource: {source} \nData:\n{Parameter}", e.ToString(), e.Source, e.Data);
             }
             catch (Exception e)
             {

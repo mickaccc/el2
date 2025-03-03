@@ -247,8 +247,18 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                                    EditingElementStyle="{StaticResource CellEditStyle}"/>
+                <DataGridTemplateColumn Header="Kommentar" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding CommentMach}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding CommentMach}" LostFocus="TextBox_LostFocus" GotFocus="TextBox_GotFocus" Style="{StaticResource CellEditStyle}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>  
+                </DataGridTemplateColumn>
 
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">
                     <DataGridTemplateColumn.CellTemplate >
