@@ -63,7 +63,7 @@ namespace ModulePlanning.Dialogs
             if (DataContext is MachineViewVM ctx && sender is TextBox tx)
             {
                 var bind = BindingOperations.GetBinding(tx, TextBox.TextProperty);
-                if (tx.DataContext is Vorgang vrg && !tx.IsReadOnly && ctx.PlanMachine != null)
+                if (tx.DataContext is Vorgang vrg && !tx.IsReadOnly && ctx.PlanMachine != null && bind != null)
                 { ctx.PlanMachine.Focused = new(vrg.VorgangId, bind.Path.Path); }
             }
         }
