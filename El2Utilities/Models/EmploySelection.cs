@@ -12,4 +12,6 @@ public partial class EmploySelection
     public string Description { get; set; } = null!;
 
     public bool Active { get; set; }
+
+    public virtual ICollection<EmployeeNote> EmployeeNotes { get; set; } = new List<EmployeeNote>();
 }

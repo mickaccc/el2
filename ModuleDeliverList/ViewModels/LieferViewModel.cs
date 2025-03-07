@@ -195,9 +195,12 @@ namespace ModuleDeliverList.ViewModels
             {
                 if (value != _selectedPersonalFilter)
                 {
-                    _selectedPersonalFilter = value;
-                    NotifyPropertyChanged(() => SelectedPersonalFilter);
-                    OrdersView.Refresh();
+                    if (value != null)
+                    {
+                        _selectedPersonalFilter = value;
+                        NotifyPropertyChanged(() => SelectedPersonalFilter);
+                        OrdersView.Refresh(); 
+                    }
                 }
             }
         }
@@ -651,7 +654,7 @@ namespace ModuleDeliverList.ViewModels
             SelectedDefaultFilter = CmbFilter.NOT_SET;
             SelectedProjectFilter = string.Empty;
             SelectedSectionFilter = string.Empty;
-            SelectedPersonalFilter = null;
+            SelectedPersonalFilter = PersonalFilterContainer.GetInstance().Keys[0];
             MarkerCode = string.Empty;
             FilterInvers = false;
         }
@@ -659,7 +662,6 @@ namespace ModuleDeliverList.ViewModels
         {
             FilterInvers = !FilterInvers;
         }
-
 
         private void OnSaveExecuted(object obj)
         {

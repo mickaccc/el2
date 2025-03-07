@@ -9,7 +9,7 @@ namespace El2Core.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return null;
+            if (value == null) return string.Empty;
             DateTime v = (DateTime)value;
             if (parameter == null) parameter = "0";
             _ = int.TryParse(parameter.ToString(), out int par);

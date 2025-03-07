@@ -17,6 +17,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<AccountWorkArea> AccountWorkAreas { get; set; }
 
+    public virtual DbSet<Component> Components { get; set; }
+
     public virtual DbSet<Costunit> Costunits { get; set; }
 
     public virtual DbSet<EmploySelection> EmploySelections { get; set; }
@@ -32,6 +34,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<InMemoryMsg> InMemoryMsgs { get; set; }
 
     public virtual DbSet<InMemoryOnline> InMemoryOnlines { get; set; }
+
+    public virtual DbSet<MaterialComponent> MaterialComponents { get; set; }
 
     public virtual DbSet<MeasureRess> MeasureResses { get; set; }
 
@@ -137,6 +141,18 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasConstraintName("FK_AccountWorkArea_WorkArea");
         });
 
+        modelBuilder.Entity<Component>(entity =>
+        {
+            entity.HasKey(e => e.TtnrC).HasAnnotation("SqlServer:FillFactor", 95);
+
+            entity.ToTable("Component");
+
+            entity.Property(e => e.TtnrC)
+                .HasMaxLength(255)
+                .HasColumnName("TTNR_C");
+            entity.Property(e => e.Description).HasMaxLength(255);
+        });
+
         modelBuilder.Entity<Costunit>(entity =>
         {
             entity.HasKey(e => e.CostunitId).HasAnnotation("SqlServer:FillFactor", 95);
@@ -186,14 +202,28 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("reference");
+            entity.Property(e => e.SelId).HasColumnName("sel_id");
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp");
+            entity.Property(e => e.VorgId)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("vorg_id");
 
             entity.HasOne(d => d.Acc).WithMany(p => p.EmployeeNotes)
                 .HasForeignKey(d => d.AccId)
                 .HasConstraintName("FK_Employee_note_idm_accounts");
+
+            entity.HasOne(d => d.Sel).WithMany(p => p.EmployeeNotes)
+                .HasForeignKey(d => d.SelId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Employee_note_EmploySelection");
+
+            entity.HasOne(d => d.Vorg).WithMany(p => p.EmployeeNotes)
+                .HasForeignKey(d => d.VorgId)
+                .HasConstraintName("FK_Employee_note_Vorgang");
         });
 
         modelBuilder.Entity<IdmAccount>(entity =>
@@ -333,6 +363,35 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Userid)
                 .HasMaxLength(50)
                 .IsFixedLength();
+        });
+
+        modelBuilder.Entity<MaterialComponent>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasAnnotation("SqlServer:FillFactor", 95);
+
+            entity.ToTable("MaterialComponent");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.Timestamp)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp");
+            entity.Property(e => e.Ttnr)
+                .HasMaxLength(255)
+                .HasColumnName("TTNR");
+            entity.Property(e => e.TtnrC)
+                .HasMaxLength(255)
+                .HasColumnName("TTNR_C");
+
+            entity.HasOne(d => d.TtnrNavigation).WithMany(p => p.MaterialComponents)
+                .HasForeignKey(d => d.Ttnr)
+                .HasConstraintName("FK_MaterialComponent_tblMaterial");
+
+            entity.HasOne(d => d.TtnrCNavigation).WithMany(p => p.MaterialComponents)
+                .HasForeignKey(d => d.TtnrC)
+                .HasConstraintName("FK_MaterialComponent_Component");
         });
 
         modelBuilder.Entity<MeasureRess>(entity =>
@@ -812,6 +871,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("TTNR");
             entity.Property(e => e.Bezeichng).HasMaxLength(256);
+            entity.Property(e => e.Type)
+                .HasMaxLength(100)
+                .HasColumnName("TYPE");
         });
 
         modelBuilder.Entity<Vorgang>(entity =>

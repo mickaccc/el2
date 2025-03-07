@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace ModuleReport.ViewModels
 {
-    internal class SelectionWorkAreaViewModel
+    internal partial class SelectionWorkAreaViewModel
     {
         public SelectionWorkAreaViewModel(IContainerProvider containerProvider, IEventAggregator eventAggregator)
         {
@@ -37,14 +37,14 @@ namespace ModuleReport.ViewModels
                     {
                         if (m.Vorgangs.Any(x => x.Responses.Count > 0))
                         {
-                            Machine mach = new(m.RessourceId, m.Inventarnummer, m.RessName);
+                            Machine mach = new(m.RessourceId, m.Inventarnummer ?? string.Empty, m.RessName ?? string.Empty);
                             mach.PropertyChanged += Mach_PropertyChanged;
                             list.Add(mach);
                         }
                     }
                     if (list.Count > 0)
                     {
-                        var w = new WorkRegion(area.Bereich, list);
+                        var w = new WorkRegion(area.Bereich ?? "null", list);
                         WorkAreas.Add(w);
                     }
                 }
@@ -83,7 +83,7 @@ namespace ModuleReport.ViewModels
                 Machines.ForEach(x => x.IsChecked = isChecked);
             }
         }
-        public class Machine : ViewModelBase
+        public partial class Machine : ViewModelBase
         {
             public Machine(int ressid, string inventno, string name)
             {

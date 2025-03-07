@@ -14,7 +14,7 @@ namespace ModuleReport.ReportSources
         long Counter { get; }
 
     }
-    internal class MaterialSource : ViewModelBase, IMaterialSource
+    internal partial class MaterialSource : ViewModelBase, IMaterialSource
     {
         public MaterialSource(IContainerProvider containerProvider, IEventAggregator eventAggregator)
         {
@@ -32,8 +32,8 @@ namespace ModuleReport.ReportSources
             if (obj == 1) _ = LoadSapDataAsync();
         }
 
-        IContainerProvider container;
-        IEventAggregator ea;
+        private readonly IContainerProvider container;
+        private readonly IEventAggregator ea;
         private readonly ILogger _Logger;
         public ObservableCollection<ReportMaterial> Materials { get; private set; } = [];
         public long MatCount
@@ -51,8 +51,8 @@ namespace ModuleReport.ReportSources
             }
         }
 
-        private List<Vorgang> defaultVrg;
-        private List<Vorgang> sapVrg;
+        private List<Vorgang>? defaultVrg;
+        private List<Vorgang>? sapVrg;
 
         private async Task<List<Vorgang>> TakeDefaults()
         {

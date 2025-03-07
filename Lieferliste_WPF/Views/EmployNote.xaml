@@ -25,12 +25,12 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Background="Aqua">
-            <WpfControl:SearchableComboBox ItemsSource="{Binding VorgangRef}" Width="150" PopupWidth="600"
-                                           SelectedItem="{Binding SelectedVorgangItem, Mode=OneWayToSource}"
+            <WpfControl:SearchableComboBox Name="VrgCombo" ItemsSource="{Binding VorgangRef}" Width="150" PopupWidth="600"
+                                           SelectedItem="{Binding SelectedVorgangItem, Mode=TwoWay}" SelectionChanged="Combo_SelectionChanged" 
                                            SearchFieldName="Auftrag" DisplayFieldNames="Auftrag,Vorgang,Kurztext,Material,Bezeichnung"/>
 
-            <ComboBox ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=OneWayToSource}"
-                      DisplayMemberPath="Description"/>
+            <ComboBox Name="RefCombo" ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=TwoWay}"
+                      DisplayMemberPath="Description" SelectionChanged="Combo_SelectionChanged"/>
 
             <StackPanel Orientation="Horizontal">
                 <StackPanel.Resources>

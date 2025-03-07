@@ -11,6 +11,10 @@ public partial class EmployeeNote
 
     public string AccId { get; set; } = null!;
 
+    public int? SelId { get; set; }
+
+    public string? VorgId { get; set; }
+
     public string Reference { get; set; } = null!;
 
     public string? Comment { get; set; }
@@ -22,4 +26,8 @@ public partial class EmployeeNote
     public double? Processingtime { get; set; }
 
     public virtual IdmAccount Acc { get; set; } = null!;
+
+    public virtual EmploySelection? Sel { get; set; }
+
+    public virtual Vorgang? Vorg { get; set; }
 }

@@ -35,6 +35,8 @@
     <PackageReference Include="MaterialDesignThemes.MahApps" />
     <PackageReference Include="OpenXmlPowerTools" NoWarn="NU1701" />
     <PackageReference Include="Prism.Unity" />
+    <PackageReference Include="System.Net.Http" />
+    <PackageReference Include="System.Text.RegularExpressions" />
   </ItemGroup>
 
   <ItemGroup>

@@ -222,8 +222,11 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                _DbCtx.SaveChanges();
-               foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+                lock (_lock)
+                {
+                    _DbCtx.SaveChanges();
+                    foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -267,6 +270,8 @@ namespace ModulePlanning.ViewModels
             var query = await _DbCtx.Vorgangs
               .Include(x => x.AidNavigation)
               .ThenInclude(x => x.MaterialNavigation)
+              .ThenInclude(x => x.MaterialComponents)
+              .ThenInclude(x => x.TtnrCNavigation)
               .Include(x => x.AidNavigation.DummyMatNavigation)
               .Include(x => x.ArbPlSapNavigation)
               .Include(x => x.Responses)

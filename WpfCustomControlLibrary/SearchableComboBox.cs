@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 namespace WpfCustomControlLibrary
 {
-    public class SearchableComboBox : ContentControl
+    public class SearchableComboBox : ComboBox
     {
         static SearchableComboBox()
         {

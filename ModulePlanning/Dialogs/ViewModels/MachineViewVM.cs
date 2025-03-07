@@ -10,7 +10,7 @@ namespace ModulePlanning.Dialogs.ViewModels
     public class MachineViewVM : IDialogAware, IDropTarget
     {
         public string Title => "Maschinen Details";
-        public string UserIdent => UserInfo.User.UserId;
+        public string UserIdent { get; } = UserInfo.User.UserId;
         public PlanMachine? PlanMachine { get; private set; }
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands

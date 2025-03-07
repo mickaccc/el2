@@ -24,13 +24,13 @@ namespace ModuleReport.ViewModels
 
         public ICollectionView Materials { get; }
 
-        IEventAggregator ea;
-        private HashSet<int> FilterRids = [];
+        readonly IEventAggregator ea;
+        private readonly HashSet<int> FilterRids = [];
         private List<DateTime> FilterDates = [];
         private int _YieldSum = 0;
         private int _ScrapSum = 0;
         private int _ReworkSum = 0;
-        private string _textSearch;
+        private string _textSearch = string.Empty;
         public IMaterialSource MaterialSource { get; }
         public int YieldSum
         {

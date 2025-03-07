@@ -5,15 +5,11 @@ using System.Collections.Generic;
 
 namespace El2Core.Models;
 
-public partial class TblMaterial
+public partial class Component
 {
-    public string Ttnr { get; set; } = null!;
+    public string TtnrC { get; set; } = null!;
 
-    public string? Bezeichng { get; set; }
-
-    public string? Type { get; set; }
+    public string? Description { get; set; }
 
     public virtual ICollection<MaterialComponent> MaterialComponents { get; set; } = new List<MaterialComponent>();
-
-    public virtual ICollection<OrderRb> OrderRbs { get; set; } = new List<OrderRb>();
 }

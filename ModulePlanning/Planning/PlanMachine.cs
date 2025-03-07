@@ -11,6 +11,7 @@ using ModulePlanning.Specials;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
@@ -125,6 +126,7 @@ namespace ModulePlanning.Planning
             }
         }
         private string? _description;
+        
         public string? Description { get { return _description; }
             set { if (_description != value)
                 {
@@ -173,7 +175,7 @@ namespace ModulePlanning.Planning
         public WorkArea? WorkArea { get; set; }
         public List<int> CostUnits { get; set; } = [];
         public ObservableCollection<Vorgang>? Processes { get; set; }
-        public ICollectionView ProcessesCV { get { return ProcessesCVSource.View; } }
+        public ICollectionView ProcessesCV { get; private set; }
         public bool EnableRowDetails { get; private set; }
         private IContainerProvider _container;
         private IEventAggregator _eventAggregator;
@@ -227,7 +229,10 @@ namespace ModulePlanning.Planning
             ProcessesCVSource.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
             ProcessesCVSource.IsLiveSortingRequested = true;
             ProcessesCVSource.LiveSortingProperties.Add("SortPos");
- 
+            ProcessesCV = ProcessesCVSource.View;
+            ProcessesCV.SortDescriptions.Add(new SortDescription("SortPos", ListSortDirection.Ascending));
+  
+            ProcessesCV.CollectionChanged += OnProcessesChanged;
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
             foreach(var s in db.ShiftCalendars.OrderBy(x => x.Id).AsNoTracking())
@@ -236,11 +241,16 @@ namespace ModulePlanning.Planning
             }
             foreach(var stop in db.Stopages.Where(x => x.Rid == Rid && x.Endtime > DateTime.Today).OrderBy(x => x.Starttime).AsNoTracking())
             {
-                Stoppages.Add(stop.Id, [ stop.Description, string.Format("{0} - {1}",
+                Stoppages.Add(stop.Id, [ stop.Description ?? "Stop Ausfall", string.Format("{0} - {1}",
                         stop.Starttime.ToString("d.M H:mm"), stop.Endtime.ToString("d.M H:mm"))]);
             }
             StoppagesView = CollectionViewSource.GetDefaultView(Stoppages);
             ShiftCalendarView = CollectionViewSource.GetDefaultView(ShiftCalendars);
+        }
+
+        private void OnProcessesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+
         }
 
         private void Initialize()
@@ -253,8 +263,8 @@ namespace ModulePlanning.Planning
             NewCalculateCommand = new ActionCommand(OnCalculateExecuted, OnCalculateCanExecute);
             NewStoppageCommand = new ActionCommand(OnNewStoppageExecuted, OnNewStoppageCanExecute);
             DelStoppageCommand = new ActionCommand(OnDelStoppageExecuted, OnDelStoppageCanExecute);
-            _eventAggregator.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-            _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
+            //_eventAggregator.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
+            //_eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
             EnableRowDetails = _settingsService.IsRowDetails;           
@@ -530,7 +540,7 @@ namespace ModulePlanning.Planning
                     db.Stopages.Add(stop);
                     db.SaveChanges();
 
-                    Stoppages.Add(stop.Id, [ stop.Description, string.Format("{0} - {1}",
+                    Stoppages.Add(stop.Id, [ stop.Description ?? "Stop Ausfall", string.Format("{0} - {1}",
                         stop.Starttime.ToString("d.M H:mm"), stop.Endtime.ToString("d.M H:mm"))]);
                     StoppagesView.Refresh();
                     _shiftPlanService.ReloadStoppage();
@@ -750,7 +760,7 @@ namespace ModulePlanning.Planning
             {
                 Item.Rid = _rId;
                 List<Vorgang> lst = [];
-                Target.IsLiveSorting = false;
+                //Target.IsLiveSorting = false;
                 var p = Target.SourceCollection as Collection<Vorgang>;
                 lst.AddRange(p.OrderBy(x => x.SortPos));
                 int oldIndex = Target.IndexOf(Item);
@@ -820,11 +830,10 @@ namespace ModulePlanning.Planning
 
             try
             {
-                lock(_lock)
-                {
+
                 var s = dropInfo.DragInfo.SourceCollection as ListCollectionView;
                 var t = dropInfo.TargetCollection as ListCollectionView;
-                
+
                 var v = dropInfo.InsertIndex;
                     if (s != null && t != null)
                     {
@@ -845,11 +854,12 @@ namespace ModulePlanning.Planning
                         {
                             InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
                             _logger.LogInformation("{message} {id} {sort}", "Drops", vrg.VorgangId, vrg.SortPos);
+    
                         }
-
+                        
                         ProcessesCV.Refresh();
                     }
-                }               
+                              
             }
             catch (DbUpdateConcurrencyException ex)
             {

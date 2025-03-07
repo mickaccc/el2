@@ -33,8 +33,8 @@ namespace Lieferliste_WPF.ViewModels
         UserSettingsService userSettingsService;
         private DB_COS_LIEFERLISTE_SQLContext _ctx;
         public IEnumerable<dynamic> VorgangRef { get; private set; }
-        private VorgItem _SelectedVorgangItem;
-        public VorgItem SelectedVorgangItem
+        private VorgItem? _SelectedVorgangItem;
+        public VorgItem? SelectedVorgangItem
         {
             get { return _SelectedVorgangItem; }
             set
@@ -44,6 +44,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     ReferencePre = new RefItem("Vorgang;", value.SourceVorgang.VorgangId, string.Format("{0} - {1}\n{2} {3}",
                         value.Auftrag, value.Vorgang, value.Material?.Trim(), value.Bezeichnung));
+ 
                 }
             }
         }
@@ -62,8 +63,8 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private RefItem _selectedRef;
-        public RefItem SelectedRef
+        private RefItem? _selectedRef;
+        public RefItem? SelectedRef
         {
             get { return _selectedRef; }
             set
@@ -72,6 +73,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     _selectedRef = value;
                     ReferencePre = value;
+                    
                 }
             }
         }
@@ -254,6 +256,14 @@ namespace Lieferliste_WPF.ViewModels
             emp.AccId = SelectedUser.User;
             emp.Reference = string.Format("{0}{1}{2}{3}{4}",
                 ReferencePre.Value.Table, (char)29, ReferencePre.Value.Id, (char)29, ReferencePre.Value.Description);
+            if (ReferencePre.Value.Table == "Vorgang")
+            {
+                emp.VorgId = ReferencePre.Value.Id;
+            }
+            else
+            {
+                emp.SelId = int.Parse(ReferencePre.Value.Id);
+            }
             emp.Comment = Comment;
             emp.Date = SelectedDate;
             emp.Processingtime = NoteTime;

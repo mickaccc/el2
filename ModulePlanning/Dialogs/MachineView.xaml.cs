@@ -2,6 +2,7 @@
 using El2Core.Models;
 using ModulePlanning.Dialogs.ViewModels;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -12,17 +13,6 @@ namespace ModulePlanning.Dialogs
     /// </summary>
     public partial class MachineView : UserControl
     {
-
-        public string BemTInfo
-        {
-            get { return (string)GetValue(BemTInfoProperty); }
-            set { SetValue(BemTInfoProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for BemTInfo.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty BemTInfoProperty =
-            DependencyProperty.Register("BemTInfo", typeof(string), typeof(MachineView), new PropertyMetadata(""));
-
 
         public MachineView()
         {
@@ -60,18 +50,19 @@ namespace ModulePlanning.Dialogs
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (DataContext is MachineViewVM ctx && sender is TextBox tx)
-            {
-                var bind = BindingOperations.GetBinding(tx, TextBox.TextProperty);
-                if (tx.DataContext is Vorgang vrg && !tx.IsReadOnly && ctx.PlanMachine != null && bind != null)
-                { ctx.PlanMachine.Focused = new(vrg.VorgangId, bind.Path.Path); }
-            }
+            //if (DataContext is MachineViewVM ctx && sender is TextBox tx)
+            //{
+            //    var bind = BindingOperations.GetBinding(tx, TextBox.TextProperty);
+            //    if (tx.DataContext is Vorgang vrg && !tx.IsReadOnly && ctx.PlanMachine != null && bind != null)
+            //    { ctx.PlanMachine.Focused = new(vrg.VorgangId, bind.Path.Path); }
+            //}
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (DataContext is MachineViewVM ctx && ctx.PlanMachine != null)
-                ctx.PlanMachine.Focused = null;
+            //if (DataContext is MachineViewVM ctx && ctx.PlanMachine != null)
+            //    ctx.PlanMachine.Focused = null;
         }
     }
+
 }

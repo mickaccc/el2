@@ -12,7 +12,7 @@ namespace El2Core.Converters
     [MarkupExtensionReturnType(typeof(IValueConverter))]
     public class ZeroToVisibilityConverter : MarkupExtension, IValueConverter
     {
-        private static ZeroToVisibilityConverter converter;
+        private static ZeroToVisibilityConverter? converter;
 
         /// <summary>
         /// Standard Constructor
@@ -34,10 +34,7 @@ namespace El2Core.Converters
         /// <returns></returns>
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            if (converter == null)
-            {
-                converter = new ZeroToVisibilityConverter();
-            }
+            converter ??= new ZeroToVisibilityConverter();
 
             return converter;
         }

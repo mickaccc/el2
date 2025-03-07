@@ -1,18 +1,7 @@
 ﻿using Lieferliste_WPF.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using WpfCustomControlLibrary;
 
 namespace Lieferliste_WPF.Views
 {
@@ -30,6 +19,21 @@ namespace Lieferliste_WPF.Views
         {
             var dt = DataContext as EmployNoteViewModel;
             dt.Closing();
+        }
+
+        private void Combo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var Combo = e.Source as FrameworkElement;
+            if (Combo.Name == "RefCombo")
+            {
+                var cb = this.FindName("VrgCombo") as SearchableComboBox;
+                cb.SelectedIndex = -1;
+            }
+            else if (Combo.Name == "VrgCombo")
+            {
+                var cb = this.FindName("RefCombo") as ComboBox;
+                cb.SelectedIndex = -1;
+            }
         }
     }
 }

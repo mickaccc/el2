@@ -23,6 +23,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Component]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Costunit]",
          "ObjectType": 0
       },
@@ -52,6 +56,10 @@
       },
       {
          "Name": "[dbo].[InMemoryOnline]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MaterialComponent]",
          "ObjectType": 0
       },
       {

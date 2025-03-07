@@ -10,10 +10,10 @@ namespace El2Core.Converters
     {
         #region Public Properties
 
-        public Binding Binding { get; set; }
+        public Binding? Binding { get; set; }
         public BindingMode Mode { get; set; }
-        public IValueConverter Converter { get; set; }
-        public Binding ConverterParameter { get; set; }
+        public IValueConverter? Converter { get; set; }
+        public Binding? ConverterParameter { get; set; }
 
         #endregion
 
@@ -55,7 +55,7 @@ namespace El2Core.Converters
         [ContentProperty(nameof(Converter))]
         private class MultiValueConverterAdapter : IMultiValueConverter
         {
-            public IValueConverter Converter { get; set; }
+            public IValueConverter? Converter { get; set; }
 
             private object lastParameter;
 
