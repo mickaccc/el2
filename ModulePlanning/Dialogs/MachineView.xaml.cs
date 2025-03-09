@@ -59,16 +59,16 @@ namespace ModulePlanning.Dialogs
             if (dp?.DataContext is Vorgang vrg) { vrg.Termin = dp?.SelectedDate; }
         }
 
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            var tx = sender as TextBox;
-            if (tx?.DataContext is Vorgang vrg && DataContext is PlanMachine ctx)
-            { ctx.Focused = new(vrg.VorgangId, TextBox.TextProperty.Name); }
-        }
+        //private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        //{
+        //    var tx = sender as TextBox;
+        //    if (tx?.DataContext is Vorgang vrg && DataContext is PlanMachine ctx)
+        //    { ctx.Focused = new(vrg.VorgangId, TextBox.TextProperty.Name); }
+        //}
 
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is PlanMachine ctx) ctx.Focused = null;
-        }
+        //private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        //{
+        //    if (DataContext is PlanMachine ctx) ctx.Focused = null;
+        //}
     }
 }

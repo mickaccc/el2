@@ -5,23 +5,20 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:CommentControl}">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-
-                        <Grid MinHeight="70">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock  x:Name="PART_CommentInfo" Grid.Row="0" Text="{TemplateBinding HeaderText}" Background="Bisque"
-                                    VerticalAlignment="Center" Padding="5" FontSize="{TemplateBinding FontSize}"/>
-                            <TextBox  x:Name="PART_TextBox" Grid.Row="1" Text="{TemplateBinding CommentText}"
-                                     Background="Transparent" Padding="5" FontSize="{TemplateBinding FontSize}"
-                                      TextWrapping="Wrap" AcceptsReturn="True" TextAlignment="Left" />
-                        </Grid>
- 
-                    </Border>
+                    <Grid>
+                        <Canvas x:Name="PART_CanvasSize">
+                            <Label  x:Name="PART_CommentInfo" Content="{TemplateBinding HeaderText}"
+                                    Background="LightYellow"
+                                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                    Padding="5" FontSize="{TemplateBinding FontSize}"
+                                    Width="{TemplateBinding Width}" Height="30"/>
+                            <TextBox  x:Name="PART_TextBox" Canvas.Top="30" Text="{TemplateBinding CommentText}"
+                                    Background="Transparent" Padding="2" FontSize="{TemplateBinding FontSize}"
+                                    Width="{TemplateBinding Width}" IsEnabled="False"
+                                    TextWrapping="Wrap" AcceptsReturn="True" TextAlignment="Left"
+                                    VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                        </Canvas>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

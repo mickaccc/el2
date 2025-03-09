@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace WpfCustomControlLibrary
@@ -41,8 +42,7 @@ namespace WpfCustomControlLibrary
 
 
         private TextBox _textBox;
-        internal string _headerText;
-        internal string _commentText;
+        private Canvas _canvas;
 
 
         static CommentControl()
@@ -59,7 +59,29 @@ namespace WpfCustomControlLibrary
         }
         public static readonly DependencyProperty CommentStringProperty = DependencyProperty.Register(nameof(CommentString),
                 typeof(string), typeof(CommentControl),
-                new PropertyMetadata(null, OnCommentStringChanged));
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnCommentStringChanged));
+
+        public (string, string, string) Blocked
+        {
+            get { return ((string, string, string))GetValue(BlockedProperty); }
+            set { SetValue(BlockedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Context.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BlockedProperty =
+            DependencyProperty.Register("Blocked", typeof((string, string, string)), typeof(CommentControl), new PropertyMetadata(default((string, string, string))));
+
+
+        public string ContextId
+        {
+            get { return (string)GetValue(ContextIdProperty); }
+            set { SetValue(ContextIdProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ContextId.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ContextIdProperty =
+            DependencyProperty.Register("ContextId", typeof(string), typeof(CommentControl), new PropertyMetadata(default(string)));
+
 
 
         public new double FontSize
@@ -72,8 +94,6 @@ namespace WpfCustomControlLibrary
                 new FrameworkPropertyMetadata(11.0,
                     FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-
-
         internal string HeaderText
         {
             get { return (string)GetValue(HeaderTextProperty); }
@@ -82,7 +102,8 @@ namespace WpfCustomControlLibrary
 
         // Using a DependencyProperty as the backing store for HeaderText.  This enables animation, styling, binding, etc...
         internal static readonly DependencyProperty HeaderTextProperty =
-            DependencyProperty.Register("HeaderText", typeof(string), typeof(CommentControl), new PropertyMetadata(""));
+            DependencyProperty.Register("HeaderText", typeof(string), typeof(CommentControl),
+                new PropertyMetadata(default(string)));
 
 
 
@@ -94,10 +115,7 @@ namespace WpfCustomControlLibrary
 
         // Using a DependencyProperty as the backing store for CommentText.  This enables animation, styling, binding, etc...
         internal static readonly DependencyProperty CommentTextProperty =
-            DependencyProperty.Register("CommentText", typeof(string), typeof(CommentControl), new PropertyMetadata(""));
-
-
-
+            DependencyProperty.Register("CommentText", typeof(string), typeof(CommentControl), new PropertyMetadata(default(string)));
 
         public string User
         {
@@ -107,44 +125,44 @@ namespace WpfCustomControlLibrary
 
         // Using a DependencyProperty as the backing store for User.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UserProperty =
-            DependencyProperty.Register("User", typeof(string), typeof(CommentControl), new PropertyMetadata(""));
+            DependencyProperty.Register("User", typeof(string), typeof(CommentControl), new PropertyMetadata(default(string)));
 
 
-        protected override Size MeasureOverride(Size constraint)
+
+        public bool IsEditable
         {
-            FormattedText txt = GetFormattedText();
-            return new Size(txt.Width + 5, txt.Height + 5);
+            get { return (bool)GetValue(IsEditableProperty); }
+            set { SetValue(IsEditableProperty, value); }
         }
 
-
-        private FormattedText GetFormattedText()
-        {
-            return
-                new FormattedText(_textBox.Text
-                , CultureInfo.InvariantCulture
-                , FlowDirection.LeftToRight
-                , new Typeface("Arial")
-                , this.FontSize
-                , Brushes.Black
-                , VisualTreeHelper.GetDpi(this).PixelsPerDip);
-        }
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            base.OnRender(drawingContext);
-            drawingContext.DrawRectangle(Brushes.LightGray
-                , null
-                , new Rect(this.RenderSize));
-            FormattedText txt = GetFormattedText();
-            drawingContext.DrawText(txt, new Point(2.5, 2.5));
-        }
+        // Using a DependencyProperty as the backing store for IsEditable.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsEditableProperty =
+            DependencyProperty.Register("IsEditable", typeof(bool), typeof(CommentControl),
+                new PropertyMetadata(false, OnEditableCallback));
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _textBox = Template.FindName("PART_TextBox", this) as TextBox;
-            
-            _textBox.LostFocus += LostFocus;
+            _canvas = (Canvas)Template.FindName("PART_CanvasSize", this);
+            _textBox = (TextBox)Template.FindName("PART_TextBox", this);
+            _textBox.LostFocus += TextBoxLostFocus;
+ 
+            _textBox.SizeChanged += txSizeChanged;
+            LostFocus += OnLostFocus;
+            GotFocus += OnGotFocus;
+     
         }
+
+
+        private void OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            Blocked = new(ContextId, "BemT", CommentString);
+        }
+        private void OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            Blocked = new(ContextId, "BemT", CommentString);
+        }
+
         private static void OnCommentStringChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue is string s)
@@ -161,14 +179,26 @@ namespace WpfCustomControlLibrary
                 }
             }
         }
-        private void LostFocus(object sender, RoutedEventArgs e)
+        private static void OnEditableCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var cmt = (CommentControl)d;
+            cmt._textBox.IsEnabled = (bool)e.NewValue;
+        }
+        private void TextBoxLostFocus(object sender, RoutedEventArgs e)
         {
             var txt = sender as TextBox;
             if (txt.Text.Length != 0)
             {
-                CommentString = string.Format("[{0} - {1}]{2}{3}", User, DateTime.Now.ToShortDateString(), (char)29, txt.Text);
+                var val = string.Format("[{0} - {1}]{2}{3}", User, DateTime.Now.ToShortDateString(), (char)29, txt.Text);
+                SetCurrentValue(CommentStringProperty, val);
             }
         }
-
+        private void txSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var txt = sender as TextBox;
+            _canvas.Width = e.NewSize.Width;
+            _canvas.Height = 30 + e.NewSize.Height;
+            
+        }
     }
 }

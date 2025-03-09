@@ -134,7 +134,8 @@
         
         <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding PlanMachine.ProcessesCV}" AutoGenerateColumns="False"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" IsSynchronizedWithCurrentItem="True"
-                  dd:DragDrop.IsDragSource="True" AlternatingRowBackground="LightGray" RowHeight="{x:Static System:Double.NaN}"
+                  AlternatingRowBackground="LightGray" CanUserResizeRows="True"
+                  dd:DragDrop.IsDragSource="True" 
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"
                   dd:DragDrop.DropHandler="{Binding}">
@@ -251,13 +252,24 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach}" EditingElementStyle="{StaticResource CellEditStyle}"/>
-                <DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Bemerkung Teamleiter">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Grid Height="100">
-                                <wpfControl:CommentControl CommentString="{Binding BemT}" User="{Binding DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                           Width="120" />
-                                </Grid>
+
+                            <wpfControl:CommentControl CommentString="{Binding BemT, Mode=TwoWay}"
+                                                       ContextId="{Binding VorgangId, Mode=OneTime}"
+                                                       Blocked="{Binding DataContext.PlanMachine.Focused,
+                                                            Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                       User="{Binding DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                       Width="200">
+                                <wpfControl:CommentControl.IsEditable>
+                                    <MultiBinding Converter="{StaticResource Relpermiss}">
+                                        <Binding Source="{x:Static const:Permissions.CommentTe}"/>
+                                        <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                    </MultiBinding>
+                                </wpfControl:CommentControl.IsEditable>
+                            </wpfControl:CommentControl>
+       
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

@@ -6,6 +6,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using ModulePlanning.Specials;
 using System;
@@ -63,7 +64,7 @@ namespace ModulePlanning.Planning
     public interface IPlanMachine
     {
         public int Rid { get; }
-        public (string, string)? Focused { get; set;}
+        public (string?, string?, string?) Focused { get; set;}
     }
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
     public class PlanMachine : ViewModelBase, IPlanMachine, IDropTarget, IViewModel
@@ -212,7 +213,24 @@ namespace ModulePlanning.Planning
             }
         }
         internal CollectionViewSource ProcessesCVSource { get; set; } = new CollectionViewSource();
-        public (string, string)? Focused { get; set; }
+        private (string?, string?, string?) _focused = default;
+        public (string?, string?, string?) Focused
+        {
+            get { return _focused; }
+            set
+            {
+                if (_focused != default && _focused != value)
+                {
+                    if (value.Item3 != _focused.Item3)
+                    {
+                        var Vrg = Processes?.FirstOrDefault(x => x.VorgangId == _focused.Item1);
+                        if (Vrg != null) Vrg.BemT = value.Item3;
+                        _focused = default;
+                    }
+                }
+                else if (_focused == default) _focused = value;
+            }
+        }
 
         private void LoadData(Ressource res)
         { 
