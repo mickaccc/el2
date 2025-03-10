@@ -11,12 +11,6 @@ namespace ModulePlanning.Dialogs.ViewModels
     {
         public string Title => "Maschinen Details";
         public string UserIdent { get; } = UserInfo.User.UserId;
-        private string _bem = "mg" + (char)29 + "TTEESSTT";
-        public string BemTest { get { return _bem; }
-            set
-            { 
-                _bem = value;
-            } }
         public PlanMachine? PlanMachine { get; private set; }
         private IApplicationCommands _applicationCommands;
         public IApplicationCommands ApplicationCommands

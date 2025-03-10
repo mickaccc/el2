@@ -7,12 +7,14 @@
                 <ControlTemplate TargetType="{x:Type local:CommentControl}">
                     <Grid>
                         <Canvas x:Name="PART_CanvasSize">
-                            <Label  x:Name="PART_CommentInfo" Content="{TemplateBinding HeaderText}"
-                                    Background="LightYellow"
+                            <TextBlock  x:Name="PART_CommentInfo" Text="{TemplateBinding HeaderText}"
+                                    Background="Gold"
                                     VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                                    Padding="5" FontSize="{TemplateBinding FontSize}"
-                                    Width="{TemplateBinding Width}" Height="30"/>
-                            <TextBox  x:Name="PART_TextBox" Canvas.Top="30" Text="{TemplateBinding CommentText}"
+                                    Padding="1"
+                                    Width="{TemplateBinding Width}" Height="15" FontSize="10">
+      
+                            </TextBlock>
+                            <TextBox  x:Name="PART_TextBox" Canvas.Top="15" Text="{TemplateBinding CommentText}"
                                     Background="Transparent" Padding="2" FontSize="{TemplateBinding FontSize}"
                                     Width="{TemplateBinding Width}" IsEnabled="False"
                                     TextWrapping="Wrap" AcceptsReturn="True" TextAlignment="Left"

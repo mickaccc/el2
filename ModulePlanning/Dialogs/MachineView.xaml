@@ -261,7 +261,7 @@
                                                        Blocked="{Binding DataContext.PlanMachine.Focused,
                                                             Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                        User="{Binding DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                       Width="200">
+                                                       Width="200" FontSize="14">
                                 <wpfControl:CommentControl.IsEditable>
                                     <MultiBinding Converter="{StaticResource Relpermiss}">
                                         <Binding Source="{x:Static const:Permissions.CommentTe}"/>

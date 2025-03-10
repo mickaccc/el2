@@ -224,7 +224,11 @@ namespace ModulePlanning.Planning
                     if (value.Item3 != _focused.Item3)
                     {
                         var Vrg = Processes?.FirstOrDefault(x => x.VorgangId == _focused.Item1);
-                        if (Vrg != null) Vrg.BemT = value.Item3;
+                        if (Vrg != null)
+                        {
+                            if (value.Item3 == null) Vrg.BemT = null;
+                            else Vrg.BemT = value.Item3;
+                        }
                         _focused = default;
                     }
                 }
@@ -281,8 +285,8 @@ namespace ModulePlanning.Planning
             NewCalculateCommand = new ActionCommand(OnCalculateExecuted, OnCalculateCanExecute);
             NewStoppageCommand = new ActionCommand(OnNewStoppageExecuted, OnNewStoppageCanExecute);
             DelStoppageCommand = new ActionCommand(OnDelStoppageExecuted, OnDelStoppageCanExecute);
-            //_eventAggregator.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-            //_eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
+            _eventAggregator.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
+            _eventAggregator.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             _eventAggregator.GetEvent<SearchTextFilter>().Subscribe(MessageSearchFilterReceived);
             IsAdmin = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AdminFunc);
             EnableRowDetails = _settingsService.IsRowDetails;           

@@ -189,15 +189,22 @@ namespace WpfCustomControlLibrary
             var txt = sender as TextBox;
             if (txt.Text.Length != 0)
             {
-                var val = string.Format("[{0} - {1}]{2}{3}", User, DateTime.Now.ToShortDateString(), (char)29, txt.Text);
-                SetCurrentValue(CommentStringProperty, val);
+                if (CommentText != txt.Text)
+                {
+                    var val = string.Format("[{0} - {1}]{2}{3}", User, DateTime.Now.ToShortDateString(), (char)29, txt.Text);
+                    SetCurrentValue(CommentStringProperty, val);
+                }
+            }
+            else
+            {
+                SetCurrentValue(CommentStringProperty, default);
             }
         }
         private void txSizeChanged(object sender, SizeChangedEventArgs e)
         {
             var txt = sender as TextBox;
             _canvas.Width = e.NewSize.Width;
-            _canvas.Height = 30 + e.NewSize.Height;
+            _canvas.Height = 15 + e.NewSize.Height;
             
         }
     }
