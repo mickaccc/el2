@@ -256,10 +256,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
 
-                            <wpfControl:CommentControl CommentString="{Binding BemT, Mode=TwoWay}"
-                                                       ContextId="{Binding VorgangId, Mode=OneTime}"
-                                                       Blocked="{Binding DataContext.PlanMachine.Focused,
-                                                            Mode=OneWayToSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            <wpfControl:CommentControl Text="{Binding BemT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                        User="{Binding DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                        Width="200" FontSize="14">
                                 <wpfControl:CommentControl.IsEditable>

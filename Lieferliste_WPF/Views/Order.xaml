@@ -311,7 +311,7 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
                             </GroupBox>-->
-                            <wpf:CommentControl Grid.Column="9" CommentString="{Binding BemMa, Mode=TwoWay}"
+                            <wpf:CommentControl Grid.Column="9" Text="{Binding BemMa, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                 User="{Binding Path=DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         </Grid>
                     </Border>
