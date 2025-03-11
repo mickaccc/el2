@@ -15,18 +15,6 @@ namespace ModulePlanning.Dialogs
     public partial class MachineView : UserControl
     {
 
-
-        public string BemTInfo
-        {
-            get { return (string)GetValue(BemTInfoProperty); }
-            set { SetValue(BemTInfoProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for BemTInfo.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty BemTInfoProperty =
-            DependencyProperty.Register("BemTInfo", typeof(string), typeof(MachineView), new PropertyMetadata(""));
-
-
         public MachineView()
         {
             InitializeComponent();
@@ -58,17 +46,5 @@ namespace ModulePlanning.Dialogs
             var dp = sender as DatePicker;
             if (dp?.DataContext is Vorgang vrg) { vrg.Termin = dp?.SelectedDate; }
         }
-
-        //private void TextBox_LostFocus(object sender, RoutedEventArgs e)
-        //{
-        //    var tx = sender as TextBox;
-        //    if (tx?.DataContext is Vorgang vrg && DataContext is PlanMachine ctx)
-        //    { ctx.Focused = new(vrg.VorgangId, TextBox.TextProperty.Name); }
-        //}
-
-        //private void TextBox_GotFocus(object sender, RoutedEventArgs e)
-        //{
-        //    if (DataContext is PlanMachine ctx) ctx.Focused = null;
-        //}
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WpfCustomControlLibrary
 {
@@ -33,13 +34,12 @@ namespace WpfCustomControlLibrary
     ///     <MyNamespace:CustomControl1/>
     ///
     /// </summary>
-    public class CommentControl : TextBox
+    public class CommentControl : Control
     {
-
-
+        private const bool DefaultValue = false;
         private TextBox _textBox;
         private Canvas _canvas;
-
+        private bool _IsInUse = false;
 
         static CommentControl()
         {
@@ -47,6 +47,18 @@ namespace WpfCustomControlLibrary
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CommentControl), new FrameworkPropertyMetadata(typeof(CommentControl)));
         }
 
+
+
+        public string CommentString
+        {
+            get { return (string)GetValue(CommentStringProperty); }
+            set { SetValue(CommentStringProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CommentString.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CommentStringProperty =
+            DependencyProperty.Register("CommentString", typeof(string), typeof(CommentControl),
+                new PropertyMetadata(default, OnCommentChanged));
 
         public new double FontSize
         {
@@ -68,7 +80,6 @@ namespace WpfCustomControlLibrary
         internal static readonly DependencyProperty HeaderTextProperty =
             DependencyProperty.Register("HeaderText", typeof(string), typeof(CommentControl),
                 new PropertyMetadata(default(string)));
-
 
 
         internal string CommentText
@@ -102,52 +113,70 @@ namespace WpfCustomControlLibrary
         // Using a DependencyProperty as the backing store for IsEditable.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsEditableProperty =
             DependencyProperty.Register("IsEditable", typeof(bool), typeof(CommentControl),
-                new PropertyMetadata(false, OnEditableCallback));
+                new PropertyMetadata(DefaultValue, OnIsEditableChanged));
+
+        private static void OnIsEditableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var cmt = (CommentControl)d;
+
+            cmt._textBox.IsReadOnly = !(bool)e.NewValue;
+        }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             _canvas = (Canvas)Template.FindName("PART_CanvasSize", this);
             _textBox = (TextBox)Template.FindName("PART_TextBox", this);
+            _textBox.IsEnabled = true;
+            _textBox.IsReadOnly = true;
             _textBox.SizeChanged += txSizeChanged;
- 
+            GotFocus += OnGotFocus;
             LostFocus += OnLostFocus;  
-            Loaded += OnLoaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private static void OnCommentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (String.IsNullOrEmpty(Text) == false)
+            
+            var cmt = (CommentControl)d;
+            if (!cmt._IsInUse)
             {
-                var st = Text.Split((char)29);
-                if (st.Length == 2)
+                if (e.NewValue is string s)
                 {
-                    HeaderText = st[0];
-                    CommentText = st[1];
+                    var st = s.Split((char)29);
+                    if (st.Length == 2)
+                    {
+                        cmt.HeaderText = st[0];
+                        cmt.CommentText = st[1];
+                    }
                 }
             }
+        }
+
+        private void OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            _IsInUse = true;
         }
 
         private void OnLostFocus(object sender, RoutedEventArgs e)
         {
+            _IsInUse = false;
             if (_textBox.Text.Length != 0)
             {
                 if (CommentText != _textBox.Text)
                 {
-                    var val = string.Format("[{0} - {1}]{2}{3}", User, DateTime.Now.ToShortDateString(), (char)29, _textBox.Text);
-                    Text = val;
+                    
+                    HeaderText = $"[{User} - {DateTime.Now.ToShortDateString()}]";
+                    CommentText = _textBox.Text ;
+                    CommentString = string.Format("{0}{1}{2}", HeaderText, (char)29, _textBox.Text);
                 }
             }
             else
             {
-                SetValue(TextProperty, default);
+                HeaderText = string.Empty;
+                CommentText = string.Empty;
+                CommentString = default;
             }
-        }
-
-        private static void OnEditableCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var cmt = (CommentControl)d;
-            cmt._textBox.IsEnabled = (bool)e.NewValue;
+            
         }
  
         private void txSizeChanged(object sender, SizeChangedEventArgs e)
@@ -155,7 +184,7 @@ namespace WpfCustomControlLibrary
             var txt = sender as TextBox;
             _canvas.Width = e.NewSize.Width;
             _canvas.Height = 15 + e.NewSize.Height;
-            
+
         }
     }
 }

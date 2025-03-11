@@ -134,7 +134,7 @@
         
         <DataGrid x:Name="MachProcesses" Grid.Row="1" ItemsSource="{Binding PlanMachine.ProcessesCV}" AutoGenerateColumns="False"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" IsSynchronizedWithCurrentItem="True"
-                  AlternatingRowBackground="LightGray" CanUserResizeRows="True"
+                  AlternatingRowBackground="LightGray" CanUserResizeRows="True" VirtualizingPanel.IsVirtualizing="False"
                   dd:DragDrop.IsDragSource="True" 
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DragHandler="{Binding}"
@@ -253,10 +253,18 @@
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach}" EditingElementStyle="{StaticResource CellEditStyle}"/>
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">
+                    <!--<DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wpfControl:CommentControl CommentString="{Binding BemT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                       User="{Binding DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                       IsEditable="False"
+                                                       Width="200" FontSize="14"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>-->
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
 
-                            <wpfControl:CommentControl Text="{Binding BemT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            <wpfControl:CommentControl CommentString="{Binding BemT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                        User="{Binding DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                        Width="200" FontSize="14">
                                 <wpfControl:CommentControl.IsEditable>

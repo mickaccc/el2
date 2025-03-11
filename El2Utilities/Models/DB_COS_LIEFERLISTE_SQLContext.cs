@@ -17,8 +17,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<AccountWorkArea> AccountWorkAreas { get; set; }
 
-    public virtual DbSet<Component> Components { get; set; }
-
     public virtual DbSet<Costunit> Costunits { get; set; }
 
     public virtual DbSet<EmploySelection> EmploySelections { get; set; }
@@ -34,8 +32,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<InMemoryMsg> InMemoryMsgs { get; set; }
 
     public virtual DbSet<InMemoryOnline> InMemoryOnlines { get; set; }
-
-    public virtual DbSet<MaterialComponent> MaterialComponents { get; set; }
 
     public virtual DbSet<MeasureRess> MeasureResses { get; set; }
 
@@ -84,6 +80,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<Vorgang> Vorgangs { get; set; }
 
     public virtual DbSet<VorgangAttachment> VorgangAttachments { get; set; }
+
+    public virtual DbSet<VorgangComponent> VorgangComponents { get; set; }
 
     public virtual DbSet<VorgangDocu> VorgangDocus { get; set; }
 
@@ -139,18 +137,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.WorkArea).WithMany(p => p.AccountWorkAreas)
                 .HasForeignKey(d => d.WorkAreaId)
                 .HasConstraintName("FK_AccountWorkArea_WorkArea");
-        });
-
-        modelBuilder.Entity<Component>(entity =>
-        {
-            entity.HasKey(e => e.TtnrC).HasAnnotation("SqlServer:FillFactor", 95);
-
-            entity.ToTable("Component");
-
-            entity.Property(e => e.TtnrC)
-                .HasMaxLength(255)
-                .HasColumnName("TTNR_C");
-            entity.Property(e => e.Description).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Costunit>(entity =>
@@ -363,35 +349,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Userid)
                 .HasMaxLength(50)
                 .IsFixedLength();
-        });
-
-        modelBuilder.Entity<MaterialComponent>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasAnnotation("SqlServer:FillFactor", 95);
-
-            entity.ToTable("MaterialComponent");
-
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.Timestamp)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
-                .HasColumnName("timestamp");
-            entity.Property(e => e.Ttnr)
-                .HasMaxLength(255)
-                .HasColumnName("TTNR");
-            entity.Property(e => e.TtnrC)
-                .HasMaxLength(255)
-                .HasColumnName("TTNR_C");
-
-            entity.HasOne(d => d.TtnrNavigation).WithMany(p => p.MaterialComponents)
-                .HasForeignKey(d => d.Ttnr)
-                .HasConstraintName("FK_MaterialComponent_tblMaterial");
-
-            entity.HasOne(d => d.TtnrCNavigation).WithMany(p => p.MaterialComponents)
-                .HasForeignKey(d => d.TtnrC)
-                .HasConstraintName("FK_MaterialComponent_Component");
         });
 
         modelBuilder.Entity<MeasureRess>(entity =>
@@ -990,6 +947,29 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.Vorgang).WithMany(p => p.VorgangAttachments)
                 .HasForeignKey(d => d.VorgangId)
                 .HasConstraintName("FK_VorgangAttachment_Vorgang");
+        });
+
+        modelBuilder.Entity<VorgangComponent>(entity =>
+        {
+            entity.HasKey(e => e.CompId).HasAnnotation("SqlServer:FillFactor", 95);
+
+            entity.ToTable("VorgangComponent");
+
+            entity.Property(e => e.CompId).HasColumnName("CompID");
+            entity.Property(e => e.LatestRequirementsDate).HasColumnType("date");
+            entity.Property(e => e.Material).HasMaxLength(255);
+            entity.Property(e => e.Vorgang)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.VorgangComponents)
+                .HasForeignKey(d => d.Material)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VorgangComponent_tblMaterial");
+
+            entity.HasOne(d => d.VorgangNavigation).WithMany(p => p.VorgangComponents)
+                .HasForeignKey(d => d.Vorgang)
+                .HasConstraintName("FK_VorgangComponent_Vorgang");
         });
 
         modelBuilder.Entity<VorgangDocu>(entity =>

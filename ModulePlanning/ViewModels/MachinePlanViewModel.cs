@@ -270,9 +270,9 @@ namespace ModulePlanning.ViewModels
             var query = await _DbCtx.Vorgangs
               .Include(x => x.AidNavigation)
               .ThenInclude(x => x.MaterialNavigation)
-              .ThenInclude(x => x.MaterialComponents)
-              .ThenInclude(x => x.TtnrCNavigation)
               .Include(x => x.AidNavigation.DummyMatNavigation)
+              .Include(x => x.VorgangComponents)
+              .ThenInclude(x => x.MaterialNavigation)
               .Include(x => x.ArbPlSapNavigation)
               .Include(x => x.Responses)
               .Include(x => x.RidNavigation.WorkArea)
