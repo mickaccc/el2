@@ -28,6 +28,15 @@ namespace ModuleProducts.ViewModels
         private MeasureFirstPartInfo firstPartInfo;
         private List<ProductMaterial> _Materials =[];
         private string? _SearchText;
+        public string? SearchText
+        {
+            get { return _SearchText; }
+            set
+            {
+                _SearchText = value;
+                OnTextSearch(value);
+            }
+        }
         private RelayCommand? _SearchCommand;
         public RelayCommand SearchCommand => _SearchCommand ??= new RelayCommand(OnTextSearch);
 
@@ -74,7 +83,8 @@ namespace ModuleProducts.ViewModels
                     var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs]);
                     _Materials.Add(p);
                 }
-                ProductsView = CollectionViewSource.GetDefaultView(_Materials);
+                ProductsView = new ListCollectionView(_Materials);
+                //ProductsView = CollectionViewSource.GetDefaultView(_Materials);
                 ProductsView.Filter += OnFilterPredicate;
             }
             catch (Exception e)
@@ -101,11 +111,8 @@ namespace ModuleProducts.ViewModels
         {
             if(obj is string search)
             {
-                if (search.Length >= 3)
-                {
-                    _SearchText = search;
-                    ProductsView.Refresh();
-                }
+                _SearchText = search;
+                ProductsView.Refresh();
             }
         }
         public class ProductMaterial

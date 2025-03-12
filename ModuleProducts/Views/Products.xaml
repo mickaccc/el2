@@ -25,14 +25,12 @@
         </Grid.RowDefinitions>
         <TextBox x:Name="search"
                  materialdesign:HintAssist.Hint="nach TTNR, Bezeichnung oder Auftragsnummer suchen"
-                 materialdesign:TextFieldAssist.HasClearButton="False"
+                 materialdesign:TextFieldAssist.HasClearButton="False" Text="{Binding Path=SearchText}"
                  Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="TextChanged">
-                    <i:InvokeCommandAction Command="{Binding SearchCommand}"
-                                           CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType=TextBox}}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+            <TextBox.InputBindings>
+                <KeyBinding Key="Return" Command="{Binding SearchCommand}"
+                            CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType=TextBox}}" />
+            </TextBox.InputBindings>
         </TextBox>
         <StackPanel Grid.Row="1" >
 

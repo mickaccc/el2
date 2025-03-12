@@ -131,8 +131,10 @@ namespace WpfCustomControlLibrary
             _textBox.IsReadOnly = true;
             _textBox.SizeChanged += txSizeChanged;
             GotFocus += OnGotFocus;
-            LostFocus += OnLostFocus;  
+            LostFocus += OnLostFocus; 
+            
         }
+
 
         private static void OnCommentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
