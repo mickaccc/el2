@@ -360,6 +360,12 @@ namespace ModulePlanning.Planning
                             if (item == null) continue;
                             foreach(var v in Processes?.Where(x => x.Aid == item.Value.Item2) )
                             {
+                                if (db.Entry(v).State == EntityState.Modified)
+                                {
+                                    var values = db.ChangeTracker.DebugView.LongView;
+                                    _logger.LogInformation("PlanMachine - State Modified {message} {1}", v.VorgangId, values);
+                                    db.SaveChanges();
+                                }
                                 db.Entry<Vorgang>(v).Reload();
                                 v.RunPropertyChanged();
                                 _logger.LogInformation("Planmachine - reloaded {message}", v.VorgangId);
@@ -390,6 +396,12 @@ namespace ModulePlanning.Planning
                                 var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                                 if (pr != null)
                                 {
+                                    if (db.Entry(pr).State == EntityState.Modified)
+                                    {
+                                        var values = db.ChangeTracker.DebugView.LongView;
+                                        _logger.LogInformation("PlanMachine - State Modified {message} {1}", pr.VorgangId, values);
+                                        db.SaveChanges();
+                                    }
                                     _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
                                     db.Entry<Vorgang>(pr).Reload();
                                     pr.RunPropertyChanged();
