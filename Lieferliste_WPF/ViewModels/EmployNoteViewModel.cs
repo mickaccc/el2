@@ -42,7 +42,7 @@ namespace Lieferliste_WPF.ViewModels
                 _SelectedVorgangItem = value;
                 if (value != null)
                 {
-                    ReferencePre = new RefItem("Vorgang;", value.SourceVorgang.VorgangId, string.Format("{0} - {1}\n{2} {3}",
+                    ReferencePre = new RefItem("Vorgang", value.SourceVorgang.VorgangId, string.Format("{0} - {1}\n{2} {3}",
                         value.Auftrag, value.Vorgang, value.Material?.Trim(), value.Bezeichnung));
  
                 }

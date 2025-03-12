@@ -87,7 +87,7 @@ namespace ModuleProducts.ViewModels
         private bool OnFilterPredicate(object obj)
         {
             bool accept = true;
-            if (obj is ProductMaterial mat && _SearchText != null)
+            if (obj is ProductMaterial mat && string.IsNullOrEmpty(_SearchText) == false)
             {
                 accept = mat.TTNR.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
                 if (!accept)
@@ -101,8 +101,11 @@ namespace ModuleProducts.ViewModels
         {
             if(obj is string search)
             {
-                _SearchText = search;
-                ProductsView.Refresh();
+                if (search.Length >= 3)
+                {
+                    _SearchText = search;
+                    ProductsView.Refresh();
+                }
             }
         }
         public class ProductMaterial
