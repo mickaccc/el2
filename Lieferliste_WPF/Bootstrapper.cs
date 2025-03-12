@@ -88,7 +88,7 @@ namespace Lieferliste_WPF
             var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
                 .UseSqlServer(defaultconnection)
                 .EnableThreadSafetyChecks(true);
-
+            //containerRegistry.RegisterSingleton<DB_COS_LIEFERLISTE_SQLContext>();
             containerRegistry.RegisterInstance(builderopt.Options);
             containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
             containerRegistry.RegisterSingleton<IHolidayLogic, HolidayLogic>();
