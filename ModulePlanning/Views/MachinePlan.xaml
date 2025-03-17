@@ -168,21 +168,21 @@
                         </MultiBinding>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Material Typ" IsReadOnly="True" Binding="{Binding AidNavigation.MaterialNavigation.Type}"/>
+                <!--<DataGridTextColumn Header="Material Typ" IsReadOnly="True" Binding="{Binding AidNavigation.MaterialNavigation.Type}"/>
                 <DataGridTemplateColumn Header="Komponente">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TreeView ItemsSource="{Binding VorgangComponents}">
+                            <TreeView ItemsSource="{Binding AidNavigation.OrderComponents}">
                                 <TreeView.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Ttnr}"/>
+                                        <TextBlock Text="{Binding Material}"/>
                                     </DataTemplate>
                                 </TreeView.ItemTemplate>
                             </TreeView>
                             
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                </DataGridTemplateColumn>-->
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

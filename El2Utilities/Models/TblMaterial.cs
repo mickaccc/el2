@@ -13,7 +13,7 @@ public partial class TblMaterial
 
     public string? Type { get; set; }
 
-    public virtual ICollection<OrderRb> OrderRbs { get; set; } = new List<OrderRb>();
+    public virtual ICollection<OrderComponent> OrderComponents { get; set; } = new List<OrderComponent>();
 
-    public virtual ICollection<VorgangComponent> VorgangComponents { get; set; } = new List<VorgangComponent>();
+    public virtual ICollection<OrderRb> OrderRbs { get; set; } = new List<OrderRb>();
 }

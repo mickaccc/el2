@@ -67,6 +67,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[OrderComponent]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[OrderGroup]",
          "ObjectType": 0
       },
@@ -148,10 +152,6 @@
       },
       {
          "Name": "[dbo].[VorgangAttachment]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[VorgangComponent]",
          "ObjectType": 0
       },
       {

@@ -84,7 +84,6 @@ namespace ModuleProducts.ViewModels
                     _Materials.Add(p);
                 }
                 ProductsView = new ListCollectionView(_Materials);
-                //ProductsView = CollectionViewSource.GetDefaultView(_Materials);
                 ProductsView.Filter += OnFilterPredicate;
             }
             catch (Exception e)

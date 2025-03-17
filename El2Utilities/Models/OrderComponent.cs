@@ -5,13 +5,13 @@ using System.Collections.Generic;
 
 namespace El2Core.Models;
 
-public partial class VorgangComponent
+public partial class OrderComponent
 {
     public int CompId { get; set; }
 
-    public string Material { get; set; } = null!;
+    public string Aid { get; set; } = null!;
 
-    public string Vorgang { get; set; } = null!;
+    public string Material { get; set; } = null!;
 
     public int? RequirementQuantity { get; set; }
 
@@ -21,7 +21,9 @@ public partial class VorgangComponent
 
     public DateTime? LatestRequirementsDate { get; set; }
 
-    public virtual TblMaterial MaterialNavigation { get; set; } = null!;
+    public string? Assembly { get; set; }
 
-    public virtual Vorgang VorgangNavigation { get; set; } = null!;
+    public virtual OrderRb AidNavigation { get; set; } = null!;
+
+    public virtual TblMaterial MaterialNavigation { get; set; } = null!;
 }

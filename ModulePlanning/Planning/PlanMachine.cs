@@ -39,7 +39,7 @@ namespace ModulePlanning.Planning
         public IUserSettingsService SettingsService { get; }
 
         public IDialogService DialogService { get; }
-
+        public DB_COS_LIEFERLISTE_SQLContext DbContext { get; }
 
         public PlanMachineFactory(IContainerProvider container, IApplicationCommands applicationCommands,
             IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
@@ -49,13 +49,12 @@ namespace ModulePlanning.Planning
             this.EventAggregator = eventAggregator;
             this.SettingsService = settingsService;
             this.DialogService = dialogService;
-
             DataObject dt = new();
             
         }
-        public PlanMachine CreatePlanMachine(Ressource res)
+        public PlanMachine CreatePlanMachine(Ressource res, DB_COS_LIEFERLISTE_SQLContext context)
         {
-            return new PlanMachine(res, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
+            return new PlanMachine(res, context, Container, ApplicationCommands, EventAggregator, SettingsService, DialogService);
         }
 
     }
@@ -69,7 +68,7 @@ namespace ModulePlanning.Planning
 
         #region Constructors
 
-        public PlanMachine(Ressource ressource, IContainerProvider container, IApplicationCommands applicationCommands,
+        public PlanMachine(Ressource ressource, DB_COS_LIEFERLISTE_SQLContext context, IContainerProvider container, IApplicationCommands applicationCommands,
             IEventAggregator eventAggregator, IUserSettingsService settingsService, IDialogService dialogService)
         {
             _container = container;
@@ -81,7 +80,7 @@ namespace ModulePlanning.Planning
             _eventAggregator = eventAggregator;
             _settingsService = settingsService;
             _dialogService = dialogService;
-  
+            _db = context;
             Setup = settingsService.PlanedSetup;
             Initialize();
             LoadData(ressource);
@@ -179,6 +178,7 @@ namespace ModulePlanning.Planning
         private IEventAggregator _eventAggregator;
         private IApplicationCommands? _applicationCommands;
         private IUserSettingsService _settingsService;
+        private DB_COS_LIEFERLISTE_SQLContext _db;
         private readonly IDialogService _dialogService;
         private Vorgang _scrollItem;
 
@@ -352,7 +352,7 @@ namespace ModulePlanning.Planning
             {
                 Task.Run(() =>
                 {
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     lock (_lock)
                     {
                         foreach((string, string)?  item in list)
@@ -360,13 +360,13 @@ namespace ModulePlanning.Planning
                             if (item == null) continue;
                             foreach(var v in Processes?.Where(x => x.Aid == item.Value.Item2) )
                             {
-                                if (db.Entry(v).State == EntityState.Modified)
+                                if (_db.Entry(v).State == EntityState.Modified)
                                 {
-                                    var values = db.ChangeTracker.DebugView.LongView;
+                                    var values = _db.ChangeTracker.DebugView.LongView;
                                     _logger.LogInformation("PlanMachine - State Modified {message} {1}", v.VorgangId, values);
-                                    db.SaveChanges();
+                                    _db.SaveChanges();
                                 }
-                                db.Entry<Vorgang>(v).Reload();
+                                _db.Entry<Vorgang>(v).Reload();
                                 v.RunPropertyChanged();
                                 _logger.LogInformation("Planmachine - reloaded {message}", v.VorgangId);
                             }
@@ -386,7 +386,7 @@ namespace ModulePlanning.Planning
             { 
                 Task.Run(() =>
                 {
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     lock (_lock)
                     {
                         foreach ((string, string)? idTuple in vorgangIdList)
@@ -396,14 +396,14 @@ namespace ModulePlanning.Planning
                                 var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                                 if (pr != null)
                                 {
-                                    if (db.Entry(pr).State == EntityState.Modified)
+                                    if (_db.Entry(pr).State == EntityState.Modified)
                                     {
-                                        var values = db.ChangeTracker.DebugView.LongView;
+                                        var values = _db.ChangeTracker.DebugView.LongView;
                                         _logger.LogInformation("PlanMachine - State Modified {message} {1}", pr.VorgangId, values);
-                                        db.SaveChanges();
+                                        _db.SaveChanges();
                                     }
                                     _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
-                                    db.Entry<Vorgang>(pr).Reload();
+                                    _db.Entry<Vorgang>(pr).Reload();
                                     pr.RunPropertyChanged();
                                     _logger.LogInformation("PlanMachine - maybe remove {message} {1} {2} - {3}", pr.VorgangId, pr.SysStatus, pr.Aid,pr.Vnr);
                                              
@@ -415,9 +415,9 @@ namespace ModulePlanning.Planning
                                     }
                                     
                                 }
-                                else if (db.Vorgangs.Find(idTuple.Value.Item2)?.Rid == Rid)
+                                else if (_db.Vorgangs.Find(idTuple.Value.Item2)?.Rid == Rid)
                                 {
-                                    var vo = db.Vorgangs.AsNoTracking()
+                                    var vo = _db.Vorgangs.AsNoTracking()
                                         .Include(x => x.AidNavigation)
                                         .ThenInclude(x => x.MaterialNavigation)
                                         .Include(x => x.AidNavigation.DummyMatNavigation)
@@ -432,7 +432,7 @@ namespace ModulePlanning.Planning
                                 }
                             }
                         }
-                        db.SaveChanges();
+                        _db.SaveChanges();
                     }
                 });        
             }

@@ -115,7 +115,5 @@ public partial class Vorgang : ModelBase
 
     public virtual ICollection<VorgangAttachment> VorgangAttachments { get; set; } = new List<VorgangAttachment>();
 
-    public virtual ICollection<VorgangComponent> VorgangComponents { get; set; } = new List<VorgangComponent>();
-
     public virtual VorgangDocu? VorgangDocu { get; set; }
 }

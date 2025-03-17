@@ -54,9 +54,9 @@ public partial class OrderRb : ModelBase
 
     public string? OrderType { get; set; }
 
-    public string? OrderCategory { get; set; }
-
     public string? ProductionSupervisor { get; set; }
+
+    public string? OrderCategory { get; set; }
 
     public string? Wbselement { get; set; }
 
@@ -65,6 +65,8 @@ public partial class OrderRb : ModelBase
     public virtual TblDummy? DummyMatNavigation { get; set; }
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
+
+    public virtual ICollection<OrderComponent> OrderComponents { get; set; } = new List<OrderComponent>();
 
     public virtual OrderGroup? OrderGroupNavigation { get; set; }
 

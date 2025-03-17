@@ -39,6 +39,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<MeasureRessVorgang> MeasureRessVorgangs { get; set; }
 
+    public virtual DbSet<OrderComponent> OrderComponents { get; set; }
+
     public virtual DbSet<OrderGroup> OrderGroups { get; set; }
 
     public virtual DbSet<OrderRb> OrderRbs { get; set; }
@@ -80,8 +82,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<Vorgang> Vorgangs { get; set; }
 
     public virtual DbSet<VorgangAttachment> VorgangAttachments { get; set; }
-
-    public virtual DbSet<VorgangComponent> VorgangComponents { get; set; }
 
     public virtual DbSet<VorgangDocu> VorgangDocus { get; set; }
 
@@ -409,6 +409,30 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.Vorg).WithMany(p => p.MeasureRessVorgangs)
                 .HasForeignKey(d => d.VorgId)
                 .HasConstraintName("FK_MeasureRessVorgang_Vorgang");
+        });
+
+        modelBuilder.Entity<OrderComponent>(entity =>
+        {
+            entity.HasKey(e => e.CompId).HasAnnotation("SqlServer:FillFactor", 95);
+
+            entity.ToTable("OrderComponent");
+
+            entity.Property(e => e.CompId).HasColumnName("CompID");
+            entity.Property(e => e.Aid)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Assembly).HasMaxLength(50);
+            entity.Property(e => e.LatestRequirementsDate).HasColumnType("date");
+            entity.Property(e => e.Material).HasMaxLength(255);
+
+            entity.HasOne(d => d.AidNavigation).WithMany(p => p.OrderComponents)
+                .HasForeignKey(d => d.Aid)
+                .HasConstraintName("FK_OrderComponent_OrderRB");
+
+            entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.OrderComponents)
+                .HasForeignKey(d => d.Material)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderComponent_tblMaterial");
         });
 
         modelBuilder.Entity<OrderGroup>(entity =>
@@ -947,29 +971,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.Vorgang).WithMany(p => p.VorgangAttachments)
                 .HasForeignKey(d => d.VorgangId)
                 .HasConstraintName("FK_VorgangAttachment_Vorgang");
-        });
-
-        modelBuilder.Entity<VorgangComponent>(entity =>
-        {
-            entity.HasKey(e => e.CompId).HasAnnotation("SqlServer:FillFactor", 95);
-
-            entity.ToTable("VorgangComponent");
-
-            entity.Property(e => e.CompId).HasColumnName("CompID");
-            entity.Property(e => e.LatestRequirementsDate).HasColumnType("date");
-            entity.Property(e => e.Material).HasMaxLength(255);
-            entity.Property(e => e.Vorgang)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.VorgangComponents)
-                .HasForeignKey(d => d.Material)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_VorgangComponent_tblMaterial");
-
-            entity.HasOne(d => d.VorgangNavigation).WithMany(p => p.VorgangComponents)
-                .HasForeignKey(d => d.Vorgang)
-                .HasConstraintName("FK_VorgangComponent_Vorgang");
         });
 
         modelBuilder.Entity<VorgangDocu>(entity =>

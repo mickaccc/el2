@@ -271,8 +271,7 @@ namespace ModulePlanning.ViewModels
               .Include(x => x.AidNavigation)
               .ThenInclude(x => x.MaterialNavigation)
               .Include(x => x.AidNavigation.DummyMatNavigation)
-              .Include(x => x.VorgangComponents)
-              .ThenInclude(x => x.MaterialNavigation)
+              .Include(x => x.AidNavigation.OrderComponents)
               .Include(x => x.ArbPlSapNavigation)
               .Include(x => x.Responses)
               .Include(x => x.RidNavigation.WorkArea)
@@ -283,10 +282,11 @@ namespace ModulePlanning.ViewModels
                 && y.SysStatus != null
                 && y.Text != null
                 && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
-                && y.Text.ToLower().Contains("starten") == false
+                && y.Text.ToLower().Contains("auftrag starten") == false
                 && y.SysStatus.Contains("RÜCK") == false)
               .ToListAsync();
 
+            var test = query.Where(x => x.AidNavigation.OrderComponents.Count > 0);
             var result = new List<Vorgang>();
             if (aid != null && query != null)
                 result.AddRange(query.Where(x => x.Aid == aid).ToList());
@@ -352,14 +352,14 @@ namespace ModulePlanning.ViewModels
                             int[] kay = new int[2];
                             kay[0] = v.RidNavigation.Sort ?? 0;
                             kay[1] = v.Rid ?? 0;                           
-                            result.TryAdd(kay, factory.CreatePlanMachine(v.RidNavigation));
+                            result.TryAdd(kay, factory.CreatePlanMachine(v.RidNavigation, _DbCtx));
                         }
                         else //is not in my costunit
                         {
                             int[] kay = new int[2];
                             kay[0] = m.Sort ?? 0;
                             kay[1] = m.RessourceId;
-                            result.TryAdd(kay, factory.CreatePlanMachine(m));
+                            result.TryAdd(kay, factory.CreatePlanMachine(m, _DbCtx));
                         }
                     }
                 }
