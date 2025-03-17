@@ -417,7 +417,7 @@ namespace ModulePlanning.Planning
                                 }
                                 else if (_db.Vorgangs.Find(idTuple.Value.Item2)?.Rid == Rid)
                                 {
-                                    var vo = _db.Vorgangs.AsNoTracking()
+                                    var vo = _db.Vorgangs
                                         .Include(x => x.AidNavigation)
                                         .ThenInclude(x => x.MaterialNavigation)
                                         .Include(x => x.AidNavigation.DummyMatNavigation)

@@ -205,7 +205,7 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                return Changed();
+                return _DbCtx.ChangeTracker.HasChanges();
             }
             catch (InvalidOperationException e)
             {
@@ -224,8 +224,8 @@ namespace ModulePlanning.ViewModels
             {
                 lock (_lock)
                 {
-                    _DbCtx.SaveChanges();
-                    foreach (var mach in _machines.Where(x => x.HasChange)) { mach.SaveAll(); }
+                    _DbCtx.SaveChangesAsync();
+                    
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -554,13 +554,9 @@ namespace ModulePlanning.ViewModels
         }
         private bool Changed()
         {
-            var ret = _DbCtx.ChangeTracker.HasChanges();
-            if (!ret)
-            {
-                ret = _machines.Any(x => x.HasChange == true);
-            }
-            return ret;
+            return _DbCtx.ChangeTracker.HasChanges();
         }
+ 
         public void Closing()
         {
             try

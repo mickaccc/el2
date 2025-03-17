@@ -11,6 +11,8 @@
     xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
     xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:control="clr-namespace:ModulePlanning.UserControls"
+    xmlns:wpfControl="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:prism="http://prismlibrary.com/"
     prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:dd="urn:gong-wpf-dragdrop"
@@ -143,6 +145,24 @@
                   dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}" 
                   CanUserAddRows="False" CanUserDeleteRows="False" HorizontalContentAlignment="Center" ColumnWidth="Auto"
                   IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" SelectionMode="Extended" RowStyle="{StaticResource RowCustomStyle}" >
+            <DataGrid.Resources>
+                <x:Array Type="sys:String" x:Key="Headers">
+                    <sys:String>Material</sys:String>
+                    <sys:String>Bedarf</sys:String>
+                    <sys:String>Bestätigt</sys:String>
+                    <sys:String>Gemeldet</sys:String>
+                    <sys:String>Datum</sys:String>
+                    <sys:String>Baugruppe</sys:String>
+                </x:Array>
+                <x:Array Type="sys:String" x:Key="OriginalHeaders">
+                    <sys:String>Material</sys:String>
+                    <sys:String>RequirementQuantity</sys:String>
+                    <sys:String>QuantityWithdrawn</sys:String>
+                    <sys:String>ConfirmedQuantity</sys:String>
+                    <sys:String>LatestRequirementDate</sys:String>
+                    <sys:String>Assembly</sys:String>
+                </x:Array>
+            </DataGrid.Resources>
             <DataGrid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick"
                               Command="{Binding ApplicationCommands.OpenOrderCommand}"
@@ -168,6 +188,18 @@
                         </MultiBinding>
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wpfControl:ExpandPopup ItemsSource="{Binding AidNavigation.OrderComponents}"
+                                                    Headers="{StaticResource Headers}"
+                                                    OriginalHeaders="{StaticResource OriginalHeaders}"/>
+
+
+
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <!--<DataGridTextColumn Header="Material Typ" IsReadOnly="True" Binding="{Binding AidNavigation.MaterialNavigation.Type}"/>
                 <DataGridTemplateColumn Header="Komponente">
                     <DataGridTemplateColumn.CellTemplate>

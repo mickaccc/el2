@@ -6,9 +6,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:ExpandPopup}">
                     <Canvas>
-                        <Expander IsExpanded="{TemplateBinding IsOpen}"/>
+                        <Expander x:Name="PART_Expand" Background="Beige"/>
                         <Popup Canvas.Top="30" IsOpen="{TemplateBinding IsOpen}">
-                            <DataGrid ItemsSource="{TemplateBinding ItemsSource}"/>
+                            <DataGrid x:Name="PART_DataGrid" ItemsSource="{TemplateBinding ItemsSource}"/>
                         </Popup>
                     </Canvas>
                 </ControlTemplate>
