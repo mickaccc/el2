@@ -61,7 +61,7 @@
                 <DataGridTextColumn Header="Stückzahl" Binding="{Binding Quantity}"/>
                 <DataGridTextColumn Header="Projekt" Binding="{Binding Pro.ProjectPsp}"/>
                 <DataGridTextColumn Header="Projekt Info" Binding="{Binding Pro.ProjectInfo}"/>
-                <DataGridTextColumn Header="Ist Ende" Binding="{Binding Istende, StringFormat=\{0:d\}}"/>
+                <DataGridTextColumn Header="Ist Ende" Binding="{Binding ActualEnd, StringFormat=\{0:d\}}"/>
                 <DataGridTextColumn Header="SysStatus" Binding="{Binding SysStatus}"/>
             </DataGrid.Columns>
         </DataGrid>

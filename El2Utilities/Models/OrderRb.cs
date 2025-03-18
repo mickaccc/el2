@@ -3,11 +3,14 @@
 using El2Core.ViewModelBase;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace El2Core.Models;
 
 public partial class OrderRb : ModelBase
 {
+    [NotMapped]
+    public DateTime? ActualEnd { get; set; }
     public string Aid { get; set; } = null!;
 
     public DateTime? Eckstart { get; set; }

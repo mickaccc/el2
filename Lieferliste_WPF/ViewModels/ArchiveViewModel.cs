@@ -5,6 +5,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -95,9 +96,19 @@ namespace Lieferliste_WPF.ViewModels
                     .Include(x => x.MaterialNavigation)
                     .Include(x => x.DummyMatNavigation)
                     .Include(x => x.Pro)
+                    .Include(x => x.Vorgangs)
                     .Where(x => x.Abgeschlossen)
                     .ToListAsync();
-                result.AddRange(ord);
+
+                List<OrderRb> o = [];
+                foreach (var item in ord.OrderBy(x => x.Eckende))
+                {
+                    var simple = item.Vorgangs.MaxBy(x => x.Vnr);
+                    if (simple != null) 
+                        item.ActualEnd = simple.ActualEndDate;
+                    o.Add(item);
+                }
+                result.AddRange(o);
             }
 
             CollectionView = CollectionViewSource.GetDefaultView(result);
