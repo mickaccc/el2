@@ -106,7 +106,7 @@ namespace ModulePlanning.ViewModels
             _settingsService = settingsService;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SizePercent = 340 * _settingsService.SizePercent / 100;
-            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+            SaveCommand = new ActionCommand(OnSaveExecutedAsync, OnSaveCanExecute);
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
@@ -205,7 +205,10 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                return _DbCtx.ChangeTracker.HasChanges();
+                lock (_lock)
+                {
+                    return _DbCtx.ChangeTracker.HasChanges();
+                }
             }
             catch (InvalidOperationException e)
             {
@@ -218,15 +221,11 @@ namespace ModulePlanning.ViewModels
             return false;
         }
 
-        private void OnSaveExecuted(object obj)
+        private async void OnSaveExecutedAsync(object obj)
         {
             try
             {
-                lock (_lock)
-                {
-                    _DbCtx.SaveChangesAsync();
-                    
-                }
+                 await _DbCtx.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -297,21 +296,20 @@ namespace ModulePlanning.ViewModels
         private void SetAutoSaveTimer()
         {
             _autoSaveTimer = new System.Timers.Timer(15000);
-            _autoSaveTimer.Elapsed += OnAutoSave;
+            _autoSaveTimer.Elapsed += OnAutoSaveAsync;
             _autoSaveTimer.AutoReset = true;
             _autoSaveTimer.Enabled = true;
         }
 
-        private void OnAutoSave(object? sender, ElapsedEventArgs e)
+        private async void OnAutoSaveAsync(object? sender, ElapsedEventArgs e)
         {
             try
             {
                 if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
                 {
-                    lock (_lock)
-                    {
-                        if (_DbCtx.ChangeTracker.HasChanges()) _DbCtx.SaveChangesAsync();
-                    }
+
+                    if (_DbCtx.ChangeTracker.HasChanges()) _ = await _DbCtx.SaveChangesAsync();
+                    
                 }
             }
             catch (Exception ex)

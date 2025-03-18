@@ -106,6 +106,7 @@ namespace ModuleMeasuring.ViewModels
                 {
                     _SelectedItem = value;
                     InWorkState = value.SourceVorgang.VorgangDocu?.InWorkState ?? 0;
+                    SelectedValue = _SelectedItem.Auftrag;
                     NotifyPropertyChanged(() => SelectedItem);                   
                 }
             }
@@ -410,7 +411,7 @@ namespace ModuleMeasuring.ViewModels
 
         private void onPruefExecuted(object obj)
         {
-            var mes = ProcessList.First(x => x.Auftrag == _SelectedValue);  
+            var mes = ProcessList.First(x => x.Auftrag == SelectedItem.Auftrag);  
             var docu = FirstPartInfo.CreateDocumentInfos([mes.Material, mes.Auftrag]);
             FirstPartInfo.Collect();
             Directory.CreateDirectory(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], docu[DocumentPart.Folder]));
