@@ -175,6 +175,7 @@
     <PackageReference Include="gong-wpf-dragdrop" />
     <PackageReference Include="MahApps.Metro" />
     <PackageReference Include="MahApps.Metro.IconPacks" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" />
     <PackageReference Include="System.Net.Http" />

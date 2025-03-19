@@ -186,7 +186,6 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.AidNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Where(x => x.AidNavigation.Abgeschlossen == false)
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
                 .Select(s => new VorgItem(s))];

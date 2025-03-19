@@ -8,6 +8,7 @@ using Prism.Ioc;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -89,7 +90,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private async Task<ICollectionView> LoadAsync()
         {
-
+            var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
             using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 var ord = await db.OrderRbs.AsNoTracking()
@@ -100,19 +101,22 @@ namespace Lieferliste_WPF.ViewModels
                     .Where(x => x.Abgeschlossen)
                     .ToListAsync();
 
-                List<OrderRb> o = [];
-                foreach (var item in ord.OrderBy(x => x.Eckende))
+                await Task.Factory.StartNew(() =>
                 {
-                    var simple = item.Vorgangs.MaxBy(x => x.Vnr);
-                    if (simple != null) 
-                        item.ActualEnd = simple.ActualEndDate;
-                    o.Add(item);
-                }
-                result.AddRange(o);
+                    List<OrderRb> o = [];
+                    foreach (var item in ord.OrderBy(x => x.Eckende))
+                    {
+                        var simple = item.Vorgangs.MaxBy(x => x.Vnr);
+                        if (simple != null)
+                            item.ActualEnd = simple.ActualEndDate;
+                        o.Add(item);
+                    }
+                    result.AddRange(o);
+                }, CancellationToken.None, TaskCreationOptions.RunContinuationsAsynchronously, uiContext);
             }
-
             CollectionView = CollectionViewSource.GetDefaultView(result);
             CollectionView.Filter += OnFilter;
+            
             return CollectionView;
         }
 

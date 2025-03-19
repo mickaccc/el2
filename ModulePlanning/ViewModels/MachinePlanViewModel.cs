@@ -188,9 +188,14 @@ namespace ModulePlanning.ViewModels
                                     _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
                                     _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
                                 }
-
                             }
                         });
+                    }
+                    else
+                    {
+                        var o = Priv_processes?.FirstOrDefault(x => x.Aid == item.Value.Item2);
+                        if (o != null)
+                             _DbCtx.Entry(o.AidNavigation.OrderComponents).Reload();
                     }
                 }
             }
