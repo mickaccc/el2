@@ -170,6 +170,8 @@ namespace ModulePlanning.ViewModels
 
         private void MessageOrderReceived(List<(string, string)?> list)
         {
+            Vorgang vrg;
+            Vorgang vo;
             try
             {
                 foreach (var item in list)
@@ -180,22 +182,26 @@ namespace ModulePlanning.ViewModels
                         _ = Task.Factory.StartNew(async () =>
                         {
                             var proc = await GetVorgangsAsync(item.Value.Item2);
-                            foreach (var item2 in proc.Where(x => x.Aktuell))
+                            foreach (var item2 in proc)
                             {
                                 if (IsRelevant(item2.ArbPlSap) && item2.Rid == null)
                                 {
-                                    _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
-                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
-                                    _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
+                                    if (Priv_processes.Contains(item2))
+                                    {
+                                        foreach (var item3 in item2.AidNavigation.OrderComponents)
+                                        {
+                                            _DbCtx.Entry(item3).Reload();
+                                        }                                       
+                                    }
+                                    else
+                                    {
+                                        _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
+                                        _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
+                                        _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
+                                    }
                                 }
                             }
                         });
-                    }
-                    else
-                    {
-                        var o = Priv_processes?.FirstOrDefault(x => x.Aid == item.Value.Item2);
-                        if (o != null)
-                             _DbCtx.Entry(o.AidNavigation.OrderComponents).Reload();
                     }
                 }
             }
@@ -273,9 +279,9 @@ namespace ModulePlanning.ViewModels
         {
             var query = await _DbCtx.Vorgangs
               .Include(x => x.AidNavigation)
-              .ThenInclude(x => x.MaterialNavigation)
+              .ThenInclude(x => x.OrderComponents)
               .Include(x => x.AidNavigation.DummyMatNavigation)
-              .Include(x => x.AidNavigation.OrderComponents)
+              .Include(x => x.AidNavigation.MaterialNavigation)
               .Include(x => x.ArbPlSapNavigation)
               .Include(x => x.Responses)
               .Include(x => x.RidNavigation.WorkArea)
@@ -290,7 +296,6 @@ namespace ModulePlanning.ViewModels
                 && y.SysStatus.Contains("RÜCK") == false)
               .ToListAsync();
 
-            var test = query.Where(x => x.AidNavigation.OrderComponents.Count > 0);
             var result = new List<Vorgang>();
             if (aid != null && query != null)
                 result.AddRange(query.Where(x => x.Aid == aid).ToList());
