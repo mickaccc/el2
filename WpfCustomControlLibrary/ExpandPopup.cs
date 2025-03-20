@@ -1,4 +1,5 @@
 ﻿using System;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -69,6 +70,11 @@ namespace WpfCustomControlLibrary
             {
                 var zip = OriginalHeaders.Zip(Headers);
                 var dtg = (DataGrid)sender;
+                var ss = zip.FirstOrDefault().First.Split('.');
+                if (ss.Length > 1)
+                {
+           
+                }
                 var s = zip.FirstOrDefault(x => x.First == e.PropertyName);
                 if (s.First != null)
                 {
