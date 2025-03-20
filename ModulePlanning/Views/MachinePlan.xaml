@@ -148,6 +148,7 @@
             <DataGrid.Resources>
                 <x:Array Type="sys:String" x:Key="Headers">
                     <sys:String>Material</sys:String>
+                    <sys:String>Bezeichnung</sys:String>
                     <sys:String>Bedarf</sys:String>
                     <sys:String>Bestätigt</sys:String>
                     <sys:String>Gemeldet</sys:String>
@@ -156,6 +157,7 @@
                 </x:Array>
                 <x:Array Type="sys:String" x:Key="OriginalHeaders">
                     <sys:String>Material</sys:String>
+                    <sys:String>MaterialNavigation.Bezeichng</sys:String>
                     <sys:String>RequirementQuantity</sys:String>
                     <sys:String>QuantityWithdrawn</sys:String>
                     <sys:String>ConfirmedQuantity</sys:String>

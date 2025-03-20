@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace WpfCustomControlLibrary
 {
@@ -68,20 +69,39 @@ namespace WpfCustomControlLibrary
         {
             if (OriginalHeaders.Length > 0 && OriginalHeaders.Length == Headers.Length)
             {
+   
+                int index = 0;
                 var zip = OriginalHeaders.Zip(Headers);
                 var dtg = (DataGrid)sender;
-                var ss = zip.FirstOrDefault().First.Split('.');
-                if (ss.Length > 1)
+                if (OriginalHeaders.Any(x => x.Contains(e.PropertyName)))
                 {
-           
-                }
-                var s = zip.FirstOrDefault(x => x.First == e.PropertyName);
-                if (s.First != null)
-                {
-                    e.Column.Header = s.Second;
-                }
-                else e.Cancel = true;
+                    foreach (var z in zip)
+                    {
+                        if (z.First.Split('.').First() == e.PropertyName)
+                        {
+                            var textcolumn = new DataGridTextColumn();
+                            textcolumn.Binding = new Binding(z.First);
+                            textcolumn.Header = z.Second;
 
+                            if (dtg.Columns.Count > index) dtg.Columns.Insert(index, textcolumn);
+                            else dtg.Columns.Add(textcolumn);
+                            break;
+                        }
+                        else
+                        {
+
+                            if (z.First == e.PropertyName)
+                            {
+                                e.Column.Header = z.Second;
+                                if (dtg.Columns.Count > index) dtg.Columns.Insert(index, e.Column);
+                                else dtg.Columns.Add(e.Column);
+                                break;
+                            }
+                        }
+                        index++;
+                    }
+                }
+                e.Cancel = true;
             }
             else
             {
