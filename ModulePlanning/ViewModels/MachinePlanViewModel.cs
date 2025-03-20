@@ -139,7 +139,10 @@ namespace ModulePlanning.ViewModels
 
                             if (vo != null)
                             {
-                                _DbCtx.Entry(vo).Reload();
+                                _ = Task.Factory.StartNew(async () =>
+                                {
+                                    await _DbCtx.Entry(vo).ReloadAsync();
+                                });
                                 _Logger.LogInformation("maybe plug {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
                                 if (item.Value.Item1 == "EL2")
                                 {
@@ -195,7 +198,10 @@ namespace ModulePlanning.ViewModels
                     {
                         var o = Priv_processes?.FirstOrDefault(x => x.Aid == item.Value.Item2);
                         if (o != null)
-                             _DbCtx.Entry(o.AidNavigation.OrderComponents).Reload();
+                            _ = Task.Factory.StartNew(async () =>
+                            {
+                                await _DbCtx.Entry(o.AidNavigation.OrderComponents).ReloadAsync();
+                            });
                     }
                 }
             }
