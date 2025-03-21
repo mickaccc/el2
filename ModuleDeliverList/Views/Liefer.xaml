@@ -191,8 +191,8 @@
     </DockPanel>
     <StackPanel Grid.Row="1" Grid.Column="1">
 
-        <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" IsActive="True" Foreground="{DynamicResource ActiveProcess}"
-                   Visibility="{Binding OrderTask.IsNotCompleted, Converter={StaticResource BoolToVis}}"/>
+        <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" Foreground="{DynamicResource ActiveProcess}"
+                   IsActive="{Binding OrderTask.IsNotCompleted}"/>
         <TextBlock Text="{Binding OrderTask.ErrorMessage}" HorizontalAlignment="Center"
                    Visibility="{Binding OrderTask.IsFaulted, Converter={StaticResource BoolToVis}}"/>
     </StackPanel>

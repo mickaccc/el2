@@ -82,8 +82,8 @@
 
 
         </DockPanel>
-        <mah:ProgressRing Grid.Row="1" IsActive="True" Foreground="{DynamicResource ActiveProcess}"
-                     Visibility="{Binding MachineTask.IsNotCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <mah:ProgressRing Grid.Row="1" Foreground="{DynamicResource ActiveProcess}"
+                     IsActive="{Binding MachineTask.IsNotCompleted}"/>
         <TextBlock Grid.Row="1" Text="{Binding MachineTask.ErrorMessage}"
                    Visibility="{Binding MachineTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <ListBox x:Name="machines" ScrollViewer.HorizontalScrollBarVisibility="Auto" Grid.Row="1"
@@ -148,6 +148,7 @@
             <DataGrid.Resources>
                 <x:Array Type="sys:String" x:Key="Headers">
                     <sys:String>Material</sys:String>
+                    <sys:String>Bezeichnung</sys:String>
                     <sys:String>Bedarf</sys:String>
                     <sys:String>Bestätigt</sys:String>
                     <sys:String>Gemeldet</sys:String>
@@ -156,6 +157,7 @@
                 </x:Array>
                 <x:Array Type="sys:String" x:Key="OriginalHeaders">
                     <sys:String>Material</sys:String>
+                    <sys:String>MaterialNavigation.Bezeichng</sys:String>
                     <sys:String>RequirementQuantity</sys:String>
                     <sys:String>QuantityWithdrawn</sys:String>
                     <sys:String>ConfirmedQuantity</sys:String>

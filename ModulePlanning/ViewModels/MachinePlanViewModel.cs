@@ -139,7 +139,10 @@ namespace ModulePlanning.ViewModels
 
                             if (vo != null)
                             {
-                                _DbCtx.Entry(vo).Reload();
+                                _ = Task.Factory.StartNew(async () =>
+                                {
+                                    await _DbCtx.Entry(vo).ReloadAsync();
+                                });
                                 _Logger.LogInformation("maybe plug {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
                                 if (item.Value.Item1 == "EL2")
                                 {
@@ -190,7 +193,10 @@ namespace ModulePlanning.ViewModels
                                     {
                                         foreach (var item3 in item2.AidNavigation.OrderComponents)
                                         {
-                                            _DbCtx.Entry(item3).Reload();
+                                            _ = Task.Factory.StartNew(async () =>
+                                            {
+                                                await _DbCtx.Entry(item3).ReloadAsync();
+                                            });
                                         }                                       
                                     }
                                     else
@@ -280,6 +286,7 @@ namespace ModulePlanning.ViewModels
             var query = await _DbCtx.Vorgangs
               .Include(x => x.AidNavigation)
               .ThenInclude(x => x.OrderComponents)
+              .ThenInclude(x => x.MaterialNavigation)
               .Include(x => x.AidNavigation.DummyMatNavigation)
               .Include(x => x.AidNavigation.MaterialNavigation)
               .Include(x => x.ArbPlSapNavigation)
