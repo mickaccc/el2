@@ -8,6 +8,7 @@ using El2Core.ViewModelBase;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using ModulePlanning.Planning;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -389,7 +390,7 @@ namespace ModulePlanning.ViewModels
                             x.ArbPlSapNavigation.CostId == c.CostId));
                     }
                 }
-                Priv_processes = list.FindAll(x => x.Rid == null)
+                Priv_processes = list.FindAll(x => x.Rid == null).OrderBy(x => x.Vnr)
                     .ToObservableCollection();
                 Priv_parking = list.FindAll(x => x.Rid < 0)
                     .ToObservableCollection();
@@ -445,7 +446,7 @@ namespace ModulePlanning.ViewModels
             {
                 if (commandParameter is string change)
                 {
-                    if (!string.IsNullOrWhiteSpace(change))
+                    if (change.Length > 3 || change.IsNullOrEmpty())
                     {
                         _searchFilterText = change;
                         ProcessCV.Refresh();

@@ -11,6 +11,7 @@
     xmlns:Views="clr-namespace:ModuleDeliverList.Views"
     xmlns:const="clr-namespace:El2Core.Constants;assembly=El2Core"
     xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:wpfControl="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     xmlns:Controls="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
     
     x:Class="ModuleDeliverList.UserControls.LieferlisteControl"
@@ -210,8 +211,17 @@
                                 </TextBox>
                             </materialdesign:Badged>
                     </GroupBox>
-                
-            <GroupBox Grid.Column="1"  ToolTip="Kommentar Teamleiter" MinWidth="30"  MaxWidth="380"  
+                    <!--<wpfControl:CommentControl CommentString="{Binding Comment_Me, Mode=TwoWay, ElementName=luc, UpdateSourceTrigger=PropertyChanged}"
+                                                    User="{Binding DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    FontSize="14">
+                        <wpfControl:CommentControl.IsEditable>
+                            <MultiBinding Converter="{StaticResource Relpermiss}">
+                                <Binding Source="{x:Static const:Permissions.CommentMe}"/>
+                                <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                            </MultiBinding>
+                        </wpfControl:CommentControl.IsEditable>
+                    </wpfControl:CommentControl>-->
+                    <GroupBox Grid.Column="1"  ToolTip="Kommentar Teamleiter" MinWidth="30"  MaxWidth="380"  
                           Header="{Binding Comment_Te, ElementName=luc,
             Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
                         <TextBox x:Name="txtT" Text="{Binding Comment_Te, ElementName=luc,

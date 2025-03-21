@@ -21,5 +21,10 @@ namespace ModuleDeliverList.Views
             if (data != null)
                 Lieferlist.SelectedItem = data.DataContext;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.SearchBox.Text = string.Empty;
+        }
     }
 }

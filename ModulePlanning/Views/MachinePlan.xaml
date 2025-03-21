@@ -67,7 +67,7 @@
             
             <TextBox x:Name="searchTextBox" VerticalContentAlignment="Center" DockPanel.Dock="Left" Margin="10,0,10,0"
                      materialdesign:HintAssist.Hint="suchen in Auftragsnummer, TTNR und Materialbezeichnung"
-                     materialdesign:TextFieldAssist.HasClearButton="false" 
+                     materialdesign:TextFieldAssist.HasClearButton="false"  
                      Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="TextChanged">

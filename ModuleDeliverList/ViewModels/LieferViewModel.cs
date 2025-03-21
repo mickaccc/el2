@@ -6,6 +6,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Prism.Dialogs;
 using Prism.Events;
 using Prism.Ioc;
@@ -51,9 +52,6 @@ namespace ModuleDeliverList.ViewModels
         public bool HasChange => DBctx.ChangeTracker.HasChanges();
         private readonly ILogger _Logger;
         IDialogService _dialogService;
-        private readonly Dictionary<string, string> _filterCriterias = [];
-        private readonly string _sortField = string.Empty;
-        private readonly string _sortDirection = string.Empty;
         private RelayCommand? _textSearchCommand;
         private RelayCommand? _filterDeleteCommand;
         private RelayCommand? _toggleFilterCommand;
@@ -105,13 +103,11 @@ namespace ModuleDeliverList.ViewModels
             get { return _searchFilterText; }
             set
             {
-                if (value != _searchFilterText)
+                if (_searchFilterText != value)
                 {
-                    _searchTxtLock = true;
                     _searchFilterText = value;
                     NotifyPropertyChanged(() => SearchFilterText);
                     OrdersView.Refresh();
-                    _searchTxtLock = false;
                 }
             }
         }
@@ -129,7 +125,6 @@ namespace ModuleDeliverList.ViewModels
             }
         }
         private static readonly object _lock = new();
-        private static bool _searchTxtLock;
         private IApplicationCommands _applicationCommands;
 
         public IApplicationCommands ApplicationCommands
@@ -506,7 +501,7 @@ namespace ModuleDeliverList.ViewModels
         {
             if (commandParameter is string search)
 
-                if (!_searchTxtLock && search.Length >= 3)
+                if (search.Length > 3 || search.IsNullOrEmpty())
                     SearchFilterText = search;
         }
 
@@ -657,6 +652,7 @@ namespace ModuleDeliverList.ViewModels
             SelectedPersonalFilter = PersonalFilterContainer.GetInstance().Keys[0];
             MarkerCode = string.Empty;
             FilterInvers = false;
+            _Logger.LogInformation("Filter Keys {0}", string.Join(",", PersonalFilterContainer.GetInstance().Keys));
         }
         private void OnToggleFilter(object obj)
         {

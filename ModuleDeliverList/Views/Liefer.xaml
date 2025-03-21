@@ -81,7 +81,7 @@
         </DockPanel.Background>
 
         <Button Content="Speichern" DockPanel.Dock="Left" Command="{Binding SaveCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-        <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Padding="3" Text="{Binding SearchFilterText, Mode=OneWay}"
+        <TextBox x:Name="SearchBox"  MinWidth="300" Margin="10,0,0,10" Padding="3" 
                  materialDesign:HintAssist.Hint="suchen in Auftragsnr, TTNR, Materialtext"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Background="{DynamicResource MahApps.Brushes.ThemeBackground}">
             <i:Interaction.Triggers>
@@ -90,8 +90,11 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-            <Button Command="{Binding FilterDeleteCommand}" ToolTip="alle Filter rücksetzen" Margin="5" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
+            <Button Command="{Binding FilterDeleteCommand}" ToolTip="alle Filter rücksetzen" Margin="5"
+                    Click="Button_Click"
+                    Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}">
                 <materialDesign:PackIcon Kind="DeleteEmpty" Width="30" />
+                
             </Button>
 
             <materialDesign:ColorZone DockPanel.Dock="Right"
