@@ -118,8 +118,10 @@ namespace WpfCustomControlLibrary
         private static void OnIsEditableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var cmt = (CommentControl)d;
-
-            cmt._textBox.IsReadOnly = !(bool)e.NewValue;
+            if (cmt._textBox != null)
+            {
+                cmt._textBox.IsReadOnly = !(bool)e.NewValue;
+            }
         }
 
         public override void OnApplyTemplate()

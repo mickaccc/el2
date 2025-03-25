@@ -332,7 +332,7 @@ namespace ModulePlanning.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "AutoSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(ex.Message, "AutoSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
                 _Logger.LogError("{message}", ex.ToString());
             }
         }
