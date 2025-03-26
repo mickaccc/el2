@@ -94,6 +94,15 @@ namespace Lieferliste_WPF
             //    .EnableThreadSafetyChecks(true);
 
             
+            //var builder = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            //IConfiguration configuration = builder.Build();
+            //var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+            //var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
+            //    .UseSqlServer(defaultconnection)
+            //    .EnableThreadSafetyChecks(true);
             //containerRegistry.RegisterSingleton<DB_COS_LIEFERLISTE_SQLContext>();
             containerRegistry.Register<DbContext, DB_COS_LIEFERLISTE_SQLContext>();
             containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
