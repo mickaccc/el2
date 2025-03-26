@@ -257,7 +257,6 @@
  
                         <TextBox  x:Name="CommentHighPrio" ToolTip="Priotext" MinWidth="100" MaxWidth="200"
                                   TextWrapping="Wrap" HorizontalAlignment="Stretch"
-                               Height="{Binding Path=ActualHeight, ElementName=prio}"
                               Text="{Binding PrioText, ElementName=luc, Mode=TwoWay}"
                               IsReadOnly="{Binding Converter={StaticResource Permission},
                         ConverterParameter={x:Static const:Permissions.VorgangPrioInvers}}"/>

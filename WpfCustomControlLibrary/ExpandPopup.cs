@@ -77,25 +77,28 @@ namespace WpfCustomControlLibrary
                 {
                     foreach (var z in zip)
                     {
-                        if (z.First.Split('.').First() == e.PropertyName)
+                        if (dtg.Columns.All(x => x.Header.ToString() != z.Second))
                         {
-                            var textcolumn = new DataGridTextColumn();
-                            textcolumn.Binding = new Binding(z.First);
-                            textcolumn.Header = z.Second;
-
-                            if (dtg.Columns.Count > index) dtg.Columns.Insert(index, textcolumn);
-                            else dtg.Columns.Add(textcolumn);
-                            break;
-                        }
-                        else
-                        {
-
-                            if (z.First == e.PropertyName)
+                            if (z.First.Split('.').First() == e.PropertyName)
                             {
-                                e.Column.Header = z.Second;
-                                if (dtg.Columns.Count > index) dtg.Columns.Insert(index, e.Column);
-                                else dtg.Columns.Add(e.Column);
+                                var textcolumn = new DataGridTextColumn();
+                                textcolumn.Binding = new Binding(z.First);
+                                textcolumn.Header = z.Second;
+
+                                if (dtg.Columns.Count > index) dtg.Columns.Insert(index, textcolumn);
+                                else dtg.Columns.Add(textcolumn);
                                 break;
+                            }
+                            else
+                            {
+
+                                if (z.First == e.PropertyName)
+                                {
+                                    e.Column.Header = z.Second;
+                                    if (dtg.Columns.Count > index) dtg.Columns.Insert(index, e.Column);
+                                    else dtg.Columns.Add(e.Column);
+                                    break;
+                                }
                             }
                         }
                         index++;

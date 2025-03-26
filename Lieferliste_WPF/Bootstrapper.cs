@@ -8,8 +8,10 @@ using Lieferliste_WPF.Dialogs.ViewModels;
 using Lieferliste_WPF.Planning;
 using Lieferliste_WPF.ViewModels;
 using Lieferliste_WPF.Views;
+using LiveCharts.Wpf;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModuleDeliverList.Dialogs;
 using ModuleDeliverList.Dialogs.ViewModels;
@@ -29,6 +31,7 @@ using Prism.Modularity;
 using Prism.Navigation.Regions;
 using Prism.Unity;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
@@ -77,23 +80,26 @@ namespace Lieferliste_WPF
         {
             base.OnInitialized();
         }
+  
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            //var builder = new ConfigurationBuilder()
+            //    .SetBasePath(Directory.GetCurrentDirectory())
+            //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-            IConfiguration configuration = builder.Build();
-            var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
-            var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
-                .UseSqlServer(defaultconnection)
-                .EnableThreadSafetyChecks(true);
+            //IConfiguration configuration = builder.Build();
+            //var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+            //var builderopt = new DbContextOptionsBuilder<DB_COS_LIEFERLISTE_SQLContext>()
+            //    .UseSqlServer(defaultconnection)
+            //    .EnableThreadSafetyChecks(true);
+
+            
             //containerRegistry.RegisterSingleton<DB_COS_LIEFERLISTE_SQLContext>();
-            containerRegistry.RegisterInstance(builderopt.Options);
+            containerRegistry.RegisterScoped<DbContext, DB_COS_LIEFERLISTE_SQLContext>();
             containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
             containerRegistry.RegisterSingleton<IHolidayLogic, HolidayLogic>();
             containerRegistry.RegisterSingleton<IProcessStripeService, ProcessStripeService>();
-            containerRegistry.RegisterScoped<IRegionManager, RegionManager>();
+            containerRegistry.RegisterSingleton<IRegionManager, RegionManager>();
             containerRegistry.RegisterSingleton<IUserSettingsService, UserSettingsService>();
             containerRegistry.RegisterSingleton<ILoggerFactory, LoggerFactory>();
             containerRegistry.RegisterForNavigation<UserSettings>();
@@ -135,6 +141,10 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterInstance(Globals.CreateUserInfo(Container));
             RuleInfo rule = new(gl.Rules);
             containerRegistry.RegisterInstance(rule);
+
+        }
+        protected virtual void ConfigureContainer()
+        {
 
         }
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)

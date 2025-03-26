@@ -225,6 +225,7 @@ namespace ModulePlanning.ViewModels
             {
                 lock (_lock)
                 {
+                    
                     return _DbCtx.ChangeTracker.HasChanges();
                 }
             }

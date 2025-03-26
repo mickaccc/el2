@@ -2,7 +2,9 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace El2Core.Models;
 
@@ -91,6 +93,17 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<WorkShift> WorkShifts { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+        IConfiguration configuration = builder.Build();
+        var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+        optionsBuilder.UseSqlServer(defaultconnection).EnableThreadSafetyChecks();
+        base.OnConfiguring(optionsBuilder);
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AccountCost>(entity =>
