@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="gong-wpf-dragdrop" />
-    <PackageReference Include="MahApps.Metro.IconPacks"  />
+    <PackageReference Include="MahApps.Metro.IconPacks" />
     <PackageReference Include="MaterialDesignThemes.MahApps" />
     <PackageReference Include="Prism.Unity" />
   </ItemGroup>
