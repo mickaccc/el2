@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -25,6 +26,7 @@ namespace Lieferliste_WPF.ViewModels
             userSettingsService = usrSettingsService;
             _ctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             LoadingData();
+            VrgTask = new NotifyTaskCompletion<IEnumerable<dynamic>>(LoadVrgAsnc());
             SubmitCommand = new ActionCommand(OnSubmitExecuted, OnSubmitCanExecute);
         }
 
@@ -32,7 +34,8 @@ namespace Lieferliste_WPF.ViewModels
         IContainerProvider container;
         UserSettingsService userSettingsService;
         private DB_COS_LIEFERLISTE_SQLContext _ctx;
-        public IEnumerable<dynamic> VorgangRef { get; private set; }
+        private IEnumerable<dynamic> VorgangRef { get; set; }
+        public NotifyTaskCompletion<IEnumerable<dynamic>>? VrgTask { get; private set; }
         private VorgItem? _SelectedVorgangItem;
         public VorgItem? SelectedVorgangItem
         {
@@ -179,16 +182,21 @@ namespace Lieferliste_WPF.ViewModels
                 NotifyPropertyChanged(() => SumTimes);
             }
         }
-
-        private void LoadingData()
+        private async Task<IEnumerable<dynamic>> LoadVrgAsnc()
         {
-            VorgangRef = [.. _ctx.Vorgangs.AsNoTracking()
+            using var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            VorgangRef = await db.Vorgangs
                 .Include(x => x.AidNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
-                .Select(s => new VorgItem(s))];
+                .Select(s => new VorgItem(s)).ToListAsync();
+            return VorgangRef;
+        }
+
+        private void LoadingData()
+        {
             var D = DateTime.Today.AddYears(-1);
             EmployeeNotes = _ctx.EmployeeNotes.Where(x => x.Date > D).OrderBy(x => x.Date).ToObservableCollection();
 
@@ -334,7 +342,8 @@ namespace Lieferliste_WPF.ViewModels
                             }
                             if (sec.StartsWith("m", StringComparison.CurrentCultureIgnoreCase))
                             {
-                                minute += int.Parse(test.Groups[1].Value);
+                                hour += int.Parse(test.Groups[1].Value)/60;
+                                minute += int.Parse(test.Groups[1].Value)%60;
                             }
                         }
                     }

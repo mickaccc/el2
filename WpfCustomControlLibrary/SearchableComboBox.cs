@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics.Arm;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -101,11 +96,14 @@ namespace WpfCustomControlLibrary
         {
             var dep = (SearchableComboBox)d;
             dep.ItemsViewSource = new CollectionViewSource() { Source = e.NewValue };
+            if (dep._itemsList != null )
+                dep._itemsList.ItemsSource = dep.ItemsViewSource.View;
             dep.SetFilter();
         }
 
         private void SetFilter()
         {
+            ItemsViewSource.Filter -= FilterEvent;
             ItemsViewSource.Filter += FilterEvent;
         }
 

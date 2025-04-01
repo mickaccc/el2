@@ -25,9 +25,10 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Background="Aqua">
-            <WpfControl:SearchableComboBox Name="VrgCombo" ItemsSource="{Binding VorgangRef}" Width="150" PopupWidth="600"
+            <WpfControl:SearchableComboBox Name="VrgCombo" ItemsSource="{Binding VrgTask.Result}" Width="150" PopupWidth="600"
                                            SelectedItem="{Binding SelectedVorgangItem, Mode=TwoWay}" SelectionChanged="Combo_SelectionChanged" 
-                                           SearchFieldName="Auftrag" DisplayFieldNames="Auftrag,Vorgang,Kurztext,Material,Bezeichnung"/>
+                                           SearchFieldName="Auftrag" DisplayFieldNames="Auftrag,Vorgang,Kurztext,Material,Bezeichnung"
+                                           IsEnabled="{Binding VrgTask.IsSuccessfullyCompleted}"/>
 
             <ComboBox Name="RefCombo" ItemsSource="{Binding SelectedRefs}" SelectedItem="{Binding SelectedRef, Mode=TwoWay}"
                       DisplayMemberPath="Description" SelectionChanged="Combo_SelectionChanged"/>
@@ -83,12 +84,20 @@
         </Grid>
         <DataGrid Grid.Row="2" ItemsSource="{Binding EmployeeNotesView}" AutoGenerateColumns="False" CanUserAddRows="False"
                   AlternatingRowBackground="LightGray"  AlternationCount="2">
+            <DataGrid.Resources>
+                <Style x:Key="TextRight" TargetType="{x:Type TextBlock}" >
+                    <Setter Property="TextAlignment" Value="Right" />
+                    <Setter Property="Padding" Value="5,0"/>
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Referenz" Binding="{Binding Reference, Converter={StaticResource RefConvert},
                     ConverterParameter=2}" Width="300" IsReadOnly="True" />
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding Comment}" Width="250"/>
                 <DataGridTextColumn Header="Datum" Binding="{Binding Date, StringFormat=\{0:D\}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime, Converter={StaticResource TimeConverter}}"/>
+                <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime, Converter={StaticResource TimeConverter}}"
+                                    IsReadOnly="True" ElementStyle="{StaticResource TextRight}"/>
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Orientation="Horizontal" Grid.Row="3">

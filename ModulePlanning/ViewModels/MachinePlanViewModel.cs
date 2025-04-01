@@ -178,37 +178,40 @@ namespace ModulePlanning.ViewModels
             Vorgang vo;
             try
             {
-                foreach (var item in list)
+                lock (_lock)
                 {
-                    if (item == null) continue;
-                    if (Priv_processes?.Any(x => x.Aid == item.Value.Item2) ?? false)
+                    foreach (var item in list)
                     {
-                        _ = Task.Factory.StartNew(async () =>
+                        if (item == null) continue;
+                        if (Priv_processes?.Any(x => x.Aid == item.Value.Item2) ?? false)
                         {
-                            var proc = await GetVorgangsAsync(item.Value.Item2);
-                            foreach (var item2 in proc)
+                            _ = Task.Factory.StartNew(async () =>
                             {
-                                if (IsRelevant(item2.ArbPlSap) && item2.Rid == null)
+                                var proc = await GetVorgangsAsync(item.Value.Item2);
+                                foreach (var item2 in proc)
                                 {
-                                    if (Priv_processes.Contains(item2))
+                                    if (IsRelevant(item2.ArbPlSap) && item2.Rid == null)
                                     {
-                                        foreach (var item3 in item2.AidNavigation.OrderComponents)
+                                        if (Priv_processes.Contains(item2))
                                         {
-                                            _ = Task.Factory.StartNew(async () =>
+                                            foreach (var item3 in item2.AidNavigation.OrderComponents)
                                             {
-                                                await _DbCtx.Entry(item3).ReloadAsync();
-                                            });
-                                        }                                       
-                                    }
-                                    else
-                                    {
-                                        _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
-                                        _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
-                                        _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
+                                                _ = Task.Factory.StartNew(async () =>
+                                                {
+                                                    await _DbCtx.Entry(item3).ReloadAsync();
+                                                });
+                                            }
+                                        }
+                                        else
+                                        {
+                                            _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
+                                            _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
+                                            _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }
@@ -224,8 +227,7 @@ namespace ModulePlanning.ViewModels
             try
             {
                 lock (_lock)
-                {
-                    
+                {                    
                     return _DbCtx.ChangeTracker.HasChanges();
                 }
             }
@@ -324,11 +326,14 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
+                lock (_lock)
                 {
+                    if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
+                    {
 
-                    if (_DbCtx.ChangeTracker.HasChanges()) _ = await _DbCtx.SaveChangesAsync();
-                    
+                        if (_DbCtx.ChangeTracker.HasChanges()) _ = await _DbCtx.SaveChangesAsync();
+
+                    }
                 }
             }
             catch (Exception ex)
@@ -522,9 +527,12 @@ namespace ModulePlanning.ViewModels
 
                         if (_DbCtx.Ressources.All(x => x.RessourceId != parkRid))
                         {
-                            _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource ON");
-                            _DbCtx.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
-                            _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource OFF");
+                            lock (_lock)
+                            {
+                                _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource ON");
+                                _DbCtx.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
+                                _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource OFF");
+                            }
                             _Logger.LogInformation("{message} {park} {id}", "Drop Parking", parkRid, vrg.VorgangId);
                         }
                         vrg.Rid = parkRid;
@@ -561,7 +569,10 @@ namespace ModulePlanning.ViewModels
                     var vv = _DbCtx.Ressources.First(x => x.RessourceId == _machines[i].Rid);
                     vv.Sort = vv.Visability ? i : 1000;
                 }
-                _DbCtx.SaveChanges();
+                lock (_lock)
+                {
+                    _DbCtx.SaveChanges();
+                }
             }
             catch (Exception e)
             {
@@ -571,7 +582,10 @@ namespace ModulePlanning.ViewModels
         }
         private bool Changed()
         {
-            return _DbCtx.ChangeTracker.HasChanges();
+            lock (_lock)
+            {
+                return _DbCtx.ChangeTracker.HasChanges();
+            }
         }
  
         public void Closing()
