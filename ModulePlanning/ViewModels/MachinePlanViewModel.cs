@@ -326,15 +326,13 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                lock (_lock)
+                if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
                 {
-                    if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
+                    lock (_lock)
                     {
-
-                        if (_DbCtx.ChangeTracker.HasChanges()) _ = await _DbCtx.SaveChangesAsync();
-
+                        if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());
                     }
-                }
+                }             
             }
             catch (Exception ex)
             {
