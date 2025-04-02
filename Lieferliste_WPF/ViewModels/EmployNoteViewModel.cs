@@ -3,6 +3,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
@@ -25,15 +26,18 @@ namespace Lieferliste_WPF.ViewModels
             container = containerProvider;
             userSettingsService = usrSettingsService;
             _ctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            LoadingData();
+            var loggerFactory = container.Resolve<ILoggerFactory>();
+            _logger = loggerFactory.CreateLogger<EmployNoteViewModel>();       
             VrgTask = new NotifyTaskCompletion<IEnumerable<dynamic>>(LoadVrgAsnc());
             SubmitCommand = new ActionCommand(OnSubmitExecuted, OnSubmitCanExecute);
+            LoadingData();
         }
 
         public string Title { get; } = "Arbeitszeiten";
         IContainerProvider container;
         UserSettingsService userSettingsService;
         private DB_COS_LIEFERLISTE_SQLContext _ctx;
+        private ILogger _logger;
         private IEnumerable<dynamic> VorgangRef { get; set; }
         public NotifyTaskCompletion<IEnumerable<dynamic>>? VrgTask { get; private set; }
         private VorgItem? _SelectedVorgangItem;
@@ -201,9 +205,8 @@ namespace Lieferliste_WPF.ViewModels
             EmployeeNotes = _ctx.EmployeeNotes.Where(x => x.Date > D).OrderBy(x => x.Date).ToObservableCollection();
 
             EmployeeNotesView = CollectionViewSource.GetDefaultView(EmployeeNotes);
-            
             CalendarWeeks = GetKW_List();
- 
+
             Users = [];
             foreach (var cost in UserInfo.User.AccountCostUnits)
             {
@@ -212,10 +215,9 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     if (Users.All(x => x.User != account.AccountId))
                         Users.Add(new UserItem(account.AccountId, account.Account.Firstname, account.Account.Lastname));
-                }
-                SelectedUser = Users.FirstOrDefault(x => x.User == UserInfo.User.UserId);
-
+                }               
             }
+            SelectedUser = Users.First(x => x.User.Equals(UserInfo.User.UserId, StringComparison.CurrentCultureIgnoreCase));
             EmployeeNotesView.Filter += FilterPredicate;
             EmployeeNotesView.CollectionChanged += CollectionHasChanged;
             var sel = _ctx.EmploySelections.Where(y => y.Active).OrderBy(o => o.Description);
@@ -225,6 +227,7 @@ namespace Lieferliste_WPF.ViewModels
                 SelectedRefs.Add(new RefItem("EmploySelection", s.Id.ToString(), s.Description));
             }
             SelectedWeekDay = DateTime.Today.DayOfWeek;
+
         }
 
         private void CollectionHasChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -234,10 +237,11 @@ namespace Lieferliste_WPF.ViewModels
                 foreach (var o in e.OldItems)
                 {
                     _ctx.EmployeeNotes.Remove((EmployeeNote)o);
-                    
+                    _ctx.SaveChanges();
                 }
             }
-            SumTimes = EmployeeNotesView.Cast<EmployeeNote>().Sum(x => (double?)x.Processingtime ?? 0);
+
+            SumTimes = EmployeeNotesView.Cast<EmployeeNote>().Sum(x => x.Processingtime ?? 0);
         }
 
         private bool FilterPredicate(object obj)
@@ -278,6 +282,7 @@ namespace Lieferliste_WPF.ViewModels
 
             _ctx.SaveChanges();
             EmployeeNotes.Add(emp);
+            _logger.LogInformation("Employnote Submitted");
         }
 
         private List<string> GetKW_List()
@@ -360,8 +365,7 @@ namespace Lieferliste_WPF.ViewModels
             return input;
         }
         public void Closing()
-        {
-            var c = _ctx.ChangeTracker.HasChanges();         
+        {         
             _ctx.SaveChanges();
         }
     }
