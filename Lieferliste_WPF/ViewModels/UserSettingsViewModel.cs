@@ -1,4 +1,5 @@
 ﻿using ControlzEx.Theming;
+using El2Core.Constants;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -81,7 +82,12 @@ namespace Lieferliste_WPF.ViewModels
                     ErrorsChanged(this, new DataErrorsChangedEventArgs(nameof(GlobalFontSize)));               
             }
         }
-
+        public string EmpTimeFormat
+        {
+            get { return _settingsService.EmployTimeFormat; }
+            set { _settingsService.EmployTimeFormat = value; }
+        }
+        public string[] TimeFormats { get { return Enum.GetNames<Formats.TimeFormat>(); } }
         public double SizePercent
         {
             get { return _settingsService.SizePercent; }

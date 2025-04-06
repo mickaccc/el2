@@ -1,4 +1,5 @@
-﻿using System;
+﻿using El2Core.Constants;
+using System;
 using System.Configuration;
 using System.IO;
 using System.Windows;
@@ -17,6 +18,7 @@ namespace El2Core.Services
         string PlanedSetup { get; set; }
         double SizePercent { get; set; }
         int KWReview {  get; set; }
+        string EmployTimeFormat { get; set; }
         bool IsDefaults();
         bool IsChanged { get; }
         void Save();
@@ -80,7 +82,6 @@ namespace El2Core.Services
         }
         private bool _isChanged;
         public bool IsChanged { get { return _isChanged; } }
-
         public string PlanedSetup
         {
             get => Properties.Settings.Default.PlanedSetup;
@@ -91,6 +92,12 @@ namespace El2Core.Services
         {
             get => Properties.Settings.Default.KWReview;
             set { Properties.Settings.Default[nameof(KWReview)] = value; _isChanged = true; }
+        }
+
+        public string EmployTimeFormat
+        {
+            get => Properties.Settings.Default.EmplTimeFormat;
+            set { Properties.Settings.Default[nameof(EmployTimeFormat)] = value; _isChanged = true; }
         }
 
         public void Save()

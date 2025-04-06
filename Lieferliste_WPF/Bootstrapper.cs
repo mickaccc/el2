@@ -1,5 +1,6 @@
 ﻿using CompositeCommands.Core;
 using ControlzEx.Theming;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
@@ -127,8 +128,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<ReportMainView>();
             containerRegistry.RegisterForNavigation<Products>();
             containerRegistry.RegisterForNavigation<EmployNote>();
-
-
+            
             containerRegistry.RegisterSingleton<IPlanMachineFactory, PlanMachineFactory>();
             containerRegistry.RegisterSingleton<IPlanWorkerFactory, PlanWorkerFactory>();
             containerRegistry.RegisterDialog<Order>();

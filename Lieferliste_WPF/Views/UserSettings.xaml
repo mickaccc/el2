@@ -89,6 +89,8 @@
                         </Binding>
         
                     </TextBox>
+                    <Label Content="Zeitformat (Arbeitszeiten)"/>
+                    <ComboBox ItemsSource="{Binding TimeFormats}" SelectedItem="{Binding EmpTimeFormat}"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Teamleiter">

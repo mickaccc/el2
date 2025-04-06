@@ -96,7 +96,8 @@
                     ConverterParameter=2}" Width="300" IsReadOnly="True" />
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding Comment}" Width="250"/>
                 <DataGridTextColumn Header="Datum" Binding="{Binding Date, StringFormat=\{0:D\}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime, Converter={StaticResource TimeConverter}}"
+                <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime,
+                    Converter={StaticResource TimeConverter}, ConverterParameter={Binding TFormat}}"
                                     IsReadOnly="True" ElementStyle="{StaticResource TextRight}"/>
             </DataGrid.Columns>
         </DataGrid>

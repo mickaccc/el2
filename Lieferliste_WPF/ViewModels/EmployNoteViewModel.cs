@@ -30,6 +30,7 @@ namespace Lieferliste_WPF.ViewModels
             _logger = loggerFactory.CreateLogger<EmployNoteViewModel>();       
             VrgTask = new NotifyTaskCompletion<IEnumerable<dynamic>>(LoadVrgAsnc());
             SubmitCommand = new ActionCommand(OnSubmitExecuted, OnSubmitCanExecute);
+            TFormat = userSettingsService.EmployTimeFormat;
             LoadingData();
         }
 
@@ -99,6 +100,7 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        public string TFormat { get; private set; }
         private string _Comment = string.Empty;
 
         public string Comment
