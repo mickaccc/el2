@@ -184,6 +184,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Dialogs\ProcessTimeDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UserControls\CommentUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

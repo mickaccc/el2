@@ -1,15 +1,18 @@
-﻿using El2Core.Models;
+﻿using El2Core.Constants;
+using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Prism.Dialogs;
 using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -21,16 +24,20 @@ namespace Lieferliste_WPF.ViewModels
 {
     internal class EmployNoteViewModel : ViewModelBase
     {
-        public EmployNoteViewModel(IContainerProvider containerProvider, UserSettingsService usrSettingsService)
+        public EmployNoteViewModel(IContainerProvider containerProvider, UserSettingsService usrSettingsService,
+            IDialogService dialogService)
         {
             container = containerProvider;
             userSettingsService = usrSettingsService;
+            _dialogService = dialogService;
             _ctx = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var loggerFactory = container.Resolve<ILoggerFactory>();
-            _logger = loggerFactory.CreateLogger<EmployNoteViewModel>();       
+            _logger = loggerFactory.CreateLogger<EmployNoteViewModel>();
             VrgTask = new NotifyTaskCompletion<IEnumerable<dynamic>>(LoadVrgAsnc());
             SubmitCommand = new ActionCommand(OnSubmitExecuted, OnSubmitCanExecute);
+            ProcessTimeChangeCommand = new ActionCommand(OnProcessTimeChangeExecuted, OnProcessTimeChangeCanExecute);
             LoadingData();
+            _dialogService = dialogService;
         }
 
         public string Title { get; } = "Arbeitszeiten";
@@ -38,6 +45,7 @@ namespace Lieferliste_WPF.ViewModels
         UserSettingsService userSettingsService;
         private DB_COS_LIEFERLISTE_SQLContext _ctx;
         private ILogger _logger;
+        private readonly IDialogService _dialogService;
         private IEnumerable<dynamic> VorgangRef { get; set; }
         public NotifyTaskCompletion<IEnumerable<dynamic>>? VrgTask { get; private set; }
         private VorgItem? _SelectedVorgangItem;
@@ -114,7 +122,7 @@ namespace Lieferliste_WPF.ViewModels
             get { return _NoteTimePre; }
             set
             {
-                _NoteTimePre = ConvertInputValue(value.ToString());
+                _NoteTimePre = ConvertInputValue(value.ToString(), out NoteTime);
                 NotifyPropertyChanged(() => NoteTimePre);
             }
         }
@@ -147,6 +155,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView EmployeeNotesView { get; private set; }
         public List<string> CalendarWeeks { get; private set; }
         public ICommand SubmitCommand { get; private set; }
+        public ICommand ProcessTimeChangeCommand { get; private set; }
         private int _CalendarWeek;
 
         public int CalendarWeek
@@ -184,6 +193,36 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _SumTimes = value;
                 NotifyPropertyChanged(() => SumTimes);
+            }
+        }
+
+        private bool OnProcessTimeChangeCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Correction);
+        }
+
+        private void OnProcessTimeChangeExecuted(object obj)
+        {
+            if (obj is EmployeeNote empl)
+            {
+                var par = new DialogParameters();
+                par.Add("correction", empl);
+                _dialogService.ShowDialog("ProcessTimeDialog", par, ProcessTimeChangeCallback);
+
+            }
+        }
+
+        private void ProcessTimeChangeCallback(IDialogResult result)
+        {
+            if (result.Result == ButtonResult.OK)
+            {
+                var empl = result.Parameters.GetValue<EmployeeNote>("correction");
+                var corrPre = result.Parameters.GetValue<string?>("correct");
+                var e = EmployeeNotes.First(x => x.Id == empl.Id);
+                _ = ConvertInputValue(corrPre, out double corr);
+                e.Processingtime = corr;
+                
+                _logger.LogInformation("{message} {1}", "Set new ProcessTime:", e.Processingtime);
             }
         }
         private async Task<IEnumerable<dynamic>> LoadVrgAsnc()
@@ -304,8 +343,9 @@ namespace Lieferliste_WPF.ViewModels
             d = d.AddDays((int)SelectedWeekDay - (int)d.DayOfWeek);
             return d;
         }
-        private string ConvertInputValue(string input)
+        private string ConvertInputValue(string input, out double noteTime)
         {
+            noteTime = default;
             int hour = 0, minute = 0;
             bool error = false;
             input = input.Trim();
@@ -313,7 +353,7 @@ namespace Lieferliste_WPF.ViewModels
             Match test = reg.Match(input);
             if (double.TryParse(input, out double t))
             {
-                NoteTime = t;
+                noteTime = t;
                 hour = (int)t;
                 var m = t - Math.Truncate(t);
                 m = Math.Round(m, 2)*60;
@@ -359,7 +399,7 @@ namespace Lieferliste_WPF.ViewModels
             if (!error)
             {
                 if (test.Success)
-                    NoteTime = hour + Convert.ToDouble(minute) / 60;
+                    noteTime = hour + Convert.ToDouble(minute) / 60;
                 return string.Format("{0}:{1}", hour.ToString(), minute.ToString("D2"));           
             }
             return input;

@@ -59,19 +59,6 @@
 		</MenuItem>
 	</ContextMenu>
  
-    <!--<Style>
-        <Separator>
-			<Separator.Template>
-				<ControlTemplate>
-					<Line Stretch="Fill"
-						  Stroke="Black"
-						  StrokeThickness="1"
-						  X1="0"
-						  X2="1"/>
-				</ControlTemplate>
-			</Separator.Template>
-		</Separator>
-    </Style>-->
     <x:Array x:Key="AppCommandsCm" Type="{x:Type MenuItem}">
 
         <MenuItem Command="{Binding ApplicationCommands.OpenOrderCommand}"
