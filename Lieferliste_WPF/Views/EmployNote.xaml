@@ -15,7 +15,7 @@
     <Grid>
         <Grid.Resources>
             <conv:EnumBooleanConverter x:Key="enumBool"/>
-            <conv:DoubleToTimeConverter x:Key="TimeConverter"/>
+            <conv:TimeConverter x:Key="TimeConverter"/>
             <conv:CommentConverter x:Key="RefConvert"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -79,7 +79,11 @@
             <Label Content="Datum" Grid.Column="2" />
             <TextBlock Text="{Binding SelectedDate, StringFormat=\{0:D\}}" Grid.Row="1" Grid.Column="2"/>
             <Label Content="Stunden" Grid.Column="3" />
-            <TextBox Text="{Binding NoteTimePre}" Grid.Row="1" Grid.Column="3" />
+            <TextBox Text="{Binding NoteTimePre}" Grid.Row="1" Grid.Column="3">
+                <TextBox.ToolTip>
+                    <Image Source="/Images/TooltipEmpl.png" Width="250"/>
+                </TextBox.ToolTip>
+            </TextBox>
             <Button Content="eintragen" Grid.Row="1" Grid.Column="4" Command="{Binding SubmitCommand}"/>
         </Grid>
         <DataGrid Grid.Row="2" ItemsSource="{Binding EmployeeNotesView}" AutoGenerateColumns="False" CanUserAddRows="False"
@@ -97,7 +101,7 @@
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding Comment}" Width="250"/>
                 <DataGridTextColumn Header="Datum" Binding="{Binding Date, StringFormat=\{0:D\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime,
-                    Converter={StaticResource TimeConverter}, ConverterParameter={Binding TFormat}}"
+                    Converter={StaticResource TimeConverter}}"
                                     IsReadOnly="True" ElementStyle="{StaticResource TextRight}"/>
             </DataGrid.Columns>
         </DataGrid>

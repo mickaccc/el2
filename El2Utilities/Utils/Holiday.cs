@@ -143,7 +143,7 @@ namespace El2Core.Utils
             var holiRule = (CloseAndHolidayRule)serializer.Deserialize(reader);
             for (int i = year; i <= year + 1; i++)
             {
-                var easter = getGaussianEaster(i);
+                var easter = GetEasterSunday(i);
                 if (holiRule.FixHoliday != null)
                 {
                     foreach (var d in holiRule.FixHoliday)
@@ -174,10 +174,10 @@ namespace El2Core.Utils
             #endregion
         }
 
-        private DateTime GetEasterSunday()
+        private static DateTime GetEasterSunday(int year)
         {
             var g = year % 19;
-            var c = this.year / 100;
+            var c = year / 100;
             var h = ((c - (c / 4)) - (((8 * c) + 13) / 25) + (19 * g) + 15) % 30;
             var i = h - (h / 28) * (1 - (29 / (h + 1)) * ((21 - g) / 11));
             var j = (year + (year / 4) + i + 2 - c + (c / 4)) % 7;
@@ -188,27 +188,6 @@ namespace El2Core.Utils
 
             return new DateTime(year, month, day);
 
-        }
-        private static DateTime getGaussianEaster(int year)
-        {
-
-            var k = year / 100;
-            var tmp = (3 * k + 3) / 4;
-            var m = 15 + tmp - (8 * k + 13) / 25;
-            var s = 2 - tmp;
-            var a = year % 19;
-            var d = (19 * a + m) % 30;
-            var r = (d / 29) + (d / 28 - d / 29) * (a / 11);
-            var og = 21 + d - r;
-            var sz = 7 - (year + year / 4 + s) % 7;
-            var oe = 7 - (og - sz) % 7;
-            var os = og + oe - 1;
-
-            var cal = new DateTime(year, 3, 1);
-
-            cal.AddDays(os);
-
-            return (cal);
         }
     }
   

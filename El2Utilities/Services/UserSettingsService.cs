@@ -18,7 +18,7 @@ namespace El2Core.Services
         string PlanedSetup { get; set; }
         double SizePercent { get; set; }
         int KWReview {  get; set; }
-        string EmployTimeFormat { get; set; }
+        int EmployTimeFormat { get; set; }
         bool IsDefaults();
         bool IsChanged { get; }
         void Save();
@@ -94,9 +94,9 @@ namespace El2Core.Services
             set { Properties.Settings.Default[nameof(KWReview)] = value; _isChanged = true; }
         }
 
-        public string EmployTimeFormat
+        public int EmployTimeFormat
         {
-            get => Properties.Settings.Default.EmplTimeFormat;
+            get => Properties.Settings.Default.EmployTimeFormat;
             set { Properties.Settings.Default[nameof(EmployTimeFormat)] = value; _isChanged = true; }
         }
 

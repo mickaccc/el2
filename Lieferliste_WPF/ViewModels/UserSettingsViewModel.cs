@@ -11,9 +11,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -84,8 +82,8 @@ namespace Lieferliste_WPF.ViewModels
         }
         public string EmpTimeFormat
         {
-            get { return _settingsService.EmployTimeFormat; }
-            set { _settingsService.EmployTimeFormat = value; }
+            get => Enum.GetName((Formats.TimeFormat)_settingsService.EmployTimeFormat) ?? string.Empty;
+            set => _settingsService.EmployTimeFormat = (int)Enum.Parse<Formats.TimeFormat>(value);
         }
         public string[] TimeFormats { get { return Enum.GetNames<Formats.TimeFormat>(); } }
         public double SizePercent

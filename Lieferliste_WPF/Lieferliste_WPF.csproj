@@ -149,6 +149,7 @@
     <None Remove="Images\sort-by-attributes.png" />
     <None Remove="Images\spacing.png" />
     <None Remove="Images\SplashPic.png" />
+    <None Remove="Images\TooltipEmpl.png" />
     <None Remove="Images\unknown-file.png" />
     <None Remove="Images\user-edit.png" />
     <None Remove="Images\user-profiles %281%29.png" />
@@ -268,6 +269,7 @@
     <Resource Include="Images\sort-by-attributes-interface-button-option.png" />
     <Resource Include="Images\sort-by-attributes.png" />
     <Resource Include="Images\spacing.png" />
+    <Resource Include="Images\TooltipEmpl.png" />
     <Resource Include="Images\unknown-file.png" />
     <Resource Include="Images\user-edit.png" />
     <Resource Include="Images\user-profiles (1).png" />
