@@ -206,7 +206,7 @@ namespace Lieferliste_WPF.ViewModels
             if (obj is EmployeeNote empl)
             {
                 var par = new DialogParameters();
-                par.Add("correction", empl);
+                par.Add("note", empl);
                 _dialogService.ShowDialog("ProcessTimeDialog", par, ProcessTimeChangeCallback);
 
             }
@@ -216,13 +216,14 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (result.Result == ButtonResult.OK)
             {
-                var empl = result.Parameters.GetValue<EmployeeNote>("correction");
-                var corrPre = result.Parameters.GetValue<string?>("correct");
-                var e = EmployeeNotes.First(x => x.Id == empl.Id);
+                var empl = result.Parameters.GetValue<EmployeeNote>("note");
+                var corrPre = result.Parameters.GetValue<string?>("newTime");
                 _ = ConvertInputValue(corrPre, out double corr);
-                e.Processingtime = corr;
-                
-                _logger.LogInformation("{message} {1}", "Set new ProcessTime:", e.Processingtime);
+                empl.Processingtime = corr;
+                empl.RunPropertyChanged();
+                SumTimes = EmployeeNotesView.Cast<EmployeeNote>().Sum(x => x.Processingtime ?? 0);
+                _logger.LogInformation("{message} {1}", "Set new ProcessTime:", empl.Processingtime);
+                _ctx.SaveChanges();
             }
         }
         private async Task<IEnumerable<dynamic>> LoadVrgAsnc()
@@ -343,9 +344,10 @@ namespace Lieferliste_WPF.ViewModels
             d = d.AddDays((int)SelectedWeekDay - (int)d.DayOfWeek);
             return d;
         }
-        private string ConvertInputValue(string input, out double noteTime)
+        private string ConvertInputValue(string? input, out double noteTime)
         {
             noteTime = default;
+            if (input == null) { return string.Empty; }
             int hour = 0, minute = 0;
             bool error = false;
             input = input.Trim();
@@ -422,5 +424,8 @@ namespace Lieferliste_WPF.ViewModels
         public string Id { get; } = Id;
         public string Description { get; set; } = Description;
     }
-
+    public class NotifyEmployNote : EmployeeNote, INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler? PropertyChanged;
+    }
 }

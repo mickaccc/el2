@@ -97,7 +97,7 @@
             </DataGrid.Resources>
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Command="{Binding ProcessTimeChangeCommand}"
+                    <MenuItem Header="Zeit bearbeiten" Command="{Binding ProcessTimeChangeCommand}"
                               CommandParameter="{Binding Path=PlacementTarget.SelectedItem,
                                   RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
                 </ContextMenu>

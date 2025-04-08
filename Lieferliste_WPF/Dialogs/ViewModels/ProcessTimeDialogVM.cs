@@ -1,13 +1,14 @@
 ﻿using El2Core.Models;
 using Prism.Commands;
 using Prism.Dialogs;
+using System;
 
 namespace Lieferliste_WPF.Dialogs.ViewModels
 {
     public class ProcessTimeDialogVM : IDialogAware
     {
-        private double? correctValue;
-        public double? CorrectValue
+        private string? correctValue;
+        public string? CorrectValue
         {
             get { return correctValue; }
             set { correctValue = value; }
@@ -18,6 +19,11 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         private DelegateCommand<string?>? _closeDialogCommand;
         public DelegateCommand<string?> CloseDialogCommand =>
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand<string?>(CloseDialog));
+        private DelegateCommand<string?>? _textChangeCommand;
+        public DelegateCommand<string?> TextChangeCommand =>
+            _textChangeCommand ?? (_textChangeCommand = new DelegateCommand<string?>(OnTextChange));
+
+
 
         public DialogCloseListener RequestClose { get; }
 
@@ -30,6 +36,10 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
         {
 
         }
+        private void OnTextChange(string? obj)
+        {
+            correctValue = obj;
+        }
         protected virtual void CloseDialog(string? parameter)
         {
             ButtonResult result = ButtonResult.None;
@@ -40,16 +50,16 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
             else
             {
                 result = ButtonResult.OK;
-                param.Add("correct", correctValue);
-                param.Add("correction", emplNote);
+                param.Add("newTime", correctValue);
+                param.Add("note", emplNote);
             }
             RequestClose.Invoke(param, result);
         }
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-            emplNote = parameters.GetValue<EmployeeNote>("correction");
-            correctValue = emplNote.Processingtime;
+            emplNote = parameters.GetValue<EmployeeNote>("note");
+            correctValue = emplNote.Processingtime.ToString();
             
         }
     }

@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:prism="http://prismlibrary.com/"
              mc:Ignorable="d" 
              d:DesignHeight="80" d:DesignWidth="250" >
@@ -25,13 +26,23 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel >
-            <Label Content="Korrekturwert in Stunden eingeben:" FontWeight="Bold" FontSize="14"/>
-            <TextBox x:Name="correct" Text="{Binding CorrectValue, TargetNullValue=0}" HorizontalAlignment="Stretch" />
+            <Label Content="Zeit ändern:" FontWeight="Bold" FontSize="14"/>
+            <TextBox x:Name="correct" Text="{Binding CorrectValue, TargetNullValue=0}" HorizontalAlignment="Stretch">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding CloseDialogCommand}" CommandParameter="1"/>
+                </TextBox.InputBindings>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <i:InvokeCommandAction Command="{Binding TextChangeCommand}"
+                                               CommandParameter="{Binding ElementName=correct, Path=Text}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+        <ToolBarPanel Orientation="Horizontal" Grid.Row="1">
             <Button Content="abbrechen" Command="{Binding CloseDialogCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
             <Button Content="OK" Command="{Binding CloseDialogCommand}" CommandParameter="1" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-        </StackPanel>
-            
+        </ToolBarPanel>
+
     </Grid>
 </UserControl>
