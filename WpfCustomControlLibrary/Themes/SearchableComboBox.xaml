@@ -2,16 +2,19 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:WpfCustomControlLibrary">
     
-
+    
     <Style TargetType="{x:Type local:SearchableComboBox}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:SearchableComboBox}">
+  
                     <Border Background="{TemplateBinding Background}"  
                             BorderBrush="{TemplateBinding BorderBrush}"  
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <StackPanel Orientation="Vertical" DataContext="{TemplateBinding DataContext}">
-                            <TextBox x:Name="PART_SearchBox" Text="{TemplateBinding SelectedText}" Width="200" Margin="2" HorizontalAlignment="Left"/>
+                            <TextBox x:Name="PART_SearchBox" Text="{TemplateBinding SelectedText}"
+                                     Width="200" Margin="2" HorizontalAlignment="Left"
+                                     Background="LightBlue"/>
                             <Popup x:Name="PART_ItemsBox" Width="{TemplateBinding PopupWidth}" Height="300">
                                 <DataGrid x:Name="PART_List"   
                                      CanUserAddRows="{TemplateBinding CanUserAddRows}"  

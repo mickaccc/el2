@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace WpfCustomControlLibrary
 {
@@ -33,7 +34,17 @@ namespace WpfCustomControlLibrary
                 _itemsList.ItemsSource = ItemsViewSource?.View;
                 LostFocus += OnLostFocus;
                 GotFocus += OnGotFocus;
+                IsEnabledChanged += OnEnableChange;
             }
+        }
+
+        private void OnEnableChange(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is true)
+            {
+                _searchBox.Background = Brushes.LightBlue;
+            }
+            else { _searchBox.Background = Brushes.Gray; }
         }
 
         private void OnGotFocus(object sender, RoutedEventArgs e)
@@ -57,6 +68,7 @@ namespace WpfCustomControlLibrary
         private static string _searchBoxText = string.Empty;
         private string _PreSelect = string.Empty;
         internal CollectionViewSource? ItemsViewSource;
+
         public bool CanUserAddRows
         {
             get { return (bool)GetValue(CanUserAddRowsProperty); }

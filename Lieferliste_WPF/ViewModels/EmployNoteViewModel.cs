@@ -371,7 +371,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             else
             {
-                reg = new Regex(@"^(\d+,?\d+)(\s*[a-zA-Z]+)?");
+                reg = new Regex(@"^(\d+,?\d*)(\s*[a-zA-Z]+)?");
                 test = reg.Match(input);
                 
                 for(int i = 0; i<2; i++)
