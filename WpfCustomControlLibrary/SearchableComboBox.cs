@@ -31,8 +31,13 @@ namespace WpfCustomControlLibrary
                 _itemsList.MouseDoubleClick += Row_DoubleClick;
                 _itemsList.AutoGeneratingColumn += AutoGenerating;
                 _itemsList.ItemsSource = ItemsViewSource?.View;
-
+                LostFocus += OnLostFocus;
             }
+        }
+
+        private void OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            _itemsBox.IsOpen = false;
         }
 
         private void SearchGotFocus(object sender, RoutedEventArgs e)

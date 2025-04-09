@@ -144,6 +144,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterDialog<ProjectEdit, ProjectEditViewModel>();
             containerRegistry.RegisterDialog<AttachmentDialog, AttachmentDialogViewModel>();
             containerRegistry.RegisterDialog<InputStoppage, InputStoppageVM>();
+            containerRegistry.RegisterDialog<ProcessTimeDialog, ProcessTimeDialogVM>();
 
 
             Globals gl = new(Container);
