@@ -32,7 +32,13 @@ namespace WpfCustomControlLibrary
                 _itemsList.AutoGeneratingColumn += AutoGenerating;
                 _itemsList.ItemsSource = ItemsViewSource?.View;
                 LostFocus += OnLostFocus;
+                GotFocus += OnGotFocus;
             }
+        }
+
+        private void OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            _itemsBox.IsOpen = true;
         }
 
         private void OnLostFocus(object sender, RoutedEventArgs e)
@@ -199,8 +205,7 @@ namespace WpfCustomControlLibrary
         private void Searching(object sender, TextChangedEventArgs e)
         {
             _searchBoxText = _searchBox.Text;
-            
-            _itemsBox.IsOpen = true;
+
             ItemsViewSource?.View.Refresh();
         }
     }

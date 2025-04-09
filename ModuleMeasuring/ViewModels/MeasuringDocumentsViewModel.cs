@@ -726,7 +726,7 @@ namespace ModuleMeasuring.ViewModels
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         public void OnNavigatedTo(NavigationContext navigationContext)
         {

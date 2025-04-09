@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -351,6 +350,7 @@ namespace Lieferliste_WPF.ViewModels
             int hour = 0, minute = 0;
             bool error = false;
             input = input.Trim();
+            //input = input.Replace(',', '.');
             Regex reg = new Regex(@"(\d+):(\d+)");
             Match test = reg.Match(input);
             if (double.TryParse(input, out double t))
@@ -371,7 +371,7 @@ namespace Lieferliste_WPF.ViewModels
             }
             else
             {
-                reg = new Regex(@"^(\d+)(\s*[a-zA-Z]+)?");
+                reg = new Regex(@"^(\d+,?\d+)(\s*[a-zA-Z]+)?");
                 test = reg.Match(input);
                 
                 for(int i = 0; i<2; i++)
@@ -385,7 +385,15 @@ namespace Lieferliste_WPF.ViewModels
 
                             if (sec.StartsWith("s", StringComparison.CurrentCultureIgnoreCase))
                             {
-                                hour += int.Parse(test.Groups[1].Value);
+                                if (double.TryParse(test.Groups[1].Value, out double d))
+                                {
+                                    noteTime = d;
+                                    hour = (int)d;
+                                    var m = d - Math.Truncate(d);
+                                    m = Math.Round(m, 2) * 60;
+                                    minute = (int)m;
+                                }
+                                    
                             }
                             if (sec.StartsWith("m", StringComparison.CurrentCultureIgnoreCase))
                             {
@@ -423,9 +431,5 @@ namespace Lieferliste_WPF.ViewModels
         public string Table { get; } = Table;
         public string Id { get; } = Id;
         public string Description { get; set; } = Description;
-    }
-    public class NotifyEmployNote : EmployeeNote, INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

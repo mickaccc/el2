@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:conv="clr-namespace:El2Core.Converters;assembly=El2Core"
              xmlns:prism="http://prismlibrary.com/"
              mc:Ignorable="d" 
              d:DesignHeight="80" d:DesignWidth="250" >
@@ -19,7 +20,10 @@
             <Setter Property="Width" Value="300"/>
 
         </Style>
-    </prism:Dialog.WindowStyle> 
+    </prism:Dialog.WindowStyle>
+    <UserControl.Resources>
+        <conv:TimeConverter x:Key="time"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

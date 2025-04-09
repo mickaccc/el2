@@ -90,7 +90,7 @@
         
                     </TextBox>
                     <Label Content="Zeitformat (Arbeitszeiten)"/>
-                    <ComboBox ItemsSource="{Binding TimeFormats}" SelectedItem="{Binding EmpTimeFormat}"/>
+                    <ComboBox ItemsSource="{Binding TimeFormats}" SelectedItem="{Binding EmployTimeFormat}"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Teamleiter">

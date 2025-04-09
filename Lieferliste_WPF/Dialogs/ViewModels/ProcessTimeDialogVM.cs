@@ -1,4 +1,5 @@
-﻿using El2Core.Models;
+﻿using El2Core.Converters;
+using El2Core.Models;
 using Prism.Commands;
 using Prism.Dialogs;
 using System;
@@ -58,8 +59,9 @@ namespace Lieferliste_WPF.Dialogs.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
+            var conv = new TimeConverter();
             emplNote = parameters.GetValue<EmployeeNote>("note");
-            correctValue = emplNote.Processingtime.ToString();
+            correctValue = (string?)conv.Convert(emplNote.Processingtime, null, null, null);
             
         }
     }

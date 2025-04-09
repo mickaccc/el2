@@ -80,7 +80,7 @@ namespace Lieferliste_WPF.ViewModels
                     ErrorsChanged(this, new DataErrorsChangedEventArgs(nameof(GlobalFontSize)));               
             }
         }
-        public string EmplTimeFormat
+        public string EmployTimeFormat
         {
             get => Enum.GetName((Formats.TimeFormat)_settingsService.EmployTimeFormat) ?? string.Empty;
             set => _settingsService.EmployTimeFormat = (int)Enum.Parse<Formats.TimeFormat>(value);
