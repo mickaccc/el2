@@ -35,6 +35,7 @@ namespace WpfCustomControlLibrary
                 LostFocus += OnLostFocus;
                 GotFocus += OnGotFocus;
                 IsEnabledChanged += OnEnableChange;
+                if (!IsEnabled) _searchBox.Background = Brushes.Gray;
             }
         }
 
@@ -42,7 +43,7 @@ namespace WpfCustomControlLibrary
         {
             if (e.NewValue is true)
             {
-                _searchBox.Background = Brushes.LightBlue;
+                _searchBox.Background = Brushes.Transparent;
             }
             else { _searchBox.Background = Brushes.Gray; }
         }

@@ -52,28 +52,6 @@
                                         SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
 
         </wpfcontrol:SearchableComboBox>
-
-
-        <!--<TextBox Grid.Column="1" x:Name="searchOrd" Style="{DynamicResource MahApps.Styles.TextBox}" Text="{Binding OrderSearch}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="TextChanged">
-                    <i:InvokeCommandAction Command="{Binding SearchChangedCommand}" CommandParameter="{Binding Text, ElementName=searchOrd}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </TextBox>-->
-        <!--<DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding OrderList}" IsReadOnly="True" AutoGenerateColumns="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding Aid}"/>
-                <DataGridTextColumn Header="Material" Binding="{Binding Material}"/>
-                <DataGridTextColumn Header="Bezeichnung" Binding="{Binding MaterialNavigation.Bezeichng}"/>
-            </DataGrid.Columns>
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding SelectionCommand}"
-                                           CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </DataGrid>-->
         <Grid  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="267*"/>
@@ -81,16 +59,17 @@
                 <ColumnDefinition Width="267*"/>
             </Grid.ColumnDefinitions>
             <DockPanel Grid.Row="1" Background="{DynamicResource MahApps.Brushes.Accent}">
-                <ItemsControl DockPanel.Dock="Top"  ItemsSource="{Binding FirstDocumentItems}" x:Name="first" 
-                dd:DragDrop.IsDropTarget="True"
-                dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2" Margin="0,0,92,0">
-                <ItemsControl.ContextMenu>
+                <DockPanel.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
                       CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
                         <MenuItem Header="Zeichnung öffnen" Command="{Binding OpenZngCommand}"/>
                     </ContextMenu>
-                </ItemsControl.ContextMenu>
+                </DockPanel.ContextMenu>
+                <ItemsControl DockPanel.Dock="Top"  ItemsSource="{Binding FirstDocumentItems}" x:Name="first" 
+                dd:DragDrop.IsDropTarget="True"
+                dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2" Margin="0,0,92,0">
+ 
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
@@ -120,9 +99,19 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-                <TextBlock DockPanel.Dock="Bottom" Text="Teilebezogen" VerticalAlignment="Bottom"  HorizontalAlignment="Center" Panel.ZIndex="1" FontSize="20" Background="White"/>
+                <TextBlock DockPanel.Dock="Bottom" Text="Teilebezogen" VerticalAlignment="Bottom"  HorizontalAlignment="Center"  FontSize="20" Background="White"/>
             </DockPanel>
             <DockPanel Grid.Column="1" Grid.Row="1" Background="{DynamicResource MahApps.Brushes.Gray}">
+                <DockPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                        <MenuItem Header="VMPB Original öffnen" Command="{Binding VmpbOriginalOpenCommand}"/>
+                        <MenuItem Header="VMPB Original löschen" Command="{Binding VmpbDeleteCommand}"/>
+                        <MenuItem Header="VMPB Pdf erzeugen" Command="{Binding VmpbCreatePdfCommand}"/>
+                        <MenuItem Header="VMPB abschliessen/rückgängig" Command="{Binding VmpbCloseCommand}"/>
+                    </ContextMenu>
+                </DockPanel.ContextMenu>
                 <ItemsControl DockPanel.Dock="Top"   ItemsSource="{Binding VmpbDocumentItems}" x:Name="vmpb"
                 dd:DragDrop.IsDropTarget="True" BorderThickness="4"
                 dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2">
@@ -141,16 +130,7 @@
                             </Style.Triggers>
                         </Style>
                     </ItemsControl.Style>
-                    <ItemsControl.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
-                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
-                            <MenuItem Header="VMPB Original öffnen" Command="{Binding VmpbOriginalOpenCommand}"/>
-                            <MenuItem Header="VMPB Original löschen" Command="{Binding VmpbDeleteCommand}"/>
-                            <MenuItem Header="VMPB Pdf erzeugen" Command="{Binding VmpbCreatePdfCommand}"/>
-                            <MenuItem Header="VMPB abschliessen/rückgängig" Command="{Binding VmpbCloseCommand}"/>
-                        </ContextMenu>
-                    </ItemsControl.ContextMenu>
+  
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -181,18 +161,19 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock DockPanel.Dock="Bottom" Text="Auftragsbezogen" VerticalAlignment="Bottom"  HorizontalAlignment="Center" Panel.ZIndex="1" FontSize="20" Background="White"/>
+                <TextBlock DockPanel.Dock="Bottom" Text="Auftragsbezogen" VerticalAlignment="Bottom"  HorizontalAlignment="Center" FontSize="20" Background="White"/>
             </DockPanel>
             <DockPanel Grid.Column="2" Grid.Row="1" Background="{DynamicResource MahApps.Brushes.Accent2}">
+                <DockPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
+                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                    </ContextMenu>
+                </DockPanel.ContextMenu>
                 <ItemsControl DockPanel.Dock="Top"  ItemsSource="{Binding PartDocumentItems}" x:Name="part"
             dd:DragDrop.IsDropTarget="True"
             dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2" Margin="174,0,0,0">
-                    <ItemsControl.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
-                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
-                        </ContextMenu>
-                    </ItemsControl.ContextMenu>
+ 
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -223,7 +204,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock DockPanel.Dock="Bottom" Text="Messen" VerticalAlignment="Bottom"  HorizontalAlignment="Center" Panel.ZIndex="1" FontSize="20" Background="White" />
+                <TextBlock DockPanel.Dock="Bottom" Text="Messen" VerticalAlignment="Bottom"  HorizontalAlignment="Center" FontSize="20" Background="White" />
             </DockPanel>
         </Grid>
     </Grid>

@@ -73,12 +73,12 @@ namespace ModuleProducts.ViewModels
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
-                var mat = await db.TblMaterials.AsNoTracking()
+                var mat = await db.TblMaterials
                     .Include(x => x.OrderRbs)
                     .ThenInclude(x => x.Vorgangs)
                     .ToListAsync();
 
-                foreach (var m in mat.AsParallel())
+                foreach (var m in mat.Where(x => x.OrderRbs.Any()).AsParallel())
                 {
                     var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs]);
                     _Materials.Add(p);

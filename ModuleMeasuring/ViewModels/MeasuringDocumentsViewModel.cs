@@ -107,7 +107,8 @@ namespace ModuleMeasuring.ViewModels
                     _SelectedItem = value;
                     InWorkState = value.SourceVorgang.VorgangDocu?.InWorkState ?? 0;
                     SelectedValue = _SelectedItem.Auftrag;
-                    NotifyPropertyChanged(() => SelectedItem);                   
+                    NotifyPropertyChanged(() => SelectedItem);
+                    OnOrderChanged();
                 }
             }
         }
@@ -180,6 +181,14 @@ namespace ModuleMeasuring.ViewModels
         {
             try
             {
+                string link = "https://fe0-dbb-p-web.rbesz01.com/webcube/?action=showsearch&id=8b6ce5da-1e74-40dd-acba-0b7120f6845e&reusesession=1&samllogin=1&left=1&documentnumber=";
+                link += SelectedItem.Material[..10];
+                var pi = new ProcessStartInfo(link)
+                {
+                    UseShellExecute = true,
+                    Verb = "OPEN"
+                };
+                Process.Start(pi);
                 //var docu = FirstPartInfo.CreateDocumentInfos([SelectedItem.AidNavigation.Material, SelectedItem.Aid]);
                 //string source = Path.Combine(docu[DocumentPart.RasterFolder1], docu[DocumentPart.SavePath]);
                 //source = source.TrimEnd(Path.DirectorySeparatorChar);
@@ -613,7 +622,7 @@ namespace ModuleMeasuring.ViewModels
             SelectedItem.SourceVorgang.VorgangDocu = null;
 
         }
-        private void OnOrderChanged(object? sender, EventArgs e)
+        private void OnOrderChanged()
         {
             _FirstDocumentItems.Clear();
             _VmpbDocumentItems.Clear();
@@ -624,7 +633,7 @@ namespace ModuleMeasuring.ViewModels
                 string path = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]);
                 if (Directory.Exists(path))
                 {
-                    foreach (var d in Directory.GetFiles(path).Where(x => x[0] != '~'))
+                    foreach (var d in Directory.GetFiles(path).Where(x => x.Contains('~') == false))
                     {
                         FileInfo f = new FileInfo(d);
                         _FirstDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
@@ -636,7 +645,7 @@ namespace ModuleMeasuring.ViewModels
                 string vmpath = Path.Combine(docu[DocumentPart.RootPath], vmdocu[DocumentPart.SavePath]);
                 if (Directory.Exists(vmpath))
                 {
-                    foreach (var d in Directory.GetFiles(vmpath).Where(x => x[0] != '~'))
+                    foreach (var d in Directory.GetFiles(vmpath).Where(x => x.Contains('~') == false))
                     {
                         FileInfo f = new FileInfo(d);
                         _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
@@ -646,7 +655,7 @@ namespace ModuleMeasuring.ViewModels
                 string Mpath = Path.Combine(docu[DocumentPart.RootPath], Mdocu[DocumentPart.SavePath]);
                 if (Directory.Exists(Mpath))
                 {
-                    foreach (var d in Directory.GetFiles(Mpath).Where(x => x[0] != '~'))
+                    foreach (var d in Directory.GetFiles(Mpath).Where(x => x.Contains('~') == false))
                     {
                         FileInfo f = new FileInfo(d);
                         _PartDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });                       

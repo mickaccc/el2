@@ -8,13 +8,13 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:SearchableComboBox}">
   
-                    <Border Background="{TemplateBinding Background}"  
+                    <Border Background="{TemplateBinding BorderBrush}"  
                             BorderBrush="{TemplateBinding BorderBrush}"  
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <StackPanel Orientation="Vertical" DataContext="{TemplateBinding DataContext}">
                             <TextBox x:Name="PART_SearchBox" Text="{TemplateBinding SelectedText}"
                                      Width="200" Margin="2" HorizontalAlignment="Left"
-                                     Background="LightBlue"/>
+                                     Background="Transparent"/>
                             <Popup x:Name="PART_ItemsBox" Width="{TemplateBinding PopupWidth}" Height="300">
                                 <DataGrid x:Name="PART_List"   
                                      CanUserAddRows="{TemplateBinding CanUserAddRows}"  
