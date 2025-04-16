@@ -268,9 +268,9 @@ namespace ModuleMeasuring.ViewModels
         }
         private bool onAddFileCanExecute(object arg)
         {
-            var target = arg as ItemsControl;
+            var target = arg as string;
             bool accept;
-            switch (target?.Name)
+            switch (target)
             {
                 case "first":
                     accept = PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc) &&
@@ -288,13 +288,13 @@ namespace ModuleMeasuring.ViewModels
 
         private void onAddFileExecuted(object obj)
         {
-            var target = obj as ItemsControl;
+            var target = obj as string;
             if (target != null)
             {
                 string jump;
                 var dialog = new Microsoft.Win32.OpenFileDialog();
                 var setting = new UserSettingsService();
-                switch (target.Name)
+                switch (target)
                 {
                     case "first":
                         var Fdocu = FirstPartInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
@@ -464,6 +464,9 @@ namespace ModuleMeasuring.ViewModels
                         break;
                     case "size3":
                         vmFile = new FileInfo(docu[DocumentPart.Template_Size3]);
+                        break;
+                    case "size4":
+                        vmFile = new FileInfo(docu[DocumentPart.Template_Size4]);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -686,7 +689,7 @@ namespace ModuleMeasuring.ViewModels
                 dropInfo.Effects = DragDropEffects.All;
             }
         }
-
+        
         public void Drop(IDropInfo dropInfo)
         {
             if (dropInfo.Data is IDataObject f)
@@ -702,6 +705,7 @@ namespace ModuleMeasuring.ViewModels
                         FirstPartInfo.Collect();
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
+                        if (!source.Exists) { MessageBox.Show("Datei nicht vorhanden", "File IO Error", MessageBoxButton.OK, MessageBoxImage.Stop); return; }
                         File.Copy(source.FullName, target.FullName);
                         _FirstDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name }); 
                     }
@@ -711,6 +715,7 @@ namespace ModuleMeasuring.ViewModels
                         VmpbInfo.Collect();
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
+                        if (!source.Exists) { MessageBox.Show("Datei nicht vorhanden", "File IO Error", MessageBoxButton.OK, MessageBoxImage.Stop); return; }
                         File.Copy(source.FullName, target.FullName);
                         _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name });
                     }
@@ -720,11 +725,16 @@ namespace ModuleMeasuring.ViewModels
                         MeasureInfo.Collect();
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
+                        if (!source.Exists) { MessageBox.Show("Datei nicht vorhanden", "File IO Error", MessageBoxButton.OK, MessageBoxImage.Stop); return; }
                         File.Copy(source.FullName, target.FullName);
                         _PartDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name });
                     }
 
                 }
+            }
+            if (dropInfo.Data is DocumentDisplay d)
+            {
+
             }
         }
 

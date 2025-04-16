@@ -182,6 +182,7 @@ namespace El2Core.Utils
                 document[DocumentPart.Template_Size1] = string.Empty;
                 document[DocumentPart.Template_Size2] = string.Empty;
                 document[DocumentPart.Template_Size3] = string.Empty;
+                document[DocumentPart.Template_Size4] = string.Empty;
                 document[DocumentPart.OriginalFolder] = string.Empty;
                 document[DocumentPart.SavePath] = string.Empty;
                 document[DocumentPart.VNR] = string.Empty;
@@ -441,7 +442,8 @@ namespace El2Core.Utils
         RasterFolder3,
         OriginalFolder,
         VNR,
-        DummyRegualarEx
+        DummyRegualarEx,
+        Template_Size4
     }
     public enum DocumentType
     {

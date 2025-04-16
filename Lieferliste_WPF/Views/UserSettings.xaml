@@ -275,6 +275,13 @@
                             <TextBox Text="{Binding Vdocu[6]}"/>
                             <Label>
                                 <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Template5:"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
+                            <TextBox Text="{Binding Vdocu[18]}"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="RegEx:"/>
                                     <materialDesign:PackIcon Kind="Settings"/>
                                 </StackPanel>

@@ -40,8 +40,11 @@
             <Button Content="Vmpb_156" Command="{Binding VmpbCreateCommand}"
                     CommandParameter="size2"
                     Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
-            <Button Content="Vmpb_406" Command="{Binding VmpbCreateCommand}"
+            <Button Content="Vmpb_xx" Command="{Binding VmpbCreateCommand}"
                     CommandParameter="size3"
+                    Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="Vmpb_406" Command="{Binding VmpbCreateCommand}"
+                    CommandParameter="size4"
                     Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
 
@@ -54,58 +57,62 @@
         </wpfcontrol:SearchableComboBox>
         <Grid  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="267*"/>
-                <ColumnDefinition Width="175*"/>
-                <ColumnDefinition Width="267*"/>
+                <ColumnDefinition Width="301*"/>
+                <ColumnDefinition Width="31*"/>
+                <ColumnDefinition Width="167*"/>
+                <ColumnDefinition Width="301*"/>
             </Grid.ColumnDefinitions>
-            <DockPanel Grid.Row="1" Background="{DynamicResource MahApps.Brushes.Accent}">
+            <DockPanel Background="{DynamicResource MahApps.Brushes.Accent}"
+                       dd:DragDrop.DragHandler="{Binding}">
                 <DockPanel.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
-                      CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                      CommandParameter="first"/>
                         <MenuItem Header="Zeichnung öffnen" Command="{Binding OpenZngCommand}"/>
                     </ContextMenu>
                 </DockPanel.ContextMenu>
                 <ItemsControl DockPanel.Dock="Top"  ItemsSource="{Binding FirstDocumentItems}" x:Name="first" 
                 dd:DragDrop.IsDropTarget="True"
-                dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2" Margin="0,0,92,0">
- 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <mah:Badged BadgePlacementMode="BottomLeft" >
-                            <mah:Badged.Badge>
-                                <icon:Modern Kind="Disk"/>
-                            </mah:Badged.Badge>
-                            <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                dd:DragDrop.IsDragSource="False"
+                dd:DragDrop.DropHandler="{Binding}"
+                Grid.ColumnSpan="2" Margin="0,0,92,0">
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <mah:Badged BadgePlacementMode="BottomLeft" >
+                                <mah:Badged.Badge>
+                                    <icon:Modern Kind="Disk"/>
+                                </mah:Badged.Badge>
+                                <Button Command="{Binding DataContext.OpenFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         CommandParameter="{Binding}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                                <Button.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Datei löschen"
+                                    <Button.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Datei löschen"
                                    Command="{Binding PlacementTarget.Tag.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                    CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
-                                <StackPanel>
-                                    <icon:FileIcons Kind="Default" Width="120"/>
-                                    <TextBlock Text="{Binding Display}"/>
-                                </StackPanel>
-                            </Button>
-                        </mah:Badged>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                    <StackPanel>
+                                        <icon:FileIcons Kind="Default" Width="120"/>
+                                        <TextBlock Text="{Binding Display}"/>
+                                    </StackPanel>
+                                </Button>
+                            </mah:Badged>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
                 <TextBlock DockPanel.Dock="Bottom" Text="Teilebezogen" VerticalAlignment="Bottom"  HorizontalAlignment="Center"  FontSize="20" Background="White"/>
             </DockPanel>
-            <DockPanel Grid.Column="1" Grid.Row="1" Background="{DynamicResource MahApps.Brushes.Gray}">
+            <DockPanel Background="{DynamicResource MahApps.Brushes.Gray}" Grid.ColumnSpan="4" Margin="301,0,301,0">
                 <DockPanel.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
-                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                                  CommandParameter="vmpb"/>
                         <MenuItem Header="VMPB Original öffnen" Command="{Binding VmpbOriginalOpenCommand}"/>
                         <MenuItem Header="VMPB Original löschen" Command="{Binding VmpbDeleteCommand}"/>
                         <MenuItem Header="VMPB Pdf erzeugen" Command="{Binding VmpbCreatePdfCommand}"/>
@@ -113,8 +120,10 @@
                     </ContextMenu>
                 </DockPanel.ContextMenu>
                 <ItemsControl DockPanel.Dock="Top"   ItemsSource="{Binding VmpbDocumentItems}" x:Name="vmpb"
-                dd:DragDrop.IsDropTarget="True" BorderThickness="4"
-                dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2">
+                              BorderThickness="4" Grid.ColumnSpan="2"
+                              dd:DragDrop.IsDropTarget="True"
+                              dd:DragDrop.IsDragSource="False"
+                              dd:DragDrop.DropHandler="{Binding}" >
                     <ItemsControl.Style>
                         <Style>
                             <Style.Triggers>
@@ -130,7 +139,7 @@
                             </Style.Triggers>
                         </Style>
                     </ItemsControl.Style>
-  
+
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -163,17 +172,18 @@
                 </ItemsControl>
                 <TextBlock DockPanel.Dock="Bottom" Text="Auftragsbezogen" VerticalAlignment="Bottom"  HorizontalAlignment="Center" FontSize="20" Background="White"/>
             </DockPanel>
-            <DockPanel Grid.Column="2" Grid.Row="1" Background="{DynamicResource MahApps.Brushes.Accent2}">
+            <DockPanel Grid.Column="3" Background="{DynamicResource MahApps.Brushes.Accent2}">
                 <DockPanel.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Datei einfügen" Command="{Binding AddFileCommand}"
-                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget}"/>
+                         CommandParameter="part"/>
                     </ContextMenu>
                 </DockPanel.ContextMenu>
                 <ItemsControl DockPanel.Dock="Top"  ItemsSource="{Binding PartDocumentItems}" x:Name="part"
-            dd:DragDrop.IsDropTarget="True"
-            dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2" Margin="174,0,0,0">
- 
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.IsDragSource="False"
+                    dd:DragDrop.DropHandler="{Binding}" Grid.ColumnSpan="2" Margin="174,0,0,0">
+
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>

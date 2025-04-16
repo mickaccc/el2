@@ -1,9 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using El2Core.Constants;
+using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
-using El2Core.Constants;
 
 namespace El2Core.Converters
 {
@@ -16,7 +14,8 @@ namespace El2Core.Converters
             switch(Properties.Settings.Default.EmployTimeFormat)
             {
                 case (int)Formats.TimeFormat.hour_minute:
-                    return TimeSpan.FromHours((double)val).ToString(@"hh\:mm");
+                    var ts = TimeSpan.FromHours((double)val);
+                    return string.Format("{0}:{1:d2}", ts.Hours + ts.Days*24, ts.Minutes);
                 case (int)Formats.TimeFormat.minute:
                     return string.Format("{0} Min.", TimeSpan.FromHours((double)val).TotalMinutes);
                 case (int)Formats.TimeFormat.hour:

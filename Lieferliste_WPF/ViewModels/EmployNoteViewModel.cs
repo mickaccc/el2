@@ -197,7 +197,7 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnProcessTimeChangeCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Correction);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.EmplCorr);
         }
 
         private void OnProcessTimeChangeExecuted(object obj)
