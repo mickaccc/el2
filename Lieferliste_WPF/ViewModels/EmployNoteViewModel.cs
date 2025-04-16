@@ -106,6 +106,14 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
+        private string quant;
+
+        public string Quant
+        {
+            get { return quant; }
+            set { quant = value; }
+        }
+
         private string _Comment = string.Empty;
 
         public string Comment
@@ -315,8 +323,10 @@ namespace Lieferliste_WPF.ViewModels
                 emp.SelId = int.Parse(ReferencePre.Value.Id);
             }
             emp.Comment = Comment;
+            emp.Stk = Quant;
             emp.Date = SelectedDate;
             emp.Processingtime = NoteTime;
+            emp.Usr = UserInfo.User.UserId;
             _ctx.EmployeeNotes.Add(emp);
 
             _ctx.SaveChanges();

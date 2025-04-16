@@ -54,17 +54,18 @@
                                            SearchFieldName="User"
                                            SelectedItem="{Binding SelectedUser, Mode=TwoWay}" HorizontalContentAlignment="Right"/>
         </StackPanel>
-        <Grid Grid.Row="1" Background="Beige" ShowGridLines="True">
+        <Grid Grid.Row="1" Background="Beige" ShowGridLines="True" TextElement.FontSize="18">
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="70*"/>
+                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="80*"/>
+                <ColumnDefinition Width="40*"/>
+                <ColumnDefinition Width="30*"/>
+                <ColumnDefinition Width="20*"/>
 
             </Grid.ColumnDefinitions>
             <Grid.Resources>
@@ -74,17 +75,19 @@
             </Grid.Resources>
             <Label Content="Referenz" Grid.Column="0" />
             <TextBox Text="{Binding ReferencePre.Description}" Grid.Row="1" Grid.Column="0" MaxLines="2" IsReadOnly="True" />
-            <Label Content="Kommentar" Grid.Column="1" />
-            <TextBox Text="{Binding Comment}" Grid.Row="1" Grid.Column="1"/>
-            <Label Content="Datum" Grid.Column="2" />
-            <TextBlock Text="{Binding SelectedDate, StringFormat=\{0:D\}}" Grid.Row="1" Grid.Column="2"/>
-            <Label Content="Stunden" Grid.Column="3" />
-            <TextBox Text="{Binding NoteTimePre}" Grid.Row="1" Grid.Column="3">
+            <Label Content="Stück" Grid.Column="1" />
+            <TextBox Text="{Binding Quant}" Grid.Row="1" Grid.Column="1"/>
+            <Label Content="Kommentar" Grid.Column="2" />
+            <TextBox Text="{Binding Comment}" Grid.Row="1" Grid.Column="2"/>
+            <Label Content="Datum" Grid.Column="3" />
+            <TextBlock Text="{Binding SelectedDate, StringFormat=\{0:D\}}" Grid.Row="1" Grid.Column="3"/>
+            <Label Content="Stunden" Grid.Column="4" />
+            <TextBox Text="{Binding NoteTimePre}" Grid.Row="1" Grid.Column="4">
                 <TextBox.ToolTip>
                     <Image Source="/Images/TooltipEmpl.png" Width="250"/>
                 </TextBox.ToolTip>
             </TextBox>
-            <Button Content="eintragen" Grid.Row="1" Grid.Column="4" Command="{Binding SubmitCommand}"/>
+            <Button Content="eintragen" Grid.Row="1" Grid.Column="5" Command="{Binding SubmitCommand}"/>
         </Grid>
         <DataGrid Grid.Row="2" ItemsSource="{Binding EmployeeNotesView}" AutoGenerateColumns="False" CanUserAddRows="False"
                   AlternatingRowBackground="LightGray"  AlternationCount="2">
@@ -105,6 +108,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Referenz" Binding="{Binding Reference, Converter={StaticResource RefConvert},
                     ConverterParameter=2}" Width="300" IsReadOnly="True" />
+                <DataGridTextColumn Header="Stück" Binding="{Binding Stk}" Width="50"/>
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding Comment}" Width="250"/>
                 <DataGridTextColumn Header="Datum" Binding="{Binding Date, StringFormat=\{0:D\}}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Arbeitszeit" Binding="{Binding Processingtime,

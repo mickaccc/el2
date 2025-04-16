@@ -1,5 +1,5 @@
 ﻿{
-   "CodeGenerationMode": 4,
+   "CodeGenerationMode": 5,
    "ContextClassName": "DB_COS_LIEFERLISTE_SQLContext",
    "ContextNamespace": null,
    "FilterSchemas": false,

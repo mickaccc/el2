@@ -26,6 +26,10 @@ public partial class EmployeeNote : ModelBase
 
     public double? Processingtime { get; set; }
 
+    public string? Stk { get; set; }
+
+    public string? Usr { get; set; }
+
     public virtual IdmAccount Acc { get; set; } = null!;
 
     public virtual EmploySelection? Sel { get; set; }
