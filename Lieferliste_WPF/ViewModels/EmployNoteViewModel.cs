@@ -111,7 +111,11 @@ namespace Lieferliste_WPF.ViewModels
         public string Quant
         {
             get { return quant; }
-            set { quant = value; }
+            set
+            {
+                quant = value;
+                NotifyPropertyChanged(() => Quant);
+            }
         }
 
         private string _Comment = string.Empty;
@@ -119,9 +123,13 @@ namespace Lieferliste_WPF.ViewModels
         public string Comment
         {
             get { return _Comment; }
-            set { _Comment = value; }
+            set
+            {
+                _Comment = value;
+                NotifyPropertyChanged(() => Comment);
+            }
         }
-        private double NoteTime;
+        private double? NoteTime;
         private string _NoteTimePre;
 
         public string NoteTimePre
@@ -225,7 +233,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 var empl = result.Parameters.GetValue<EmployeeNote>("note");
                 var corrPre = result.Parameters.GetValue<string?>("newTime");
-                _ = ConvertInputValue(corrPre, out double corr);
+                _ = ConvertInputValue(corrPre, out double? corr);
                 empl.Processingtime = corr;
                 empl.RunPropertyChanged();
                 SumTimes = EmployeeNotesView.Cast<EmployeeNote>().Sum(x => x.Processingtime ?? 0);
@@ -334,6 +342,10 @@ namespace Lieferliste_WPF.ViewModels
             _ctx.SaveChanges();
             EmployeeNotes.Add(emp);
             _logger.LogInformation("Employnote Submitted");
+            ReferencePre = null;
+            Comment = string.Empty;
+            Quant = string.Empty;
+            NoteTimePre = string.Empty;
         }
 
         private List<string> GetKW_List()
@@ -355,7 +367,7 @@ namespace Lieferliste_WPF.ViewModels
             d = d.AddDays((int)SelectedWeekDay - (int)d.DayOfWeek);
             return d;
         }
-        private string ConvertInputValue(string? input, out double noteTime)
+        private string ConvertInputValue(string? input, out double? noteTime)
         {
             noteTime = default;
             if (input == null) { return string.Empty; }

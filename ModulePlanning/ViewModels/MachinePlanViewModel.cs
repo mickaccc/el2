@@ -246,7 +246,7 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                 await _DbCtx.SaveChangesAsync();
+                await _DbCtx.SaveChangesAsync();                 
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -274,7 +274,7 @@ namespace ModulePlanning.ViewModels
             catch (Exception e)
             {
                 _Logger.LogError("{message}", e.ToString());
-                MessageBox.Show(e.ToString(), "OnSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(e.ToString(), "OnSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
