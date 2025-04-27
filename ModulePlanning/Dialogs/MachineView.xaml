@@ -167,20 +167,12 @@
                     </ContextMenu.ItemsSource>
                 </ContextMenu>
             </DataGrid.ContextMenu>
-            <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="Transparent"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.RowStyle>
+
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Background" Value="White"/>
                             <Setter Property="Foreground" Value="Blue"/>
                         </Trigger>
                     </Style.Triggers>
@@ -253,14 +245,6 @@
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Kommentar" Binding="{Binding CommentMach}" EditingElementStyle="{StaticResource CellEditStyle}"/>
                 <DataGridTemplateColumn Header="Bemerkung Teamleiter">
-                    <!--<DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wpfControl:CommentControl CommentString="{Binding BemT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                       User="{Binding DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                       IsEditable="False"
-                                                       Width="200" FontSize="14"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>-->
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
 
@@ -278,27 +262,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <!--<DataGridTemplateColumn Header="Bemerkung Teamleiter">
-                    <DataGridTemplateColumn.CellTemplate >
-                        <DataTemplate>
-                             <StackPanel ToolTip="Bemerkung Teamleiter" Width="150" >
-                                <TextBlock x:Name="BemTInfo" Text="{Binding BemT, NotifyOnSourceUpdated=True,
-                           Converter={StaticResource comment}, ConverterParameter={StaticResource TrueValue}}" Background="Gold"/>
-
-                                <TextBox x:Name="BemTText" Text="{Binding BemT,
-                            Converter={StaticResource comment}, ConverterParameter={StaticResource FalseValue}}"                                                
-                                                  TextWrapping="Wrap" AcceptsReturn="True" >
-                                    <TextBox.IsEnabled>
-                                        <MultiBinding Converter="{StaticResource Relpermiss}">
-                                            <Binding Source="{x:Static const:Permissions.CommentTe}"/>
-                                            <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
-                                        </MultiBinding>
-                                    </TextBox.IsEnabled>
-                                </TextBox>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>-->
+   
                 <DataGridTextColumn Header="Mge" Binding="{Binding AidNavigation.Quantity}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Rck" Binding="{Binding QuantityYield}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="offen" Binding="{Binding QuantityMiss}" IsReadOnly="True"/>
@@ -318,6 +282,7 @@
                                 <DataTrigger Binding="{Binding Correction, UpdateSourceTrigger=PropertyChanged,
                                     Converter={StaticResource zerobool}}" Value="{StaticResource FalseValue}">
                                     <Setter Property="Foreground" Value="black"/>
+                                    <Setter Property="Background" Value="White"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Correction, UpdateSourceTrigger=PropertyChanged,
                                     Converter={StaticResource zerobool}}" Value="{StaticResource TrueValue}">
@@ -340,6 +305,7 @@
                                 </DataTrigger>
                             </Style.Triggers>
                             <Setter Property="ToolTip" Value="{Binding Formula}"/>
+                            <Setter Property="Background" Value="White"/>
                         </Style>
                     </DataGridTextColumn.CellStyle>
            

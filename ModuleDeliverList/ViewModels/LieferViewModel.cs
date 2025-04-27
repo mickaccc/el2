@@ -663,7 +663,10 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                DBctx.SaveChanges();
+                lock (_lock)
+                {
+                    DBctx.SaveChanges();
+                }
             }
             catch (Exception e)
             {
@@ -675,7 +678,10 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                return DBctx.ChangeTracker.HasChanges();
+                lock (_lock)
+                {
+                    return DBctx.ChangeTracker.HasChanges();
+                }
             }
             catch (InvalidOperationException e)
             {

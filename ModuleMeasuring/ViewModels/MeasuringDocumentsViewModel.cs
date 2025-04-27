@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Packaging;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -131,9 +132,9 @@ namespace ModuleMeasuring.ViewModels
                 }
             }
         }
-        private int? _InworkState;
+        private int _InworkState = 0;
 
-        public int? InWorkState
+        public int InWorkState
         {
             get { return _InworkState; }
             set
@@ -438,7 +439,7 @@ namespace ModuleMeasuring.ViewModels
         private bool onVmpbCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddVmpb) &&
-                SelectedItem != null && (InWorkState == null || InWorkState == 0);
+                SelectedItem != null && InWorkState == 0;
         }
         private void onVmpbExecuted(object obj)
         {
@@ -478,7 +479,7 @@ namespace ModuleMeasuring.ViewModels
                 {
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     File.Copy(vmFile.FullName, vmtarg.FullName.Trim());
-                    var doku = db.Vorgangs.Single(x => x.Aid == mes.Auftrag);
+                    var doku = db.Vorgangs.Single(x => x.Aid == mes.Auftrag && x.Vnr == short.Parse(mes.Vorgang));
                     doku.VorgangDocu ??= new VorgangDocu();
                     
                     doku.VorgangDocu.VmpbOriginal = vmtarg.Name.Trim();
@@ -586,6 +587,12 @@ namespace ModuleMeasuring.ViewModels
                 MessageBox.Show(e.Message, "Datei", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 _logger.LogWarning(e.ToString());
             }
+            catch (COMException e)
+            {
+                MessageBox.Show("${e.Message}\nStellen Sie sicher dass die Datei nicht geöffnet ist.", "Datei", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                _logger.LogWarning(e.ToString());
+                
+            }
             catch (Exception e)
             {
                 _logger.LogError(e.ToString());
@@ -621,7 +628,7 @@ namespace ModuleMeasuring.ViewModels
                 db.VorgangDocus.Remove(o);
                 db.SaveChanges();
             }
-            InWorkState = null;
+            InWorkState = 0;
             SelectedItem.SourceVorgang.VorgangDocu = null;
 
         }
