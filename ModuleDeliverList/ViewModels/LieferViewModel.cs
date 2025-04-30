@@ -124,7 +124,6 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
-        private static readonly object _lock = new();
         private IApplicationCommands _applicationCommands;
 
         public IApplicationCommands ApplicationCommands
@@ -316,19 +315,20 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                lock (_lock)
+                if (rb.Abgeschlossen)
                 {
-                    var o = _orders.FirstOrDefault(x => x.Aid == rb.Aid);
-                    if (o != null)
+                    var o = _orders.Where(x => x.Aid == rb.Aid);
+                    foreach (var x in o)
                     {
 
-                        if (rb.Abgeschlossen)
+                        lock (this)
                         {
-                            _orders.Remove(o);
+                            _orders.Remove(x);
+                            DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
+                            OrdersView.Refresh();
+                            _Logger.LogInformation("Auftrag archiviert: {message}", rb.Aid);
                         }
-                        DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
-                        OrdersView.Refresh();
-                        _Logger.LogInformation("{message}", rb.Aid);
+
                     }
                 }
             }
@@ -344,34 +344,39 @@ namespace ModuleDeliverList.ViewModels
             {
                 Task.Run(() =>
                 {
-                    lock (_lock)
+  
+                    foreach ((string, string) rbId in rb.Where(x => x != null).Select(v => ((string, string))v))
                     {
-                        foreach ((string, string) rbId in rb.Where(x => x != null).Select(v => ((string, string))v))
+                        _Logger.LogInformation("commin {message}, {1}", rbId.Item1, rbId.Item2);
+                        if (_orders.Any(x => x.Aid == rbId.Item2))
                         {
-                            _Logger.LogInformation("commin {message}, {1}", rbId.Item1, rbId.Item2);
-                            if (_orders.Any(x => x.Aid == rbId.Item2))
+                            lock (this)
                             {
                                 var ord = _orders.First(x => x.Aid == rbId.Item2).AidNavigation;
                                 DBctx.Entry<OrderRb>(ord).Reload();
-                                foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
+                            }
+                            foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
+                            {
+                                lock (this)
                                 {
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;
                                     DBctx.Entry<Vorgang>(o).Reload();
-                                    o.RunPropertyChanged();
-                                    _Logger.LogInformation("reloaded {message}", o.VorgangId);
                                 }
+                                o.RunPropertyChanged();
+                                _Logger.LogInformation("reloaded {message}", o.VorgangId);
                             }
-                            else
+                        }
+                        else
+                        {
+                            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                            foreach (var v in db.Vorgangs.Where(x => x.Aid.Trim() == rbId.Item2.Trim()))
                             {
-                                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                                foreach (var v in db.Vorgangs.Where(x => x.Aid.Trim() == rbId.Item2.Trim()))
-                                {
-                                    if (v.Aktuell)
-                                        Application.Current.Dispatcher.Invoke(AddRelevantProcess, (rbId.Item1, v.VorgangId));                                 
-                                }
+                                if (v.Aktuell)
+                                    Application.Current.Dispatcher.Invoke(AddRelevantProcess, (rbId.Item1, v.VorgangId));                                 
                             }
                         }
                     }
+                    
                 });
             }
             catch (Exception ex)
@@ -387,41 +392,45 @@ namespace ModuleDeliverList.ViewModels
                 
                 Task.Run(() =>
          {
-            lock (_lock)
-            {
+
                 foreach (var vrg in vrgIdList.Where(x => x != null))
                 {
+                     Vorgang v;
                      _Logger.LogInformation("commin {message}, {1}", vrg.Value.Item1, vrg.Value.Item2);
                      if (vrg != null)
                      {
-                         
-                         if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
+
+                     if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
+                     {
+
+                         lock (this)
                          {
-                             var v = _orders.SingleOrDefault(x => x.VorgangId == vrg.Value.Item2);
+                             v = _orders.Single(x => x.VorgangId == vrg.Value.Item2);
                              DBctx.Entry<Vorgang>(v).Reload();
-                             _Logger.LogInformation("reloaded {message}", v.VorgangId);
-                             v.RunPropertyChanged();
-                             if (v.Aktuell == false)
+                         }
+                         _Logger.LogInformation("reloaded {message}", v.VorgangId);
+                         v.RunPropertyChanged();
+                         if (v.Aktuell == false)
+                         {
+                             _orders.Remove(v);
+                             _Logger.LogInformation("remove {message}", v.VorgangId);
+                             lock (this)
                              {
-                                 _orders.Remove(v);
                                  DBctx.ChangeTracker.Entries<Vorgang>()
                                  .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
-                                 _Logger.LogInformation("remove {message}", v.VorgangId);
                                  OrdersView.Refresh();
                              }
                          }
-                         else 
-                         {
-                             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                             var v = db.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
-
-                              if (v.Aktuell)
-                              {
-                                  _Logger.LogInformation("maybe adding {message}", v.VorgangId);
-                                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
-                              }
-                         }
                      }
+                     else
+                     {
+                         using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                         var vv = db.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
+
+                         _Logger.LogInformation("maybe adding {message}", vv?.VorgangId);
+                         Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
+
+                     }                                      
                 }
             }
          });
@@ -663,7 +672,7 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                lock (_lock)
+                lock (this)
                 {
                     DBctx.SaveChanges();
                 }
@@ -678,7 +687,7 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                lock (_lock)
+                lock (this)
                 {
                     return DBctx.ChangeTracker.HasChanges();
                 }
@@ -769,68 +778,66 @@ namespace ModuleDeliverList.ViewModels
             {
                 HashSet<Vorgang> result = new();
 
-                lock (_lock)
-                {
-                    SortedDictionary<string, ProjectTypes.ProjectType> proj = new();
+                SortedDictionary<string, ProjectTypes.ProjectType> proj = new();
  
-                        bool relev = false;
-                    foreach (var group in a.GroupBy(x => x.Aid))
+                    bool relev = false;
+                foreach (var group in a.GroupBy(x => x.Aid))
+                {
+                    if (filt.Any(y => y.OrderNumber == group.Key))
                     {
-                        if (filt.Any(y => y.OrderNumber == group.Key))
-                        {
-                            relev = true;
-                        }
-                        else
-                        {
-                            foreach (var vorg in group)
-                            {
-
-                                if (vorg.ArbPlSap?.Length >= 3 && !relev)
-                                {
-                                    if (int.TryParse(vorg.ArbPlSap[..3], out int c))
-                                        if (UserInfo.User.AccountCostUnits.Any(y => y.CostId == c))
-                                        {
-                                            relev = true;
-                                            break;
-                                        }
-                                }
-
-                            }
-                        }
-                        if (relev)
-                        {
-                            
-                            foreach (var vorg in group)
-                            {
-                                if (vorg.AidNavigation.ProId != null && !vorg.AidNavigation.ProId.StartsWith('0'))
-                                {
-                                    var p = vorg.AidNavigation.Pro;
-                                    if (p != null)
-                                    {
-                                        pl.Add(new(p.ProjectPsp.Trim(), (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
-                                        p.AttCount = attPro.Where(x => x == p.ProjectPsp).Count();
-                                    }
-                                }
-
-                                if (vorg.Aktuell)
-                                {
-                                    vorg.AttCount = attVrg.Where(x => x == vorg.VorgangId).Count();
-                                    result.Add(vorg);
-                                    var inv = (vorg.ArbPlSap != null) ? vorg.ArbPlSap[3..] : string.Empty;
-                                    var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
-                                    if (z != null)
-                                    {
-                                        if (!_sections.ContainsKey(z.Sort) && z.Bereich != null)
-                                            _sections.Add(z.Sort, z.Bereich);
-                                    }
-                                }
-                            }
-                        }
-                        
-                        relev = false;                                              
+                        relev = true;
                     }
-                    _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
+                    else
+                    {
+                        foreach (var vorg in group)
+                        {
+
+                            if (vorg.ArbPlSap?.Length >= 3 && !relev)
+                            {
+                                if (int.TryParse(vorg.ArbPlSap[..3], out int c))
+                                    if (UserInfo.User.AccountCostUnits.Any(y => y.CostId == c))
+                                    {
+                                        relev = true;
+                                        break;
+                                    }
+                            }
+
+                        }
+                    }
+                    if (relev)
+                    {
+                            
+                        foreach (var vorg in group)
+                        {
+                            if (vorg.AidNavigation.ProId != null && !vorg.AidNavigation.ProId.StartsWith('0'))
+                            {
+                                var p = vorg.AidNavigation.Pro;
+                                if (p != null)
+                                {
+                                    pl.Add(new(p.ProjectPsp.Trim(), (ProjectTypes.ProjectType)p.ProjectType, p.ProjectInfo));
+                                    p.AttCount = attPro.Where(x => x == p.ProjectPsp).Count();
+                                }
+                            }
+
+                            if (vorg.Aktuell)
+                            {
+                                vorg.AttCount = attVrg.Where(x => x == vorg.VorgangId).Count();
+                                result.Add(vorg);
+                                var inv = (vorg.ArbPlSap != null) ? vorg.ArbPlSap[3..] : string.Empty;
+                                var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
+                                if (z != null)
+                                {
+                                    if (!_sections.ContainsKey(z.Sort) && z.Bereich != null)
+                                        _sections.Add(z.Sort, z.Bereich);
+                                }
+                            }
+                        }
+                    }
+                        
+                    relev = false;                                              
                 }
+                _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
+                
             });
             Projects.AddRange(pl);
             OrdersView = CollectionViewSource.GetDefaultView(_orders);

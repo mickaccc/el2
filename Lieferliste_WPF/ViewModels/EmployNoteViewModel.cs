@@ -248,8 +248,7 @@ namespace Lieferliste_WPF.ViewModels
                 .Include(x => x.AidNavigation)
                 .Include(x => x.AidNavigation.MaterialNavigation)
                 .Include(x => x.AidNavigation.DummyMatNavigation)
-                .Where(static x => x.AidNavigation.SysStatus.Contains("TABG") == false
-                        && x.AidNavigation.SysStatus.Contains("RÜCK") == false)
+                .Where(static x => x.AidNavigation.SysStatus.Contains("TABG") == false)                       
                 .OrderBy(x => x.Aid)
                 .ThenBy(x => x.Vnr)
                 .Select(s => new VorgItem(s)).ToListAsync();

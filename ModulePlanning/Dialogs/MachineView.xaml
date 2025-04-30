@@ -177,6 +177,7 @@
                         </Trigger>
                     </Style.Triggers>
                     <Setter Property="Margin" Value="3"/>
+                    <Setter Property="Foreground" Value="Black"/>
                 </Style>
  
             </DataGrid.CellStyle>
