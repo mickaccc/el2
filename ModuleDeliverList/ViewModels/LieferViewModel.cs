@@ -17,6 +17,7 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -61,6 +62,7 @@ namespace ModuleDeliverList.ViewModels
         private string _selectedProjectFilter = string.Empty;
         private string _selectedSectionFilter = string.Empty;
         private string _markerCode = string.Empty;
+        private readonly Lock _lock = new();
         private static System.Timers.Timer? _autoSaveTimer;
         private readonly IContainerProvider _container;
         private readonly IEventAggregator _ea;
@@ -321,7 +323,7 @@ namespace ModuleDeliverList.ViewModels
                     foreach (var x in o)
                     {
 
-                        lock (this)
+                        lock (_lock)
                         {
                             _orders.Remove(x);
                             DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
@@ -350,14 +352,14 @@ namespace ModuleDeliverList.ViewModels
                         _Logger.LogInformation("commin {message}, {1}", rbId.Item1, rbId.Item2);
                         if (_orders.Any(x => x.Aid == rbId.Item2))
                         {
-                            lock (this)
+                            lock (_lock)
                             {
                                 var ord = _orders.First(x => x.Aid == rbId.Item2).AidNavigation;
                                 DBctx.Entry<OrderRb>(ord).Reload();
                             }
                             foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
                             {
-                                lock (this)
+                                lock (_lock)
                                 {
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;
                                     DBctx.Entry<Vorgang>(o).Reload();
@@ -403,7 +405,7 @@ namespace ModuleDeliverList.ViewModels
                      if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
                      {
 
-                         lock (this)
+                         lock (_lock)
                          {
                              v = _orders.Single(x => x.VorgangId == vrg.Value.Item2);
                              DBctx.Entry<Vorgang>(v).Reload();
@@ -414,7 +416,7 @@ namespace ModuleDeliverList.ViewModels
                          {
                              _orders.Remove(v);
                              _Logger.LogInformation("remove {message}", v.VorgangId);
-                             lock (this)
+                             lock (_lock)
                              {
                                  DBctx.ChangeTracker.Entries<Vorgang>()
                                  .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
@@ -528,7 +530,13 @@ namespace ModuleDeliverList.ViewModels
             {
                 if (OrderTask != null && OrderTask.IsSuccessfullyCompleted)
                 {
-                    if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
+                    if (_lock.TryEnter())
+                    {
+                        lock (_lock)
+                        {
+                            if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -672,9 +680,12 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                lock (this)
+                if (_lock.TryEnter())
                 {
-                    DBctx.SaveChanges();
+                    lock (_lock)
+                    {
+                        DBctx.SaveChanges();
+                    }
                 }
             }
             catch (Exception e)
@@ -687,9 +698,12 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                lock (this)
+                if (_lock.TryEnter())
                 {
-                    return DBctx.ChangeTracker.HasChanges();
+                    lock (_lock)
+                    {
+                        return DBctx.ChangeTracker.HasChanges();
+                    }
                 }
             }
             catch (InvalidOperationException e)

@@ -91,7 +91,7 @@ namespace ModulePlanning.ViewModels
         private readonly ILogger _Logger;
         private int _currentWorkArea;
         private string? _searchFilterText;
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
 
         internal CollectionViewSource ProcessViewSource { get; } = new();
         internal CollectionViewSource ParkingViewSource { get; } = new();
@@ -130,40 +130,42 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                lock (_lock)
-                {
-                    foreach (var item in list)
-                    {
-                        if ((item != null))
-                        {
-                            var vo = Priv_processes?.FirstOrDefault(x => x.VorgangId == item.Value.Item2);
 
-                            if (vo != null)
+                foreach (var item in list)
+                {
+                    if ((item != null))
+                    {
+                        var vo = Priv_processes?.FirstOrDefault(x => x.VorgangId == item.Value.Item2);
+
+                        if (vo != null)
+                        {
+                            _ = Task.Factory.StartNew(async () =>
                             {
-                                _ = Task.Factory.StartNew(async () =>
+                                await _DbCtx.Entry(vo).ReloadAsync();
+                            });
+                            _Logger.LogInformation("maybe plug {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
+                            if (item.Value.Item1 == "EL2")
+                            {
+                                if (vo.Rid != null)
                                 {
-                                    await _DbCtx.Entry(vo).ReloadAsync();
-                                });
-                                _Logger.LogInformation("maybe plug {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
-                                if (item.Value.Item1 == "EL2")
+                                    Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
+                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
+                                    _Logger.LogInformation("pool pluged {message}-{0} rid {1}", vo.Aid, vo.Vnr, vo.Rid);
+                                }
+                                else
                                 {
-                                    if (vo.Rid != null)
-                                    {
-                                        Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
-                                        _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
-                                        _Logger.LogInformation("pool pluged {message}-{0} rid {1}", vo.Aid, vo.Vnr, vo.Rid);
-                                    }
-                                    else
+                                    lock (_lock)
                                     {
                                         Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
                                         _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
-                                        _Logger.LogInformation("pool unplug {message}-{0}", vo.Aid, vo.Vnr);
                                     }
+                                    _Logger.LogInformation("pool unplug {message}-{0}", vo.Aid, vo.Vnr);
                                 }
                             }
                         }
                     }
                 }
+                
             }
             catch (Exception ex)
             {
@@ -178,42 +180,44 @@ namespace ModulePlanning.ViewModels
             Vorgang vo;
             try
             {
-                lock (_lock)
+
+                foreach (var item in list)
                 {
-                    foreach (var item in list)
+                    if (item == null) continue;
+                    if (Priv_processes?.Any(x => x.Aid == item.Value.Item2) ?? false)
                     {
-                        if (item == null) continue;
-                        if (Priv_processes?.Any(x => x.Aid == item.Value.Item2) ?? false)
+                        _ = Task.Factory.StartNew(async () =>
                         {
-                            _ = Task.Factory.StartNew(async () =>
+                            var proc = await GetVorgangsAsync(item.Value.Item2);
+                            foreach (var item2 in proc)
                             {
-                                var proc = await GetVorgangsAsync(item.Value.Item2);
-                                foreach (var item2 in proc)
+                                if (IsRelevant(item2.ArbPlSap) && item2.Rid == null)
                                 {
-                                    if (IsRelevant(item2.ArbPlSap) && item2.Rid == null)
+                                    if (Priv_processes.Contains(item2))
                                     {
-                                        if (Priv_processes.Contains(item2))
+                                        foreach (var item3 in item2.AidNavigation.OrderComponents)
                                         {
-                                            foreach (var item3 in item2.AidNavigation.OrderComponents)
+                                            _ = Task.Factory.StartNew(async () =>
                                             {
-                                                _ = Task.Factory.StartNew(async () =>
-                                                {
-                                                    await _DbCtx.Entry(item3).ReloadAsync();
-                                                });
-                                            }
+                                                await _DbCtx.Entry(item3).ReloadAsync();
+                                            });
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        lock (_lock)
                                         {
                                             _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
                                             _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
-                                            _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
                                         }
+                                        _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
                                     }
                                 }
-                            });
-                        }
+                            }
+                        });
                     }
                 }
+                
             }
             catch (Exception ex)
             {
@@ -226,9 +230,12 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                lock (_lock)
+                if (_lock.TryEnter())
                 {
-                    return _DbCtx.ChangeTracker.HasChanges();
+                    lock (_lock)
+                    {
+                        return _DbCtx.ChangeTracker.HasChanges();
+                    }
                 }
             }
             catch (InvalidOperationException e)
@@ -328,9 +335,12 @@ namespace ModulePlanning.ViewModels
             {
                 if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
                 {
-                    lock (_lock)
+                    if (_lock.TryEnter())
                     {
-                        if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());
+                        lock (_lock)
+                        {
+                            if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());
+                        }
                     }
                 }             
             }
@@ -360,29 +370,28 @@ namespace ModulePlanning.ViewModels
             await Task.Factory.StartNew(() =>
             {
                 SortedDictionary<int[], PlanMachine> result = new SortedDictionary<int[], PlanMachine>(new ArrayKeyComparer());
-                lock (_lock)
-                {
-                    PlanMachineFactory factory = _container.Resolve<PlanMachineFactory>();
+
+                PlanMachineFactory factory = _container.Resolve<PlanMachineFactory>();
                     
-                    foreach (var m in mach2)
+                foreach (var m in mach2)
+                {
+                    var v = proc.FirstOrDefault(x => x.Rid == m.RessourceId);
+                    if (v != null) //is in my costunit allocated
                     {
-                        var v = proc.FirstOrDefault(x => x.Rid == m.RessourceId);
-                        if (v != null) //is in my costunit allocated
-                        {
-                            int[] kay = new int[2];
-                            kay[0] = v.RidNavigation.Sort ?? 0;
-                            kay[1] = v.Rid ?? 0;                           
-                            result.TryAdd(kay, factory.CreatePlanMachine(v.RidNavigation, _DbCtx));
-                        }
-                        else //is not in my costunit
-                        {
-                            int[] kay = new int[2];
-                            kay[0] = m.Sort ?? 0;
-                            kay[1] = m.RessourceId;
-                            result.TryAdd(kay, factory.CreatePlanMachine(m, _DbCtx));
-                        }
+                        int[] kay = new int[2];
+                        kay[0] = v.RidNavigation.Sort ?? 0;
+                        kay[1] = v.Rid ?? 0;                           
+                        result.TryAdd(kay, factory.CreatePlanMachine(v.RidNavigation, _DbCtx));
+                    }
+                    else //is not in my costunit
+                    {
+                        int[] kay = new int[2];
+                        kay[0] = m.Sort ?? 0;
+                        kay[1] = m.RessourceId;
+                        result.TryAdd(kay, factory.CreatePlanMachine(m, _DbCtx));
                     }
                 }
+                
                 _machines.AddRange(result.Values);
 
                 List<Vorgang> list = new();
