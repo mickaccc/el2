@@ -253,7 +253,8 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                await _DbCtx.SaveChangesAsync();                 
+                _lock.Enter();
+                await _DbCtx.SaveChangesAsync();             
             }
             catch (DbUpdateConcurrencyException ex)
             {

@@ -104,7 +104,7 @@ namespace ModulePlanning.Planning
         public ICommand? NewStoppageCommand { get; private set; }
         public ICommand? DelStoppageCommand { get; private set; }
         private ILogger _logger;
-        private static readonly object _lock = new();
+        private readonly Lock _lock = new();
         private HashSet<string> ImChanged = [];
         private ShiftPlanService _shiftPlanService;
         private readonly int _rId;
@@ -360,12 +360,6 @@ namespace ModulePlanning.Planning
                             if (item == null) continue;
                             foreach(var v in Processes?.Where(x => x.Aid == item.Value.Item2) )
                             {
-                                if (_db.Entry(v).State == EntityState.Modified)
-                                {
-                                    var values = _db.ChangeTracker.DebugView.LongView;
-                                    _logger.LogInformation("PlanMachine - State Modified {message} {1}", v.VorgangId, values);
-                                    _db.SaveChanges();
-                                }
                                 _db.Entry<Vorgang>(v).Reload();
                                 v.RunPropertyChanged();
                                 _logger.LogInformation("Planmachine - reloaded {message}", v.VorgangId);
@@ -387,53 +381,48 @@ namespace ModulePlanning.Planning
                 Task.Run(() =>
                 {
                     //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    lock (_lock)
+
+                    foreach ((string, string)? idTuple in vorgangIdList)
                     {
-                        foreach ((string, string)? idTuple in vorgangIdList)
+                        if(idTuple != null)
                         {
-                            if(idTuple != null)
+                            var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
+                            if (pr != null)
                             {
-                                var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
-                                if (pr != null)
-                                {
-                                    if (_db.Entry(pr).State == EntityState.Modified)
-                                    {
-                                        var values = _db.ChangeTracker.DebugView.LongView;
-                                        _logger.LogInformation("PlanMachine - State Modified {message} {1}", pr.VorgangId, values);
-                                        _db.SaveChanges();
-                                    }
-                                    _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
+                                lock (_lock)
+                                {                                
                                     _db.Entry<Vorgang>(pr).Reload();
-                                    pr.RunPropertyChanged();
-                                    _logger.LogInformation("PlanMachine - maybe remove {message} {1} {2} - {3}", pr.VorgangId, pr.SysStatus, pr.Aid,pr.Vnr);
-                                             
-                                    if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
-                                    {
-                                        pr.SortPos = "Z";
-                                        Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
-                                        _logger.LogInformation("PlanMachine - removed {message} {1} - {2}", pr.VorgangId, pr.Aid, pr.Vnr);
-                                    }
-                                    
+                                    pr.RunPropertyChanged();                                 
                                 }
-                                else if (_db.Vorgangs.Find(idTuple.Value.Item2)?.Rid == Rid)
+                                _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
+                                             
+                                if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
                                 {
-                                    var vo = _db.Vorgangs
-                                        .Include(x => x.AidNavigation)
-                                        .ThenInclude(x => x.MaterialNavigation)
-                                        .Include(x => x.AidNavigation.DummyMatNavigation)
-                                        .Include(x => x.RidNavigation)
-                                        .First(x => x.VorgangId == idTuple.Value.Item2);
-                                    _logger.LogInformation("PlanMachine - maybe add {message} {1}-{2}", vo.VorgangId, vo.Aid, vo.Vnr);
-                                    if (vo?.SysStatus?.Contains("RÜCK") == false)
-                                    {
-                                        Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));
-                                        _logger.LogInformation("PlanMachine - added {message} {1}-{2}", vo.VorgangId, vo.Aid, vo.Vnr);
-                                    }
+                                    pr.SortPos = "Z";
+                                    Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
+                                    _logger.LogInformation("PlanMachine - removed {message} {1} - {2}", pr.VorgangId, pr.Aid, pr.Vnr);
+                                }
+                                    
+                            }
+                            else if (_db.Vorgangs.Find(idTuple.Value.Item2)?.Rid == Rid)
+                            {
+                                var vo = _db.Vorgangs
+                                    .Include(x => x.AidNavigation)
+                                    .ThenInclude(x => x.MaterialNavigation)
+                                    .Include(x => x.AidNavigation.DummyMatNavigation)
+                                    .Include(x => x.RidNavigation)
+                                    .First(x => x.VorgangId == idTuple.Value.Item2);
+                                _logger.LogInformation("PlanMachine - maybe add {message} {1}-{2}", vo.VorgangId, vo.Aid, vo.Vnr);
+                                if (vo?.SysStatus?.Contains("RÜCK") == false)
+                                {
+                                    Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));
+                                    _logger.LogInformation("PlanMachine - added {message} {1}-{2}", vo.VorgangId, vo.Aid, vo.Vnr);
                                 }
                             }
                         }
-                        _db.SaveChanges();
                     }
+                    _db.SaveChanges();
+                    
                 });        
             }
             catch (DbUpdateConcurrencyException ex)
