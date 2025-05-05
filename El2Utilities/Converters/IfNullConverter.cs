@@ -12,7 +12,7 @@ namespace El2Core.Converters
         {
             foreach (var item in value)
             {
-                if (item != DependencyProperty.UnsetValue) return item;
+                if (item != DependencyProperty.UnsetValue && (string.IsNullOrEmpty((string?)item) == false)) return item;
                 
             }
             return string.Empty;

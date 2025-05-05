@@ -24,7 +24,7 @@
         <conv:MultiObjectConverter x:Key="multi"/>
         <conv:PlusConverter x:Key="plus"/>
         <conv:KW_Converter x:Key="KW"/>
-
+        <conv:IfNullConverter x:Key="IfNull"/>
     </UserControl.Resources>
  
     <Grid x:Name="Main" >
@@ -174,8 +174,22 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Auftrag" Binding="{Binding Path=Aid}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Vorgang" Binding="{Binding Vnr, StringFormat=\{0:D4\}}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Material" Binding="{Binding AidNavigation.Material, Converter={StaticResource ttnr}}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Bezeichnung" Binding="{Binding Path=AidNavigation.MaterialNavigation.Bezeichng}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Material"  IsReadOnly="True">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding Converter="{StaticResource IfNull}">
+                            <Binding Path="AidNavigation.Material"/>
+                            <Binding Path="AidNavigation.DummyMat"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Bezeichnung" IsReadOnly="True">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding Converter="{StaticResource IfNull}">
+                            <Binding Path="AidNavigation.MaterialNavigation.Bezeichng"/>
+                            <Binding Path="AidNavigation.DummyMatNavigation.Mattext"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="Spätstart" Binding="{Binding SpaetStart, Converter={StaticResource KW},
                     ConverterParameter=1}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Spätend" Binding="{Binding SpaetEnd, Converter={StaticResource KW},
@@ -202,21 +216,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <!--<DataGridTextColumn Header="Material Typ" IsReadOnly="True" Binding="{Binding AidNavigation.MaterialNavigation.Type}"/>
-                <DataGridTemplateColumn Header="Komponente">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TreeView ItemsSource="{Binding AidNavigation.OrderComponents}">
-                                <TreeView.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Material}"/>
-                                    </DataTemplate>
-                                </TreeView.ItemTemplate>
-                            </TreeView>
-                            
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>-->
+
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
