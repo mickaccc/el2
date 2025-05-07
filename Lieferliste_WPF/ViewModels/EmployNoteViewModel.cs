@@ -86,8 +86,7 @@ namespace Lieferliste_WPF.ViewModels
                 if (_selectedRef.Equals(value) == false)
                 {
                     _selectedRef = value;
-                    ReferencePre = value;
-                    
+                    ReferencePre = value;                   
                 }
             }
         }

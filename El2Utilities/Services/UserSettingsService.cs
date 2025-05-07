@@ -1,5 +1,4 @@
-﻿using El2Core.Constants;
-using System;
+﻿using System;
 using System.Configuration;
 using System.IO;
 using System.Windows;
