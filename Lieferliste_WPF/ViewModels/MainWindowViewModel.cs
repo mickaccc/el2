@@ -744,14 +744,25 @@ namespace Lieferliste_WPF.ViewModels
         {
             var gl = new Globals(_container);
 
-            List<ProjectScheme> schemes = new List<ProjectScheme>();
-            schemes.Add(new ProjectScheme("DS", "(DS-[0-9]{6})(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?"));
-            schemes.Add(new ProjectScheme("SC-PR", "(SC-PR-[0-9]{9})(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?"));
-            schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(_[0-9]{3})(_[0-9]{8})?"));
+            //List<ProjectScheme> schemes = new List<ProjectScheme>();
+            //schemes.Add(new ProjectScheme("DS", "(DS-[0-9]{6})(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?"));
+            //schemes.Add(new ProjectScheme("SC-PR", "(SC-PR-[0-9]{9})(-[0-9]{2})?(-[0-9]{2})?(-[0-9]{2})?"));
+            //schemes.Add(new ProjectScheme("BM", "(BM-[0-9]{8})(_[0-9]{3})(_[0-9]{8})?"));
 
-            gl.SaveProjectSchemes(schemes);
-
-
+            //gl.SaveProjectSchemes(schemes);
+            var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            var orders = db.OrderRbs
+                .Include(x => x.Vorgangs)
+                .Where(x => x.Abgeschlossen == true && x.CompleteDate == null).ToList();
+            
+            foreach (var order in orders)
+            {
+                var accdate = order.Vorgangs.OrderBy(y => y.Vnr).Last().ActualEndDate;
+                order.CompleteDate = accdate;
+                //db.Update(order);
+                db.SaveChanges();
+            }
+            
             //var pcont = new PersonalFilterContainer();
             //var filt = new PersonalFilter("^F", PropertyNames.Auftragsnummer);
             //pcont.Add("name", filt);

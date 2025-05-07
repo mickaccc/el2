@@ -489,6 +489,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.AuftragFarbe).HasMaxLength(10);
             entity.Property(e => e.Ausgebl).HasColumnName("ausgebl");
             entity.Property(e => e.Bemerkung).HasMaxLength(255);
+            entity.Property(e => e.CompleteDate).HasColumnType("datetime");
             entity.Property(e => e.DummyMat)
                 .HasMaxLength(255)
                 .IsUnicode(false);

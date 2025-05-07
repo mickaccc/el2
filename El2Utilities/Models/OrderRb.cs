@@ -65,6 +65,8 @@ public partial class OrderRb : ModelBase
 
     public int? OrderGroup { get; set; }
 
+    public DateTime? CompleteDate { get; set; }
+
     public virtual TblDummy? DummyMatNavigation { get; set; }
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
