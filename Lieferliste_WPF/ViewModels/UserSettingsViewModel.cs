@@ -272,6 +272,7 @@ namespace Lieferliste_WPF.ViewModels
             var gl = new Globals(_container);
             gl.SaveRule("MeasureScan");
             gl.SaveRule("MeasureMsfDomain");
+            gl.SaveRule("ArchivatePath");
             gl.SaveProjectSchemes([.. ProjectSchemes]);
             _filterContainer.Save();
 

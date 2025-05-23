@@ -353,6 +353,7 @@ namespace El2Core.Utils
                 document[DocumentPart.MaterialRegularEx] = string.Empty;
                 document[DocumentPart.JumpTarget] = string.Empty;
                 document[DocumentPart.Folder] = string.Empty;
+
                 if (RuleInfo.Rules.Keys.Contains(document[DocumentPart.Type]) == false) return document;
                 var xml = XmlSerializerHelper.GetSerializer(typeof(List<Entry>));
 
