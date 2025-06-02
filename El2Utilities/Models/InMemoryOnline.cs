@@ -7,7 +7,7 @@ namespace El2Core.Models;
 
 public partial class InMemoryOnline
 {
-    public int OnlId { get; set; }
+    public int Onlid { get; set; }
 
     public string? Userid { get; set; }
 
@@ -16,6 +16,4 @@ public partial class InMemoryOnline
     public DateTime Login { get; set; }
 
     public DateTime? LifeTime { get; set; }
-
-    public virtual ICollection<InMemoryMsg> InMemoryMsgs { get; set; } = new List<InMemoryMsg>();
 }

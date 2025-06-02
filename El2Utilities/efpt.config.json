@@ -71,10 +71,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[OrderGroup]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[OrderRB]",
          "ObjectType": 0
       },
@@ -123,10 +119,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[ShiftCalendarShiftPlan]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[ShiftCover]",
          "ObjectType": 0
       },
@@ -152,10 +144,6 @@
       },
       {
          "Name": "[dbo].[VorgangAttachment]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[VorgangDocu]",
          "ObjectType": 0
       },
       {

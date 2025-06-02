@@ -38,11 +38,11 @@ namespace El2Core.Utils
             using (var db = container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
                 var result = (from account in db.IdmAccounts
-                             join r in db.IdmRelations on account.AccountId equals r.AccountId
-                             join role in db.IdmRoles on r.RoleId equals role.RoleId
-                             join perm in db.RolePermissions on role.RoleId equals perm.RoleId
-                             where account.AccountId == us
-                             select new { account, perm }) ?? throw new KeyNotFoundException("User nicht gefunden");
+                              join r in db.IdmRelations on account.AccountId equals r.AccountId
+                              join role in db.IdmRoles on r.RoleId equals role.RoleId
+                              join perm in db.RolePermissions on role.RoleId equals perm.RoleId
+                              where account.AccountId == us
+                              select new { account, perm }) ?? throw new KeyNotFoundException("User nicht gefunden");
 
                 UserInfo userInfo = new UserInfo();
                 var usr = result.First().account;

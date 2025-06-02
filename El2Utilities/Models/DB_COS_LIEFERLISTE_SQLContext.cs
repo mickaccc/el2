@@ -43,8 +43,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<OrderComponent> OrderComponents { get; set; }
 
-    public virtual DbSet<OrderGroup> OrderGroups { get; set; }
-
     public virtual DbSet<OrderRb> OrderRbs { get; set; }
 
     public virtual DbSet<Permission> Permissions { get; set; }
@@ -69,8 +67,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<ShiftCalendar> ShiftCalendars { get; set; }
 
-    public virtual DbSet<ShiftCalendarShiftPlan> ShiftCalendarShiftPlans { get; set; }
-
     public virtual DbSet<ShiftCover> ShiftCovers { get; set; }
 
     public virtual DbSet<ShiftPlan> ShiftPlans { get; set; }
@@ -84,8 +80,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     public virtual DbSet<Vorgang> Vorgangs { get; set; }
 
     public virtual DbSet<VorgangAttachment> VorgangAttachments { get; set; }
-
-    public virtual DbSet<VorgangDocu> VorgangDocus { get; set; }
 
     public virtual DbSet<WorkArea> WorkAreas { get; set; }
 
@@ -106,6 +100,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("Latin1_General_100_CS_AI");
+
         modelBuilder.Entity<AccountCost>(entity =>
         {
             entity.HasKey(e => new { e.AccountId, e.CostId }).HasFillFactor(95);
@@ -239,7 +235,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasName("idm_accounts_pk")
                 .HasFillFactor(95);
 
-            entity.ToTable("idm_accounts", tb => tb.HasTrigger("idm_accounts_modify_trg"));
+            entity.ToTable("idm_accounts");
 
             entity.Property(e => e.AccountId)
                 .HasMaxLength(80)
@@ -271,7 +267,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity
                 .HasNoKey()
-                .ToTable("idm_relations", tb => tb.HasTrigger("idm_relations_modify_trg"));
+                .ToTable("idm_relations");
 
             entity.HasIndex(e => new { e.AccountId, e.RoleId }, "idm_relations_uq")
                 .IsUnique()
@@ -304,7 +300,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasName("idm_roles_pk")
                 .HasFillFactor(95);
 
-            entity.ToTable("idm_roles", tb => tb.HasTrigger("idm_roles_modify_trg"));
+            entity.ToTable("idm_roles");
 
             entity.HasIndex(e => e.RoleName, "idm_roles_uq")
                 .IsUnique()
@@ -326,50 +322,51 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<InMemoryMsg>(entity =>
         {
             entity.HasKey(e => e.MsgId)
-                .HasName("PK__InMemory__662358934B319009")
-                .IsClustered(false)
-                .HasFillFactor(95);
+                .HasName("PK__InMemory__662358933D802574")
+                .IsClustered(false);
 
-            entity
-                .ToTable("InMemoryMsg")
-                .IsMemoryOptimized();
+            entity.ToTable("InMemoryMsg");
 
             entity.Property(e => e.MsgId).HasColumnName("MsgID");
-            entity.Property(e => e.Invoker).HasMaxLength(255);
-            entity.Property(e => e.Operation).HasMaxLength(50);
-            entity.Property(e => e.TableName).HasMaxLength(50);
+            entity.Property(e => e.Invoker)
+                .HasMaxLength(255)
+                .UseCollation("Latin1_General_CI_AS");
+            entity.Property(e => e.NewValue).UseCollation("Latin1_General_CI_AS");
+            entity.Property(e => e.OldValue).UseCollation("Latin1_General_CI_AS");
+            entity.Property(e => e.Operation)
+                .HasMaxLength(50)
+                .UseCollation("Latin1_General_CI_AS");
+            entity.Property(e => e.PrimaryKey).UseCollation("Latin1_General_CI_AS");
+            entity.Property(e => e.TableName)
+                .HasMaxLength(50)
+                .UseCollation("Latin1_General_CI_AS");
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp");
-
-            entity.HasOne(d => d.Onl).WithMany(p => p.InMemoryMsgs)
-                .HasForeignKey(d => d.OnlId)
-                .HasConstraintName("FK_InMemoryMsg_InMemoryOnline");
         });
 
         modelBuilder.Entity<InMemoryOnline>(entity =>
         {
-            entity.HasKey(e => e.OnlId)
-                .HasName("PK__InMemory__A34E616341453DE5")
-                .IsClustered(false)
-                .HasFillFactor(95);
+            entity.HasKey(e => e.Onlid)
+                .HasName("PK__InMemory__A34E6163151E3EB9")
+                .IsClustered(false);
 
-            entity
-                .ToTable("InMemoryOnline")
-                .IsMemoryOptimized();
+            entity.ToTable("InMemoryOnline");
 
-            entity.Property(e => e.OnlId).HasColumnName("OnlID");
+            entity.Property(e => e.Onlid).HasColumnName("ONLID");
             entity.Property(e => e.LifeTime).HasColumnType("datetime");
             entity.Property(e => e.Login)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.PcId)
                 .HasMaxLength(50)
-                .IsFixedLength();
+                .IsFixedLength()
+                .UseCollation("Latin1_General_CI_AS");
             entity.Property(e => e.Userid)
                 .HasMaxLength(50)
-                .IsFixedLength();
+                .IsFixedLength()
+                .UseCollation("Latin1_General_CI_AS");
         });
 
         modelBuilder.Entity<MeasureRess>(entity =>
@@ -456,30 +453,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasConstraintName("FK_OrderComponent_tblMaterial");
         });
 
-        modelBuilder.Entity<OrderGroup>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasFillFactor(95);
-
-            entity.ToTable("OrderGroup");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Description).HasMaxLength(100);
-            entity.Property(e => e.Key)
-                .HasMaxLength(10)
-                .IsFixedLength();
-        });
-
         modelBuilder.Entity<OrderRb>(entity =>
         {
             entity.HasKey(e => e.Aid)
                 .HasName("PK_Order")
                 .HasFillFactor(95);
 
-            entity.ToTable("OrderRB", tb =>
-                {
-                    tb.HasTrigger("AuditChangesOrderRB");
-                    tb.HasTrigger("AuditInsertOrderRB");
-                });
+            entity.ToTable("OrderRB");
 
             entity.Property(e => e.Aid)
                 .HasMaxLength(50)
@@ -534,11 +514,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.MaterialNavigation).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.Material)
                 .HasConstraintName("FK_Order_tblMaterial");
-
-            entity.HasOne(d => d.OrderGroupNavigation).WithMany(p => p.OrderRbs)
-                .HasForeignKey(d => d.OrderGroup)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK_OrderRB_OrderGroup");
 
             entity.HasOne(d => d.Pro).WithMany(p => p.OrderRbs)
                 .HasForeignKey(d => d.ProId)
@@ -748,30 +723,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("timestamp");
         });
 
-        modelBuilder.Entity<ShiftCalendarShiftPlan>(entity =>
-        {
-            entity.HasKey(e => e.PrimId).HasFillFactor(95);
-
-            entity.ToTable("ShiftCalendarShiftPlan");
-
-            entity.Property(e => e.Timestamp)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime")
-                .HasColumnName("timestamp");
-            entity.Property(e => e.YearKw)
-                .HasMaxLength(6)
-                .IsFixedLength()
-                .HasColumnName("YearKW");
-
-            entity.HasOne(d => d.Cal).WithMany(p => p.ShiftCalendarShiftPlans)
-                .HasForeignKey(d => d.CalId)
-                .HasConstraintName("FK_ShiftCalendarShiftPlan_ShiftCalendar");
-
-            entity.HasOne(d => d.Plan).WithMany(p => p.ShiftCalendarShiftPlans)
-                .HasForeignKey(d => d.PlanId)
-                .HasConstraintName("FK_ShiftCalendarShiftPlan_ShiftPlan");
-        });
-
         modelBuilder.Entity<ShiftCover>(entity =>
         {
             entity.HasKey(e => e.Id).HasFillFactor(95);
@@ -883,11 +834,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity.HasKey(e => e.VorgangId).HasFillFactor(95);
 
-            entity.ToTable("Vorgang", tb =>
-                {
-                    tb.HasTrigger("AuditChangesVorgang");
-                    tb.HasTrigger("AuditInsertVorgang");
-                });
+            entity.ToTable("Vorgang");
 
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)
@@ -993,27 +940,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.Vorgang).WithMany(p => p.VorgangAttachments)
                 .HasForeignKey(d => d.VorgangId)
                 .HasConstraintName("FK_VorgangAttachment_Vorgang");
-        });
-
-        modelBuilder.Entity<VorgangDocu>(entity =>
-        {
-            entity.HasKey(e => e.VorgangId).HasFillFactor(95);
-
-            entity.ToTable("VorgangDocu");
-
-            entity.Property(e => e.VorgangId)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.VmpbOriginal)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.VmpbTemplate)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Vorgang).WithOne(p => p.VorgangDocu)
-                .HasForeignKey<VorgangDocu>(d => d.VorgangId)
-                .HasConstraintName("FK_VorgangDocu_Vorgang");
         });
 
         modelBuilder.Entity<WorkArea>(entity =>

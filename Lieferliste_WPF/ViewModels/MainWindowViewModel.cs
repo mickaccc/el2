@@ -21,7 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Printing;
 using System.Reflection;
-using System.Timers;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -100,7 +100,11 @@ namespace Lieferliste_WPF.ViewModels
         }
         private WorkareaDocumentInfo? _workareaDocumentInfo;
         private static int _onlines;
-        private static System.Timers.Timer? _timer;
+        private static TimerCallback? timerCallbackOnl;
+        private static TimerCallback? timerCallbackMsg;
+        private readonly Timer _timerOnl;
+        private readonly Timer _timerMsg;
+
         private IRegionManager _regionmanager;
         private static readonly object _lock = new();
         private readonly IContainerExtension _container;
@@ -130,11 +134,16 @@ namespace Lieferliste_WPF.ViewModels
 
                 if (CoreFunction.PriorProcess == null)
                 {
+                    _timerMsg.Dispose();
+                    _timerOnl.Dispose();
                     App.Current.Shutdown();
                 }
                 _ = RegisterMe();
-                SetTimer();
-                SetMsgDBTimer();
+                timerCallbackOnl = new(ExecuteT);
+                timerCallbackMsg = new(ExecuteGetMsg);
+                _timerOnl = new Timer(callback: timerCallbackOnl, null, 0, 59000);
+                _timerMsg = new Timer(callback: timerCallbackMsg, null, 0, 60000);
+
                 TabCloseCommand = new ActionCommand(OnTabCloseExecuted, OnTabCloseCanExecute);
                 CloseCommand = new ActionCommand(OnCloseExecuted, OnCloseCanExecute);
                 _applicationCommands.CloseCommand.RegisterCommand(CloseCommand);
@@ -383,8 +392,8 @@ namespace Lieferliste_WPF.ViewModels
                             if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
                         }
 
-                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.Dbid.Equals(x.OnlId));                        
-                        if (Dbctx.InMemoryMsgs.Any()) Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().OnlId)).ExecuteDelete();
+                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.Dbid.Equals(x.Onlid));                        
+                        if (Dbctx.InMemoryMsgs.Any()) Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().Onlid)).ExecuteDelete();
                         del.ExecuteDelete();
                     }
                 }
@@ -605,15 +614,15 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         #endregion
-        private void SetTimer()
-        {
-            // Create a timer with a 59 seconds interval.
-            _timer = new System.Timers.Timer(59000);
-            // Hook up the Elapsed event for the timer. 
-            _timer.Elapsed += OnTimedEvent;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
-        }
+        //private void SetTimer()
+        //{
+        //    // Create a timer with a 59 seconds interval.
+        //    _timer = new System.Timers.Timer(59000);
+        //    // Hook up the Elapsed event for the timer. 
+        //    _timer.Elapsed += OnTimedEvent;
+        //    _timer.AutoReset = true;
+        //    _timer.Enabled = true;
+        //}
         public int Onlines
         {
             get { return _onlines; }
@@ -626,36 +635,43 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-  
-        private void OnTimedEvent(object? sender, ElapsedEventArgs e)
-        {           
-            Application.Current.Dispatcher.InvokeAsync(new Action(() =>
+        private void ExecuteT(object? state)
+        {
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            Onlines = db.InMemoryOnlines.Count();
+            if (db.InMemoryOnlines.All(x => x.Onlid != UserInfo.Dbid))
             {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                Onlines = db.InMemoryOnlines.Count();
-                if (db.InMemoryOnlines.All(x => x.OnlId != UserInfo.Dbid))
-                {
-                    if (MessageBox.Show(Application.Current.MainWindow,
-                        "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
-                        MessageBoxResult.OK)
-                    { Application.Current.Shutdown(10); }
-                }
-                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlId = {1}",
-                    DateTime.Now,
-                    UserInfo.Dbid);
-            }), System.Windows.Threading.DispatcherPriority.Background);
+                if (MessageBox.Show(Application.Current.MainWindow,
+                    "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
+                    MessageBoxResult.OK)
+                { Application.Current.Shutdown(10); }
+            }
+            else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlId = {1}",
+                DateTime.Now,
+                UserInfo.Dbid);
         }
-        private void SetMsgDBTimer()
+        //private void OnTimedEvent(object? sender, ElapsedEventArgs e)
+        //{           
+        //    Application.Current.Dispatcher.InvokeAsync(new Action(() =>
+        //    {
+        //        using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+        //        Onlines = db.InMemoryOnlines.Count();
+        //        if (db.InMemoryOnlines.All(x => x.OnlId != UserInfo.Dbid))
+        //        {
+        //            if (MessageBox.Show(Application.Current.MainWindow,
+        //                "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
+        //                MessageBoxResult.OK)
+        //            { Application.Current.Shutdown(10); }
+        //        }
+        //        else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlId = {1}",
+        //            DateTime.Now,
+        //            UserInfo.Dbid);
+        //    }), System.Windows.Threading.DispatcherPriority.Background);
+        //}
+        private void ExecuteGetMsg(object? state)
         {
-            // Create a timer with a 60 seconds interval.
-            _timer = new System.Timers.Timer(60000);
-            // Hook up the Elapsed event for the timer. 
-            _timer.Elapsed += OnMsgDBTimedEvent;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
-        }
-        private async void OnMsgDBTimedEvent(object? sender, ElapsedEventArgs e)
-        {
+
+
             List<(string, string)?> msgListV = [];
             List<(string, string)?> msgListO = [];
 
@@ -663,39 +679,39 @@ namespace Lieferliste_WPF.ViewModels
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 {
-                    var m = await db.InMemoryMsgs.AsNoTracking()
-                        .Include(x => x.Onl)
-                        .Where(x => x.Onl.OnlId == UserInfo.Dbid)
-                        .OrderBy(x => x.Timestamp)
-                        .ToListAsync();
-                    if (m.Count > 0)
-                    {
-                        foreach (var item in m)
-                        {
-                            if (item != null && item.TableName == "Vorgang")
-                            {
-                                if (item.OldValue != item.NewValue)
-                                    if (msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
-                                    {
-                                        msgListV.Add((item.Invoker, item.PrimaryKey));
-                                    }
-                            }
-                            if (item != null && item.TableName == "OrderRB")
-                            {
-                                if (item.OldValue != item.NewValue)
-                                    if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
-                                    {
-                                        msgListO.Add((item.Invoker, item.PrimaryKey));
-                                        
-                                    }
-                            }                            
-                        }
+                    //var m = db.InMemoryMsgs.AsNoTracking()
+                    //    .Include(x => x.InMemoryOnline)
+                    //    .Where(x => x.Onl.OnlId == UserInfo.Dbid)
+                    //    .OrderBy(x => x.Timestamp)
+                    //    .ToListAsync();
+                    //if (m.Result.Count > 0)
+                    //{
+                    //    foreach (var item in m)
+                    //    {
+                    //        if (item != null && item.TableName == "Vorgang")
+                    //        {
+                    //            if (item.OldValue != item.NewValue)
+                    //                if (msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
+                    //                {
+                    //                    msgListV.Add((item.Invoker, item.PrimaryKey));
+                    //                }
+                    //        }
+                    //        if (item != null && item.TableName == "OrderRB")
+                    //        {
+                    //            if (item.OldValue != item.NewValue)
+                    //                if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
+                    //                {
+                    //                    msgListO.Add((item.Invoker, item.PrimaryKey));
 
-                        foreach (var msg in m)
-                        {
-                            await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
-                        }
-                    }
+                    //                }
+                    //        }
+                    //    }
+
+                    //    foreach (var msg in m)
+                    //    {
+                    //        db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
+                    //    }
+                    //}
                 }
                 Msg = string.Format("{0}-{1} ", DateTime.Now.ToString("HH:mm:ss"), msgListO.Count + msgListV.Count);
 
@@ -711,6 +727,73 @@ namespace Lieferliste_WPF.ViewModels
                 _Logger.LogCritical("{message}", ex.ToString());
             }
         }
+        
+        //private void SetMsgDBTimer()
+        //{
+        //    // Create a timer with a 60 seconds interval.
+        //    _timer = new System.Timers.Timer(60000);
+        //    // Hook up the Elapsed event for the timer. 
+        //    _timer.Elapsed += OnMsgDBTimedEvent;
+        //    _timer.AutoReset = true;
+        //    _timer.Enabled = true;
+        //}
+        //private async void OnMsgDBTimedEvent(object? sender, ElapsedEventArgs e)
+        //{
+        //    List<(string, string)?> msgListV = [];
+        //    List<(string, string)?> msgListO = [];
+
+        //    try
+        //    {
+        //        using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+        //        {
+        //            var m = await db.InMemoryMsgs.AsNoTracking()
+        //                .Include(x => x.Onl)
+        //                .Where(x => x.Onl.OnlId == UserInfo.Dbid)
+        //                .OrderBy(x => x.Timestamp)
+        //                .ToListAsync();
+        //            if (m.Count > 0)
+        //            {
+        //                foreach (var item in m)
+        //                {
+        //                    if (item != null && item.TableName == "Vorgang")
+        //                    {
+        //                        if (item.OldValue != item.NewValue)
+        //                            if (msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
+        //                            {
+        //                                msgListV.Add((item.Invoker, item.PrimaryKey));
+        //                            }
+        //                    }
+        //                    if (item != null && item.TableName == "OrderRB")
+        //                    {
+        //                        if (item.OldValue != item.NewValue)
+        //                            if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
+        //                            {
+        //                                msgListO.Add((item.Invoker, item.PrimaryKey));
+                                        
+        //                            }
+        //                    }                            
+        //                }
+
+        //                foreach (var msg in m)
+        //                {
+        //                    await db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
+        //                }
+        //            }
+        //        }
+        //        Msg = string.Format("{0}-{1} ", DateTime.Now.ToString("HH:mm:ss"), msgListO.Count + msgListV.Count);
+
+        //        if (msgListV.Count > 0)
+        //            _ea.GetEvent<MessageVorgangChanged>().Publish(msgListV);
+        //        if (msgListO.Count > 0)
+        //            _ea.GetEvent<MessageOrderChanged>().Publish(msgListO);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _Logger.LogError("Auftrag:{msgo} -- Vorgang:{msgv}", [msgListO.Count, msgListV.Count]);
+        //        _Logger.LogCritical("{message}", ex.ToString());
+        //    }
+        //}
 
         private async System.Threading.Tasks.Task RegisterMe()
         {
@@ -721,16 +804,16 @@ namespace Lieferliste_WPF.ViewModels
                 var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC);
                 if (onl != null)
                 {
-                    db.Database.ExecuteSqlRaw("DELETE dbo.InMemoryMsg WHERE OnlId=@p0", onl.OnlId);
-                    db.Database.ExecuteSqlRaw("DELETE dbo.InMemoryOnline WHERE OnlId=@p0", onl.OnlId);
+                    db.Database.ExecuteSqlRaw("DELETE InMemoryMsg WHERE OnlId=@p0", onl.Onlid);
+                    db.Database.ExecuteSqlRaw("DELETE InMemoryOnline WHERE OnlId=@p0", onl.Onlid);
                 }
-                db.Database.ExecuteSqlRaw(@"INSERT INTO dbo.InMemoryOnline(Userid,PcId,Login, LifeTime) VALUES({0},{1},{2}, {3})",
+                db.Database.ExecuteSqlRaw(@"INSERT INTO InMemoryOnline(Userid,PcId,Login, LifeTime) VALUES({0},{1},{2}, {3})",
                     UserInfo.User.UserId,
                     UserInfo.PC ?? string.Empty,
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 await transaction.CommitAsync();
-                UserInfo.Dbid = db.InMemoryOnlines.Single(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC).OnlId;
+                UserInfo.Dbid = db.InMemoryOnlines.Single(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC).Onlid;
                 _Logger.LogInformation("Startup {user}-{pc}-{id}--{version}", [UserInfo.User.UserId, UserInfo.PC, UserInfo.Dbid, Assembly.GetExecutingAssembly().GetName().Version]);
             }
             catch (Exception e)
