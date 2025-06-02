@@ -68,7 +68,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMeasureOperCommand { get; }
         public ICommand ExplorerCommand { get; }
         public ICommand OpenOrderCommand { get; }
-        public ICommand ArchivateCommand { get; }
+        public ICommand OrderCloseCommand { get; }
         public ICommand OpenProjectOverViewCommand { get; }
         public ICommand MachinePrintCommand { get; }
         public ICommand OpenProductViewCommand { get; }
@@ -142,8 +142,8 @@ namespace Lieferliste_WPF.ViewModels
                 _applicationCommands.ExplorerCommand.RegisterCommand(ExplorerCommand);
                 OpenOrderCommand = new ActionCommand(OnOpenOrderExecuted, OnOpenOrderCanExecute);
                 _applicationCommands.OpenOrderCommand.RegisterCommand(OpenOrderCommand);
-                ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
-                _applicationCommands.ArchivateCommand.RegisterCommand(ArchivateCommand);
+                OrderCloseCommand = new ActionCommand(OnOrderCloseExecuted, OnOrderCloseCanExecute);
+                _applicationCommands.OrderCloseCommand.RegisterCommand(OrderCloseCommand);
                 OpenProjectOverViewCommand = new ActionCommand(OnOpenProjectOverViewExecuted, OnOpenProjectOverViewCanExecute);
                 _applicationCommands.OpenProjectOverViewCommand.RegisterCommand(OpenProjectOverViewCommand);
                 MachinePrintCommand = new ActionCommand(OnMachinePrintExecuted, OnMachinePrintCanExecute);
@@ -322,7 +322,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Archive", UriKind.Relative));
         }
-        private void OnArchivateExecuted(object obj)
+        private void OnOrderCloseExecuted(object obj)
         {
             try
             {
@@ -346,7 +346,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
 
-        private bool OnArchivateCanExecute(object arg)
+        private bool OnOrderCloseCanExecute(object arg)
         {
             try
             {
@@ -354,7 +354,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     if (onr[1] is Boolean f)
                     {
-                        return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate) &&
+                        return PermissionsProvider.GetInstance().GetUserPermission(Permissions.CloseOrder) &&
                             (f || Keyboard.IsKeyDown(Key.LeftAlt));
                     }
                 }
@@ -420,9 +420,6 @@ namespace Lieferliste_WPF.ViewModels
         }
         private static bool OnOpenOrderCanExecute(object arg)
         {
-            if (arg is string s)
-                if (s.StartsWith("DS") || s.StartsWith("SC-PR") || s.StartsWith("BM"))
-                    return false;
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Order);
         }
         private void OnOpenOrderExecuted(object parameter)

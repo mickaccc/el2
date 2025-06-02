@@ -5,6 +5,7 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -37,6 +38,7 @@ namespace Lieferliste_WPF.ViewModels
         private string? _searchValue;
         private readonly ConcurrentObservableCollection<OrderRb> result = [];
         public ICollectionView? CollectionView { get; private set; }
+        private MeasureDocumentInfo MeasureInfo { get; set; }
         public NotifyTaskCompletion<ICollectionView>? ContentTask
         {
             get
@@ -52,7 +54,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
             }
         }
-        public ICommand DeArchivateCommand { get; set; }
+        public ICommand RetriveCommand { get; set; }
+        public ICommand ArchivateCommand { get; set; }
         private RelayCommand? _textSearchCommand;
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
 
@@ -66,16 +69,41 @@ namespace Lieferliste_WPF.ViewModels
         {
             _container = container;
             _applicationCommands = applicationCommands;
-            DeArchivateCommand = new ActionCommand(OnDeArchivateExecuted, OnDeArchivateCanExecute);
+            RetriveCommand = new ActionCommand(OnRetriveExecuted, OnRetriveCanExecute);
+            ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
+            MeasureInfo = new MeasureDocumentInfo(container);
             ContentTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync());
         }
 
-        private bool OnDeArchivateCanExecute(object arg)
+        private bool OnArchivateCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.DeArchivate);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
 
-        private void OnDeArchivateExecuted(object obj)
+        private void OnArchivateExecuted(object obj)
+        {
+            string path;
+            if (RuleInfo.Rules.TryGetValue("MeasureArchivFolder", out Rule? archiv))
+            {
+                path = archiv.RuleValue;
+
+                foreach (var col in CollectionView)
+                {
+                    var order = (OrderRb)col;
+                    if (order.Material != null)
+                    {
+                        MeasureInfo.CreateDocumentInfos([order.Material, order.Aid]);
+                    }
+                }
+            }
+        }
+
+        private bool OnRetriveCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.RetriveOrder);
+        }
+
+        private void OnRetriveExecuted(object obj)
         {
             if (obj is OrderRb o)
             {

@@ -132,7 +132,7 @@
                    Background="#FFEBEB73" Width="71" />
             <Button Grid.Column="6" Grid.Row="1" HorizontalAlignment="Right" Margin="5" x:Name="btnArchivate"
                     VerticalAlignment="Top"  SnapsToDevicePixels="True" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
-                    Command="{Binding Path=ApplicationCommands.ArchivateCommand}" ToolTip="Ablegen">
+                    Command="{Binding Path=ApplicationCommands.OrderCloseCommand}" ToolTip="Ablegen">
                 <Button.CommandParameter>
                     <MultiBinding Converter="{StaticResource multiobj}">
                         <Binding Path="Aid"/>

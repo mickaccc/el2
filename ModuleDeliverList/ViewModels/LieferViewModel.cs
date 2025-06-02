@@ -322,7 +322,6 @@ namespace ModuleDeliverList.ViewModels
                     var o = _orders.Where(x => x.Aid == rb.Aid);
                     foreach (var x in o)
                     {
-
                         lock (_lock)
                         {
                             _orders.Remove(x);
@@ -330,7 +329,6 @@ namespace ModuleDeliverList.ViewModels
                             OrdersView.Refresh();
                             _Logger.LogInformation("Auftrag archiviert: {message}", rb.Aid);
                         }
-
                     }
                 }
             }

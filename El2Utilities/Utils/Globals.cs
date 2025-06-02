@@ -75,14 +75,15 @@ namespace El2Core.Utils
                 Rules = db.Rules.ToList(); 
             }
         }
-        public void SaveRule(string RuleKey)
+        public void SaveRule(string RuleKey, string value)
         {
             Rule rule;
             if (RuleInfo.Rules.TryGetValue(RuleKey, out var outRule))
             {
                 rule = outRule;
+                rule.RuleValue = value;
             }
-            else { rule = new Rule() { RuleName = RuleKey, RuleValue = RuleKey }; }
+            else { rule = new Rule() { RuleName = RuleKey, RuleValue = value }; }
             SaveRule(rule);
         }
         public void SaveRule(Rule rule)
