@@ -376,6 +376,13 @@
                                 </StackPanel>
                             </Label>
                             <TextBox Text="{Binding RuleMsfDomain}"/>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Pfad zum Archiv"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
+                            <TextBox Text="{Binding ArchivatePath}"/>
                         </StackPanel>
                         <StackPanel>
                             <Label>
