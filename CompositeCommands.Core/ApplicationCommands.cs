@@ -5,7 +5,7 @@ namespace CompositeCommands.Core
     public interface IApplicationCommands
     {
         CompositeCommand ExplorerCommand { get; }
-        CompositeCommand ArchivateCommand { get; }
+        CompositeCommand OrderCloseCommand { get; }
         CompositeCommand OpenOrderCommand { get; }
         CompositeCommand OpenMachineCommand { get; }
         CompositeCommand OpenProjectOverViewCommand { get; }
@@ -23,7 +23,7 @@ namespace CompositeCommands.Core
             get { return _explorerCommand; }
         }
         private CompositeCommand _archivateCommand = new();
-        public CompositeCommand ArchivateCommand
+        public CompositeCommand OrderCloseCommand
         {
             get { return _archivateCommand; }
         }

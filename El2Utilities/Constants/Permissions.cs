@@ -83,5 +83,7 @@
         public const string EmployNoteOpen = "EMPNOTE";
         public const string ProjectScheme = "PROJ07";
         public const string EmplCorr = "EMPLCORR";
+        public const string RetriveOrder = "OO10";
+        public const string CloseOrder = "OO09";
     }
 }

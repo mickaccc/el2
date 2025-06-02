@@ -33,6 +33,8 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
+            <Button Content="Messdokumente Archivieren"
+                    Command="{Binding ArchivateCommand}"/>
             <TextBlock HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignHeadline4TextBlock}" Text="{Binding Path=Items.Count, ElementName=data}"/>
         </DockPanel>
         <StackPanel Grid.Row="1">

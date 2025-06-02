@@ -289,7 +289,7 @@
                 <Label Grid.Column="10" Background="{DynamicResource MahApps.Brushes.Badged.Background}"  Margin="6" Padding="2" HorizontalAlignment="Center"
                        Visibility="{Binding InVisible, ElementName=luc, Converter={StaticResource BooleanToVisibilityConverter}}">ausgeblendet</Label>
                 <Button Grid.Column="10" Grid.Row="2" Content="ablegen" x:Name="btnToArchiv" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"
-                        Command="{Binding Path=DataContext.ApplicationCommands.ArchivateCommand,
+                        Command="{Binding Path=DataContext.ApplicationCommands.OrderCloseCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}">
                 <Button.CommandParameter>
                     <MultiBinding Converter="{StaticResource MultiObject}">

@@ -1,5 +1,6 @@
 ﻿using ControlzEx.Theming;
 using El2Core.Constants;
+using El2Core.Models;
 using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -99,20 +100,28 @@ namespace Lieferliste_WPF.ViewModels
         public Document Vdocu { get; private set; }
         public Document Wdocu { get; private set; }
         public Document Mdocu { get; private set; }
-        private string _ruleInfoScan;
+        private string _ruleInfoScan = string.Empty;
 
         public string RuleInfoScan
         {
             get => _ruleInfoScan;
             set { _ruleInfoScan = value; }
         }
-        private string _ruleMsfDomain;
+        private string _ruleMsfDomain = string.Empty;
 
         public string RuleMsfDomain
         {
             get => _ruleMsfDomain; 
             set { _ruleMsfDomain = value; }
         }
+        private string _RuleMeasureArchivFolder = string.Empty;
+
+        public string RuleMeasureArchivFolder
+        {
+            get { return _RuleMeasureArchivFolder; }
+            set { _RuleMeasureArchivFolder = value; }
+        }
+
 
         public List<Tuple<string, string, int>> PropertyNames { get; } = [];
         private PersonalFilterContainer _filterContainer;
@@ -193,29 +202,41 @@ namespace Lieferliste_WPF.ViewModels
             Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
             LoadFilters();
             LoadProjectSchemes();
+            LoadRules();
         }
 
-        private void LoadFilters()
+        private void LoadRules()
         {
-            _filterContainer = PersonalFilterContainer.GetInstance();
-            _filterContainer.Remove("_keine");
-            _filterContainerKeys = _filterContainer.Keys.ToObservableCollection();
-            PersonalFilterView = CollectionViewSource.GetDefaultView(_filterContainerKeys);
-            PersonalFilterView.MoveCurrentToFirst();
-            //if(PersonalFilterView.CurrentItem != null)
-            //    PersonalFilterContainerItem = pfilter[PersonalFilterView.CurrentItem.ToString()];
-            PersonalFilterView.CurrentChanged += OnPersonalFilterChanged;
-            PropertyNames.Add(PropertyPair.OrderNumber.ToTuple());
-            PropertyNames.Add(PropertyPair.ProcessDescription.ToTuple());
-            PropertyNames.Add(PropertyPair.Material.ToTuple());
-            PropertyNames.Add(PropertyPair.MaterialDescription.ToTuple());
-            PropertyNames.Add(PropertyPair.LieferTermin.ToTuple());
-            PropertyNames.Add(PropertyPair.PrioText.ToTuple());
-            PropertyNames.Add(PropertyPair.RessourceName.ToTuple());
-            PropertyNames.Add(PropertyPair.Project.ToTuple());
-            PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
-            PropertyNames.Add(PropertyPair.MarkerCode.ToTuple());
+
+            if (RuleInfo.Rules.TryGetValue("MeasureMsfDomain", out Rule? msf))
+                RuleMsfDomain = msf.RuleValue;
+            if (RuleInfo.Rules.TryGetValue("MeasureScan", out Rule? scan))
+                RuleInfoScan= scan.RuleValue;
+            if (RuleInfo.Rules.TryGetValue("MeasureArchivFolder", out Rule? archiv))
+                RuleMeasureArchivFolder = archiv.RuleValue;
+
         }
+                private void LoadFilters()
+                {
+                    _filterContainer = PersonalFilterContainer.GetInstance();
+                    _filterContainer.Remove("_keine");
+                    _filterContainerKeys = _filterContainer.Keys.ToObservableCollection();
+                    PersonalFilterView = CollectionViewSource.GetDefaultView(_filterContainerKeys);
+                    PersonalFilterView.MoveCurrentToFirst();
+                    //if(PersonalFilterView.CurrentItem != null)
+                    //    PersonalFilterContainerItem = pfilter[PersonalFilterView.CurrentItem.ToString()];
+                    PersonalFilterView.CurrentChanged += OnPersonalFilterChanged;
+                    PropertyNames.Add(PropertyPair.OrderNumber.ToTuple());
+                    PropertyNames.Add(PropertyPair.ProcessDescription.ToTuple());
+                    PropertyNames.Add(PropertyPair.Material.ToTuple());
+                    PropertyNames.Add(PropertyPair.MaterialDescription.ToTuple());
+                    PropertyNames.Add(PropertyPair.LieferTermin.ToTuple());
+                    PropertyNames.Add(PropertyPair.PrioText.ToTuple());
+                    PropertyNames.Add(PropertyPair.RessourceName.ToTuple());
+                    PropertyNames.Add(PropertyPair.Project.ToTuple());
+                    PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
+                    PropertyNames.Add(PropertyPair.MarkerCode.ToTuple());
+                }
         private void LoadProjectSchemes()
         {
             ProjectSchemes = RuleInfo.ProjectSchemes.Values.ToObservableCollection();
@@ -270,9 +291,9 @@ namespace Lieferliste_WPF.ViewModels
             WorkareaDocumentInfo.SaveDocumentData();
             MeasureDocumentInfo.SaveDocumentData();
             var gl = new Globals(_container);
-            gl.SaveRule("MeasureScan");
-            gl.SaveRule("MeasureMsfDomain");
-            gl.SaveRule("ArchivatePath");
+            gl.SaveRule("MeasureScan", RuleInfoScan);
+            gl.SaveRule("MeasureMsfDomain", RuleMsfDomain);
+            gl.SaveRule("MeasureArchivFolder", RuleMeasureArchivFolder);
             gl.SaveProjectSchemes([.. ProjectSchemes]);
             _filterContainer.Save();
 

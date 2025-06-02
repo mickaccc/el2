@@ -368,6 +368,7 @@
                     </TabItem>
                     <TabItem Header="Muster">
                         <StackPanel>
+                        <StackPanel>
                             <Label>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Domain für Muster Sonder Freigabe"/>
@@ -382,6 +383,16 @@
                                 </StackPanel>
                             </Label>
                             <TextBox Text="{Binding ArchivatePath}"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Archivpfad für Messdokumente"/>
+                                    <materialDesign:PackIcon Kind="Settings"/>
+                                </StackPanel>
+                            </Label>
+                                <TextBox Text="{Binding RuleMeasureArchivFolder}"/>
+                        </StackPanel>
                         </StackPanel>
                     </TabItem>
                 </TabControl>
