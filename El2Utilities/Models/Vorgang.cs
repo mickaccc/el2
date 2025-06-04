@@ -114,4 +114,6 @@ public partial class Vorgang : ModelBase
     public virtual Ressource? RidNavigation { get; set; }
 
     public virtual ICollection<VorgangAttachment> VorgangAttachments { get; set; } = new List<VorgangAttachment>();
+
+    public virtual VorgangDocu? VorgangDocu { get; set; }
 }

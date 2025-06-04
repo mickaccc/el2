@@ -43,6 +43,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<OrderComponent> OrderComponents { get; set; }
 
+    public virtual DbSet<OrderGroup> OrderGroups { get; set; }
+
     public virtual DbSet<OrderRb> OrderRbs { get; set; }
 
     public virtual DbSet<Permission> Permissions { get; set; }
@@ -67,6 +69,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<ShiftCalendar> ShiftCalendars { get; set; }
 
+    public virtual DbSet<ShiftCalendarShiftPlan> ShiftCalendarShiftPlans { get; set; }
+
     public virtual DbSet<ShiftCover> ShiftCovers { get; set; }
 
     public virtual DbSet<ShiftPlan> ShiftPlans { get; set; }
@@ -81,6 +85,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<VorgangAttachment> VorgangAttachments { get; set; }
 
+    public virtual DbSet<VorgangDocu> VorgangDocus { get; set; }
+
     public virtual DbSet<WorkArea> WorkAreas { get; set; }
 
     public virtual DbSet<WorkSap> WorkSaps { get; set; }
@@ -94,7 +100,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
         IConfiguration configuration = builder.Build();
-        var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+        var defaultconnection = configuration.GetConnectionString("ConnectionHome");
         optionsBuilder.UseSqlServer(defaultconnection).EnableThreadSafetyChecks();
         base.OnConfiguring(optionsBuilder);
     }
@@ -453,13 +459,30 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasConstraintName("FK_OrderComponent_tblMaterial");
         });
 
+        modelBuilder.Entity<OrderGroup>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasFillFactor(95);
+
+            entity.ToTable("OrderGroup");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Description).HasMaxLength(100);
+            entity.Property(e => e.Key)
+                .HasMaxLength(10)
+                .IsFixedLength();
+        });
+
         modelBuilder.Entity<OrderRb>(entity =>
         {
             entity.HasKey(e => e.Aid)
                 .HasName("PK_Order")
                 .HasFillFactor(95);
 
-            entity.ToTable("OrderRB");
+            entity.ToTable("OrderRB", tb =>
+                {
+                    tb.HasTrigger("AuditChangesOrderRB");
+                    tb.HasTrigger("AuditInsertOrderRB");
+                });
 
             entity.Property(e => e.Aid)
                 .HasMaxLength(50)
@@ -723,6 +746,30 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("timestamp");
         });
 
+        modelBuilder.Entity<ShiftCalendarShiftPlan>(entity =>
+        {
+            entity.HasKey(e => e.PrimId).HasFillFactor(95);
+
+            entity.ToTable("ShiftCalendarShiftPlan");
+
+            entity.Property(e => e.Timestamp)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("timestamp");
+            entity.Property(e => e.YearKw)
+                .HasMaxLength(6)
+                .IsFixedLength()
+                .HasColumnName("YearKW");
+
+            entity.HasOne(d => d.Cal).WithMany(p => p.ShiftCalendarShiftPlans)
+                .HasForeignKey(d => d.CalId)
+                .HasConstraintName("FK_ShiftCalendarShiftPlan_ShiftCalendar");
+
+            entity.HasOne(d => d.Plan).WithMany(p => p.ShiftCalendarShiftPlans)
+                .HasForeignKey(d => d.PlanId)
+                .HasConstraintName("FK_ShiftCalendarShiftPlan_ShiftPlan");
+        });
+
         modelBuilder.Entity<ShiftCover>(entity =>
         {
             entity.HasKey(e => e.Id).HasFillFactor(95);
@@ -834,7 +881,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity.HasKey(e => e.VorgangId).HasFillFactor(95);
 
-            entity.ToTable("Vorgang");
+            entity.ToTable("Vorgang", tb =>
+                {
+                    tb.HasTrigger("AuditChangesVorgang");
+                    tb.HasTrigger("AuditInsertVorgang");
+                });
+
+            entity.HasIndex(e => e.Aid, "IDX-AID-VNR");
 
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)
@@ -940,6 +993,27 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasOne(d => d.Vorgang).WithMany(p => p.VorgangAttachments)
                 .HasForeignKey(d => d.VorgangId)
                 .HasConstraintName("FK_VorgangAttachment_Vorgang");
+        });
+
+        modelBuilder.Entity<VorgangDocu>(entity =>
+        {
+            entity.HasKey(e => e.VorgangId).HasFillFactor(95);
+
+            entity.ToTable("VorgangDocu");
+
+            entity.Property(e => e.VorgangId)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.VmpbOriginal)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.VmpbTemplate)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Vorgang).WithOne(p => p.VorgangDocu)
+                .HasForeignKey<VorgangDocu>(d => d.VorgangId)
+                .HasConstraintName("FK_VorgangDocu_Vorgang");
         });
 
         modelBuilder.Entity<WorkArea>(entity =>

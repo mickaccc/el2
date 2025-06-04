@@ -634,18 +634,22 @@ namespace Lieferliste_WPF.ViewModels
         }
         private void ExecuteT(object? state)
         {
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-            Onlines = db.InMemoryOnlines.Count();
-            if (db.InMemoryOnlines.All(x => x.Onlid != UserInfo.Dbid))
+            if (UserInfo.Dbid == 0) return;
+            lock (_lock)
             {
-                if (MessageBox.Show(Application.Current.MainWindow,
-                    "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
-                    MessageBoxResult.OK)
-                { Application.Current.Shutdown(10); }
+                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                Onlines = db.InMemoryOnlines.Count();
+                if (db.InMemoryOnlines.All(x => x.Onlid != UserInfo.Dbid))
+                {
+                    if (MessageBox.Show(Application.Current.MainWindow,
+                        "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
+                        MessageBoxResult.OK)
+                    { Application.Current.Shutdown(10); }
+                }
+                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE ONLID = {1}",
+                    DateTime.Now,
+                    UserInfo.Dbid);
             }
-            else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlId = {1}",
-                DateTime.Now,
-                UserInfo.Dbid);
         }
         //private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         //{           
@@ -796,22 +800,26 @@ namespace Lieferliste_WPF.ViewModels
         {
             try
             {
-                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                await using var transaction = await db.Database.BeginTransactionAsync();
-                var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC);
-                if (onl != null)
+                lock (_lock)
                 {
-                    db.Database.ExecuteSqlRaw("DELETE InMemoryMsg WHERE OnlId=@p0", onl.Onlid);
-                    db.Database.ExecuteSqlRaw("DELETE InMemoryOnline WHERE OnlId=@p0", onl.Onlid);
+                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                    using var transaction = db.Database.BeginTransaction();
+                    var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC);
+                    if (onl != null)
+                    {
+                        db.Database.ExecuteSqlRaw("DELETE InMemoryMsg WHERE ONLID=@p0", onl.Onlid);
+                        db.Database.ExecuteSqlRaw("DELETE InMemoryOnline WHERE ONLID=@p0", onl.Onlid);
+                    }
+                    db.Database.ExecuteSqlRaw(@"INSERT INTO InMemoryOnline(Userid,PcId,Login, LifeTime) VALUES({0},{1},{2}, {3})",
+                        UserInfo.User.UserId,
+                        UserInfo.PC ?? string.Empty,
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    transaction.Commit();
+
+                    UserInfo.Dbid = db.InMemoryOnlines.Single(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC).Onlid;
+                    _Logger.LogInformation("Startup {user}-{pc}-{id}--{version}", [UserInfo.User.UserId, UserInfo.PC, UserInfo.Dbid, Assembly.GetExecutingAssembly().GetName().Version]);
                 }
-                db.Database.ExecuteSqlRaw(@"INSERT INTO InMemoryOnline(Userid,PcId,Login, LifeTime) VALUES({0},{1},{2}, {3})",
-                    UserInfo.User.UserId,
-                    UserInfo.PC ?? string.Empty,
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                await transaction.CommitAsync();
-                UserInfo.Dbid = db.InMemoryOnlines.Single(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC).Onlid;
-                _Logger.LogInformation("Startup {user}-{pc}-{id}--{version}", [UserInfo.User.UserId, UserInfo.PC, UserInfo.Dbid, Assembly.GetExecutingAssembly().GetName().Version]);
             }
             catch (Exception e)
             {

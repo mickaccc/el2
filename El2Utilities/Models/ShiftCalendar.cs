@@ -18,4 +18,6 @@ public partial class ShiftCalendar
     public bool Repeat { get; set; }
 
     public virtual ICollection<Ressource> Ressources { get; set; } = new List<Ressource>();
+
+    public virtual ICollection<ShiftCalendarShiftPlan> ShiftCalendarShiftPlans { get; set; } = new List<ShiftCalendarShiftPlan>();
 }

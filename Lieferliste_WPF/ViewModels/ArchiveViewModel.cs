@@ -5,11 +5,8 @@ using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.EntityFrameworkCore;
 using Prism.Ioc;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -129,22 +126,10 @@ namespace Lieferliste_WPF.ViewModels
                     .Where(x => x.Abgeschlossen)
                     .ToListAsync();
 
-                await Task.Factory.StartNew(() =>
-                {
-                    List<OrderRb> o = [];
-                    foreach (var item in ord.OrderBy(x => x.Eckende))
-                    {
-                        var simple = item.Vorgangs.MaxBy(x => x.Vnr);
-                        if (simple != null)
-                            item.ActualEnd = simple.ActualEndDate;
-                        o.Add(item);
-                    }
-                    result.AddRange(o);
-                }, CancellationToken.None, TaskCreationOptions.RunContinuationsAsynchronously, uiContext);
+
+                CollectionView = CollectionViewSource.GetDefaultView(ord);
+                CollectionView.Filter += OnFilter;
             }
-            CollectionView = CollectionViewSource.GetDefaultView(result);
-            CollectionView.Filter += OnFilter;
-            
             return CollectionView;
         }
 
