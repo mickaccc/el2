@@ -432,6 +432,10 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.ToTable("OrderComponent");
 
+            entity.HasIndex(e => e.Aid, "ixAid").HasFillFactor(95);
+
+            entity.HasIndex(e => e.Material, "ixOrderComponentMaterial").HasFillFactor(95);
+
             entity.Property(e => e.CompId).HasColumnName("CompID");
             entity.Property(e => e.Aid)
                 .HasMaxLength(50)
@@ -582,6 +586,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasFillFactor(95);
 
             entity.ToTable("Response");
+
+            entity.HasIndex(e => e.VorgangId, "ixVorgangId").HasFillFactor(95);
 
             entity.Property(e => e.ResponseId).HasColumnName("response_id");
             entity.Property(e => e.Notreal).HasColumnName("notreal");
@@ -856,6 +862,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasKey(e => e.VorgangId).HasFillFactor(95);
 
             entity.ToTable("Vorgang");
+
+            entity.HasIndex(e => new { e.Aid, e.Text, e.SysStatus }, "<ixAidTextSysstatus").HasFillFactor(95);
 
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)
