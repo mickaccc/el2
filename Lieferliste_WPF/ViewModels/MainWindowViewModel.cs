@@ -807,8 +807,8 @@ namespace Lieferliste_WPF.ViewModels
                     var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC);
                     if (onl != null)
                     {
-                        db.Database.ExecuteSqlRaw("DELETE InMemoryMsg WHERE ONLID=@p0", onl.Onlid);
-                        db.Database.ExecuteSqlRaw("DELETE InMemoryOnline WHERE ONLID=@p0", onl.Onlid);
+                        db.Database.ExecuteSqlRaw("DELETE InMemoryMsg WHERE OnlId=@p0", onl.Onlid);
+                        db.Database.ExecuteSqlRaw("DELETE InMemoryOnline WHERE Onlid=@p0", onl.Onlid);
                     }
                     db.Database.ExecuteSqlRaw(@"INSERT INTO InMemoryOnline(Userid,PcId,Login, LifeTime) VALUES({0},{1},{2}, {3})",
                         UserInfo.User.UserId,

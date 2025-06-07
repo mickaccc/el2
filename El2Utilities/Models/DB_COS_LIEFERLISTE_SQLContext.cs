@@ -43,7 +43,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<OrderComponent> OrderComponents { get; set; }
 
-    public virtual DbSet<OrderGroup> OrderGroups { get; set; }
+    public virtual DbSet<OrderDocu> OrderDocus { get; set; }
 
     public virtual DbSet<OrderRb> OrderRbs { get; set; }
 
@@ -459,17 +459,27 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasConstraintName("FK_OrderComponent_tblMaterial");
         });
 
-        modelBuilder.Entity<OrderGroup>(entity =>
+        modelBuilder.Entity<OrderDocu>(entity =>
         {
-            entity.HasKey(e => e.Id).HasFillFactor(95);
+            entity.HasKey(e => e.OrderId).HasFillFactor(95);
 
-            entity.ToTable("OrderGroup");
+            entity.ToTable("OrderDocu");
 
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Description).HasMaxLength(100);
-            entity.Property(e => e.Key)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.OrderId)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("OrderID");
+            entity.Property(e => e.VmpbOriginal)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.VmpbTemplate)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Order).WithOne(p => p.OrderDocu)
+                .HasForeignKey<OrderDocu>(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderDocu_OrderRB");
         });
 
         modelBuilder.Entity<OrderRb>(entity =>
