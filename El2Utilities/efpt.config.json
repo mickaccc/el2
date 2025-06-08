@@ -71,10 +71,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[OrderDocu]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[OrderRB]",
          "ObjectType": 0
       },

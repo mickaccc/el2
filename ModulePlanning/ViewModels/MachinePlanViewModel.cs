@@ -355,7 +355,7 @@ namespace ModulePlanning.ViewModels
         private async Task<ICollectionView> LoadMachinesAsync()
         {
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
- 
+            var preticks = DateTime.Now.Ticks;
 
             var proc = await GetVorgangsAsync(null);
             var mach = await _DbCtx.Ressources
@@ -363,11 +363,16 @@ namespace ModulePlanning.ViewModels
                 .Include(x => x.RessourceCostUnits)
                 .ToListAsync();
             var mach2 = new List<Ressource>();
+
+            _Logger.LogInformation("first: {0}", DateTime.Now.Ticks - preticks);
+            preticks = DateTime.Now.Ticks;
             foreach (var uc in UserInfo.User.AccountWorkAreas)
             {
                 mach2.AddRange(mach.Where(x => uc.WorkAreaId == x.WorkAreaId));
             }
 
+            _Logger.LogInformation("sec: {0}", DateTime.Now.Ticks - preticks);
+            preticks = DateTime.Now.Ticks;
             await Task.Factory.StartNew(() =>
             {
                 SortedDictionary<int[], PlanMachine> result = new SortedDictionary<int[], PlanMachine>(new ArrayKeyComparer());
@@ -392,7 +397,9 @@ namespace ModulePlanning.ViewModels
                         result.TryAdd(kay, factory.CreatePlanMachine(m, _DbCtx));
                     }
                 }
-                
+
+                _Logger.LogInformation("third: {0}", DateTime.Now.Ticks - preticks);
+                preticks = DateTime.Now.Ticks;
                 _machines.AddRange(result.Values);
 
                 List<Vorgang> list = new();
@@ -416,7 +423,9 @@ namespace ModulePlanning.ViewModels
                 _currentWorkArea = ((PlanMachine)RessCV.CurrentItem).WorkArea?.WorkAreaId ?? 0;
 
             }, CancellationToken.None, TaskCreationOptions.None, uiContext);
-
+      
+            _Logger.LogInformation("four: {0}", DateTime.Now.Ticks - preticks);
+            preticks = DateTime.Now.Ticks;
             NotifyPropertyChanged(() => ProcessCV);
             NotifyPropertyChanged(() => ParkingCV);
             if(RessCV != null)
@@ -425,6 +434,7 @@ namespace ModulePlanning.ViewModels
             ParkingCV.Filter = f => (f as Vorgang)?.Rid == _currentWorkArea * -1;
             ProcessViewSource.Filter += ProcessCV_Filter;
 
+            _Logger.LogInformation("five: {0}", DateTime.Now.Ticks - preticks);
             return RessCV;
         }
         private void SelectionChange(object commandParameter)

@@ -64,13 +64,13 @@ public partial class OrderRb : ModelBase
 
     public DateTime? CompleteDate { get; set; }
 
+    public bool Archivated { get; set; }
+
     public virtual TblDummy? DummyMatNavigation { get; set; }
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
 
     public virtual ICollection<OrderComponent> OrderComponents { get; set; } = new List<OrderComponent>();
-
-    public virtual OrderDocu? OrderDocu { get; set; }
 
     public virtual Project? Pro { get; set; }
 

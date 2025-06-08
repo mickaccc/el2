@@ -219,7 +219,6 @@ namespace Lieferliste_WPF.ViewModels
                 private void LoadFilters()
                 {
                     _filterContainer = PersonalFilterContainer.GetInstance();
-                    _filterContainer.Remove("_keine");
                     _filterContainerKeys = _filterContainer.Keys.ToObservableCollection();
                     PersonalFilterView = CollectionViewSource.GetDefaultView(_filterContainerKeys);
                     PersonalFilterView.MoveCurrentToFirst();

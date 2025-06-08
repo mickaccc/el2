@@ -43,8 +43,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
     public virtual DbSet<OrderComponent> OrderComponents { get; set; }
 
-    public virtual DbSet<OrderDocu> OrderDocus { get; set; }
-
     public virtual DbSet<OrderRb> OrderRbs { get; set; }
 
     public virtual DbSet<Permission> Permissions { get; set; }
@@ -106,7 +104,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.UseCollation("Latin1_General_100_CS_AI");
+        modelBuilder.UseCollation("Latin1_General_CI_AS");
 
         modelBuilder.Entity<AccountCost>(entity =>
         {
@@ -328,51 +326,44 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<InMemoryMsg>(entity =>
         {
             entity.HasKey(e => e.MsgId)
-                .HasName("PK__InMemory__662358933D802574")
+                .HasName("PK__InMemory__6623589344B17E95")
                 .IsClustered(false);
 
             entity.ToTable("InMemoryMsg");
 
             entity.Property(e => e.MsgId).HasColumnName("MsgID");
-            entity.Property(e => e.Invoker)
-                .HasMaxLength(255)
-                .UseCollation("Latin1_General_CI_AS");
-            entity.Property(e => e.NewValue).UseCollation("Latin1_General_CI_AS");
-            entity.Property(e => e.OldValue).UseCollation("Latin1_General_CI_AS");
-            entity.Property(e => e.Operation)
-                .HasMaxLength(50)
-                .UseCollation("Latin1_General_CI_AS");
-            entity.Property(e => e.PrimaryKey).UseCollation("Latin1_General_CI_AS");
-            entity.Property(e => e.TableName)
-                .HasMaxLength(50)
-                .UseCollation("Latin1_General_CI_AS");
+            entity.Property(e => e.Invoker).HasMaxLength(255);
+            entity.Property(e => e.Operation).HasMaxLength(50);
+            entity.Property(e => e.TableName).HasMaxLength(50);
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp");
+
+            entity.HasOne(d => d.Onl).WithMany(p => p.InMemoryMsgs)
+                .HasForeignKey(d => d.OnlId)
+                .HasConstraintName("FK_InMemoryMsg_InMemoryOnline");
         });
 
         modelBuilder.Entity<InMemoryOnline>(entity =>
         {
-            entity.HasKey(e => e.Onlid)
-                .HasName("PK__InMemory__A34E6163151E3EB9")
+            entity.HasKey(e => e.OnlId)
+                .HasName("PK__InMemory__A34E6163C0494893")
                 .IsClustered(false);
 
             entity.ToTable("InMemoryOnline");
 
-            entity.Property(e => e.Onlid).HasColumnName("ONLID");
+            entity.Property(e => e.OnlId).HasColumnName("OnlID");
             entity.Property(e => e.LifeTime).HasColumnType("datetime");
             entity.Property(e => e.Login)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.PcId)
                 .HasMaxLength(50)
-                .IsFixedLength()
-                .UseCollation("Latin1_General_CI_AS");
+                .IsFixedLength();
             entity.Property(e => e.Userid)
                 .HasMaxLength(50)
-                .IsFixedLength()
-                .UseCollation("Latin1_General_CI_AS");
+                .IsFixedLength();
         });
 
         modelBuilder.Entity<MeasureRess>(entity =>
@@ -459,40 +450,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasConstraintName("FK_OrderComponent_tblMaterial");
         });
 
-        modelBuilder.Entity<OrderDocu>(entity =>
-        {
-            entity.HasKey(e => e.OrderId).HasFillFactor(95);
-
-            entity.ToTable("OrderDocu");
-
-            entity.Property(e => e.OrderId)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("OrderID");
-            entity.Property(e => e.VmpbOriginal)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.VmpbTemplate)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Order).WithOne(p => p.OrderDocu)
-                .HasForeignKey<OrderDocu>(d => d.OrderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_OrderDocu_OrderRB");
-        });
-
         modelBuilder.Entity<OrderRb>(entity =>
         {
             entity.HasKey(e => e.Aid)
                 .HasName("PK_Order")
                 .HasFillFactor(95);
 
-            entity.ToTable("OrderRB", tb =>
-                {
-                    tb.HasTrigger("AuditChangesOrderRB");
-                    tb.HasTrigger("AuditInsertOrderRB");
-                });
+            entity.ToTable("OrderRB");
 
             entity.Property(e => e.Aid)
                 .HasMaxLength(50)
@@ -891,13 +855,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity.HasKey(e => e.VorgangId).HasFillFactor(95);
 
-            entity.ToTable("Vorgang", tb =>
-                {
-                    tb.HasTrigger("AuditChangesVorgang");
-                    tb.HasTrigger("AuditInsertVorgang");
-                });
-
-            entity.HasIndex(e => e.Aid, "IDX-AID-VNR");
+            entity.ToTable("Vorgang");
 
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)

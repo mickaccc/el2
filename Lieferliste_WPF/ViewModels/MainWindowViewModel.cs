@@ -392,8 +392,8 @@ namespace Lieferliste_WPF.ViewModels
                             if (r == MessageBoxResult.Yes) Dbctx.SaveChanges();
                         }
 
-                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.Dbid.Equals(x.Onlid));                        
-                        if (Dbctx.InMemoryMsgs.Any()) Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().Onlid)).ExecuteDelete();
+                        var del = Dbctx.InMemoryOnlines.Where(x => UserInfo.Dbid.Equals(x.OnlId));                        
+                        if (Dbctx.InMemoryMsgs.Any()) Dbctx.InMemoryMsgs.Where(x => x.OnlId.Equals(del.First().OnlId)).ExecuteDelete();
                         del.ExecuteDelete();
                     }
                 }
@@ -639,7 +639,7 @@ namespace Lieferliste_WPF.ViewModels
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 Onlines = db.InMemoryOnlines.Count();
-                if (db.InMemoryOnlines.All(x => x.Onlid != UserInfo.Dbid))
+                if (db.InMemoryOnlines.All(x => x.OnlId != UserInfo.Dbid))
                 {
                     if (MessageBox.Show(Application.Current.MainWindow,
                         "Registrierung ist abgelaufen!\nDie Anwendung wird beendet.", "Warnung", MessageBoxButton.OK, MessageBoxImage.Stop) ==
@@ -680,39 +680,38 @@ namespace Lieferliste_WPF.ViewModels
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 {
-                    //var m = db.InMemoryMsgs.AsNoTracking()
-                    //    .Include(x => x.InMemoryOnline)
-                    //    .Where(x => x.Onl.OnlId == UserInfo.Dbid)
-                    //    .OrderBy(x => x.Timestamp)
-                    //    .ToListAsync();
-                    //if (m.Result.Count > 0)
-                    //{
-                    //    foreach (var item in m)
-                    //    {
-                    //        if (item != null && item.TableName == "Vorgang")
-                    //        {
-                    //            if (item.OldValue != item.NewValue)
-                    //                if (msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
-                    //                {
-                    //                    msgListV.Add((item.Invoker, item.PrimaryKey));
-                    //                }
-                    //        }
-                    //        if (item != null && item.TableName == "OrderRB")
-                    //        {
-                    //            if (item.OldValue != item.NewValue)
-                    //                if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
-                    //                {
-                    //                    msgListO.Add((item.Invoker, item.PrimaryKey));
+                    var m = db.InMemoryMsgs.AsNoTracking()
+                        .Where(x => x.OnlId == UserInfo.Dbid)
+                        .OrderBy(x => x.Timestamp)
+                        .ToListAsync();
+                    if (m.Result.Count > 0)
+                    {
+                        foreach (var item in m.Result)
+                        {
+                            if (item != null && item.TableName == "Vorgang")
+                            {
+                                if (item.OldValue != item.NewValue)
+                                    if (msgListV.All(x => x.Value.Item2 != item.PrimaryKey))
+                                    {
+                                        msgListV.Add((item.Invoker, item.PrimaryKey));
+                                    }
+                            }
+                            if (item != null && item.TableName == "OrderRB")
+                            {
+                                if (item.OldValue != item.NewValue)
+                                    if (msgListO.All(x => x.Value.Item2 != item.PrimaryKey))
+                                    {
+                                        msgListO.Add((item.Invoker, item.PrimaryKey));
 
-                    //                }
-                    //        }
-                    //    }
+                                    }
+                            }
+                        }
 
-                    //    foreach (var msg in m)
-                    //    {
-                    //        db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
-                    //    }
-                    //}
+                        foreach (var msg in m.Result)
+                        {
+                            db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
+                        }
+                    }
                 }
                 Msg = string.Format("{0}-{1} ", DateTime.Now.ToString("HH:mm:ss"), msgListO.Count + msgListV.Count);
 
@@ -807,8 +806,8 @@ namespace Lieferliste_WPF.ViewModels
                     var onl = db.InMemoryOnlines.FirstOrDefault(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC);
                     if (onl != null)
                     {
-                        db.Database.ExecuteSqlRaw("DELETE InMemoryMsg WHERE OnlId=@p0", onl.Onlid);
-                        db.Database.ExecuteSqlRaw("DELETE InMemoryOnline WHERE Onlid=@p0", onl.Onlid);
+                        db.Database.ExecuteSqlRaw("DELETE InMemoryMsg WHERE OnlId=@p0", onl.OnlId);
+                        db.Database.ExecuteSqlRaw("DELETE InMemoryOnline WHERE OnlID=@p0", onl.OnlId);
                     }
                     db.Database.ExecuteSqlRaw(@"INSERT INTO InMemoryOnline(Userid,PcId,Login, LifeTime) VALUES({0},{1},{2}, {3})",
                         UserInfo.User.UserId,
@@ -817,7 +816,7 @@ namespace Lieferliste_WPF.ViewModels
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                     transaction.Commit();
 
-                    UserInfo.Dbid = db.InMemoryOnlines.Single(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC).Onlid;
+                    UserInfo.Dbid = db.InMemoryOnlines.Single(x => x.Userid == UserInfo.User.UserId && x.PcId == UserInfo.PC).OnlId;
                     _Logger.LogInformation("Startup {user}-{pc}-{id}--{version}", [UserInfo.User.UserId, UserInfo.PC, UserInfo.Dbid, Assembly.GetExecutingAssembly().GetName().Version]);
                 }
             }

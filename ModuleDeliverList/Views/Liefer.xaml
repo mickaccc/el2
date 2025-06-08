@@ -147,6 +147,14 @@
                     </StackPanel.Resources>
                     <TextBox x:Name="MarkerCode" MinWidth="40" Style="{DynamicResource MyFocusVisual}" 
                              Text="{Binding MarkerCode, Mode=TwoWay}"/>
+                    <CheckBox Content="Aktuell" IsChecked="{Binding ActiveOnly}"/>
+                    <ComboBox Width="100" materialDesign:HintAssist.Hint="Projekt Typ"
+                              ItemsSource="{Binding SelectedProjectType, Converter={conv:EnumToCollectionConverter}, Mode=OneTime}" 
+                              SelectedValue="{Binding SelectedProjectType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              DisplayMemberPath="Description"
+                              SelectedValuePath="Value"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              ItemsPanel="{StaticResource advancedComboxItemsPanelTemplate}"/>
                     <ComboBox x:Name="ProjComboBox" Width="250" materialDesign:HintAssist.Hint="Projekte"
                               MaxDropDownHeight="650"
                               AlternationCount="2"

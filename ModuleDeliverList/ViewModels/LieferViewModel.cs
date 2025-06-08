@@ -67,7 +67,7 @@ namespace ModuleDeliverList.ViewModels
         private readonly IContainerProvider _container;
         private readonly IEventAggregator _ea;
         private readonly IUserSettingsService _settingsService;
-        private CmbFilter _selectedDefaultFilter;
+        private CmbFilter _selectedDefaultFilter = CmbFilter.NOT_SET;
         private static readonly List<Ressource> _ressources = [];
         private static readonly SortedDictionary<int, string> _sections = [];
         public SortedDictionary<int, string> Sections => _sections;
@@ -83,6 +83,17 @@ namespace ModuleDeliverList.ViewModels
                     _projects = value;
                     NotifyPropertyChanged(() => Projects);
                 }
+            }
+        }
+        private bool _activeOnly = true;
+
+        public bool ActiveOnly
+        {
+            get { return _activeOnly; }
+            set
+            {
+                _activeOnly = value;
+                OrdersView?.Refresh();
             }
         }
 
@@ -153,9 +164,9 @@ namespace ModuleDeliverList.ViewModels
             READY,
             [Description("Aufträge zum Starten")]
             START,
-            [Description("Entwicklungsmuster")]
+            [Description("Entwicklungsmuster (EM...)")]
             DEVELOP,
-            [Description("Verkaufsmuster")]
+            [Description("Verkaufsmuster (VM...)")]
             SALES,
             [Description("Projekte mit Verzug")]
             PROJECTS_LOST,
@@ -179,7 +190,7 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
-        private string _selectedPersonalFilter;
+        private string _selectedPersonalFilter = PersonalFilterContainer.GetInstance().Keys[0];
 
         public string? SelectedPersonalFilter
         {
@@ -200,6 +211,17 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
+        private ProjectTypes.ProjectType _SelectedProjectType = ProjectTypes.ProjectType.None;
+
+        public ProjectTypes.ProjectType SelectedProjectType
+        {
+            get { return _SelectedProjectType; }
+            set
+            {
+                _SelectedProjectType = value;
+                OrdersView?.Refresh();
+            }
+        }
 
         public string SelectedProjectFilter
         {
@@ -210,7 +232,7 @@ namespace ModuleDeliverList.ViewModels
                 {
                     _selectedProjectFilter = value;
                     NotifyPropertyChanged(() => SelectedProjectFilter);
-                    OrdersView.Refresh();
+                    OrdersView?.Refresh();
                 }
             }
         }
@@ -224,7 +246,7 @@ namespace ModuleDeliverList.ViewModels
                 {
                     _selectedSectionFilter = value;
                     NotifyPropertyChanged(() => SelectedSectionFilter);
-                    OrdersView.Refresh();
+                    OrdersView?.Refresh();
                 }
             }
         }
@@ -449,7 +471,7 @@ namespace ModuleDeliverList.ViewModels
             {
                 var ord = (Vorgang)value;
 
-                var accepted = ord.Aktuell;
+                var accepted = (_activeOnly) ? ord.Aktuell : true;
 
                 if (accepted && _selectedDefaultFilter == CmbFilter.NOT_SET) accepted = ord.Visability;
 
@@ -464,14 +486,13 @@ namespace ModuleDeliverList.ViewModels
                 if (accepted && _selectedDefaultFilter == CmbFilter.READY) accepted = ord.AidNavigation.Fertig == !FilterInvers;
                 if (accepted && _selectedDefaultFilter == CmbFilter.START)
                     accepted = (ord.Text?.Contains("STARTEN", StringComparison.CurrentCultureIgnoreCase) ?? false) == !FilterInvers;
-                if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = (ord.AidNavigation.Pro?.ProjectType ==
-                        (int)ProjectTypes.ProjectType.SaleSpecimen) == !FilterInvers;
-                if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = (ord.AidNavigation.Pro?.ProjectType ==
-                        (int)ProjectTypes.ProjectType.DevelopeSpecimen) == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.SALES) accepted = (ord.Aid.StartsWith("VM")) == !FilterInvers;
+                if (accepted && _selectedDefaultFilter == CmbFilter.DEVELOP) accepted = (ord.Aid.StartsWith("EM")) == !FilterInvers;
                 if (accepted && _selectedDefaultFilter == CmbFilter.EXERTN) accepted = (ord.ArbPlSap == "_EXTERN_") == !FilterInvers;
                 if (accepted) accepted = !ord.AidNavigation.Abgeschlossen;
-                if (accepted && !string.IsNullOrEmpty(_selectedProjectFilter)) accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
-                if (accepted && _selectedSectionFilter != string.Empty) accepted = _ressources?
+                if (accepted && _selectedProjectFilter != "_keine") accepted = ord.AidNavigation.ProId == _selectedProjectFilter;
+                if (accepted && _SelectedProjectType != ProjectTypes.ProjectType.None) accepted = ord.AidNavigation.Pro?.ProjectType == (int)_SelectedProjectType;
+                if (accepted && _selectedSectionFilter != "_keine") accepted = _ressources?
                         .FirstOrDefault(x => x.Inventarnummer == ord.ArbPlSap?[3..])?
                         .WorkArea?.Bereich == _selectedSectionFilter;
                 if (accepted && _markerCode != string.Empty) accepted = ord.AidNavigation.MarkCode?.Contains(_markerCode, StringComparison.InvariantCultureIgnoreCase) ?? false;
@@ -662,8 +683,9 @@ namespace ModuleDeliverList.ViewModels
         {
             SearchFilterText = string.Empty;
             SelectedDefaultFilter = CmbFilter.NOT_SET;
-            SelectedProjectFilter = string.Empty;
-            SelectedSectionFilter = string.Empty;
+            SelectedProjectType = ProjectTypes.ProjectType.None;
+            SelectedProjectFilter = Projects.ElementAt(0).ProjectPsp;
+            SelectedSectionFilter = Sections.ElementAt(0).Value;
             SelectedPersonalFilter = PersonalFilterContainer.GetInstance().Keys[0];
             MarkerCode = string.Empty;
             FilterInvers = false;
@@ -831,18 +853,17 @@ namespace ModuleDeliverList.ViewModels
                                 }
                             }
 
-                            if (vorg.Aktuell)
+
+                            vorg.AttCount = attVrg.Where(x => x == vorg.VorgangId).Count();
+                            result.Add(vorg);
+                            var inv = (vorg.ArbPlSap != null) ? vorg.ArbPlSap[3..] : string.Empty;
+                            var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
+                            if (z != null)
                             {
-                                vorg.AttCount = attVrg.Where(x => x == vorg.VorgangId).Count();
-                                result.Add(vorg);
-                                var inv = (vorg.ArbPlSap != null) ? vorg.ArbPlSap[3..] : string.Empty;
-                                var z = ress.FirstOrDefault(x => x.Inventarnummer?.Trim() == inv)?.WorkArea;
-                                if (z != null)
-                                {
-                                    if (!_sections.ContainsKey(z.Sort) && z.Bereich != null)
-                                        _sections.Add(z.Sort, z.Bereich);
-                                }
+                                if (!_sections.ContainsKey(z.Sort) && z.Bereich != null)
+                                    _sections.Add(z.Sort, z.Bereich);
                             }
+                            
                         }
                     }
                         
@@ -852,6 +873,8 @@ namespace ModuleDeliverList.ViewModels
                 
             });
             Projects.AddRange(pl);
+            SelectedProjectFilter = pl.ElementAt(0).ProjectPsp;
+            SelectedSectionFilter = _sections.ElementAt(0).Value;
             OrdersView = CollectionViewSource.GetDefaultView(_orders);
             OrdersView.Filter += OrdersView_FilterPredicate;
             ICollectionViewLiveShaping? live = OrdersView as ICollectionViewLiveShaping;

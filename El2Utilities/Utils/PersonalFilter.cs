@@ -23,6 +23,7 @@ namespace El2Core.Utils
         private static readonly PersonalFilterContainer Instance = new ();
         private PersonalFilterContainer()
         {
+            _filters.Add("_keine", null);
             Load ();
         }
 
@@ -62,6 +63,7 @@ namespace El2Core.Utils
         public void Reload()
         {
             _filters.Clear();
+            
             Load();
         }
         public void Remove(string key)
@@ -174,7 +176,7 @@ namespace El2Core.Utils
 
                 FileStream fs = new FileStream(filename, FileMode.Open);
                 var filters = (PersonalFilter[])s.Deserialize(fs);
-                _filters.Add("_keine", null);
+                
                 foreach (var filter in filters)
                 {
                     _filters.Add(filter.Name, filter);
@@ -226,6 +228,7 @@ namespace El2Core.Utils
         [GeneratedRegex("")]
         public static partial Regex MyRegex();
     }
+
     [Serializable]
     public partial class PersonalFilterVorgang : PersonalFilter
     {
