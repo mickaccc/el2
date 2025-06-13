@@ -219,6 +219,7 @@ namespace ModuleDeliverList.ViewModels
             set
             {
                 _SelectedProjectType = value;
+                NotifyPropertyChanged(() => SelectedProjectType);
                 OrdersView?.Refresh();
             }
         }
@@ -477,9 +478,12 @@ namespace ModuleDeliverList.ViewModels
 
                 if (!string.IsNullOrWhiteSpace(_searchFilterText))
                 {
-                    if (!(accepted = ord.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
-                        if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
-                            accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
+                    if (accepted)
+                    {
+                        if (!(accepted = ord.Aid.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase)))
+                            if (!(accepted = ord.AidNavigation.Material?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false))
+                                accepted = ord.AidNavigation.MaterialNavigation?.Bezeichng?.Contains(_searchFilterText, StringComparison.CurrentCultureIgnoreCase) ?? false;
+                    }
                 }
 
                 if (accepted && _selectedDefaultFilter == CmbFilter.INVISIBLE) accepted = !ord.Visability == !FilterInvers;
@@ -872,7 +876,7 @@ namespace ModuleDeliverList.ViewModels
                 _orders.AddRange(result.OrderBy(x => x.SpaetEnd));
                 
             });
-            Projects.AddRange(pl);
+            Projects.AddRange(pl.OrderBy(x => x.ProjectType));
             SelectedProjectFilter = pl.ElementAt(0).ProjectPsp;
             SelectedSectionFilter = _sections.ElementAt(0).Value;
             OrdersView = CollectionViewSource.GetDefaultView(_orders);

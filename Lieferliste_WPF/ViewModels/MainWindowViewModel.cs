@@ -646,7 +646,7 @@ namespace Lieferliste_WPF.ViewModels
                         MessageBoxResult.OK)
                     { Application.Current.Shutdown(10); }
                 }
-                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE ONLID = {1}",
+                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlID = {1}",
                     DateTime.Now,
                     UserInfo.Dbid);
             }
@@ -709,7 +709,7 @@ namespace Lieferliste_WPF.ViewModels
 
                         foreach (var msg in m.Result)
                         {
-                            db.Database.ExecuteSqlRawAsync(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
+                            db.Database.ExecuteSqlRaw(@"DELETE FROM InMemoryMsg WHERE MsgId={0}", msg.MsgId);
                         }
                     }
                 }

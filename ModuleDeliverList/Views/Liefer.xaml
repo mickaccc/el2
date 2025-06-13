@@ -192,12 +192,13 @@
                         </ContextMenu>
                     </ComboBox.ContextMenu>
                 </ComboBox>
-
-                <TextBlock Text="Anzahl Vorgänge:" 
-                  AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
-                <TextBlock x:Name="Count"  Width="auto"
-                          Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
-            </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Anzahl Vorgänge:" 
+                          AutomationProperties.LabeledBy="{Binding ElementName=Count, Mode=OneWay}" />
+                        <TextBlock x:Name="Count"  Width="auto"
+                                  Text="{Binding Items.Count, ElementName=Lieferlist, Mode=OneWay}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
         </materialDesign:ColorZone>
     </DockPanel>
     <StackPanel Grid.Row="1" Grid.Column="1">

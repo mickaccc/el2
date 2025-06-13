@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -177,7 +178,7 @@ namespace El2Core.Utils
                 FileStream fs = new FileStream(filename, FileMode.Open);
                 var filters = (PersonalFilter[])s.Deserialize(fs);
                 
-                foreach (var filter in filters)
+                foreach (var filter in filters.Skip(1))
                 {
                     _filters.Add(filter.Name, filter);
                     filter.PropertyChanged += OnFilterPropertyChanged;

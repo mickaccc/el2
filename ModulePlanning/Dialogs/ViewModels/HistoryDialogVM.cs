@@ -77,16 +77,16 @@ namespace ModulePlanning.Dialogs.ViewModels
             var list = new List<Vorgang>();
             foreach (var o in ord.OrderByDescending(x => x.Eckende))
             {
-  
-                for(int i = 0; i < o.Vorgangs.Count; i++)
+                var oo = o.Vorgangs.OrderBy(x => x.Vnr);
+                for(int i = 0; i < oo.Count(); i++)
                 {
-                    if (o.Vorgangs.ElementAt(i).Vnr >= vnr)
+                    if (oo.ElementAt(i).Vnr >= vnr)
                     {
                         
-                        var e = o.Vorgangs.ElementAtOrDefault(i - 1);
+                        var e = oo.ElementAtOrDefault(i - 1);
                         if (e != null) list.Add(e);
-                        list.Add(o.Vorgangs.ElementAt(i));
-                        e = o.Vorgangs.ElementAtOrDefault(i  + 1);
+                        list.Add(oo.ElementAt(i));
+                        e = oo.ElementAtOrDefault(i  + 1);
                         if (e != null) list.Add(e);
                         break;
                     }

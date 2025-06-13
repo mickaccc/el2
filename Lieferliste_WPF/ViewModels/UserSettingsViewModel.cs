@@ -220,7 +220,7 @@ namespace Lieferliste_WPF.ViewModels
                 {
                     _filterContainer = PersonalFilterContainer.GetInstance();
                     _filterContainerKeys = _filterContainer.Keys.ToObservableCollection();
-                    PersonalFilterView = CollectionViewSource.GetDefaultView(_filterContainerKeys);
+                    PersonalFilterView = CollectionViewSource.GetDefaultView(_filterContainerKeys.Skip(1));
                     PersonalFilterView.MoveCurrentToFirst();
                     //if(PersonalFilterView.CurrentItem != null)
                     //    PersonalFilterContainerItem = pfilter[PersonalFilterView.CurrentItem.ToString()];
@@ -247,12 +247,18 @@ namespace Lieferliste_WPF.ViewModels
             if (PersonalFilterView.CurrentItem != null)
             {
                 var pf = PersonalFilterView.CurrentItem.ToString();
-                if (_filterContainer.Keys.Contains(pf))
+                if (_filterContainer[pf] != null)
                 {
                     PersonalFilterName = _filterContainer[pf].Name;
                     PersonalFilterField = _filterContainer[pf].Field.ToTuple();
                     PersonalFilterRegex = _filterContainer[pf].Pattern;
                 }
+            }
+            else
+            {
+                PersonalFilterName = string.Empty;
+                PersonalFilterField = null;
+                PersonalFilterRegex = string.Empty;
             }
         }
 
@@ -308,7 +314,8 @@ namespace Lieferliste_WPF.ViewModels
             {
                 _filterContainer.Remove(curr);
                 _filterContainerKeys.Remove(curr);
-                PersonalFilterName = (string)PersonalFilterView.CurrentItem;
+                PersonalFilterView.Refresh();
+                PersonalFilterView.MoveCurrentToFirst();               
             }
         }
 
@@ -375,6 +382,7 @@ namespace Lieferliste_WPF.ViewModels
                     _filterContainer.Add(pf.Name, pf);
                     _filterContainerKeys.Add(pf.Name);
                     _logger.LogInformation("{message} ", pf.ToString());
+                    PersonalFilterView.Refresh();
                 }
             }
             catch (Exception e)

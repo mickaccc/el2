@@ -98,14 +98,12 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
         IConfiguration configuration = builder.Build();
-        var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+        var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
         optionsBuilder.UseSqlServer(defaultconnection).EnableThreadSafetyChecks();
         base.OnConfiguring(optionsBuilder);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.UseCollation("Latin1_General_CI_AS");
-
         modelBuilder.Entity<AccountCost>(entity =>
         {
             entity.HasKey(e => new { e.AccountId, e.CostId }).HasFillFactor(95);
@@ -239,7 +237,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasName("idm_accounts_pk")
                 .HasFillFactor(95);
 
-            entity.ToTable("idm_accounts");
+            entity.ToTable("idm_accounts", tb => tb.HasTrigger("idm_accounts_modify_trg"));
 
             entity.Property(e => e.AccountId)
                 .HasMaxLength(80)
@@ -271,7 +269,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity
                 .HasNoKey()
-                .ToTable("idm_relations");
+                .ToTable("idm_relations", tb => tb.HasTrigger("idm_relations_modify_trg"));
 
             entity.HasIndex(e => new { e.AccountId, e.RoleId }, "idm_relations_uq")
                 .IsUnique()
@@ -304,7 +302,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasName("idm_roles_pk")
                 .HasFillFactor(95);
 
-            entity.ToTable("idm_roles");
+            entity.ToTable("idm_roles", tb => tb.HasTrigger("idm_roles_modify_trg"));
 
             entity.HasIndex(e => e.RoleName, "idm_roles_uq")
                 .IsUnique()
@@ -326,10 +324,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<InMemoryMsg>(entity =>
         {
             entity.HasKey(e => e.MsgId)
-                .HasName("PK__InMemory__6623589344B17E95")
-                .IsClustered(false);
+                .HasName("PK__InMemory__662358934B319009")
+                .IsClustered(false)
+                .HasFillFactor(95);
 
-            entity.ToTable("InMemoryMsg");
+            entity
+                .ToTable("InMemoryMsg")
+                .IsMemoryOptimized();
 
             entity.Property(e => e.MsgId).HasColumnName("MsgID");
             entity.Property(e => e.Invoker).HasMaxLength(255);
@@ -348,10 +349,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<InMemoryOnline>(entity =>
         {
             entity.HasKey(e => e.OnlId)
-                .HasName("PK__InMemory__A34E6163C0494893")
-                .IsClustered(false);
+                .HasName("PK__InMemory__A34E616341453DE5")
+                .IsClustered(false)
+                .HasFillFactor(95);
 
-            entity.ToTable("InMemoryOnline");
+            entity
+                .ToTable("InMemoryOnline")
+                .IsMemoryOptimized();
 
             entity.Property(e => e.OnlId).HasColumnName("OnlID");
             entity.Property(e => e.LifeTime).HasColumnType("datetime");
@@ -460,7 +464,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasName("PK_Order")
                 .HasFillFactor(95);
 
-            entity.ToTable("OrderRB");
+            entity.ToTable("OrderRB", tb =>
+                {
+                    tb.HasTrigger("AuditChangesOrderRB");
+                    tb.HasTrigger("AuditInsertOrderRB");
+                });
 
             entity.Property(e => e.Aid)
                 .HasMaxLength(50)
@@ -861,7 +869,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         {
             entity.HasKey(e => e.VorgangId).HasFillFactor(95);
 
-            entity.ToTable("Vorgang");
+            entity.ToTable("Vorgang", tb =>
+                {
+                    tb.HasTrigger("AuditChangesVorgang");
+                    tb.HasTrigger("AuditInsertVorgang");
+                });
 
             entity.HasIndex(e => new { e.Aid, e.Text, e.SysStatus }, "<ixAidTextSysstatus").HasFillFactor(95);
 
