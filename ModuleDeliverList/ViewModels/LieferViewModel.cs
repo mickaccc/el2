@@ -801,9 +801,9 @@ namespace ModuleDeliverList.ViewModels
                .Include(m => m.AidNavigation.DummyMatNavigation)
                .Include(p => p.AidNavigation.Pro)
                .Include(v => v.ArbPlSapNavigation)
-               .Where(x => x.AidNavigation.Abgeschlossen == false)
+               .Where(x => x.AidNavigation.Abgeschlossen == false && x.SysStatus != null && !x.SysStatus.Contains("RÜCK"))
                .ToListAsync();
-
+            
             var attPro = await DBctx.ProjectAttachments.Select(x => x.ProjectPsp).ToListAsync();
             var attVrg = await DBctx.VorgangAttachments.Select(x => x.VorgangId).ToListAsync();
             var ress = await DBctx.Ressources.AsNoTracking()

@@ -107,7 +107,7 @@ namespace ModulePlanning.ViewModels
             _settingsService = settingsService;
             _DbCtx = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             SizePercent = 340 * _settingsService.SizePercent / 100;
-            SaveCommand = new ActionCommand(OnSaveExecutedAsync, OnSaveCanExecute);
+            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
             LoadWorkAreas();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
@@ -228,6 +228,7 @@ namespace ModulePlanning.ViewModels
  
         private bool OnSaveCanExecute(object arg)
         {
+            if (_settingsService.IsAutoSave) return false;
             try
             {
                 if (_lock.TryEnter())
@@ -249,12 +250,13 @@ namespace ModulePlanning.ViewModels
             return false;
         }
 
-        private async void OnSaveExecutedAsync(object obj)
+        private void OnSaveExecuted(object obj)
         {
             try
             {
                 _lock.Enter();
-                await _DbCtx.SaveChangesAsync();             
+                    _DbCtx.SaveChanges();
+                _lock.Exit();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -295,31 +297,59 @@ namespace ModulePlanning.ViewModels
         }
         private async Task<List<Vorgang>> GetVorgangsAsync(string? aid)
         {
-            var query = await _DbCtx.Vorgangs
-              .Include(x => x.AidNavigation)
-              .ThenInclude(x => x.OrderComponents)
-              .ThenInclude(x => x.MaterialNavigation)
-              .Include(x => x.AidNavigation.DummyMatNavigation)
-              .Include(x => x.AidNavigation.MaterialNavigation)
-              .Include(x => x.ArbPlSapNavigation)
-              .Include(x => x.Responses)
-              .Include(x => x.RidNavigation.WorkArea)
-              .Include(x => x.RidNavigation)
-              .ThenInclude(x => x.RessourceWorkshifts)
-              .ThenInclude(x => x.SidNavigation)
-              .Where(y => y.AidNavigation.Abgeschlossen == false
-                && y.SysStatus != null
-                && y.Text != null
-                && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
-                && y.Text.ToLower().Contains("auftrag starten") == false
-                && y.SysStatus.Contains("RÜCK") == false)
-              .ToListAsync();
+            List<Vorgang> query;
+            if (aid != null)
+            {
+                query = await _DbCtx.Vorgangs
+                   .Include(x => x.AidNavigation)
+                   .ThenInclude(x => x.OrderComponents)
+                   .ThenInclude(x => x.MaterialNavigation)
+                   .Include(x => x.AidNavigation.DummyMatNavigation)
+                   .Include(x => x.AidNavigation.MaterialNavigation)
+                   .Include(x => x.ArbPlSapNavigation)
+                   .Include(x => x.Responses)
+                   .Include(x => x.RidNavigation.WorkArea)
+                   .Include(x => x.RidNavigation)
+                   .ThenInclude(x => x.RessourceWorkshifts)
+                   .ThenInclude(x => x.SidNavigation)
+                   .Where(y => y.Aid == aid
+                     && y.SysStatus != null
+                     && y.Text != null
+                     && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
+                     && y.Text.ToLower().Contains("auftrag starten") == false
+                     && y.SysStatus.Contains("RÜCK") == false)
+                   .ToListAsync();
+            }
+            else
+            {
+                //var procedure = new DB_COS_LIEFERLISTE_SQLContextProcedures(_DbCtx);
 
-            var result = new List<Vorgang>();
-            if (aid != null && query != null)
-                result.AddRange(query.Where(x => x.Aid == aid).ToList());
-            else if (query != null) result.AddRange(query);
-            return result;
+                //var q = await procedure.MachPlanVorgangsProcAsync(UserInfo.User.UserId, cancellationToken: CancellationToken.None);
+                //var t = q.Select(x => x.Vorgang).ToList();
+
+                query = await _DbCtx.Vorgangs
+                   .Include(x => x.AidNavigation)
+                   .ThenInclude(x => x.OrderComponents)
+                   .ThenInclude(x => x.MaterialNavigation)
+                   .Include(x => x.AidNavigation.DummyMatNavigation)
+                   .Include(x => x.AidNavigation.MaterialNavigation)
+                   .Include(x => x.ArbPlSapNavigation)
+                   .Include(x => x.Responses)
+                   .Include(x => x.RidNavigation.WorkArea)
+                   .Include(x => x.RidNavigation)
+                   .ThenInclude(x => x.RessourceWorkshifts)
+                   .ThenInclude(x => x.SidNavigation)
+                   .Where(y => y.AidNavigation.Abgeschlossen == false
+                     && y.SysStatus != null
+                     && y.Text != null
+                     && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
+                     && y.Text.ToLower().Contains("auftrag starten") == false
+                     && y.SysStatus.Contains("RÜCK") == false)
+                   .ToListAsync();
+            }
+
+
+            return query;
         }
 
         private void SetAutoSaveTimer()
@@ -366,7 +396,7 @@ namespace ModulePlanning.ViewModels
 
             _Logger.LogInformation("first: {0}", DateTime.Now.Ticks - preticks);
             preticks = DateTime.Now.Ticks;
-            foreach (var uc in UserInfo.User.AccountWorkAreas)
+            foreach (var uc in UserInfo.User.AccountWorkAreas.OrderBy(x => x.WorkArea.Sort))
             {
                 mach2.AddRange(mach.Where(x => uc.WorkAreaId == x.WorkAreaId));
             }

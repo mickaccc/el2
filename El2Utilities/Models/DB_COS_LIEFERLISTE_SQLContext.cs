@@ -98,12 +98,14 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
         IConfiguration configuration = builder.Build();
-        var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+        var defaultconnection = configuration.GetConnectionString("ConnectionHome");
         optionsBuilder.UseSqlServer(defaultconnection).EnableThreadSafetyChecks();
         base.OnConfiguring(optionsBuilder);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("Latin1_General_CI_AS");
+
         modelBuilder.Entity<AccountCost>(entity =>
         {
             entity.HasKey(e => new { e.AccountId, e.CostId }).HasFillFactor(95);
@@ -324,13 +326,10 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<InMemoryMsg>(entity =>
         {
             entity.HasKey(e => e.MsgId)
-                .HasName("PK__InMemory__662358934B319009")
-                .IsClustered(false)
-                .HasFillFactor(95);
+                .HasName("PK__InMemory__6623589344B17E95")
+                .IsClustered(false);
 
-            entity
-                .ToTable("InMemoryMsg")
-                .IsMemoryOptimized();
+            entity.ToTable("InMemoryMsg");
 
             entity.Property(e => e.MsgId).HasColumnName("MsgID");
             entity.Property(e => e.Invoker).HasMaxLength(255);
@@ -349,13 +348,10 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<InMemoryOnline>(entity =>
         {
             entity.HasKey(e => e.OnlId)
-                .HasName("PK__InMemory__A34E616341453DE5")
-                .IsClustered(false)
-                .HasFillFactor(95);
+                .HasName("PK__InMemory__A34E6163C0494893")
+                .IsClustered(false);
 
-            entity
-                .ToTable("InMemoryOnline")
-                .IsMemoryOptimized();
+            entity.ToTable("InMemoryOnline");
 
             entity.Property(e => e.OnlId).HasColumnName("OnlID");
             entity.Property(e => e.LifeTime).HasColumnType("datetime");
@@ -435,10 +431,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasKey(e => e.CompId).HasFillFactor(95);
 
             entity.ToTable("OrderComponent");
-
-            entity.HasIndex(e => e.Aid, "ixAid").HasFillFactor(95);
-
-            entity.HasIndex(e => e.Material, "ixOrderComponentMaterial").HasFillFactor(95);
 
             entity.Property(e => e.CompId).HasColumnName("CompID");
             entity.Property(e => e.Aid)
@@ -594,8 +586,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasFillFactor(95);
 
             entity.ToTable("Response");
-
-            entity.HasIndex(e => e.VorgangId, "ixVorgangId").HasFillFactor(95);
 
             entity.Property(e => e.ResponseId).HasColumnName("response_id");
             entity.Property(e => e.Notreal).HasColumnName("notreal");
@@ -874,8 +864,6 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                     tb.HasTrigger("AuditChangesVorgang");
                     tb.HasTrigger("AuditInsertVorgang");
                 });
-
-            entity.HasIndex(e => new { e.Aid, e.Text, e.SysStatus }, "<ixAidTextSysstatus").HasFillFactor(95);
 
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)

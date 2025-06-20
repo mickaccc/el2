@@ -165,6 +165,10 @@
       {
          "Name": "[dbo].[WorkShift]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MachPlanVorgangsProc]",
+         "ObjectType": 1
       }
    ],
    "UiHint": null,
