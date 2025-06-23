@@ -49,13 +49,12 @@ namespace Lieferliste_WPF
             _Logger = loggerFactory.CreateLogger<Bootstrapper>();
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
             Application.Current.Exit += Current_Exit;
-            _Logger.LogInformation("UserSetting 0");
+
             var settingsService = Container.Resolve<UserSettingsService>();
-            //settingsService.Upgrade();
-            _Logger.LogInformation("UserSetting 1");
+            settingsService.Upgrade();
+
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
             App.GlobalFontSize = settingsService.FontSize;
-            _Logger.LogInformation("UserSetting 2");
 
             return Container.Resolve<MainWindow>();
         }
