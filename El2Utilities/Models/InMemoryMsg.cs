@@ -24,6 +24,4 @@ public partial class InMemoryMsg
     public string? Invoker { get; set; }
 
     public DateTime? Timestamp { get; set; }
-
-    public virtual InMemoryOnline? Onl { get; set; }
 }

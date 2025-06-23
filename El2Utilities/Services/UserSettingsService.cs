@@ -119,9 +119,10 @@ namespace El2Core.Services
         {
             var fp = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
             bool.TryParse(Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed"), out bool isNetworkDeployed);
-            if (isNetworkDeployed)
+            if (!isNetworkDeployed)
             {
                 var previous = Environment.GetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", EnvironmentVariableTarget.User);
+
                 if (previous != null)
                 {
                     var curFileInfo = new FileInfo(fp);
@@ -134,7 +135,7 @@ namespace El2Core.Services
                             var UrlhashOld = preFileInfo.Directory.Parent.Name;
                             var newFile = previous.Replace(UrlhashOld, UrlhashNew);
                             var newDir = new FileInfo(newFile).Directory;
-                            if (newDir.Exists == false) { Directory.CreateDirectory(newDir.FullName); }
+                            if (newDir?.Exists == false) { Directory.CreateDirectory(newDir.FullName); }
                             if (previous.Equals(newFile) == false)
                                 File.Copy(previous, newFile, true);
                         }

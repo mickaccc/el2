@@ -45,17 +45,18 @@ namespace Lieferliste_WPF
         {
             var loggerFactory = Container.Resolve<ILoggerFactory>();
             loggerFactory.AddLog4Net();
+            log4net.Config.XmlConfigurator.Configure(new FileInfo("Log4Net.config"));
             _Logger = loggerFactory.CreateLogger<Bootstrapper>();
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
             Application.Current.Exit += Current_Exit;
-
+            _Logger.LogInformation("UserSetting 0");
             var settingsService = Container.Resolve<UserSettingsService>();
-            settingsService.Upgrade();
-
+            //settingsService.Upgrade();
+            _Logger.LogInformation("UserSetting 1");
             ThemeManager.Current.ChangeTheme(App.Current, settingsService.Theme);
             App.GlobalFontSize = settingsService.FontSize;
+            _Logger.LogInformation("UserSetting 2");
 
-            log4net.Config.XmlConfigurator.Configure(new FileInfo("Log4Net.config"));
             return Container.Resolve<MainWindow>();
         }
 
@@ -79,6 +80,7 @@ namespace Lieferliste_WPF
   
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            
             //var builder = new ConfigurationBuilder()
             //    .SetBasePath(Directory.GetCurrentDirectory())
             //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
