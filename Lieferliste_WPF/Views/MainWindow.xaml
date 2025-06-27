@@ -172,6 +172,7 @@
                     <TextBlock Text="{Binding Onlines, Mode=OneWay}" Margin="10,0,0,0" />
                 </StackPanel>
             </StatusBarItem>
+  
             <StatusBarItem HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding Msg}"/>

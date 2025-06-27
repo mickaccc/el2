@@ -190,7 +190,7 @@ namespace ModuleDeliverList.ViewModels
                 }
             }
         }
-        private string _selectedPersonalFilter = PersonalFilterContainer.GetInstance().Keys[0];
+        private string _selectedPersonalFilter = PersonalFilterContainer.GetInstance().Keys.First();
 
         public string? SelectedPersonalFilter
         {
@@ -262,24 +262,33 @@ namespace ModuleDeliverList.ViewModels
             _container = container;
             var factory = _container.Resolve<ILoggerFactory>();
             _Logger = factory.CreateLogger<LieferViewModel>();
-            _ea = ea;
-            _settingsService = settingsService;
-            _dialogService = dialogService;
 
-            InvisibilityCommand = new ActionCommand(OnInvisibilityExecuted, OnInvisibilityCanExecute);
-            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            FilterSaveCommand = new ActionCommand(OnFilterSaveExecuted, OnFilterSaveCanExecute);
-            ProjectPrioCommand = new ActionCommand(OnSetProjectPrioExecuted, OnSetProjectPrioCanExecute);
-            CreateRtfCommand = new ActionCommand(OnCreateRtfExecuted, OnCreateRtfCanExecute);
-            CreateHtmlCommand = new ActionCommand(OnCreateHtmlExecuted, OnCreateHtmlCanExecute);
-            AttachmentCommand = new ActionCommand(OnAttachmentExecuted, OnAttachmentCanExecute);
-            OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
+            try
+            {
+                _ea = ea;
+                _settingsService = settingsService;
+                _dialogService = dialogService;
 
-            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
-            _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-            _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
+                InvisibilityCommand = new ActionCommand(OnInvisibilityExecuted, OnInvisibilityCanExecute);
+                SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+                FilterSaveCommand = new ActionCommand(OnFilterSaveExecuted, OnFilterSaveCanExecute);
+                ProjectPrioCommand = new ActionCommand(OnSetProjectPrioExecuted, OnSetProjectPrioCanExecute);
+                CreateRtfCommand = new ActionCommand(OnCreateRtfExecuted, OnCreateRtfCanExecute);
+                CreateHtmlCommand = new ActionCommand(OnCreateHtmlExecuted, OnCreateHtmlCanExecute);
+                AttachmentCommand = new ActionCommand(OnAttachmentExecuted, OnAttachmentCanExecute);
+                OrderTask = new NotifyTaskCompletion<ICollectionView>(LoadDataAsync());
 
-            if (_settingsService.IsAutoSave) SetAutoSave();
+                _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
+                _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
+                _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
+
+                if (_settingsService.IsAutoSave) SetAutoSave();
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError(e.Message);
+            }
+
         }
 
         private AbstracatBuilder CreateTableBuilder()

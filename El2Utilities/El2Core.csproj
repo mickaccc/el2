@@ -43,6 +43,7 @@
 
 	<PropertyGroup>
 		<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
+		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

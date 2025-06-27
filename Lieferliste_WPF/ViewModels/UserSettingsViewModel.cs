@@ -179,30 +179,38 @@ namespace Lieferliste_WPF.ViewModels
         public UserSettingsViewModel(IUserSettingsService settingsService, IContainerExtension container)
         {
 
-            _settingsService = settingsService;
-            _container = container;
-            var factory = container.Resolve<ILoggerFactory>();
-            _logger = factory.CreateLogger<UserSettingsViewModel>();
-            var br = new BrushConverter();
-            SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
-            ResetCommand = new ActionCommand(OnResetExecuted, OnResetCanExecute);
-            ReloadCommand = new ActionCommand(OnReloadExecuted, OnReloadCanExecute);
-            PersonalFilterAddCommand = new ActionCommand(OnPersonalFilterAddExecuted, OnPersonalFilterAddCanExecute);
-            PersonalFilterNewCommand = new ActionCommand(OnPersonalFilterNewExecuted, OnPersonalFilterNewCanExecute);
-            PersonalFilterRemoveCommand = new ActionCommand(OnPersonalFilterRemoveExecuted, OnPersonalFilterRemoveCanExecute);
-            ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
-            SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
-            FirstPartInfo = new MeasureFirstPartInfo(container);
-            Fdocu = FirstPartInfo.CreateDocumentInfos();
-            VmpbDocumentInfo = new VmpbDocumentInfo(container);
-            Vdocu = VmpbDocumentInfo.CreateDocumentInfos();
-            WorkareaDocumentInfo = new WorkareaDocumentInfo(container);
-            Wdocu = WorkareaDocumentInfo.CreateDocumentInfos();
-            MeasureDocumentInfo = new MeasureDocumentInfo(container);
-            Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
-            LoadFilters();
-            LoadProjectSchemes();
-            LoadRules();
+                _settingsService = settingsService;
+                _container = container;
+                var factory = container.Resolve<ILoggerFactory>();
+                _logger = factory.CreateLogger<UserSettingsViewModel>();
+            try
+            { 
+                var br = new BrushConverter();
+                SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
+                ResetCommand = new ActionCommand(OnResetExecuted, OnResetCanExecute);
+                ReloadCommand = new ActionCommand(OnReloadExecuted, OnReloadCanExecute);
+                PersonalFilterAddCommand = new ActionCommand(OnPersonalFilterAddExecuted, OnPersonalFilterAddCanExecute);
+                PersonalFilterNewCommand = new ActionCommand(OnPersonalFilterNewExecuted, OnPersonalFilterNewCanExecute);
+                PersonalFilterRemoveCommand = new ActionCommand(OnPersonalFilterRemoveExecuted, OnPersonalFilterRemoveCanExecute);
+                ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
+                SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
+                FirstPartInfo = new MeasureFirstPartInfo(container);
+                Fdocu = FirstPartInfo.CreateDocumentInfos();
+                VmpbDocumentInfo = new VmpbDocumentInfo(container);
+                Vdocu = VmpbDocumentInfo.CreateDocumentInfos();
+                WorkareaDocumentInfo = new WorkareaDocumentInfo(container);
+                Wdocu = WorkareaDocumentInfo.CreateDocumentInfos();
+                MeasureDocumentInfo = new MeasureDocumentInfo(container);
+                Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
+                LoadFilters();
+                LoadProjectSchemes();
+                LoadRules();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
+            
         }
 
         private void LoadRules()
@@ -216,26 +224,33 @@ namespace Lieferliste_WPF.ViewModels
                 RuleMeasureArchivFolder = archiv.RuleValue;
 
         }
-                private void LoadFilters()
-                {
-                    _filterContainer = PersonalFilterContainer.GetInstance();
-                    _filterContainerKeys = _filterContainer.Keys.ToObservableCollection();
-                    PersonalFilterView = CollectionViewSource.GetDefaultView(_filterContainerKeys.Skip(1));
-                    PersonalFilterView.MoveCurrentToFirst();
-                    //if(PersonalFilterView.CurrentItem != null)
-                    //    PersonalFilterContainerItem = pfilter[PersonalFilterView.CurrentItem.ToString()];
-                    PersonalFilterView.CurrentChanged += OnPersonalFilterChanged;
-                    PropertyNames.Add(PropertyPair.OrderNumber.ToTuple());
-                    PropertyNames.Add(PropertyPair.ProcessDescription.ToTuple());
-                    PropertyNames.Add(PropertyPair.Material.ToTuple());
-                    PropertyNames.Add(PropertyPair.MaterialDescription.ToTuple());
-                    PropertyNames.Add(PropertyPair.LieferTermin.ToTuple());
-                    PropertyNames.Add(PropertyPair.PrioText.ToTuple());
-                    PropertyNames.Add(PropertyPair.RessourceName.ToTuple());
-                    PropertyNames.Add(PropertyPair.Project.ToTuple());
-                    PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
-                    PropertyNames.Add(PropertyPair.MarkerCode.ToTuple());
-                }
+        private void LoadFilters()
+        {
+            try
+            {
+                _filterContainer = PersonalFilterContainer.GetInstance();
+                _filterContainerKeys = _filterContainer.Keys.ToObservableCollection();
+                PersonalFilterView = CollectionViewSource.GetDefaultView(_filterContainerKeys.Skip(1));
+                PersonalFilterView.MoveCurrentToFirst();
+                //if(PersonalFilterView.CurrentItem != null)
+                //    PersonalFilterContainerItem = pfilter[PersonalFilterView.CurrentItem.ToString()];
+                PersonalFilterView.CurrentChanged += OnPersonalFilterChanged;
+                PropertyNames.Add(PropertyPair.OrderNumber.ToTuple());
+                PropertyNames.Add(PropertyPair.ProcessDescription.ToTuple());
+                PropertyNames.Add(PropertyPair.Material.ToTuple());
+                PropertyNames.Add(PropertyPair.MaterialDescription.ToTuple());
+                PropertyNames.Add(PropertyPair.LieferTermin.ToTuple());
+                PropertyNames.Add(PropertyPair.PrioText.ToTuple());
+                PropertyNames.Add(PropertyPair.RessourceName.ToTuple());
+                PropertyNames.Add(PropertyPair.Project.ToTuple());
+                PropertyNames.Add(PropertyPair.ProjectInfo.ToTuple());
+                PropertyNames.Add(PropertyPair.MarkerCode.ToTuple());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
+        }
         private void LoadProjectSchemes()
         {
             ProjectSchemes = RuleInfo.ProjectSchemes.Values.ToObservableCollection();
@@ -284,8 +299,11 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnSaveCanExecute(object arg)
         {
-
-            return _settingsService.IsChanged || _filterContainer.IsChanged;
+            if (_settingsService != null && _filterContainer != null)
+            {
+                return _settingsService.IsChanged || _filterContainer.IsChanged;
+            }
+            return false;
         }
 
         private void OnSaveExecuted(object obj)

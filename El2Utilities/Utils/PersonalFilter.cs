@@ -3,6 +3,7 @@ using Prism.Ioc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Xml.Serialization;
 
 namespace El2Core.Utils
@@ -44,11 +46,10 @@ namespace El2Core.Utils
         public bool IsChanged { get; private set; } = false;
         private void Load()
         {
-            var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
+            var Configfile = new FileInfo(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath);
+            var Folder = Configfile.Directory.Parent.Parent.FullName;
 
-            var companyName = versionInfo.CompanyName?.Replace('/', '_') ?? string.Empty;
-            var env = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            FileInfo fileInfo = new FileInfo(Path.Combine(env.ToString(), companyName, "Perfilter.xml"));
+            FileInfo fileInfo = new FileInfo(Path.Combine(Folder, "Perfilter.xml"));
             if (fileInfo.Exists)
             {
                 try
@@ -137,7 +138,8 @@ namespace El2Core.Utils
                 List<PersonalFilter> filters = new List<PersonalFilter>();
                 foreach (var filter in _filters)
                 {
-                    filters.Add(filter.Value);
+                    if(filter.Value != null)
+                        filters.Add(filter.Value);
                 }
 
                 // Serializes the object.  
@@ -177,11 +179,14 @@ namespace El2Core.Utils
 
                 FileStream fs = new FileStream(filename, FileMode.Open);
                 var filters = (PersonalFilter[])s.Deserialize(fs);
-                
-                foreach (var filter in filters.Skip(1))
+
+                foreach (var filter in filters)
                 {
-                    _filters.Add(filter.Name, filter);
-                    filter.PropertyChanged += OnFilterPropertyChanged;
+                    if (filter.Name != "_keine")
+                    { 
+                        _filters.Add(filter.Name, filter);
+                        filter.PropertyChanged += OnFilterPropertyChanged;
+                    }
                 }
             }
             catch (Exception e)
@@ -229,7 +234,7 @@ namespace El2Core.Utils
         [GeneratedRegex("")]
         public static partial Regex MyRegex();
     }
-
+ 
     [Serializable]
     public partial class PersonalFilterVorgang : PersonalFilter
     {
