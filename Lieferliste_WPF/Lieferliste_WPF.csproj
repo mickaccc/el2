@@ -318,7 +318,7 @@
 		<AnalysisLevel>5.0</AnalysisLevel>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<UserSecretsId>89393e76-c4e9-423b-a875-988090c78343</UserSecretsId>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<AllowUnsafeBlocks>False</AllowUnsafeBlocks>
 	</PropertyGroup>
   
   <!--<Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v17.0\TextTemplating\Microsoft.TextTemplating.targets" />-->

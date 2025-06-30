@@ -6,24 +6,23 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Xml.Serialization;
 
 namespace El2Core.Utils
 {
     public interface IPersonalFilterContainer
     {
-        IContainerProvider container { get; }
+        IContainerProvider Container { get; }
     }
     public sealed class PersonalFilterContainer
     {
         private readonly Dictionary<string, PersonalFilter> _filters = [];
         private static readonly PersonalFilterContainer Instance = new ();
+
         private PersonalFilterContainer()
         {
             _filters.Add("_keine", null);
@@ -37,19 +36,20 @@ namespace El2Core.Utils
         }
         public string[] Keys => [.. _filters.Keys];
 
-        public IContainerProvider container;
-
         public static PersonalFilterContainer GetInstance()
         {
             return Instance;
         }
         public bool IsChanged { get; private set; } = false;
+
+
         private void Load()
         {
             var Configfile = new FileInfo(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath);
             var Folder = Configfile.Directory.Parent.Parent.FullName;
-
+            
             FileInfo fileInfo = new FileInfo(Path.Combine(Folder, "Perfilter.xml"));
+
             if (fileInfo.Exists)
             {
                 try
@@ -61,6 +61,7 @@ namespace El2Core.Utils
                     MessageBox.Show(ex.Message);
                 }
             }
+
         }
         public void Reload()
         {
@@ -89,11 +90,10 @@ namespace El2Core.Utils
         {
             if (IsChanged)
             {
-                var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
 
-                var companyName = versionInfo.CompanyName?.Replace('/', '_') ?? string.Empty;
-                var env = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string fileName = Path.Combine(env.ToString(), companyName, "Perfilter.xml");
+                var Configfile = new FileInfo(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath);
+                var Folder = Configfile.Directory.Parent.Parent.FullName;
+                string fileName = Path.Combine(Folder, "Perfilter.xml");
 
                 SerializeObject(fileName);
                 IsChanged = false;
@@ -115,6 +115,18 @@ namespace El2Core.Utils
                 // Adds the element to the collection of elements.  
                 attrs.XmlElements.Add(attr);
                 attr.Type = typeof(PersonalFilterOrderRb);
+
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
+                attr.Type = typeof(PersonalFilterMaterial);
+
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
+                attr.Type = typeof(PersonalFilterRessource);
+
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
+                attr.Type = typeof(PersonalFilterProject);
 
                 // Adds the element to the collection of elements.  
                 attrs.XmlElements.Add(attr);
@@ -171,6 +183,21 @@ namespace El2Core.Utils
 
                 // Adds the element to the collection of elements.  
                 attrs.XmlElements.Add(attr);
+
+                attr.Type = typeof(PersonalFilterProject);
+
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
+
+                attr.Type = typeof(PersonalFilterMaterial);
+
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
+
+                attr.Type = typeof(PersonalFilterRessource);
+
+                // Adds the element to the collection of elements.  
+                attrs.XmlElements.Add(attr);
                 attrOverrides.Add(typeof(PersonalFilter), "Filters", attrs);
 
                 // Creates the XmlSerializer using the XmlAttributeOverrides.  
@@ -182,17 +209,14 @@ namespace El2Core.Utils
 
                 foreach (var filter in filters)
                 {
-                    if (filter.Name != "_keine")
-                    { 
-                        _filters.Add(filter.Name, filter);
-                        filter.PropertyChanged += OnFilterPropertyChanged;
-                    }
+                    _filters.Add(filter.Name, filter);
+                    filter.PropertyChanged += OnFilterPropertyChanged;                   
                 }
             }
             catch (Exception e)
             {
 
-                MessageBox.Show(e.Message, "Deserialize", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.ToString(), "Deserialize", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
