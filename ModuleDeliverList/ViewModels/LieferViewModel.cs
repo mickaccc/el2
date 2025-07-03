@@ -393,9 +393,10 @@ namespace ModuleDeliverList.ViewModels
                                 {
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;
                                     DBctx.Entry<Vorgang>(o).Reload();
+                                    _Logger.LogInformation("reloaded {message}", o.VorgangId);
                                 }
                                 o.RunPropertyChanged();
-                                _Logger.LogInformation("reloaded {message}", o.VorgangId);
+                                
                             }
                         }
                         else
@@ -421,51 +422,54 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                
+
                 Task.Run(() =>
-         {
-
-                foreach (var vrg in vrgIdList.Where(x => x != null))
                 {
-                     Vorgang v;
-                     _Logger.LogInformation("commin {message}, {1}", vrg.Value.Item1, vrg.Value.Item2);
-                     if (vrg != null)
-                     {
 
-                     if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
-                     {
+                    foreach (var vrg in vrgIdList.Where(x => x != null))
+                    {
+                        Vorgang v;
+                        _Logger.LogInformation("commin {message}, {1}", vrg.Value.Item1, vrg.Value.Item2);
+                        if (vrg != null)
+                        {
 
-                         lock (_lock)
-                         {
-                             v = _orders.Single(x => x.VorgangId == vrg.Value.Item2);
-                             DBctx.Entry<Vorgang>(v).Reload();
-                         }
-                         _Logger.LogInformation("reloaded {message}", v.VorgangId);
-                         v.RunPropertyChanged();
-                         if (v.Aktuell == false)
-                         {
-                             _orders.Remove(v);
-                             _Logger.LogInformation("remove {message}", v.VorgangId);
-                             lock (_lock)
-                             {
-                                 DBctx.ChangeTracker.Entries<Vorgang>()
-                                 .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
-                                 OrdersView.Refresh();
-                             }
-                         }
-                     }
-                     else
-                     {
-                         using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                         var vv = db.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
+                            if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
+                            {
 
-                         _Logger.LogInformation("maybe adding {message}", vv?.VorgangId);
-                         Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
+                                lock (_lock)
+                                {
+                                    v = _orders.Single(x => x.VorgangId == vrg.Value.Item2);
+                                    DBctx.Entry<Vorgang>(v).Reload();
+                                    _Logger.LogInformation("reloaded {message}", v.VorgangId);
+                                }
 
-                     }                                      
-                }
-            }
-         });
+                                v.RunPropertyChanged();
+                                if (v.Aktuell == false)
+                                {
+                                    _orders.Remove(v);
+                                    _Logger.LogInformation("remove {message}", v.VorgangId);
+                                    lock (_lock)
+                                    {
+                                        DBctx.ChangeTracker.Entries<Vorgang>()
+                                        .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
+                                        OrdersView.Refresh();
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                                var vv = db.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
+
+                                _Logger.LogInformation("maybe adding {message}", vv?.VorgangId);
+                                Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
+
+                            }
+                        }
+                    }
+                });
+
             }
             catch (Exception ex)
             {
@@ -562,13 +566,12 @@ namespace ModuleDeliverList.ViewModels
             {
                 if (OrderTask != null && OrderTask.IsSuccessfullyCompleted)
                 {
-                    if (_lock.TryEnter())
+      
+                    lock (_lock)
                     {
-                        lock (_lock)
-                        {
-                            if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
-                        }
+                        if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
                     }
+      
                 }
             }
             catch (Exception ex)
@@ -713,13 +716,12 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                if (_lock.TryEnter())
+
+                lock (_lock)
                 {
-                    lock (_lock)
-                    {
-                        DBctx.SaveChanges();
-                    }
+                    DBctx.SaveChanges();
                 }
+  
             }
             catch (Exception e)
             {
@@ -731,13 +733,12 @@ namespace ModuleDeliverList.ViewModels
         {
             try
             {
-                if (_lock.TryEnter())
+
+                lock (_lock)
                 {
-                    lock (_lock)
-                    {
-                        return DBctx.ChangeTracker.HasChanges();
-                    }
+                    return DBctx.ChangeTracker.HasChanges();
                 }
+  
             }
             catch (InvalidOperationException e)
             {
@@ -929,7 +930,7 @@ namespace ModuleDeliverList.ViewModels
                             {
                                 _orders.Add(vrg);
                                 _Logger.LogInformation("added {message}", vrg.VorgangId);
-
+                                
                                 returnValue = true;
                                 break;
                             }

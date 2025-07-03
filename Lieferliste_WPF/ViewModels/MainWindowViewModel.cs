@@ -16,7 +16,6 @@ using Prism.Navigation;
 using Prism.Navigation.Regions;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;

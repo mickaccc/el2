@@ -142,6 +142,7 @@ namespace ModulePlanning.ViewModels
                             _ = Task.Factory.StartNew(async () =>
                             {
                                 await _DbCtx.Entry(vo).ReloadAsync();
+                                vo.RunPropertyChanged();
                             });
                             _Logger.LogInformation("maybe plug {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
                             if (item.Value.Item1 == "EL2")
@@ -200,6 +201,7 @@ namespace ModulePlanning.ViewModels
                                             _ = Task.Factory.StartNew(async () =>
                                             {
                                                 await _DbCtx.Entry(item3).ReloadAsync();
+                                                
                                             });
                                         }
                                     }
@@ -231,13 +233,12 @@ namespace ModulePlanning.ViewModels
             if (_settingsService.IsAutoSave) return false;
             try
             {
-                if (_lock.TryEnter())
+
+                lock (_lock)
                 {
-                    lock (_lock)
-                    {
-                        return _DbCtx.ChangeTracker.HasChanges();
-                    }
+                    return _DbCtx.ChangeTracker.HasChanges();
                 }
+
             }
             catch (InvalidOperationException e)
             {
@@ -254,9 +255,10 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                _lock.Enter();
+                lock (_lock)
+                { 
                     _DbCtx.SaveChanges();
-                _lock.Exit();
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -278,7 +280,7 @@ namespace ModulePlanning.ViewModels
 
                     // Refresh original values to bypass next concurrency check
                     entry.OriginalValues.SetValues(databaseValues);
-    
+
                 }
             }
             catch (Exception e)
@@ -286,6 +288,7 @@ namespace ModulePlanning.ViewModels
                 _Logger.LogError("{message}", e.ToString());
                 //MessageBox.Show(e.ToString(), "OnSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
         }
 
         private void LoadWorkAreas()
@@ -366,14 +369,13 @@ namespace ModulePlanning.ViewModels
             {
                 if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
                 {
-                    if (_lock.TryEnter())
+
+                    lock (_lock)
                     {
-                        lock (_lock)
-                        {
-                            if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());
-                        }
+                        if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());
                     }
-                }             
+
+                }
             }
             catch (Exception ex)
             {
