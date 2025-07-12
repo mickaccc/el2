@@ -165,8 +165,7 @@ namespace ModulePlanning.ViewModels
                             }
                         }
                     }
-                }
-                
+                }                
             }
             catch (Exception ex)
             {
@@ -230,25 +229,29 @@ namespace ModulePlanning.ViewModels
  
         private bool OnSaveCanExecute(object arg)
         {
+            
             if (_settingsService.IsAutoSave) return false;
             try
             {
-
-                lock (_lock)
+                bool res = false;
+                if (_lock.TryEnter() && MachineTask.IsSuccessfullyCompleted)
                 {
-                    return _DbCtx.ChangeTracker.HasChanges();
+                    res = _DbCtx.ChangeTracker.HasChanges();
+                    _lock.Exit();
                 }
-
+  
+                return res;
             }
             catch (InvalidOperationException e)
             {
                 _Logger.LogError("{message}", e.ToString());
+                return false;
             }
             catch (Exception e)
             {
                 _Logger.LogError("{message}", e.ToString());
+                return false;
             }
-            return false;
         }
 
         private void OnSaveExecuted(object obj)

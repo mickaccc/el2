@@ -731,21 +731,28 @@ namespace ModuleDeliverList.ViewModels
         }
         private bool OnSaveCanExecute(object arg)
         {
+            if (_settingsService.IsAutoSave) return false;
             try
             {
-
-                lock (_lock)
+                bool res = false;
+                if (_lock.TryEnter() && OrderTask.IsSuccessfullyCompleted)
                 {
-                    return DBctx.ChangeTracker.HasChanges();
+                    res = DBctx.ChangeTracker.HasChanges();
+                    _lock.Exit();
                 }
-  
+
+                return res;
             }
             catch (InvalidOperationException e)
             {
                 _Logger.LogError("{message}", e.ToString());
-                
+                return false;
             }
-            return false;
+            catch (Exception e)
+            {
+                _Logger.LogError("{message}", e.ToString());
+                return false;
+            }
         }
 
         private void OnDescSortExecuted(object parameter)
