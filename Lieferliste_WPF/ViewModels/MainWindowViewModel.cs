@@ -106,7 +106,7 @@ namespace Lieferliste_WPF.ViewModels
         private readonly Timer _timerMsg;
 
         private IRegionManager _regionmanager;
-        private static readonly object _lock = new();
+        private static readonly Lock _lock = new();
         private readonly IContainerExtension _container;
         private readonly IDialogService _dialogService;
         private readonly IEventAggregator _ea;
@@ -637,7 +637,7 @@ namespace Lieferliste_WPF.ViewModels
         private void ExecuteT(object? state)
         {
             if (UserInfo.Dbid == 0) return;
-            lock (_lock)
+            if (_lock.TryEnter())
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                 Onlines = db.InMemoryOnlines.Count();
@@ -648,9 +648,13 @@ namespace Lieferliste_WPF.ViewModels
                         MessageBoxResult.OK)
                     { Application.Current.Shutdown(10); }
                 }
-                else db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlID = {1}",
+                else
+                {
+                    db.Database.ExecuteSqlRaw(@"UPDATE InMemoryOnline SET LifeTime = {0} WHERE OnlID = {1}",
                     DateTime.Now,
                     UserInfo.Dbid);
+                }
+                _lock.Exit();
             }
         }
         //private void OnTimedEvent(object? sender, ElapsedEventArgs e)
