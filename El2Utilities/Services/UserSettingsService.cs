@@ -119,7 +119,7 @@ namespace El2Core.Services
         {
             var fp = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
             bool.TryParse(Environment.GetEnvironmentVariable("ClickOnce_IsNetworkDeployed"), out bool isNetworkDeployed);
-            if (!isNetworkDeployed)
+            if (isNetworkDeployed)
             {
                 var previous = Environment.GetEnvironmentVariable("EL2_PREVIOUS_VERSION_CONFIG", EnvironmentVariableTarget.User);
 
