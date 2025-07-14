@@ -362,7 +362,7 @@ namespace ModulePlanning.Planning
                             {
                                 _db.Entry<Vorgang>(v).Reload();
                                 v.RunPropertyChanged();
-                                _logger.LogInformation("Planmachine - reloaded {message}", v.VorgangId);
+                                _logger.LogInformation("Planmachine - reloaded {0} {1} {2}", v.VorgangId, v.Aid, v.Vnr);
                             }
                         }
                     }
