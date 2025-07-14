@@ -5,6 +5,7 @@ using El2Core.Services;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Microsoft.Extensions.Logging;
+using Prism.Events;
 using Prism.Ioc;
 using System;
 using System.Collections;
@@ -25,6 +26,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView ExplorerFilter { get; }
         private IUserSettingsService _settingsService;
         private IContainerExtension _container;
+        private IEventAggregator _ea;
         ILogger _logger;
         public ICommand SaveCommand { get; }
         public ICommand ResetCommand { get; }
@@ -176,10 +178,10 @@ namespace Lieferliste_WPF.ViewModels
         public ICollectionView PersonalFilterView { get; private set; }
         public ObservableCollection<ProjectScheme> ProjectSchemes { get; private set; }
         
-        public UserSettingsViewModel(IUserSettingsService settingsService, IContainerExtension container)
+        public UserSettingsViewModel(IUserSettingsService settingsService, IContainerExtension container, IEventAggregator eva)
         {
-
-                _settingsService = settingsService;
+                _ea = eva;
+            _settingsService = settingsService;
                 _container = container;
                 var factory = container.Resolve<ILoggerFactory>();
                 _logger = factory.CreateLogger<UserSettingsViewModel>();
@@ -425,7 +427,7 @@ namespace Lieferliste_WPF.ViewModels
         public bool AutoSave
         {
             get { return _settingsService.IsAutoSave; }
-            set { _settingsService.IsAutoSave = value; }
+            set { _settingsService.IsAutoSave = value; _ea.GetEvent<EnableAutoSave>().Publish(value); }
         }
         public bool SaveMessage
         {

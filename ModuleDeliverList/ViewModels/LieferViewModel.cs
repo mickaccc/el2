@@ -281,14 +281,25 @@ namespace ModuleDeliverList.ViewModels
                 _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
                 _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
                 _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
-
-                if (_settingsService.IsAutoSave) SetAutoSave();
+                _ea.GetEvent<EnableAutoSave>().Subscribe(AutoSaveEnable);
+                SetAutoSave();
             }
             catch (Exception e)
             {
                 _Logger.LogError(e.Message);
             }
 
+        }
+
+        private void AutoSaveEnable(bool obj)
+        {
+            if (obj)
+            {
+                if (_autoSaveTimer == null) SetAutoSave();
+                _autoSaveTimer?.Start();
+            }
+            else
+                _autoSaveTimer?.Stop();
         }
 
         private AbstracatBuilder CreateTableBuilder()
@@ -354,13 +365,13 @@ namespace ModuleDeliverList.ViewModels
                     var o = _orders.Where(x => x.Aid == rb.Aid);
                     foreach (var x in o)
                     {
-                        lock (_lock)
-                        {
+                        _lock.EnterScope();
+                        
                             _orders.Remove(x);
                             DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
                             OrdersView.Refresh();
                             _Logger.LogInformation("Auftrag archiviert: {message}", rb.Aid);
-                        }
+                        _lock.Exit();
                     }
                 }
             }
@@ -382,18 +393,20 @@ namespace ModuleDeliverList.ViewModels
                         _Logger.LogInformation("commin {message}, {1}", rbId.Item1, rbId.Item2);
                         if (_orders.Any(x => x.Aid == rbId.Item2))
                         {
-                            lock (_lock)
+                            _lock.EnterScope();
                             {
                                 var ord = _orders.First(x => x.Aid == rbId.Item2).AidNavigation;
                                 DBctx.Entry<OrderRb>(ord).Reload();
+                                _lock.Exit();
                             }
                             foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
                             {
-                                lock (_lock)
+                                _lock.EnterScope();
                                 {
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;
                                     DBctx.Entry<Vorgang>(o).Reload();
                                     _Logger.LogInformation("reloaded {message}", o.VorgangId);
+                                    _lock.Exit();
                                 }
                                 o.RunPropertyChanged();
                                 
@@ -436,11 +449,12 @@ namespace ModuleDeliverList.ViewModels
                             if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
                             {
 
-                                lock (_lock)
+                                _lock.EnterScope();
                                 {
                                     v = _orders.Single(x => x.VorgangId == vrg.Value.Item2);
                                     DBctx.Entry<Vorgang>(v).Reload();
                                     _Logger.LogInformation("reloaded {message}", v.VorgangId);
+                                    _lock.Exit();
                                 }
 
                                 v.RunPropertyChanged();
@@ -448,11 +462,12 @@ namespace ModuleDeliverList.ViewModels
                                 {
                                     _orders.Remove(v);
                                     _Logger.LogInformation("remove {message}", v.VorgangId);
-                                    lock (_lock)
+                                    _lock.EnterScope();
                                     {
                                         DBctx.ChangeTracker.Entries<Vorgang>()
                                         .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
                                         OrdersView.Refresh();
+                                        _lock.Exit();
                                     }
 
                                 }
@@ -557,7 +572,6 @@ namespace ModuleDeliverList.ViewModels
             _autoSaveTimer = new System.Timers.Timer(15000);
             _autoSaveTimer.Elapsed += OnAutoSave;
             _autoSaveTimer.AutoReset = true;
-            _autoSaveTimer.Enabled = true;
         }
 
         private void OnAutoSave(object? sender, ElapsedEventArgs e)
@@ -566,8 +580,8 @@ namespace ModuleDeliverList.ViewModels
             {
                 if (OrderTask != null && OrderTask.IsSuccessfullyCompleted)
                 {
-      
-                    lock (_lock)
+
+                    _lock.EnterScope();
                     {
                         if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
                     }
@@ -578,6 +592,10 @@ namespace ModuleDeliverList.ViewModels
             {
                 _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "AutoSave", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _lock.Exit();
             }
         }
 
@@ -717,7 +735,7 @@ namespace ModuleDeliverList.ViewModels
             try
             {
 
-                lock (_lock)
+                _lock.EnterScope();
                 {
                     DBctx.SaveChanges();
                 }
@@ -727,6 +745,10 @@ namespace ModuleDeliverList.ViewModels
             {
                 _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(string.Format("{0}\nInnerEx\n{1}",e.Message,e.InnerException), "OnSave Liefer", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _lock.Exit();
             }
         }
         private bool OnSaveCanExecute(object arg)

@@ -110,11 +110,25 @@ namespace ModulePlanning.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
             LoadWorkAreas();
+            SetAutoSaveTimer();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
-            if (_settingsService.IsAutoSave) SetAutoSaveTimer();
+            _ea.GetEvent<EnableAutoSave>().Subscribe(AutoSaveEnable);
+        }
 
+        private void AutoSaveEnable(bool obj)
+        {
+            if (obj)
+            {
+                if (_autoSaveTimer == null)
+                {
+                    SetAutoSaveTimer();
+                }
+                _autoSaveTimer?.Start();
+            }
+            else
+                _autoSaveTimer?.Stop();
         }
 
         private bool IsRelevant(string? ArbPl)
@@ -155,11 +169,11 @@ namespace ModulePlanning.ViewModels
                                 }
                                 else
                                 {
-                                    lock (_lock)
-                                    {
+                                    _lock.EnterScope();
+                                    
                                         Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
                                         _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
-                                    }
+                                    _lock.Exit();
                                     _Logger.LogInformation("pool unplug {message}-{0}", vo.Aid, vo.Vnr);
                                 }
                             }
@@ -206,11 +220,11 @@ namespace ModulePlanning.ViewModels
                                     }
                                     else
                                     {
-                                        lock (_lock)
-                                        {
+                                        _lock.EnterScope();
+                                        
                                             _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
                                             _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
-                                        }
+                                        _lock.Exit();
                                         _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
                                     }
                                 }
@@ -258,7 +272,7 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                lock (_lock)
+                _lock.EnterScope();
                 { 
                     _DbCtx.SaveChanges();
                 }
@@ -290,6 +304,10 @@ namespace ModulePlanning.ViewModels
             {
                 _Logger.LogError("{message}", e.ToString());
                 //MessageBox.Show(e.ToString(), "OnSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _lock.Exit();
             }
 
         }
@@ -357,13 +375,13 @@ namespace ModulePlanning.ViewModels
 
             return query;
         }
-
+        
         private void SetAutoSaveTimer()
         {
             _autoSaveTimer = new System.Timers.Timer(15000);
             _autoSaveTimer.Elapsed += OnAutoSaveAsync;
             _autoSaveTimer.AutoReset = true;
-            _autoSaveTimer.Enabled = true;
+
         }
 
         private async void OnAutoSaveAsync(object? sender, ElapsedEventArgs e)
@@ -373,17 +391,28 @@ namespace ModulePlanning.ViewModels
                 if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
                 {
 
-                    lock (_lock)
-                    {
-                        if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());
-                    }
-
+                    _lock.EnterScope();
+                    
+                        if (MachineTask.Result != null)
+                        {
+                            RessCV = MachineTask.Result;
+                            RessCV.Filter = f => (f as PlanMachine)?.WorkArea?.WorkAreaId == _currentWorkArea &&
+                                (f as PlanMachine).Vis;
+                            ParkingCV.Filter = f => (f as Vorgang)?.Rid == _currentWorkArea * -1;
+                            ProcessViewSource.Filter += ProcessCV_Filter;
+                        }
+                    
+                    if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());               
                 }
             }
             catch (Exception ex)
             {
                 //MessageBox.Show(ex.Message, "AutoSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
                 _Logger.LogError("{message}", ex.ToString());
+            }
+            finally
+            {
+                _lock.Exit();
             }
         }
 
@@ -580,13 +609,14 @@ namespace ModulePlanning.ViewModels
 
                         if (_DbCtx.Ressources.All(x => x.RessourceId != parkRid))
                         {
-                            lock (_lock)
-                            {
-                                _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource ON");
+                            _lock.EnterScope();
+
+                            _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource ON");
                                 _DbCtx.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
                                 _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource OFF");
-                            }
+                            
                             _Logger.LogInformation("{message} {park} {id}", "Drop Parking", parkRid, vrg.VorgangId);
+                            _lock.Exit();
                         }
                         vrg.Rid = parkRid;
                         vrg.SortPos = null;
@@ -631,6 +661,10 @@ namespace ModulePlanning.ViewModels
             {
                 _Logger.LogError("{message}", e.ToString());
                 MessageBox.Show(e.Message, "Method Drop", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _lock.Exit();
             }
         }
         private bool Changed()
