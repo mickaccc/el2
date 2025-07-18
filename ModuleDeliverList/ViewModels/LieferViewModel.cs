@@ -281,14 +281,25 @@ namespace ModuleDeliverList.ViewModels
                 _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
                 _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
                 _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
-
-                if (_settingsService.IsAutoSave) SetAutoSave();
+                _ea.GetEvent<EnableAutoSave>().Subscribe(AutoSaveEnable);
+                SetAutoSave();
             }
             catch (Exception e)
             {
                 _Logger.LogError(e.Message);
             }
 
+        }
+
+        private void AutoSaveEnable(bool obj)
+        {
+            if (obj)
+            {
+                if (_autoSaveTimer == null) SetAutoSave();
+                _autoSaveTimer?.Start();
+            }
+            else
+                _autoSaveTimer?.Stop();
         }
 
         private AbstracatBuilder CreateTableBuilder()
@@ -354,13 +365,13 @@ namespace ModuleDeliverList.ViewModels
                     var o = _orders.Where(x => x.Aid == rb.Aid);
                     foreach (var x in o)
                     {
-                        lock (_lock)
-                        {
+                        _lock.EnterScope();
+                        
                             _orders.Remove(x);
                             DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
                             OrdersView.Refresh();
                             _Logger.LogInformation("Auftrag archiviert: {message}", rb.Aid);
-                        }
+                        _lock.Exit();
                     }
                 }
             }
@@ -557,7 +568,6 @@ namespace ModuleDeliverList.ViewModels
             _autoSaveTimer = new System.Timers.Timer(15000);
             _autoSaveTimer.Elapsed += OnAutoSave;
             _autoSaveTimer.AutoReset = true;
-            _autoSaveTimer.Enabled = true;
         }
 
         private void OnAutoSave(object? sender, ElapsedEventArgs e)

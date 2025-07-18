@@ -110,11 +110,25 @@ namespace ModulePlanning.ViewModels
             SaveCommand = new ActionCommand(OnSaveExecuted, OnSaveCanExecute);
 
             LoadWorkAreas();
+            SetAutoSaveTimer();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
-            if (_settingsService.IsAutoSave) SetAutoSaveTimer();
+            _ea.GetEvent<EnableAutoSave>().Subscribe(AutoSaveEnable);
+        }
 
+        private void AutoSaveEnable(bool obj)
+        {
+            if (obj)
+            {
+                if (_autoSaveTimer == null)
+                {
+                    SetAutoSaveTimer();
+                }
+                _autoSaveTimer?.Start();
+            }
+            else
+                _autoSaveTimer?.Stop();
         }
 
         private bool IsRelevant(string? ArbPl)

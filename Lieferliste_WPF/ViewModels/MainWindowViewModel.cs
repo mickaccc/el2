@@ -805,7 +805,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             try
             {
-                lock (_lock)
+                _lock.EnterScope();
                 {
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     using var transaction = db.Database.BeginTransaction();
@@ -829,6 +829,10 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
                 _Logger.LogError("{message}", e.ToString());
+            }
+            finally
+            {
+                _lock?.Exit();
             }
         }
 

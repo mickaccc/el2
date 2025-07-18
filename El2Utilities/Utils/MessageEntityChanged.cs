@@ -19,5 +19,6 @@ namespace El2Core.Utils
     public class MessageReportFilterDateChanged : PubSubEvent<List<DateTime>> { }
     public class MessageReportChangeSource : PubSubEvent<int> { }
     public class MessageReportTextSearch : PubSubEvent<string> { }
+    public class EnableAutoSave : PubSubEvent<bool> { }
 
 }

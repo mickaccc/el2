@@ -356,6 +356,40 @@ namespace ModulePlanning.Planning
                     
                     var scope = _lock.EnterScope();
                     
+                //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                _lock.EnterScope();
+                    {
+                        if (Processes == null) { _lock.Exit(); return; }
+                        if (list == null || list.Count == 0) { _lock.Exit(); return; }
+                        foreach ((string, string)? item in list)
+                        {
+                            if (item == null) continue;
+                            var pr = Processes.FirstOrDefault(x => x.VorgangId == item.Value.Item2);
+                            if (pr != null)
+                            {
+                                _db.Entry<Vorgang>(pr).Reload();
+                                pr.RunPropertyChanged();
+                                _logger.LogInformation("Planmachine - reloaded {message}", pr.VorgangId);
+                            }
+                            else
+                            {
+                                var vo = _db.Vorgangs
+                                    .Include(x => x.AidNavigation)
+                                    .ThenInclude(x => x.MaterialNavigation)
+                                    .Include(x => x.AidNavigation.DummyMatNavigation)
+                                    .Include(x => x.RidNavigation)
+                                    .FirstOrDefault(x => x.VorgangId == item.Value.Item2);
+                                if (vo?.SysStatus?.Contains("RÜCK") == false)
+                                {
+                                    Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));
+                                    _logger.LogInformation("PlanMachine - added {message} {1}-{2}", vo.VorgangId, vo.Aid, vo.Vnr);
+                                }
+                            }
+                        }
+                        _lock.Exit();
+                    }
+                
+                    {
                         foreach((string, string)?  item in list)
                         {
                             if (item == null) continue;
@@ -656,8 +690,8 @@ namespace ModulePlanning.Planning
         {
             try
             {
-                lock (_lock)
-                    {
+                _lock.EnterScope();
+                    
                     if (obj is Vorgang v)
                     {
                         var m = v.AidNavigation.Quantity.ToString();
@@ -674,12 +708,16 @@ namespace ModulePlanning.Planning
                     }
                     if (obj is string s)
                     { setTextToClipboard(s); }
-                }
+                
             }
             catch (Exception e)
             {
                 _logger.LogError("{message}", e.ToString());
                 MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "FastCopy", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _lock.Exit();
             }
         }
 
