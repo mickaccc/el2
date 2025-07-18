@@ -16,6 +16,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 
 namespace ModulePlanning.Planning
@@ -352,9 +353,9 @@ namespace ModulePlanning.Planning
             {
                 Task.Run(() =>
                 {
-                    //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    lock (_lock)
-                    {
+                    
+                    var scope = _lock.EnterScope();
+                    
                         foreach((string, string)?  item in list)
                         {
                             if (item == null) continue;
@@ -365,9 +366,9 @@ namespace ModulePlanning.Planning
                                 _logger.LogInformation("Planmachine - reloaded {0} {1} {2}", v.VorgangId, v.Aid, v.Vnr);
                             }
                         }
-                    }
-                }
-                );
+                    scope.Dispose();
+                    
+                });
             }
             catch (Exception ex)
             {
@@ -389,13 +390,15 @@ namespace ModulePlanning.Planning
                             var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                             if (pr != null)
                             {
-                                lock (_lock)
-                                {                                
+                                
+                                var scope = _lock.EnterScope();
+                                                               
                                     _db.Entry<Vorgang>(pr).Reload();
                                     pr.RunPropertyChanged();                                 
-                                }
-                                _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
-                                             
+                                
+                                    _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
+                                scope.Dispose();
+
                                 if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
                                 {
                                     pr.SortPos = "Z";

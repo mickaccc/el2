@@ -155,12 +155,14 @@ namespace ModulePlanning.ViewModels
                                 }
                                 else
                                 {
-                                    lock (_lock)
-                                    {
+                                    _Logger.LogInformation("scope pool unplug {message}-{0}", vo.Aid, vo.Vnr);
+                                    var scope = _lock.EnterScope();
+                                    
                                         Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
                                         _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
-                                    }
-                                    _Logger.LogInformation("pool unplug {message}-{0}", vo.Aid, vo.Vnr);
+                                    
+                                        _Logger.LogInformation("pool unplug {message}-{0}", vo.Aid, vo.Vnr);
+                                    scope.Dispose();
                                 }
                             }
                         }
@@ -206,12 +208,14 @@ namespace ModulePlanning.ViewModels
                                     }
                                     else
                                     {
-                                        lock (_lock)
-                                        {
+                                        _Logger.LogInformation("scope pool added {message}-{0}", item2.Aid, item2.Vnr);
+                                        var scope = _lock.EnterScope();
+                                        
                                             _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
                                             _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
-                                        }
-                                        _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
+                                        
+                                            _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
+                                        scope.Dispose();
                                     }
                                 }
                             }
@@ -234,7 +238,7 @@ namespace ModulePlanning.ViewModels
             try
             {
                 bool res = false;
-                if (_lock.TryEnter() && MachineTask.IsSuccessfullyCompleted)
+                if (MachineTask.IsSuccessfullyCompleted && _lock.TryEnter())
                 {
                     res = _DbCtx.ChangeTracker.HasChanges();
                     _lock.Exit();
@@ -258,10 +262,10 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                lock (_lock)
-                { 
-                    _DbCtx.SaveChanges();
-                }
+                var scope = _lock.EnterScope();
+                
+                   _DbCtx.SaveChanges();
+               scope.Dispose();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -304,6 +308,7 @@ namespace ModulePlanning.ViewModels
         private async Task<List<Vorgang>> GetVorgangsAsync(string? aid)
         {
             List<Vorgang> query;
+    
             if (aid != null)
             {
                 query = await _DbCtx.Vorgangs
@@ -353,7 +358,6 @@ namespace ModulePlanning.ViewModels
                      && y.SysStatus.Contains("RÜCK") == false)
                    .ToListAsync();
             }
-
 
             return query;
         }
@@ -616,16 +620,16 @@ namespace ModulePlanning.ViewModels
                         Debug.Assert(t != null, nameof(t) + " != null");
                         ((IList)t.SourceCollection).Insert(v, plm);
                 }
-
-                for (var i = 0; i < _machines.Count; i++)
-                {
-                    var vv = _DbCtx.Ressources.First(x => x.RessourceId == _machines[i].Rid);
-                    vv.Sort = vv.Visability ? i : 1000;
-                }
-                lock (_lock)
-                {
+                var scope = _lock.EnterScope();
+                    for (var i = 0; i < _machines.Count; i++)
+                    {
+                        var vv = _DbCtx.Ressources.First(x => x.RessourceId == _machines[i].Rid);
+                        vv.Sort = vv.Visability ? i : 1000;
+                    }
+                
+                
                     _DbCtx.SaveChanges();
-                }
+                scope.Dispose();
             }
             catch (Exception e)
             {
