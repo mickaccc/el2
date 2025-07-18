@@ -432,6 +432,7 @@ namespace ModulePlanning.Planning
                                     pr.SortPos = "Z";
                                     Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
                                     _logger.LogInformation("PlanMachine - removed {message} {1} - {2}", pr.VorgangId, pr.Aid, pr.Vnr);
+                                    ProcessesCV.Refresh();
                                 }
                                     
                             }
@@ -448,6 +449,7 @@ namespace ModulePlanning.Planning
                                 {
                                     Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Add(vo)));
                                     _logger.LogInformation("PlanMachine - added {message} {1}-{2}", vo.VorgangId, vo.Aid, vo.Vnr);
+                                    ProcessesCV.Refresh();
                                 }
                             }
                         }
