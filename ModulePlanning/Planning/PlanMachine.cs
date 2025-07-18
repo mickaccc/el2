@@ -356,9 +356,6 @@ namespace ModulePlanning.Planning
                     
                     var scope = _lock.EnterScope();
                     
-                //using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                _lock.EnterScope();
-                    {
                         if (Processes == null) { _lock.Exit(); return; }
                         if (list == null || list.Count == 0) { _lock.Exit(); return; }
                         foreach ((string, string)? item in list)
@@ -386,10 +383,7 @@ namespace ModulePlanning.Planning
                                 }
                             }
                         }
-                        _lock.Exit();
-                    }
-                
-                    {
+                    
                         foreach((string, string)?  item in list)
                         {
                             if (item == null) continue;
