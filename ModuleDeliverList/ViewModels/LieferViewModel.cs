@@ -365,13 +365,13 @@ namespace ModuleDeliverList.ViewModels
                     var o = _orders.Where(x => x.Aid == rb.Aid);
                     foreach (var x in o)
                     {
-                        _lock.EnterScope();
-                        
+                        using (_lock.EnterScope())
+                        {
                             _orders.Remove(x);
                             DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
                             OrdersView.Refresh();
                             _Logger.LogInformation("Auftrag archiviert: {message}", rb.Aid);
-                        _lock.Exit();
+                        }
                     }
                 }
             }
@@ -393,21 +393,21 @@ namespace ModuleDeliverList.ViewModels
                         _Logger.LogInformation("commin {message}, {1}", rbId.Item1, rbId.Item2);
                         if (_orders.Any(x => x.Aid == rbId.Item2))
                         {
-                            var scope = _lock.EnterScope();
-                            
+                            using (_lock.EnterScope())
+                            {
                                 var ord = _orders.First(x => x.Aid == rbId.Item2).AidNavigation;
                                 DBctx.Entry<OrderRb>(ord).Reload();
-                            scope.Dispose();
-                            foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
-                            {
-                                var scope2 = _lock.EnterScope();
-                                
+                                _Logger.LogInformation("reloaded {message}", ord.Aid);
+                                ord.RunPropertyChanged();
+
+                                foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
+                                {
                                     DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;
                                     DBctx.Entry<Vorgang>(o).Reload();
                                     _Logger.LogInformation("reloaded {message}", o.VorgangId);
-                                scope2.Dispose();
-                                o.RunPropertyChanged();
-                                
+
+                                    o.RunPropertyChanged();
+                                }
                             }
                         }
                         else
@@ -446,26 +446,23 @@ namespace ModuleDeliverList.ViewModels
 
                             if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
                             {
+                                using (_lock.EnterScope())
+                                {
 
-                                var scope = _lock.EnterScope();
-                                
                                     v = _orders.Single(x => x.VorgangId == vrg.Value.Item2);
                                     DBctx.Entry<Vorgang>(v).Reload();
                                     _Logger.LogInformation("reloaded {message}", v.VorgangId);
-                                scope.Dispose();
+                                    v.RunPropertyChanged();
+                                    if (v.Aktuell == false)
+                                    {
 
-                                v.RunPropertyChanged();
-                                if (v.Aktuell == false)
-                                {
-                                    _orders.Remove(v);
-                                    _Logger.LogInformation("remove {message}", v.VorgangId);
-                                    var scope2 = _lock.EnterScope();
-                                    
+                                        _orders.Remove(v);
+                                        _Logger.LogInformation("remove {message}", v.VorgangId);
                                         DBctx.ChangeTracker.Entries<Vorgang>()
                                         .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
                                         OrdersView.Refresh();
-                                    scope2.Dispose();
 
+                                    }
                                 }
                             }
                             else
@@ -577,9 +574,10 @@ namespace ModuleDeliverList.ViewModels
                 if (OrderTask != null && OrderTask.IsSuccessfullyCompleted)
                 {
       
-                    lock (_lock)
+                    if (_lock.TryEnter())
                     {
                         if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
+                        _lock.Exit();
                     }
       
                 }
@@ -727,10 +725,10 @@ namespace ModuleDeliverList.ViewModels
             try
             {
 
-                var scope = _lock.EnterScope();
-                
+                using (_lock.EnterScope());
+                {
                     DBctx.SaveChanges();
-                scope.Dispose();
+                }
   
             }
             catch (Exception e)

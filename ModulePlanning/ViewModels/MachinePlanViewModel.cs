@@ -170,13 +170,13 @@ namespace ModulePlanning.ViewModels
                                 else
                                 {
                                     _Logger.LogInformation("scope pool unplug {message}-{0}", vo.Aid, vo.Vnr);
-                                    var scope = _lock.EnterScope();
-                                    
+                                    using (_lock.EnterScope())
+                                    {
                                         Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
                                         _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
-                                    
+
                                         _Logger.LogInformation("pool unplug {message}-{0}", vo.Aid, vo.Vnr);
-                                    scope.Dispose();
+                                    }
                                 }
                             }
                         }
@@ -223,13 +223,13 @@ namespace ModulePlanning.ViewModels
                                     else
                                     {
                                         _Logger.LogInformation("scope pool added {message}-{0}", item2.Aid, item2.Vnr);
-                                        var scope = _lock.EnterScope();
-                                        
+                                        using (_lock.EnterScope())
+                                        {
                                             _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
                                             _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
-                                        
+
                                             _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
-                                        scope.Dispose();
+                                        }
                                     }
                                 }
                             }
@@ -276,10 +276,10 @@ namespace ModulePlanning.ViewModels
         {
             try
             {
-                var scope = _lock.EnterScope();
-                
-                   _DbCtx.SaveChanges();
-               scope.Dispose();
+                using (_lock.EnterScope())
+                {
+                    _DbCtx.SaveChanges();
+                }
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -391,7 +391,7 @@ namespace ModulePlanning.ViewModels
                 if (MachineTask != null && MachineTask.IsSuccessfullyCompleted)
                 {
 
-                    lock (_lock)
+                    if (_lock.TryEnter())
                     {
                         if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());
                     }
@@ -402,6 +402,10 @@ namespace ModulePlanning.ViewModels
             {
                 //MessageBox.Show(ex.Message, "AutoSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
                 _Logger.LogError("{message}", ex.ToString());
+            }
+            finally
+            {
+                _lock.Exit();
             }
         }
 
@@ -598,7 +602,7 @@ namespace ModulePlanning.ViewModels
 
                         if (_DbCtx.Ressources.All(x => x.RessourceId != parkRid))
                         {
-                            lock (_lock)
+                            using (_lock.EnterScope())
                             {
                                 _DbCtx.Database.ExecuteSqlRaw(@"SET IDENTITY_INSERT dbo.Ressource ON");
                                 _DbCtx.Database.ExecuteSqlRaw(@"INSERT INTO dbo.Ressource(RessourceId) VALUES({0})", parkRid);
@@ -634,16 +638,14 @@ namespace ModulePlanning.ViewModels
                         Debug.Assert(t != null, nameof(t) + " != null");
                         ((IList)t.SourceCollection).Insert(v, plm);
                 }
-                var scope = _lock.EnterScope();
+                using (_lock.EnterScope())
+                {
                     for (var i = 0; i < _machines.Count; i++)
                     {
                         var vv = _DbCtx.Ressources.First(x => x.RessourceId == _machines[i].Rid);
                         vv.Sort = vv.Visability ? i : 1000;
                     }
-                
-                
-                    _DbCtx.SaveChanges();
-                scope.Dispose();
+                }
             }
             catch (Exception e)
             {
@@ -653,7 +655,7 @@ namespace ModulePlanning.ViewModels
         }
         private bool Changed()
         {
-            lock (_lock)
+            using (_lock.EnterScope())
             {
                 return _DbCtx.ChangeTracker.HasChanges();
             }

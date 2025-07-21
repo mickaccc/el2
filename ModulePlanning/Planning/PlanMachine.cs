@@ -353,9 +353,9 @@ namespace ModulePlanning.Planning
             {
                 Task.Run(() =>
                 {
-                    
-                    var scope = _lock.EnterScope();
-                    
+
+                    using (_lock.EnterScope())
+                    {
                         if (Processes == null) { _lock.Exit(); return; }
                         if (list == null || list.Count == 0) { _lock.Exit(); return; }
                         foreach ((string, string)? item in list)
@@ -383,18 +383,18 @@ namespace ModulePlanning.Planning
                                 }
                             }
                         }
-                    
-                        foreach((string, string)?  item in list)
+
+                        foreach ((string, string)? item in list)
                         {
                             if (item == null) continue;
-                            foreach(var v in Processes?.Where(x => x.Aid == item.Value.Item2) )
+                            foreach (var v in Processes?.Where(x => x.Aid == item.Value.Item2))
                             {
                                 _db.Entry<Vorgang>(v).Reload();
                                 v.RunPropertyChanged();
                                 _logger.LogInformation("Planmachine - reloaded {0} {1} {2}", v.VorgangId, v.Aid, v.Vnr);
                             }
                         }
-                    scope.Dispose();
+                    }
                     
                 });
             }
@@ -418,14 +418,14 @@ namespace ModulePlanning.Planning
                             var pr = Processes?.FirstOrDefault(x => x.VorgangId == idTuple.Value.Item2);
                             if (pr != null)
                             {
-                                
-                                var scope = _lock.EnterScope();
-                                                               
+
+                                using (_lock.EnterScope())
+                                {
                                     _db.Entry<Vorgang>(pr).Reload();
-                                    pr.RunPropertyChanged();                                 
-                                
+                                    pr.RunPropertyChanged();
+
                                     _logger.LogInformation("PlanMachine - execute reload {message} {1}", pr.VorgangId, pr.SysStatus);
-                                scope.Dispose();
+                                }
 
                                 if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
                                 {
@@ -686,8 +686,8 @@ namespace ModulePlanning.Planning
         {
             try
             {
-                _lock.EnterScope();
-                    
+                using (_lock.EnterScope())
+                {
                     if (obj is Vorgang v)
                     {
                         var m = v.AidNavigation.Quantity.ToString();
@@ -704,17 +704,14 @@ namespace ModulePlanning.Planning
                     }
                     if (obj is string s)
                     { setTextToClipboard(s); }
-                
+                }
             }
             catch (Exception e)
             {
                 _logger.LogError("{message}", e.ToString());
                 MessageBox.Show(string.Format("{0}\n{1}", e.Message, e.InnerException), "FastCopy", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally
-            {
-                _lock.Exit();
-            }
+  
         }
 
         private void setTextToClipboard(string text)
