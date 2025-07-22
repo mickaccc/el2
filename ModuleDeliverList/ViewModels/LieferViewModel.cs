@@ -573,19 +573,24 @@ namespace ModuleDeliverList.ViewModels
             {
                 if (OrderTask != null && OrderTask.IsSuccessfullyCompleted)
                 {
-      
+
                     if (_lock.TryEnter())
                     {
                         if (DBctx.ChangeTracker.HasChanges()) DBctx.SaveChangesAsync();
-                        _lock.Exit();
+
                     }
-      
+
                 }
             }
             catch (Exception ex)
             {
                 _Logger.LogError("{message}", ex.ToString());
                 MessageBox.Show(ex.Message, "AutoSave", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (_lock.IsHeldByCurrentThread)
+                    _lock.Exit();
             }
         }
 
@@ -746,7 +751,7 @@ namespace ModuleDeliverList.ViewModels
                 if (OrderTask.IsSuccessfullyCompleted && _lock.TryEnter())
                 {
                     res = DBctx.ChangeTracker.HasChanges();
-                    _lock.Exit();
+                    
                 }
 
                 return res;
@@ -760,6 +765,11 @@ namespace ModuleDeliverList.ViewModels
             {
                 _Logger.LogError("{message}", e.ToString());
                 return false;
+            }
+            finally
+            {
+                if (_lock.IsHeldByCurrentThread)
+                    _lock.Exit();
             }
         }
 

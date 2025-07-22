@@ -255,9 +255,9 @@ namespace ModulePlanning.ViewModels
                 if (MachineTask.IsSuccessfullyCompleted && _lock.TryEnter())
                 {
                     res = _DbCtx.ChangeTracker.HasChanges();
-                    _lock.Exit();
+                    
                 }
-  
+
                 return res;
             }
             catch (InvalidOperationException e)
@@ -269,6 +269,11 @@ namespace ModulePlanning.ViewModels
             {
                 _Logger.LogError("{message}", e.ToString());
                 return false;
+            }
+            finally
+            {
+                if (_lock.IsHeldByCurrentThread)
+                    _lock.Exit();
             }
         }
 
@@ -405,7 +410,8 @@ namespace ModulePlanning.ViewModels
             }
             finally
             {
-                _lock.Exit();
+                if (_lock.IsHeldByCurrentThread)
+                    _lock.Exit();
             }
         }
 
