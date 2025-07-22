@@ -485,7 +485,7 @@ namespace ModulePlanning.ViewModels
                 RessCV.MoveCurrentTo(_machines.First(x => x.WorkArea?.WorkAreaId == WorkAreas[0].WorkAreaId));
                 _currentWorkArea = ((PlanMachine)RessCV.CurrentItem).WorkArea?.WorkAreaId ?? 0;
 
-            }, CancellationToken.None, TaskCreationOptions.None, uiContext);
+            }, CancellationToken.None, TaskCreationOptions.LongRunning, uiContext);
       
             _Logger.LogInformation("four: {0}", DateTime.Now.Ticks - preticks);
             preticks = DateTime.Now.Ticks;
