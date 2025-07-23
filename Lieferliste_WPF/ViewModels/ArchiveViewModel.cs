@@ -104,10 +104,10 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (obj is OrderRb o)
             {
-                o.Abgeschlossen = false;
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                o.Abgeschlossen = false;              
                 db.Update(o);
-                db.SaveChangesAsync();
+                db.SaveChanges();
                 result.Remove(o);
                 CollectionView?.Refresh();
             }
@@ -126,8 +126,8 @@ namespace Lieferliste_WPF.ViewModels
                     .Where(x => x.Abgeschlossen)
                     .ToListAsync();
 
-
-                CollectionView = CollectionViewSource.GetDefaultView(ord);
+                result.AddRange(ord);
+                CollectionView = CollectionViewSource.GetDefaultView(result);
                 CollectionView.Filter += OnFilter;
             }
             return CollectionView;

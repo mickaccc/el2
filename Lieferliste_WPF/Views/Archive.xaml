@@ -56,7 +56,7 @@
                     <MenuItem Header="Eintrag kopieren" Command="Copy" 
                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
                         Path=PlacementTarget.SelectedItem}"/>
-                    <MenuItem Header="zurückholen" Command="{Binding DeArchivateCommand}"
+                    <MenuItem Header="zurückholen" Command="{Binding RetriveCommand}"
                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
                         Path=PlacementTarget.SelectedItem}"/>
                     <MenuItem Header="Projekt öffnen" Command="{Binding ApplicationCommands.OpenProjectOverViewCommand}"
