@@ -155,7 +155,7 @@ namespace ModulePlanning.ViewModels
                         {
                             _ = Task.Factory.StartNew(async () =>
                             {
-                                await _DbCtx.Entry(vo).ReloadAsync();
+                                _DbCtx.Entry(vo).Reload();
                                 vo.RunPropertyChanged();
                             });
                             _Logger.LogInformation("maybe plug {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
@@ -169,7 +169,7 @@ namespace ModulePlanning.ViewModels
                                 }
                                 else
                                 {
-                                    _Logger.LogInformation("scope pool unplug {message}-{0}", vo.Aid, vo.Vnr);
+       
                                     using (_lock.EnterScope())
                                     {
                                         Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
@@ -398,7 +398,7 @@ namespace ModulePlanning.ViewModels
 
                     if (_lock.TryEnter())
                     {
-                        if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => await _DbCtx.SaveChangesAsync());
+                        if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => _DbCtx.SaveChanges());
                     }
 
                 }

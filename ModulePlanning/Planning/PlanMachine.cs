@@ -868,30 +868,30 @@ namespace ModulePlanning.Planning
                 var t = dropInfo.TargetCollection as ListCollectionView;
 
                 var v = dropInfo.InsertIndex;
-                    if (s != null && t != null)
+                if (s != null && t != null)
+                {
+                    ListCollectionView? lv = ProcessesCV as ListCollectionView;
+                    if (lv == null) return;
+                    if (lv.IsAddingNew) { lv.CommitNew(); }
+                    if (lv.IsEditingItem) { lv.CommitEdit(); }
+                    if (dropInfo.Data is List<dynamic> vrgList)
                     {
-                        ListCollectionView? lv = ProcessesCV as ListCollectionView;
-                        if (lv == null) return;
-                        if (lv.IsAddingNew) { lv.CommitNew(); }
-                        if (lv.IsEditingItem) { lv.CommitEdit(); }
-                        if (dropInfo.Data is List<dynamic> vrgList)
+                        foreach (var vrg in vrgList)
                         {
-                            foreach (var vrg in vrgList)
-                            {
-                                InsertItems(vrg, s, t, v, false);
+                            InsertItems(vrg, s, t, v, false);
 
-                            }
-                            _logger.LogInformation("{message} {id}", "Drops", vrgList.ToString());
                         }
-                        else if (dropInfo.Data is Vorgang vrg)
-                        {
-                            InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
-                            _logger.LogInformation("{message} {id} {sort}", "Drops", vrg.VorgangId, vrg.SortPos);
-    
-                        }
-                        
-                        ProcessesCV.Refresh();
+                        _logger.LogInformation("{message} {id}", "Drops", vrgList.ToString());
                     }
+                    else if (dropInfo.Data is Vorgang vrg)
+                    {
+                        InsertItems(vrg, s, t, v, dropInfo.IsSameDragDropContextAsSource);
+                        _logger.LogInformation("{message} {id} {sort}", "Drops", vrg.VorgangId, vrg.SortPos);
+    
+                    }
+                        
+                    ProcessesCV.Refresh();
+                }
                               
             }
             catch (DbUpdateConcurrencyException ex)
