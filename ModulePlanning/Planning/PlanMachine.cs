@@ -364,6 +364,9 @@ namespace ModulePlanning.Planning
                             var pr = Processes.FirstOrDefault(x => x.VorgangId == item.Value.Item2);
                             if (pr != null)
                             {
+    
+                                if (_db.ChangeTracker.HasChanges()) { _db.SaveChanges(); }
+                                
                                 _db.Entry<Vorgang>(pr).Reload();
                                 pr.RunPropertyChanged();
                                 _logger.LogInformation("Planmachine - reloaded {message}", pr.VorgangId);
@@ -389,6 +392,10 @@ namespace ModulePlanning.Planning
                             if (item == null) continue;
                             foreach (var v in Processes?.Where(x => x.Aid == item.Value.Item2))
                             {
+                                using (_lock.EnterScope())
+                                {
+                                    if (_db.ChangeTracker.HasChanges()) { _db.SaveChanges(); }
+                                }
                                 _db.Entry<Vorgang>(v).Reload();
                                 v.RunPropertyChanged();
                                 _logger.LogInformation("Planmachine - reloaded {0} {1} {2}", v.VorgangId, v.Aid, v.Vnr);
@@ -421,6 +428,7 @@ namespace ModulePlanning.Planning
 
                                 using (_lock.EnterScope())
                                 {
+                                    if (_db.ChangeTracker.HasChanges()) { _db.SaveChanges(); }
                                     _db.Entry<Vorgang>(pr).Reload();
                                     pr.RunPropertyChanged();
 

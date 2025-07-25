@@ -143,8 +143,7 @@ namespace ModulePlanning.ViewModels
         private void MessageVorgangReceived(List<(string, string)?> list)
         {
             try
-            {
-
+            { 
                 foreach (var item in list)
                 {
                     if ((item != null))
@@ -153,8 +152,9 @@ namespace ModulePlanning.ViewModels
 
                         if (vo != null)
                         {
-                            _ = Task.Factory.StartNew(async () =>
+                            _ = Task.Factory.StartNew(() =>
                             {
+                                if (_DbCtx.Entry(vo).State == EntityState.Modified) _DbCtx.SaveChanges();
                                 _DbCtx.Entry(vo).Reload();
                                 vo.RunPropertyChanged();
                             });
@@ -164,8 +164,8 @@ namespace ModulePlanning.ViewModels
                                 if (vo.Rid != null)
                                 {
                                     Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
-                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
-                                    _Logger.LogInformation("pool pluged {message}-{0} rid {1}", vo.Aid, vo.Vnr, vo.Rid);
+                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
+                                    _Logger.LogInformation("pool unpluged {message}-{0} rid {1}", vo.Aid, vo.Vnr, vo.Rid);
                                 }
                                 else
                                 {
@@ -173,9 +173,9 @@ namespace ModulePlanning.ViewModels
                                     using (_lock.EnterScope())
                                     {
                                         Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
-                                        _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Detached;
+                                        _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
 
-                                        _Logger.LogInformation("pool unplug {message}-{0}", vo.Aid, vo.Vnr);
+                                        _Logger.LogInformation("pool pluged {message}-{0}", vo.Aid, vo.Vnr);
                                     }
                                 }
                             }
@@ -196,7 +196,7 @@ namespace ModulePlanning.ViewModels
             Vorgang vo;
             try
             {
-
+ 
                 foreach (var item in list)
                 {
                     if (item == null) continue;
@@ -213,9 +213,10 @@ namespace ModulePlanning.ViewModels
                                     {
                                         foreach (var item3 in item2.AidNavigation.OrderComponents)
                                         {
-                                            _ = Task.Factory.StartNew(async () =>
+                                            _ = Task.Factory.StartNew(() =>
                                             {
-                                                await _DbCtx.Entry(item3).ReloadAsync();
+                                                if (_DbCtx.Entry(item3).State == EntityState.Modified) { _DbCtx.SaveChanges(); }
+                                                 _DbCtx.Entry(item3).Reload();
                                                 
                                             });
                                         }
@@ -226,7 +227,7 @@ namespace ModulePlanning.ViewModels
                                         using (_lock.EnterScope())
                                         {
                                             _ = Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(item2));
-                                            _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Detached;
+                                            _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == item2.VorgangId).State = EntityState.Unchanged;
 
                                             _Logger.LogInformation("pool added {message}-{0}", item2.Aid, item2.Vnr);
                                         }
@@ -330,54 +331,52 @@ namespace ModulePlanning.ViewModels
     
             if (aid != null)
             {
+ 
                 query = await _DbCtx.Vorgangs
-                   .Include(x => x.AidNavigation)
-                   .ThenInclude(x => x.OrderComponents)
-                   .ThenInclude(x => x.MaterialNavigation)
-                   .Include(x => x.AidNavigation.DummyMatNavigation)
-                   .Include(x => x.AidNavigation.MaterialNavigation)
-                   .Include(x => x.ArbPlSapNavigation)
-                   .Include(x => x.Responses)
-                   .Include(x => x.RidNavigation.WorkArea)
-                   .Include(x => x.RidNavigation)
-                   .ThenInclude(x => x.RessourceWorkshifts)
-                   .ThenInclude(x => x.SidNavigation)
-                   .Where(y => y.Aid == aid
-                     && y.SysStatus != null
-                     && y.Text != null
-                     && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
-                     && y.Text.ToLower().Contains("auftrag starten") == false
-                     && y.SysStatus.Contains("RÜCK") == false)
-                   .ToListAsync();
+                .Include(x => x.AidNavigation)
+                .ThenInclude(x => x.OrderComponents)
+                .ThenInclude(x => x.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.AidNavigation.MaterialNavigation)
+                .Include(x => x.ArbPlSapNavigation)
+                .Include(x => x.Responses)
+                .Include(x => x.RidNavigation.WorkArea)
+                .Include(x => x.RidNavigation)
+                .ThenInclude(x => x.RessourceWorkshifts)
+                .ThenInclude(x => x.SidNavigation)
+                .Where(y => y.Aid == aid
+                    && y.SysStatus != null
+                    && y.Text != null
+                    && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
+                    && y.Text.ToLower().Contains("auftrag starten") == false
+                    && y.SysStatus.Contains("RÜCK") == false)
+                .ToListAsync();
+                
             }
             else
             {
-                //var procedure = new DB_COS_LIEFERLISTE_SQLContextProcedures(_DbCtx);
-
-                //var q = await procedure.MachPlanVorgangsProcAsync(UserInfo.User.UserId, cancellationToken: CancellationToken.None);
-                //var t = q.Select(x => x.Vorgang).ToList();
-
+ 
                 query = await _DbCtx.Vorgangs
-                   .Include(x => x.AidNavigation)
-                   .ThenInclude(x => x.OrderComponents)
-                   .ThenInclude(x => x.MaterialNavigation)
-                   .Include(x => x.AidNavigation.DummyMatNavigation)
-                   .Include(x => x.AidNavigation.MaterialNavigation)
-                   .Include(x => x.ArbPlSapNavigation)
-                   .Include(x => x.Responses)
-                   .Include(x => x.RidNavigation.WorkArea)
-                   .Include(x => x.RidNavigation)
-                   .ThenInclude(x => x.RessourceWorkshifts)
-                   .ThenInclude(x => x.SidNavigation)
-                   .Where(y => y.AidNavigation.Abgeschlossen == false
-                     && y.SysStatus != null
-                     && y.Text != null
-                     && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
-                     && y.Text.ToLower().Contains("auftrag starten") == false
-                     && y.SysStatus.Contains("RÜCK") == false)
-                   .ToListAsync();
+                .Include(x => x.AidNavigation)
+                .ThenInclude(x => x.OrderComponents)
+                .ThenInclude(x => x.MaterialNavigation)
+                .Include(x => x.AidNavigation.DummyMatNavigation)
+                .Include(x => x.AidNavigation.MaterialNavigation)
+                .Include(x => x.ArbPlSapNavigation)
+                .Include(x => x.Responses)
+                .Include(x => x.RidNavigation.WorkArea)
+                .Include(x => x.RidNavigation)
+                .ThenInclude(x => x.RessourceWorkshifts)
+                .ThenInclude(x => x.SidNavigation)
+                .Where(y => y.AidNavigation.Abgeschlossen == false
+                    && y.SysStatus != null
+                    && y.Text != null
+                    && y.ArbPlSapNavigation.Ressource.WorkAreaId != 5
+                    && y.Text.ToLower().Contains("auftrag starten") == false
+                    && y.SysStatus.Contains("RÜCK") == false)
+                .AsSplitQuery().ToListAsync();
+                
             }
-
             return query;
         }
 
