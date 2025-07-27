@@ -256,7 +256,7 @@ namespace ModulePlanning.ViewModels
                 if (MachineTask.IsSuccessfullyCompleted && _lock.TryEnter())
                 {
                     res = _DbCtx.ChangeTracker.HasChanges();
-                    
+                    _lock.Exit();
                 }
 
                 return res;
@@ -270,11 +270,6 @@ namespace ModulePlanning.ViewModels
             {
                 _Logger.LogError("{message}", e.ToString());
                 return false;
-            }
-            finally
-            {
-                if (_lock.IsHeldByCurrentThread)
-                    _lock.Exit();
             }
         }
 
@@ -398,6 +393,7 @@ namespace ModulePlanning.ViewModels
                     if (_lock.TryEnter())
                     {
                         if (_DbCtx.ChangeTracker.HasChanges()) Task.Run(async () => _DbCtx.SaveChanges());
+                        _lock.Exit();
                     }
 
                 }
@@ -406,11 +402,6 @@ namespace ModulePlanning.ViewModels
             {
                 //MessageBox.Show(ex.Message, "AutoSave MachPlan", MessageBoxButton.OK, MessageBoxImage.Error);
                 _Logger.LogError("{message}", ex.ToString());
-            }
-            finally
-            {
-                if (_lock.IsHeldByCurrentThread)
-                    _lock.Exit();
             }
         }
 
