@@ -440,6 +440,8 @@ namespace ModulePlanning.Planning
                                     pr.SortPos = "Z";
                                     Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
                                     _logger.LogInformation("PlanMachine - removed {message} {1} - {2}", pr.VorgangId, pr.Aid, pr.Vnr);
+                                    if (pr.Rid == null)
+                                        _eventAggregator.GetEvent<MessagePlanmachineProcessRemoved>().Publish(pr);
                                     ProcessesCV.Refresh();
                                 }
                                     

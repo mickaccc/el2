@@ -115,6 +115,17 @@ namespace ModulePlanning.ViewModels
             _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
             _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
             _ea.GetEvent<EnableAutoSave>().Subscribe(AutoSaveEnable);
+            _ea.GetEvent<MessagePlanmachineProcessRemoved>().Subscribe(MessagePlug);
+        }
+
+        private void MessagePlug(Vorgang vorgang)
+        {
+            using (_lock.EnterScope())
+            {
+                Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vorgang));
+
+                _Logger.LogInformation("user has removed from machine {message}-{0}", vorgang.Aid, vorgang.Vnr);
+            }          
         }
 
         private void AutoSaveEnable(bool obj)
@@ -157,27 +168,18 @@ namespace ModulePlanning.ViewModels
                                 if (_DbCtx.Entry(vo).State == EntityState.Modified) _DbCtx.SaveChanges();
                                 _DbCtx.Entry(vo).Reload();
                                 vo.RunPropertyChanged();
+                                _Logger.LogInformation("reloaded {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
                             });
-                            _Logger.LogInformation("maybe plug {message}-{0} rid {1} {2}", vo.Aid, vo.Vnr, vo.Rid, item.Value.Item1);
+
                             if (item.Value.Item1 == "EL2")
                             {
                                 if (vo.Rid != null)
                                 {
                                     Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Remove(vo));
-                                    _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
-                                    _Logger.LogInformation("pool unpluged {message}-{0} rid {1}", vo.Aid, vo.Vnr, vo.Rid);
+                                    
+                                    _Logger.LogInformation("user has added to machine {message}-{0} rid {1}", vo.Aid, vo.Vnr, vo.Rid);
                                 }
-                                else
-                                {
-       
-                                    using (_lock.EnterScope())
-                                    {
-                                        Application.Current.Dispatcher.InvokeAsync(() => Priv_processes?.Add(vo));
-                                        _DbCtx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId == vo.VorgangId).State = EntityState.Unchanged;
-
-                                        _Logger.LogInformation("pool pluged {message}-{0}", vo.Aid, vo.Vnr);
-                                    }
-                                }
+ 
                             }
                         }
                     }
