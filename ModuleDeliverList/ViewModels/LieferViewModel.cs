@@ -402,11 +402,12 @@ namespace ModuleDeliverList.ViewModels
 
                                 foreach (var o in _orders.Where(x => x.Aid.Trim() == rbId.Item2))
                                 {
-                                    DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Detached;
+                                    
                                     DBctx.Entry<Vorgang>(o).Reload();
                                     _Logger.LogInformation("reloaded {message}", o.VorgangId);
 
                                     o.RunPropertyChanged();
+                                    DBctx.ChangeTracker.Entries<Vorgang>().First(x => x.Entity.VorgangId.Trim() == o.VorgangId.Trim()).State = EntityState.Unchanged;
                                 }
                             }
                         }
