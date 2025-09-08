@@ -454,16 +454,7 @@ namespace ModuleDeliverList.ViewModels
                                     DBctx.Entry<Vorgang>(v).Reload();
                                     _Logger.LogInformation("reloaded {message}", v.VorgangId);
                                     v.RunPropertyChanged();
-                                    if (v.Aktuell == false)
-                                    {
-
-                                        _orders.Remove(v);
-                                        _Logger.LogInformation("remove {message}", v.VorgangId);
-                                        DBctx.ChangeTracker.Entries<Vorgang>()
-                                        .First(x => x.Entity.VorgangId == v.VorgangId).State = EntityState.Unchanged;
-                                        OrdersView.Refresh();
-
-                                    }
+                                    OrdersView.DeferRefresh();
                                 }
                             }
                             else

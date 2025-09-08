@@ -21,7 +21,8 @@ namespace El2Core.Converters
                     return string.Format("{0} KW {1}", v.ToString("dd.MM.yy"), weekNum.ToString());
                 case 2:
                     return string.Format("{0}\nKW {1}", v.ToString("dd.MM.yy"), weekNum.ToString());
-  
+                case 3:
+                    return weekNum.ToString();
                 default: return string.Format("KW {0}", weekNum.ToString());
             }
             

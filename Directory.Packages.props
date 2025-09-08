@@ -13,7 +13,7 @@
     <PackageVersion Include="LiveCharts.Wpf" Version="0.9.7" />
     <PackageVersion Include="log4net" Version="3.1.0" />
     <PackageVersion Include="MahApps.Metro" Version="2.4.10" />
-    <PackageVersion Include="MahApps.Metro.IconPacks" Version="5.1.0" />
+    <PackageVersion Include="MahApps.Metro.IconPacks" Version="6.1.0" />
     <PackageVersion Include="MaterialDesignThemes.MahApps" Version="5.2.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
@@ -21,7 +21,7 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.8.3" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.8.3" />
-    <PackageVersion Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="5.1.0" />
     <PackageVersion Include="OpenXmlPowerTools" Version="4.5.3.2" />
     <PackageVersion Include="Prism.Core" Version="9.0.537" />
     <PackageVersion Include="Prism.Plugin.Logging.Abstractions" Version="8.1.16" />

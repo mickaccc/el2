@@ -10,6 +10,7 @@
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/RollingTextBlock.xaml"/>
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/SearchableComboBox.xaml"/>
         <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/ExpandPopup.xaml"/>
+        <ResourceDictionary Source="/WpfCustomControlLibrary;component/Themes/ExtendDatePicker.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

@@ -221,17 +221,19 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel>
-                                <DatePicker FirstDayOfWeek="Monday" ToolTip="voraussichtlicher Termin lt. Teamleiter" VerticalAlignment="Top" SnapsToDevicePixels="True"
-                                      SelectedDate="{Binding Termin, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}"
-                                      DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
-                                       SelectedDateChanged="DatePicker_SelectedDateChanged" x:Name="TlTermin">
-                                    <DatePicker.IsEnabled>
+                                <wpfControl:ExtendDatePicker x:Name="TlTermin"
+                                    SelectedDate="{Binding Termin, Mode=TwoWay}"
+                                                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}"
+                                                             SelectedDateChanged="DatePicker_SelectedDateChanged"
+                                                             ToolTip="voraussichtlicher Termin lt. Teamleiter">
+                                    <wpfControl:ExtendDatePicker.IsEnabled>
                                         <MultiBinding Converter="{StaticResource Relpermiss}">
                                             <Binding Source="{x:Static const:Permissions.TLTermin}"/>
                                             <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
                                         </MultiBinding>
-                                    </DatePicker.IsEnabled>
-                                </DatePicker>
+                                    </wpfControl:ExtendDatePicker.IsEnabled>
+                                  </wpfControl:ExtendDatePicker>
+                 
                                 <TextBlock Text="{Binding Path=SelectedDate, Converter={StaticResource KW}, ElementName=TlTermin}" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </DataTemplate>

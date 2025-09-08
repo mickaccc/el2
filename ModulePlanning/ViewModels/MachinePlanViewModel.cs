@@ -112,10 +112,9 @@ namespace ModulePlanning.ViewModels
             LoadWorkAreas();
             SetAutoSaveTimer();
             MachineTask = new NotifyTaskCompletion<ICollectionView>(LoadMachinesAsync());
-            _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-            _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
-            _ea.GetEvent<EnableAutoSave>().Subscribe(AutoSaveEnable);
-            _ea.GetEvent<MessagePlanmachineProcessRemoved>().Subscribe(MessagePlug);
+
+            SubscribeEventsAsync();
+
         }
 
         private void MessagePlug(Vorgang vorgang)
@@ -410,7 +409,6 @@ namespace ModulePlanning.ViewModels
         private async Task<ICollectionView> LoadMachinesAsync()
         {
             var uiContext = TaskScheduler.FromCurrentSynchronizationContext();
-            var preticks = DateTime.Now.Ticks;
 
             var proc = await GetVorgangsAsync(null);
             var mach = await _DbCtx.Ressources
@@ -419,15 +417,11 @@ namespace ModulePlanning.ViewModels
                 .ToListAsync();
             var mach2 = new List<Ressource>();
 
-            _Logger.LogInformation("first: {0}", DateTime.Now.Ticks - preticks);
-            preticks = DateTime.Now.Ticks;
             foreach (var uc in UserInfo.User.AccountWorkAreas.OrderBy(x => x.WorkArea.Sort))
             {
                 mach2.AddRange(mach.Where(x => uc.WorkAreaId == x.WorkAreaId));
             }
 
-            _Logger.LogInformation("sec: {0}", DateTime.Now.Ticks - preticks);
-            preticks = DateTime.Now.Ticks;
             await Task.Factory.StartNew(() =>
             {
                 SortedDictionary<int[], PlanMachine> result = new SortedDictionary<int[], PlanMachine>(new ArrayKeyComparer());
@@ -453,8 +447,6 @@ namespace ModulePlanning.ViewModels
                     }
                 }
 
-                _Logger.LogInformation("third: {0}", DateTime.Now.Ticks - preticks);
-                preticks = DateTime.Now.Ticks;
                 _machines.AddRange(result.Values);
 
                 List<Vorgang> list = new();
@@ -479,8 +471,6 @@ namespace ModulePlanning.ViewModels
 
             }, CancellationToken.None, TaskCreationOptions.LongRunning, uiContext);
       
-            _Logger.LogInformation("four: {0}", DateTime.Now.Ticks - preticks);
-            preticks = DateTime.Now.Ticks;
             NotifyPropertyChanged(() => ProcessCV);
             NotifyPropertyChanged(() => ParkingCV);
             if(RessCV != null)
@@ -489,8 +479,22 @@ namespace ModulePlanning.ViewModels
             ParkingCV.Filter = f => (f as Vorgang)?.Rid == _currentWorkArea * -1;
             ProcessViewSource.Filter += ProcessCV_Filter;
 
-            _Logger.LogInformation("five: {0}", DateTime.Now.Ticks - preticks);
             return RessCV;
+        }
+
+        private async Task SubscribeEventsAsync()
+        {
+            await Task.Run(() =>
+            {
+                if (MachineTask.IsSuccessfullyCompleted)
+                {
+                    _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
+                    _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
+                    _ea.GetEvent<EnableAutoSave>().Subscribe(AutoSaveEnable);
+                    _ea.GetEvent<MessagePlanmachineProcessRemoved>().Subscribe(MessagePlug);
+                    return;
+                }
+            });
         }
         private void SelectionChange(object commandParameter)
         {

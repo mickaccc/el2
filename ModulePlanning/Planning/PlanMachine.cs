@@ -373,7 +373,8 @@ namespace ModulePlanning.Planning
                             }
                             else
                             {
-                                var vo = _db.Vorgangs
+                                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                                var vo = db.Vorgangs
                                     .Include(x => x.AidNavigation)
                                     .ThenInclude(x => x.MaterialNavigation)
                                     .Include(x => x.AidNavigation.DummyMatNavigation)
@@ -437,18 +438,22 @@ namespace ModulePlanning.Planning
 
                                 if ((pr.SysStatus?.Contains("RÜCK") ?? false) || pr.Rid == null)
                                 {
-                                    pr.SortPos = "Z";
-                                    Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
-                                    _logger.LogInformation("PlanMachine - removed {message} {1} - {2}", pr.VorgangId, pr.Aid, pr.Vnr);
-                                    if (pr.Rid == null)
-                                        _eventAggregator.GetEvent<MessagePlanmachineProcessRemoved>().Publish(pr);
-                                    ProcessesCV.Refresh();
+                                    using (_lock.EnterScope())
+                                    {
+                                        pr.SortPos = "Z";
+                                        Application.Current.Dispatcher.Invoke(new Action(() => Processes?.Remove(pr)));
+                                        _logger.LogInformation("PlanMachine - removed {message} {1} - {2}", pr.VorgangId, pr.Aid, pr.Vnr);
+                                        if (pr.Rid == null)
+                                            _eventAggregator.GetEvent<MessagePlanmachineProcessRemoved>().Publish(pr);
+                                        ProcessesCV.Refresh();
+                                    }
                                 }
                                     
                             }
                             else if (_db.Vorgangs.Find(idTuple.Value.Item2)?.Rid == Rid)
                             {
-                                var vo = _db.Vorgangs
+                                using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+                                var vo = db.Vorgangs
                                     .Include(x => x.AidNavigation)
                                     .ThenInclude(x => x.MaterialNavigation)
                                     .Include(x => x.AidNavigation.DummyMatNavigation)
@@ -464,7 +469,7 @@ namespace ModulePlanning.Planning
                             }
                         }
                     }
-                    _db.SaveChanges();
+                    
                     
                 });        
             }

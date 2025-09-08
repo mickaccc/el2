@@ -29,6 +29,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button Content="Prüfdatenblatt" Command="{Binding PruefDataCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
+            <Button Content="Prüfdatenblatt VMPB" Command="{Binding PruefDataVmpbCommand}" Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}"/>
         </StackPanel>
         <StackPanel Grid.Column="2" Orientation="Horizontal">
             <Button Content="Vmpb_30" Command="{Binding VmpbCreateCommand}"

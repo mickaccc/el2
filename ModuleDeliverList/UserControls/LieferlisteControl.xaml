@@ -268,7 +268,7 @@
                          Text="{Binding EndDate, ElementName=luc, StringFormat=\{0:d\}}"
                                               Style="{StaticResource AlertDateStyle}"/>
 
-            <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"   
+                <DatePicker Height="25" Grid.Row="1" Grid.Column="8" x:Name="txtTerm"   
                             HorizontalAlignment="Center" ToolTip="Voraussichtlicher Termin lt. Teamleiter"
                             SelectedDate="{Binding Termin, ElementName=luc, Mode=TwoWay}"
                             DisplayDate="{Binding Now, Mode=OneWay, Source={StaticResource datetime}}">
@@ -281,7 +281,7 @@
                 </DatePicker>
 
 
-            <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
+                <Button Grid.Row="2" Content="Explorer" x:Name="btnExpl" Command="{Binding Path=DataContext.ApplicationCommands.ExplorerCommand,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Views:Liefer}}}"
                         CommandParameter="{Binding AvailableItems, ElementName=luc, Mode=OneWay}"
                     Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"/>

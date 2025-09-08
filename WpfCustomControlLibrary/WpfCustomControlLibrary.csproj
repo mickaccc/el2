@@ -33,8 +33,15 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Icons\calendar.png" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MahApps.Metro.IconPacks" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" />
     <PackageReference Include="NUnit3TestAdapter" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\calendar.png" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Themes\CommentControl.xaml">
@@ -43,8 +50,5 @@
     <Page Update="Themes\LoadingSpinner.xaml">
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Icons\" />
   </ItemGroup>
 </Project>

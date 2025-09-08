@@ -41,6 +41,7 @@ namespace ModuleMeasuring.ViewModels
             VmpbOriginalOpenCommand = new ActionCommand(onVmpbOpenExecuted, onVmpbOpenCanExecute);
             VmpbCloseCommand = new ActionCommand(onVmpbCloseExecuted, onVmpbCloseCanExecute);
             PruefDataCommand = new ActionCommand(onPruefExecuted, onPruefCanExecute);
+            PruefDataVmpbCommand = new ActionCommand(onPruefVmpbExecuted, onPruefVmpbCanExecute);
             OpenFileCommand = new ActionCommand(onOpenFileExecuted, onOpenFileCanExecute);
             DeleteFileCommand = new ActionCommand(onDeleteFileExecuted, onDeleteFileCanExecute);
             AddFileCommand = new ActionCommand(onAddFileExecuted, onAddFileCanExecute);
@@ -65,7 +66,6 @@ namespace ModuleMeasuring.ViewModels
             _watcherScan.Changed += OnChanged;
         }
 
-
         IContainerExtension _container;
         private ILogger _logger;
 
@@ -75,6 +75,7 @@ namespace ModuleMeasuring.ViewModels
         public ICommand? VmpbOriginalOpenCommand { get; private set; }
         public ICommand? VmpbCloseCommand { get; private set; }
         public ICommand? PruefDataCommand { get; private set; }
+        public ICommand? PruefDataVmpbCommand { get; private set; }
         public ICommand? OpenFileCommand { get; private set; }
         public ICommand? DeleteFileCommand { get; private set; }
         public ICommand? AddFileCommand { get; private set; }
@@ -321,9 +322,9 @@ namespace ModuleMeasuring.ViewModels
                             var FilePath = Path.Combine(Fdocu[DocumentPart.RootPath], Fdocu[DocumentPart.SavePath], fileInfo.Name);
                             File.Copy(dialog.FileName, FilePath);
 
-                            _FirstDocumentItems.Add(new DocumentDisplay() { FullName = dialog.FileName, Display = fileInfo.Name });
+                            _FirstDocumentItems.Add(new DocumentDisplay(dialog.FileName, fileInfo.Name));
                         }
-                        break;
+                    break;
                     case "vmpb":
                         var VMdocu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag, SelectedItem.Vorgang]);
                         VmpbInfo.Collect();
@@ -347,7 +348,7 @@ namespace ModuleMeasuring.ViewModels
                             var vmFilePath = Path.Combine(VMdocu[DocumentPart.RootPath], VMdocu[DocumentPart.SavePath], fileInfo.Name);
                             File.Copy(dialog.FileName, vmFilePath);
 
-                            _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = dialog.FileName, Display = fileInfo.Name });
+                            _VmpbDocumentItems.Add(new DocumentDisplay(dialog.FileName, fileInfo.Name ));
                         }
                     break;
                     case "part":
@@ -373,7 +374,7 @@ namespace ModuleMeasuring.ViewModels
                             var mFilePath = Path.Combine(Mdocu[DocumentPart.RootPath], Mdocu[DocumentPart.SavePath], fileInfo.Name);
                             File.Copy(dialog.FileName, mFilePath);
 
-                            _PartDocumentItems.Add(new DocumentDisplay() { FullName = dialog.FileName, Display = fileInfo.Name });
+                            _PartDocumentItems.Add(new DocumentDisplay(dialog.FileName, fileInfo.Name ));
                         }
                         break;
                 }
@@ -416,7 +417,7 @@ namespace ModuleMeasuring.ViewModels
         private bool onPruefCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc) &&
-                SelectedItem != null;
+                SelectedItem != null && _FirstDocumentItems.All(x => x.DocumentType != 1);
         }
 
         private void onPruefExecuted(object obj)
@@ -433,13 +434,29 @@ namespace ModuleMeasuring.ViewModels
             _FirstDocumentItems.Clear();
             foreach (var d in Firsttarg.Directory.GetFiles())
             {
-                _FirstDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+                _FirstDocumentItems.Add(new DocumentDisplay(d.FullName, d.Name ));
             }
+        }
+        private bool onPruefVmpbCanExecute(object arg)
+        {
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddPruefDoc) &&
+                SelectedItem != null && _FirstDocumentItems.Any(x => x.DocumentType == 1)
+                && _VmpbDocumentItems.All(x => x.DocumentType != 1);
+        }
+
+        private void onPruefVmpbExecuted(object obj)
+        {
+            var docu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag, SelectedItem.Vorgang]);
+            VmpbInfo.Collect();
+            var prefile = _FirstDocumentItems.First(x => x.DocumentType == 1);
+            var postfile = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], SelectedItem.Auftrag + "_Messblatt"));
+            File.Copy(prefile.FullName, postfile.FullName, false);
+            _VmpbDocumentItems.Add(new DocumentDisplay(postfile.FullName, postfile.Name));
         }
         private bool onVmpbCanExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.AddVmpb) &&
-                SelectedItem != null && InWorkState == 0;
+                SelectedItem != null && InWorkState == 0 && _VmpbDocumentItems.Any(x => x.DocumentType == 1);
         }
         private void onVmpbExecuted(object obj)
         {
@@ -578,7 +595,7 @@ namespace ModuleMeasuring.ViewModels
                     _PartDocumentItems.Clear();
                     foreach (var d in docuItems.GetFiles())
                     {
-                        _PartDocumentItems.Add(new DocumentDisplay() { FullName = d.FullName, Display = d.Name });
+                        _PartDocumentItems.Add(new DocumentDisplay(d.FullName, d.Name));
                     }
                 }
             }
@@ -646,7 +663,7 @@ namespace ModuleMeasuring.ViewModels
                     foreach (var d in Directory.GetFiles(path).Where(x => x.Contains('~') == false))
                     {
                         FileInfo f = new FileInfo(d);
-                        _FirstDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
+                        _FirstDocumentItems.Add(new DocumentDisplay(f.FullName, f.Name));
                     }
                 }
 
@@ -658,7 +675,7 @@ namespace ModuleMeasuring.ViewModels
                     foreach (var d in Directory.GetFiles(vmpath).Where(x => x.Contains('~') == false))
                     {
                         FileInfo f = new FileInfo(d);
-                        _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });
+                        _VmpbDocumentItems.Add(new DocumentDisplay(f.FullName, f.Name));
                     }
                 }
                 var Mdocu = MeasureInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
@@ -668,7 +685,7 @@ namespace ModuleMeasuring.ViewModels
                     foreach (var d in Directory.GetFiles(Mpath).Where(x => x.Contains('~') == false))
                     {
                         FileInfo f = new FileInfo(d);
-                        _PartDocumentItems.Add(new DocumentDisplay() { FullName = f.FullName, Display = f.Name });                       
+                        _PartDocumentItems.Add(new DocumentDisplay(f.FullName, f.Name));                       
                     }
                 }
             }
@@ -692,8 +709,8 @@ namespace ModuleMeasuring.ViewModels
             }
             if (accept)
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                dropInfo.Effects = DragDropEffects.All;
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
             }
         }
         
@@ -713,8 +730,11 @@ namespace ModuleMeasuring.ViewModels
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
                         if (!source.Exists) { MessageBox.Show("Datei nicht vorhanden", "File IO Error", MessageBoxButton.OK, MessageBoxImage.Stop); return; }
-                        File.Copy(source.FullName, target.FullName);
-                        _FirstDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name }); 
+                        if (!target.Exists)
+                        {
+                            File.Copy(source.FullName, target.FullName);
+                            _FirstDocumentItems.Add(new DocumentDisplay(target.FullName, target.Name));
+                        }
                     }
                     if (t.Name == "vmpb")
                     {
@@ -723,8 +743,11 @@ namespace ModuleMeasuring.ViewModels
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
                         if (!source.Exists) { MessageBox.Show("Datei nicht vorhanden", "File IO Error", MessageBoxButton.OK, MessageBoxImage.Stop); return; }
-                        File.Copy(source.FullName, target.FullName);
-                        _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name });
+                        if (!target.Exists)
+                        {
+                            File.Copy(source.FullName, target.FullName);
+                            _VmpbDocumentItems.Add(new DocumentDisplay(target.FullName, target.Name));
+                        }
                     }
                     if (t.Name == "part")
                     {
@@ -733,16 +756,28 @@ namespace ModuleMeasuring.ViewModels
                         FileInfo source = new FileInfo(o[0]);
                         var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], source.Name));
                         if (!source.Exists) { MessageBox.Show("Datei nicht vorhanden", "File IO Error", MessageBoxButton.OK, MessageBoxImage.Stop); return; }
-                        File.Copy(source.FullName, target.FullName);
-                        _PartDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name });
+                        if (!target.Exists)
+                        {
+                            File.Copy(source.FullName, target.FullName);
+                            _PartDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name });
+                        }
                     }
 
                 }
             }
-            if (dropInfo.Data is DocumentDisplay d)
-            {
-
-            }
+            //if (dropInfo.Data is DocumentDisplay d)
+            //{
+            //    var docu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag]);
+            //    VmpbInfo.Collect();
+            //    FileInfo source = new FileInfo(d.FullName);
+            //    var target = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], "vmpb" + source.Extension));
+            //    if (!source.Exists) { MessageBox.Show("Datei nicht vorhanden", "File IO Error", MessageBoxButton.OK, MessageBoxImage.Stop); return; }
+            //    if (!target.Exists)
+            //    {
+            //        File.Copy(source.FullName, target.FullName);
+            //        _VmpbDocumentItems.Add(new DocumentDisplay() { FullName = target.FullName, Display = target.Name });
+            //    }
+            //}
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
@@ -765,8 +800,22 @@ namespace ModuleMeasuring.ViewModels
         }
         public struct DocumentDisplay
         {
-            public string FullName { get; set; }
-            public string Display { get; set; }
+            
+            public DocumentDisplay(string FullName, string Display) 
+            { 
+                _fullName = FullName;
+                _display = Display;
+                DocumentType = 0;
+                if (Display.Contains("Messblatt"))
+                {
+                    DocumentType = 1;
+                }
+            }
+            private string _fullName;
+            public string FullName { get { return _fullName; } set { _fullName = value; } }
+            private string _display;
+            public string Display { get { return _display; } set { _display = value; } }
+            public int DocumentType { get; }
         }
     }
 }
