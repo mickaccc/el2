@@ -127,7 +127,7 @@ namespace El2Core.Utils
                     document[DocumentPart.File] = Path.Combine(
                         document[DocumentPart.RootPath],
                         document[DocumentPart.SavePath],
-                        folders[0] + "_Messblatt" + f.Extension);
+                        folders[0] + "_1.Gutteil" + f.Extension);
                     document[DocumentPart.Folder] = folders[1];
                 }
                 return document;
