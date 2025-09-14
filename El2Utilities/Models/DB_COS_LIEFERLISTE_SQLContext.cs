@@ -104,6 +104,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("Latin1_General_CI_AS");
+
         modelBuilder.Entity<AccountCost>(entity =>
         {
             entity.HasKey(e => new { e.AccountId, e.CostId }).HasFillFactor(95);

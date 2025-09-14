@@ -8,23 +8,6 @@
 
 
 
-    <ControlTemplate x:Key="ValidationErrorTemplate">
-        <StackPanel Orientation="Horizontal">
-            <AdornedElementPlaceholder x:Name="Content" />
-            <TextBlock
-                x:Name="ValidationWarning"
-                Grid.Column="1"
-                Margin="5,3,0,0"
-                VerticalAlignment="Center"
-                LineHeight="10"
-                Text="&#xE814;"
-                Foreground="Coral"
-                Visibility="Visible" />
-
-        </StackPanel>
-    </ControlTemplate>
-
-
     <!--  Style for the days of a month.  -->
     <Style x:Key="CalendarDayButtonStyle" TargetType="CalendarDayButton">
         <Setter Property="MinWidth" Value="5" />
@@ -681,7 +664,39 @@
         <Setter Property="Padding" Value="5" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="CalendarStyle" Value="{StaticResource DefaultCalendarStyle}" />
-        <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ValidationErrorTemplate}" />
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <Border BorderBrush="Red" BorderThickness="1">
+                            <AdornedElementPlaceholder x:Name="Content"/>
+                        </Border>
+                        <TextBlock
+                            x:Name="ValidationWarning"
+                            VerticalAlignment="Bottom"
+                            Foreground="Red"
+                            FontSize="20"
+                            FontFamily="Segoe UI"
+                            Margin="3,0,0,0"
+                            Visibility="Visible"
+                            Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                    </Grid>
+                    <!--<ControlTemplate.Triggers>
+                        <Trigger Property="Validation.HasError" Value="False">
+                            <Setter TargetName="ValidationWarning" Property="Text" Value="uu"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>-->
+                    <!--<ControlTemplate.Triggers>
+                        <Trigger Property="Validation.HasError" Value="true">
+                 
+                            <Setter TargetName="ValidationWarning" Property="Text" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>-->
+                </ControlTemplate>
+                
+            </Setter.Value>
+        </Setter>
+ 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DatePicker}">
@@ -789,6 +804,12 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <!--<Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="true">
+                <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                
+            </Trigger>
+        </Style.Triggers>-->
     </Style>
 
     <Style BasedOn="{StaticResource DefaultDatePickerStyle}" TargetType="{x:Type local:ExtendDatePicker}" />

@@ -87,22 +87,21 @@ steppenwolfe_2000@yahoo.com
 
 #region Directives
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
-using System.Windows.Input;
 using System.Windows.Threading;
-using System.Windows.Documents;
 #endregion
 
 namespace vhCalendar
@@ -579,7 +578,7 @@ namespace vhCalendar
             // register inbuilt themes
             RegisterAttachedThemes();
             // load aero default
-            //LoadDefaultTheme();
+            LoadDefaultTheme();
             SelectedDates = new ObservableCollection<DateTime>();
             this._blackoutDates = new BlackoutDatesCollection(this);
         }
@@ -734,6 +733,7 @@ namespace vhCalendar
                 PropertyChangedCallback = new PropertyChangedCallback(OnSelectedDatesChanged),
                 CoerceValueCallback = new CoerceValueCallback(CoerceDatesChanged),
             };
+
 
             // SelectedDates
             SelectedDatesProperty = DependencyProperty.Register("CurrentlySelectedDates", typeof(ObservableCollection<DateTime>),
@@ -1457,6 +1457,7 @@ namespace vhCalendar
         /// </summary>
         public static readonly DependencyProperty SelectionModeProperty;
 
+
         public SelectionType SelectionMode
         {
             get { return (SelectionType)GetValue(SelectionModeProperty); }
@@ -1889,7 +1890,7 @@ namespace vhCalendar
                         FontWeight = FontWeights.Medium,
                     };
                     element.Tag = dayOfWeeks[j];
-                    element.Style = (Style)this.FindResource("DayNameStyle");
+                    element.Style = (Style)TryFindResource("DayNameStyle");
                     grdDay.Children.Add(element);
                 }
 
@@ -1912,7 +1913,7 @@ namespace vhCalendar
                         FontStyle = this.FontStyle,
                         FontWeight = this.FontWeight,
                     };
-                    element.Style = (Style)this.FindResource("WeekNumberStyle");
+                    element.Style = (Style)TryFindResource("WeekNumberStyle");
                     grdWeek.Children.Add(element);
                 }
             }
