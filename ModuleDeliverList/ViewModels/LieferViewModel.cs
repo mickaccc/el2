@@ -454,7 +454,7 @@ namespace ModuleDeliverList.ViewModels
                                     DBctx.Entry<Vorgang>(v).Reload();
                                     _Logger.LogInformation("reloaded {message}", v.VorgangId);
                                     v.RunPropertyChanged();
-                                    OrdersView.DeferRefresh();
+                                    
                                 }
                             }
                             else
@@ -463,7 +463,7 @@ namespace ModuleDeliverList.ViewModels
                                 var vv = db.Vorgangs.SingleOrDefault(x => x.VorgangId.Trim() == vrg.Value.Item2);
 
                                 _Logger.LogInformation("maybe adding {message}", vv?.VorgangId);
-                                Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
+                                var b = Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
 
                             }
                         }
@@ -954,7 +954,7 @@ namespace ModuleDeliverList.ViewModels
                         }
                     }
                 }
-                if(returnValue) OrdersView.Refresh();
+                
                 return returnValue;
             }
             catch (Exception ex)

@@ -448,8 +448,8 @@ namespace ModuleMeasuring.ViewModels
         {
             var docu = VmpbInfo.CreateDocumentInfos([SelectedItem.Material, SelectedItem.Auftrag, SelectedItem.Vorgang]);
             VmpbInfo.Collect();
-            var prefile = _FirstDocumentItems.First(x => x.DocumentType == 1);
-            var postfile = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], SelectedItem.Auftrag + "_Messblatt"));
+            var prefile = new FileInfo(_FirstDocumentItems.First(x => x.DocumentType == 1).FullName);
+            var postfile = new FileInfo(Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath], SelectedItem.Auftrag + "_1.Gutteil"+ prefile.Extension));
             File.Copy(prefile.FullName, postfile.FullName, false);
             _VmpbDocumentItems.Add(new DocumentDisplay(postfile.FullName, postfile.Name));
         }
@@ -806,7 +806,7 @@ namespace ModuleMeasuring.ViewModels
                 _fullName = FullName;
                 _display = Display;
                 DocumentType = 0;
-                if (Display.Contains("Messblatt"))
+                if (Display.Contains("Gutteil"))
                 {
                     DocumentType = 1;
                 }

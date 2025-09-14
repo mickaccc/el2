@@ -16,7 +16,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 
 namespace ModulePlanning.Planning
