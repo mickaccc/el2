@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:wpfcontrol="clr-namespace:WpfCustomControlLibrary;assembly=WpfCustomControlLibrary"
+             xmlns:vh="clr-namespace:vhCalendar;assembly=vhCalendar"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -15,6 +17,7 @@
     <Grid>
         <Grid.Resources>
             <conv:TTNR_Converter x:Key="TTNR"/>
+            <conv:ArchivStateConverter x:Key="ArchivState"/>
             <conv:ActivateColorConverter ActiveColor="LightGreen" x:Key="Active"/>
             <conv:MultiObjectConverter x:Key="multi"/>
             <conv:BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -23,15 +26,29 @@
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="search"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="185"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <TextBox x:Name="search"
                  materialdesign:HintAssist.Hint="nach TTNR, Bezeichnung oder Auftragsnummer suchen"
                  materialdesign:TextFieldAssist.HasClearButton="False" Text="{Binding Path=SearchText}"
                  Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Return" Command="{Binding SearchCommand}"
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding SearchCommand}"
                             CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType=TextBox}}" />
-            </TextBox.InputBindings>
-        </TextBox>
+                </TextBox.InputBindings>
+            </TextBox>
+            <ToggleButton x:Name="Timeline" Content="Zeitraum" Margin="5,0,0,0" Padding="10,0"
+                          Style="{DynamicResource MahApps.Styles.ToggleButton.Flat}" />
+            
+    
+            
+            <Button Content="Archivieren" Margin="10,0,0,0" Padding="10,0" Command="{Binding ArchivateCommand}"
+                    Style="{DynamicResource MahApps.Styles.Button.Flat}" />
+        </StackPanel>
+  
         <StackPanel Grid.Row="1" >
 
             <mah:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50" IsActive="True" Foreground="{DynamicResource ActiveProcess}"
@@ -72,7 +89,14 @@
                                 <DataGridTextColumn Header="Auftrag" Binding="{Binding OrderNr}" >
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Background" Value="{Binding Closed, Converter={StaticResource Active}}"/>
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource ArchivState}">
+                                                        <Binding Path="Closed" UpdateSourceTrigger="PropertyChanged"/>
+                                                        <Binding Path="ArchivState" UpdateSourceTrigger="PropertyChanged"/>
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                     
@@ -83,6 +107,7 @@
                                 <DataGridTextColumn Header="Geliefert" Binding="{Binding Delivered}"/>
                                 <DataGridTextColumn Header="Ausschuss" Binding="{Binding Scrap}"/>
                                 <DataGridTextColumn Header="Nacharbeit" Binding="{Binding Rework}"/>
+                                <DataGridTextColumn Header="Abgelegt" Binding="{Binding Completed, StringFormat=\{0:d\}}"/>
                                 <DataGridTemplateColumn Header="Mustersonderfreigabe">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -109,5 +134,13 @@
             </ListBox.ItemTemplate>
 
         </ListBox>
+        <vh:Calendar HorizontalAlignment="Right" Grid.Row="1" Grid.Column="1"  Height="200" Margin="0,0,10,0" VerticalAlignment="Top"
+            SelectionMode="Week"  SelectedDate="{Binding StartDateFilter}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectedDatesChanged">
+                    <i:InvokeCommandAction Command="{Binding DateChangedCommand}" CommandParameter="{Binding SelectedDate, RelativeSource={RelativeSource AncestorType=vh:Calendar}}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </vh:Calendar>
     </Grid>
 </UserControl>

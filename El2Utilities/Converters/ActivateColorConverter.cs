@@ -14,6 +14,7 @@ namespace El2Core.Converters
 
             if ((bool)value)
             {
+    
                 return ActiveColor ??= Brushes.Red;
             }
             else
