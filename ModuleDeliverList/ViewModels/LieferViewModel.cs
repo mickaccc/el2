@@ -444,17 +444,14 @@ namespace ModuleDeliverList.ViewModels
                         _Logger.LogInformation("commin {message}, {1}", vrg.Value.Item1, vrg.Value.Item2);
                         if (vrg != null)
                         {
-
                             if (_orders.Any(x => x.VorgangId == vrg.Value.Item2))
                             {
                                 using (_lock.EnterScope())
                                 {
-
                                     v = _orders.Single(x => x.VorgangId == vrg.Value.Item2);
                                     DBctx.Entry<Vorgang>(v).Reload();
                                     _Logger.LogInformation("reloaded {message}", v.VorgangId);
-                                    v.RunPropertyChanged();
-                                    
+                                    v.RunPropertyChanged();                                   
                                 }
                             }
                             else
@@ -464,12 +461,10 @@ namespace ModuleDeliverList.ViewModels
 
                                 _Logger.LogInformation("maybe adding {message}", vv?.VorgangId);
                                 var b = Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, AddRelevantProcess, vrg);
-
                             }
                         }
                     }
                 });
-
             }
             catch (Exception ex)
             {
