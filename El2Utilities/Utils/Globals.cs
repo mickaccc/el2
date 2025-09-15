@@ -16,16 +16,17 @@ namespace El2Core.Utils
     {
         static string PC { get; }
         static User User { get; }
+        static IContainerProvider Container { get; }
     }
     public class Globals : IGlobals, IDisposable
     {
         public User User { get; private set; }
         public string PC { get; }
         public List<Rule> Rules { get; private set; }
-        private IContainerProvider _container;
+        private static IContainerProvider Container;
         public Globals(IContainerProvider container)
         {
-            _container = container;
+            Container = container;
             PC = Environment.MachineName;
             LoadData();
             
@@ -69,13 +70,18 @@ namespace El2Core.Utils
         private void LoadData()
         {
 
-            using (var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
+            using (var db = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
 
                 Rules = db.Rules.ToList(); 
             }
+            Archivator.ArchivLocation = Rules.Find(x => x.RuleName.Trim() == "MeasureArchivFolder").RuleValue;
+
+            var ext = Rules.Find(x => x.RuleName.Trim() == "MeasureFileExt").RuleValue.Trim();
+            Archivator.FileExtensions = (ext.Length > 0) ? ext.Split(',') : null;
+            Archivator.DelayDays = int.Parse(Rules.Find(x => x.RuleName.Trim() == "MeasureArchivDelay").RuleValue);
         }
-        public void SaveRule(string RuleKey, string value)
+        public static void SaveRule(string RuleKey, string value)
         {
             Rule rule;
             if (RuleInfo.Rules.TryGetValue(RuleKey, out var outRule))
@@ -86,9 +92,10 @@ namespace El2Core.Utils
             else { rule = new Rule() { RuleName = RuleKey, RuleValue = value }; }
             SaveRule(rule);
         }
-        public void SaveRule(Rule rule)
+        public static void SaveRule(Rule rule)
         { 
-            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            
+            using var db = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             if (db.Rules.All(x => x.RuleName != rule.RuleName))
             {
                 db.Rules.Add(rule);
@@ -101,7 +108,7 @@ namespace El2Core.Utils
             }
             db.SaveChanges();
         }
-        public void SaveProjectSchemes(List<ProjectScheme> projectSchemes)
+        public static void SaveProjectSchemes(List<ProjectScheme> projectSchemes)
         {
 
             var serializer = XmlSerializerHelper.GetSerializer(typeof(List<ProjectScheme>));

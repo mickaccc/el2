@@ -115,15 +115,28 @@ namespace ModuleProducts.ViewModels
             {
                 using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
 
+                var onr = await db.Vorgangs
+                    .Where(x => x.ArbPlSap != null && x.ArbPlSap.Length >=3)
+                    .Select(x => new ValueTuple<string, string> (x.Aid, x.ArbPlSap))
+                    .ToListAsync();
+
+                var a = onr
+                    .Where(x => UserInfo.User.AccountCostUnits.Any(y => y.CostId.ToString().Equals(x.Item2[..3])))
+                    .Select(x => x.Item1)
+                    .ToList();
+
                 var mat = await db.TblMaterials
                     .Include(x => x.OrderRbs)
                     .ThenInclude(x => x.Vorgangs)
+                    .Where(x => x.OrderRbs.Any(y => a.Contains(y.Aid)))
                     .ToListAsync();
 
-                foreach (var m in mat.Where(x => x.OrderRbs.Any()).AsParallel())
+                foreach (var m in mat)
                 {
+    
                     var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs]);
                     _Materials.Add(p);
+        
                 }
                 ProductsView = new ListCollectionView(_Materials);
                 ProductsView.Filter += OnFilterPredicate;
@@ -200,13 +213,13 @@ namespace ModuleProducts.ViewModels
                 if (!accept)
                     accept = mat.ProdOrders.Any(x => x.OrderNr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase));
             }
-            if (Selected_Dates.Any())
-            {
-                if (obj is ProductMaterial m)
-                {
-                    accept = m.ProdOrders.Any(x => x.Completed != null && Selected_Dates.Contains(x.Completed.Value.Date));
-                }
-            }
+            //if (Selected_Dates.Any())
+            //{
+            //    if (obj is ProductMaterial m)
+            //    {
+            //        accept = m.ProdOrders.Any(x => x.Completed != null && Selected_Dates.Contains(x.Completed.Value.Date));
+            //    }
+            //}
             return accept;
         }
         private void OnTextSearch(object obj)

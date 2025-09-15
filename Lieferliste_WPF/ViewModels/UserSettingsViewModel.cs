@@ -121,7 +121,28 @@ namespace Lieferliste_WPF.ViewModels
         public string RuleMeasureArchivFolder
         {
             get { return _RuleMeasureArchivFolder; }
-            set { _RuleMeasureArchivFolder = value; }
+            set { _RuleMeasureArchivFolder = Archivator.ArchivLocation = value; }
+        }
+        private string _DrawingLink;
+
+        public string DrawingLink
+        {
+            get { return _DrawingLink; }
+            set { _DrawingLink = value; }
+        }
+        private string _ArchivFileExt;
+
+        public string ArchivFileExt
+        {
+            get { return _ArchivFileExt; }
+            set { _ArchivFileExt = value;  Archivator.FileExtensions = value.Split(','); }
+        }
+        private int _ArchivDelayDays;
+
+        public int ArchivDelayDays
+        {
+            get { return _ArchivDelayDays; }
+            set { _ArchivDelayDays = Archivator.DelayDays = value; }
         }
 
 
@@ -222,8 +243,10 @@ namespace Lieferliste_WPF.ViewModels
                 RuleMsfDomain = msf.RuleValue;
             if (RuleInfo.Rules.TryGetValue("MeasureScan", out Rule? scan))
                 RuleInfoScan= scan.RuleValue;
-            if (RuleInfo.Rules.TryGetValue("MeasureArchivFolder", out Rule? archiv))
-                RuleMeasureArchivFolder = archiv.RuleValue;
+
+            RuleMeasureArchivFolder = Archivator.ArchivLocation;
+            ArchivFileExt = (Archivator.FileExtensions != null) ? string.Join(',', Archivator.FileExtensions) : " ";
+            ArchivDelayDays = Archivator.DelayDays;
 
         }
         private void LoadFilters()
@@ -315,11 +338,13 @@ namespace Lieferliste_WPF.ViewModels
             VmpbDocumentInfo.SaveDocumentData();
             WorkareaDocumentInfo.SaveDocumentData();
             MeasureDocumentInfo.SaveDocumentData();
-            var gl = new Globals(_container);
-            gl.SaveRule("MeasureScan", RuleInfoScan);
-            gl.SaveRule("MeasureMsfDomain", RuleMsfDomain);
-            gl.SaveRule("MeasureArchivFolder", RuleMeasureArchivFolder);
-            gl.SaveProjectSchemes([.. ProjectSchemes]);
+            
+            Globals.SaveRule("MeasureScan", RuleInfoScan);
+            Globals.SaveRule("MeasureMsfDomain", RuleMsfDomain);
+            Globals.SaveRule("MeasureArchivFolder", RuleMeasureArchivFolder);
+            Globals.SaveRule("MeasureFileExt", ArchivFileExt);
+            Globals.SaveRule("MeasureArchivDelay", ArchivDelayDays.ToString());
+            Globals.SaveProjectSchemes([.. ProjectSchemes]);
             _filterContainer.Save();
 
         }

@@ -368,31 +368,43 @@
                     </TabItem>
                     <TabItem Header="Muster">
                         <StackPanel>
-                        <StackPanel>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Domain für Muster Sonder Freigabe"/>
-                                    <materialDesign:PackIcon Kind="Settings"/>
-                                </StackPanel>
-                            </Label>
-                            <TextBox Text="{Binding RuleMsfDomain}"/>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Pfad zum Archiv"/>
-                                    <materialDesign:PackIcon Kind="Settings"/>
-                                </StackPanel>
-                            </Label>
-                            <TextBox Text="{Binding ArchivatePath}"/>
-                        </StackPanel>
-                        <StackPanel>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Archivpfad für Messdokumente"/>
-                                    <materialDesign:PackIcon Kind="Settings"/>
-                                </StackPanel>
-                            </Label>
+                            <StackPanel>
+                                <Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Domain für Muster Sonder Freigabe"/>
+                                        <materialDesign:PackIcon Kind="Settings"/>
+                                    </StackPanel>
+                                </Label>
+                                <TextBox Text="{Binding RuleMsfDomain}"/>
+                            </StackPanel>
+      
+                            <StackPanel>
+                                <Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Archivpfad für Messdokumente"/>
+                                        <materialDesign:PackIcon Kind="Settings"/>
+                                    </StackPanel>
+                                </Label>
                                 <TextBox Text="{Binding RuleMeasureArchivFolder}"/>
-                        </StackPanel>
+                            </StackPanel>
+                            <StackPanel>
+                                <Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Dateierweiterungen (Komma getrennt)"/>
+                                        <materialDesign:PackIcon Kind="Settings"/>
+                                    </StackPanel>
+                                </Label>
+                                <TextBox Text="{Binding ArchivFileExt}"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Verzögerung der Archivierung in Tagen"/>
+                                        <materialDesign:PackIcon Kind="Settings"/>
+                                    </StackPanel>
+                                </Label>
+                                <TextBox Text="{Binding ArchivDelayDays}"/>
+                            </StackPanel>
                         </StackPanel>
                     </TabItem>
                 </TabControl>

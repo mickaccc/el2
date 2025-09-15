@@ -855,11 +855,12 @@ namespace Lieferliste_WPF.ViewModels
             foreach (var order in orders)
             {
                 var accdate = order.Vorgangs.OrderBy(y => y.Vnr).Last().ActualEndDate;
-                order.CompleteDate = accdate;
+                if (accdate != null)
+                    order.CompleteDate = accdate;
                 //db.Update(order);
-                db.SaveChanges();
+                
             }
-            
+            db.SaveChanges();
             //var pcont = new PersonalFilterContainer();
             //var filt = new PersonalFilter("^F", PropertyNames.Auftragsnummer);
             //pcont.Add("name", filt);

@@ -23,7 +23,7 @@ namespace El2Core.Utils
             List<FileInfo> files = [];
             var dir = new DirectoryInfo(SourceLocation);
             if (dir.Exists == false) return 3;
-            if (FileExtensions.Length != 0 == false)
+            if (FileExtensions == null)
             {
                 files.AddRange([.. dir.GetFiles()]);
             }
@@ -46,7 +46,7 @@ namespace El2Core.Utils
 
                 
                 files.Clear();
-                if (FileExtensions.Length != 0 == false)
+                if (FileExtensions == null)
                 {
                     files.AddRange([.. d.GetFiles()]);
                 }
