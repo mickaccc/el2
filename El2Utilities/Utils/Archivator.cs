@@ -13,7 +13,7 @@ namespace El2Core.Utils
         private const string DefaultArchivLocation = @"C:\Lieferliste\Archiv";
 
         public static string ArchivLocation { get; set; } = DefaultArchivLocation;
-        public static string[] FileExtensions { get; set; } = [];
+        public static string[] FileExtensions { get; set; }
         public static int DelayDays { get; set; } = 0;
 
         public static int Archivate(string SourceLocation)

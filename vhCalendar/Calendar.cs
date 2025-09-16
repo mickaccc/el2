@@ -92,6 +92,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -124,26 +125,6 @@ namespace vhCalendar
     TemplatePart(Name = "Part_FooterContainer", Type = typeof(Grid))]
     public class Calendar : Control, INotifyPropertyChanged
     {
-        #region Property Name Constants
-        /// <summary>
-        /// Property names as string constants
-        /// </summary>
-        private const string CurrentlySelectedDatePropName = "CurrentlySelectedDateString";
-        private const string DisplayModePropName = "DisplayMode";
-        private const string DisplayDateStartPropName = "DisplayDateStart";
-        private const string FooterVisibilityPropName = "FooterVisibility";
-        private const string TodayHighlightedPropName = "IsTodayHighlighted";
-        private const string SelectionModePropName = "SelectionMode";
-        private const string ShowDaysOfAllMonthsPropName = "ShowDaysOfAllMonths";
-        private const string ThemePropName = "Theme";
-        private const string WeekColumnVisibilityPropName = "WeekColumnVisibility";
-        private const string HeaderHeightPropName = "HeaderHeight";
-        private const string HeaderFontSizePropName = "HeaderFontSize";
-        private const string HeaderFontWeightPropName = "HeaderFontWeight";
-        private const string AllowDragPropName = "AllowDrag";
-        private const string AdornDragPropName = "AdornDrag";
-        private const string IsAnimatedPropName = "IsAnimated";
-        #endregion
 
         #region Theme Declarations
         /// <summary>
@@ -575,202 +556,18 @@ namespace vhCalendar
         #region Constructors
         public Calendar()
         {
+            // override style
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Calendar), new FrameworkPropertyMetadata(typeof(Calendar)));
+            SelectedDates = [];
             // register inbuilt themes
             RegisterAttachedThemes();
             // load aero default
             LoadDefaultTheme();
-            SelectedDates = new ObservableCollection<DateTime>();
-            this._blackoutDates = new BlackoutDatesCollection(this);
-        }
-
-        static Calendar()
-        {
-            // override style
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(Calendar), new FrameworkPropertyMetadata(typeof(Calendar)));
-
-
-            /*** Property Declarations ***/
-            // AllowDrag
-            UIPropertyMetadata allowDragMetaData = new UIPropertyMetadata
-            {
-                DefaultValue = false,
-                PropertyChangedCallback = new PropertyChangedCallback(OnAllowDragChanged),
-            };
-            AllowDragProperty = DependencyProperty.Register("AllowDrag", typeof(bool), typeof(Calendar), allowDragMetaData);
-
-            // AdornDrag
-            UIPropertyMetadata adornDragMetaData = new UIPropertyMetadata
-            {
-                DefaultValue = false,
-                CoerceValueCallback = new CoerceValueCallback(CoerceAdornDrag),
-                PropertyChangedCallback = new PropertyChangedCallback(OnAdornChanged),
-            };
-            AdornDragProperty = DependencyProperty.Register("AdornDrag", typeof(bool), typeof(Calendar), adornDragMetaData);
-
-            // HeaderFontSize
-            FrameworkPropertyMetadata headerFontSizeMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = (double)12,
-                CoerceValueCallback = new CoerceValueCallback(CoerceHeaderFontSize),
-                PropertyChangedCallback = new PropertyChangedCallback(OnHeaderFontSizeChanged),
-                AffectsRender = true, 
-                AffectsMeasure = true
-            };
-            HeaderFontSizeProperty = DependencyProperty.Register("HeaderFontSize", typeof(double), typeof(Calendar), headerFontSizeMetaData);
-
-            // HeaderFontWeight
-            FrameworkPropertyMetadata headerFontWeightMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = FontWeights.Bold,
-                PropertyChangedCallback = new PropertyChangedCallback(OnHeaderFontWeightChanged),
-                AffectsRender = true
-            };
-            HeaderFontWeightProperty = DependencyProperty.Register("HeaderFontWeight", typeof(FontWeight), typeof(Calendar), headerFontWeightMetaData);
-
-            // IsAnimated 
-            FrameworkPropertyMetadata isAnimatedMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = true,
-                PropertyChangedCallback = new PropertyChangedCallback(OnIsAnimatedChanged),
-            };
-            IsAnimatedProperty = DependencyProperty.Register("IsAnimated", typeof(bool), typeof(Calendar), isAnimatedMetaData);
-
-            // IsTodayHighlighted
-            FrameworkPropertyMetadata isTodayHighlightedMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = true,
-                PropertyChangedCallback = new PropertyChangedCallback(OnTodayHighlightedChanged),
-                AffectsRender = true
-            };
-            IsTodayHighlightedProperty = DependencyProperty.Register("IsTodayHighlighted", typeof(bool), typeof(Calendar), isTodayHighlightedMetaData);
-
-            // HeaderHeight
-            FrameworkPropertyMetadata headerHeightMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = (double)20,
-                PropertyChangedCallback = new PropertyChangedCallback(OnHeaderHeightChanged),
-                CoerceValueCallback = new CoerceValueCallback(CoerceHeaderHeight),
-                AffectsRender = true,
-                AffectsMeasure = true
-            };
-            HeaderHeightProperty = DependencyProperty.Register("HeaderHeight", typeof(double), typeof(Calendar), headerHeightMetaData);
-
-            // ShowDaysOfAllMonths
-            FrameworkPropertyMetadata showDaysOfAllMonthsMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = true,
-                PropertyChangedCallback = new PropertyChangedCallback(OnShowDaysOfAllMonthsChanged),
-                AffectsRender = true
-            };
-            ShowDaysOfAllMonthsProperty = DependencyProperty.Register("ShowDaysOfAllMonths", typeof(bool), typeof(Calendar), showDaysOfAllMonthsMetaData);
-
-            // FooterVisibility
-            FrameworkPropertyMetadata footerVisibilityMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = Visibility.Visible,
-                PropertyChangedCallback = new PropertyChangedCallback(OnFooterVisibilityChanged),
-                AffectsRender = true,
-                AffectsMeasure = true
-            };
-            FooterVisibilityProperty = DependencyProperty.Register("FooterVisibility", typeof(Visibility), typeof(Calendar), footerVisibilityMetaData);
-
-            // WeekColumnVisibility
-            FrameworkPropertyMetadata weekColumnVisibilityMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = Visibility.Visible,
-                PropertyChangedCallback = new PropertyChangedCallback(OnWeekColumnVisibilityChanged),
-                AffectsRender = true,
-                AffectsMeasure = true
-            };
-            WeekColumnVisibilityProperty = DependencyProperty.Register("WeekColumnVisibility", typeof(Visibility), typeof(Calendar), weekColumnVisibilityMetaData);
-
-            // DisplayMode
-            FrameworkPropertyMetadata displayModeMetaData = new FrameworkPropertyMetadata
-            {
-                PropertyChangedCallback = new PropertyChangedCallback(OnDisplayModeChanged)
-            };
-            DisplayModeProperty = DependencyProperty.Register("DisplayMode", typeof(DisplayType), typeof(Calendar), displayModeMetaData);
             
-            // DisplayDate
-            UIPropertyMetadata displayDateMetaData = new UIPropertyMetadata
-            {
-                DefaultValue = DateTime.Today,
-                PropertyChangedCallback = new PropertyChangedCallback(OnModeChanged),
-                CoerceValueCallback = new CoerceValueCallback(CoerceDateToBeInRange)
-            };
-            DisplayDateProperty = DependencyProperty.Register("DisplayDate", typeof(DateTime), typeof(Calendar), displayDateMetaData);
-
-            // DisplayDateStart
-            UIPropertyMetadata displayDateStartMetaData = new UIPropertyMetadata
-            {
-                DefaultValue = new DateTime(1, 1, 1),
-                PropertyChangedCallback = new PropertyChangedCallback(OnDisplayDateStartChanged),
-                CoerceValueCallback = new CoerceValueCallback(CoerceDisplayDateStart),
-            };
-            DisplayDateStartProperty = DependencyProperty.Register("DisplayDateStart", typeof(DateTime), typeof(Calendar), displayDateStartMetaData);
-
-            // DisplayDateEnd
-            UIPropertyMetadata displayDateEndMetaData = new UIPropertyMetadata
-            {
-                DefaultValue = new DateTime(2199, 1, 1),
-                CoerceValueCallback = new CoerceValueCallback(CoerceDisplayDateEnd),
-                PropertyChangedCallback = new PropertyChangedCallback(OnDisplayDateEndChanged)
-            };
-            DisplayDateEndProperty = DependencyProperty.Register("DisplayDateEnd", typeof(DateTime), typeof(Calendar), displayDateEndMetaData);
-
-            // SelectedDate
-            UIPropertyMetadata selectedDateMetaData = new UIPropertyMetadata
-            {
-                DefaultValue = DateTime.Now,
-                PropertyChangedCallback = new PropertyChangedCallback(OnSelectedDateChanged)
-            };
-            SelectedDateProperty = DependencyProperty.Register("SelectedDate", typeof(DateTime), typeof(Calendar), selectedDateMetaData);
-
-            // SelectedDates
-            UIPropertyMetadata selectedDatesMetaData = new UIPropertyMetadata
-            {
-                DefaultValue = null,
-                PropertyChangedCallback = new PropertyChangedCallback(OnSelectedDatesChanged),
-                CoerceValueCallback = new CoerceValueCallback(CoerceDatesChanged),
-            };
-
-
-            // SelectedDates
-            SelectedDatesProperty = DependencyProperty.Register("CurrentlySelectedDates", typeof(ObservableCollection<DateTime>),
-                typeof(Calendar), new UIPropertyMetadata(null, 
-                    delegate(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-                    { 
-                        Calendar cld = (Calendar)sender;
-                        INotifyCollectionChanged collection = e.NewValue as INotifyCollectionChanged;
-                        if (collection != null)
-                        {
-                            collection.CollectionChanged +=
-                                delegate { cld.OnPropertyChanged(new PropertyChangedEventArgs(CurrentlySelectedDatePropName)); };
-                        }
-                        cld.OnPropertyChanged(new PropertyChangedEventArgs(CurrentlySelectedDatePropName));
-                    }
-            ));
-
-            // SetTheme
-            FrameworkPropertyMetadata themeMetaData = new FrameworkPropertyMetadata
-            {
-                DefaultValue = Themes.AeroNormal.ToString(),
-                CoerceValueCallback = new CoerceValueCallback(CoerceThemeChange),
-                PropertyChangedCallback = new PropertyChangedCallback(OnThemeChanged),
-                AffectsRender = true,
-                AffectsMeasure = true
-            };
-            ThemeProperty = DependencyProperty.Register("Theme", typeof(string), typeof(Calendar), themeMetaData);
-
-            // SelectionMode
-            UIPropertyMetadata selectionModeMetaData = new UIPropertyMetadata
-                (SelectionType.Single, 
-                    delegate(DependencyObject sender, DependencyPropertyChangedEventArgs e) 
-                    { 
-                    }, 
-                CoerceSelectionMode);
-            SelectionModeProperty = DependencyProperty.Register("SelectionMode", typeof(SelectionType), typeof(Calendar), selectionModeMetaData);
+            this._blackoutDates = new BlackoutDatesCollection(this);
+            
         }
+
         #endregion
 
         #region INotifyPropertyChanged Members
@@ -855,6 +652,7 @@ namespace vhCalendar
             {
                 FindParentWindow();
             }
+            SelectedDates = [];
         }
 
         /// <summary>
@@ -933,8 +731,10 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets dragging capability
         /// </summary>
-        public static readonly DependencyProperty AllowDragProperty;
+        public static readonly DependencyProperty AllowDragProperty =
+            DependencyProperty.Register("AllowDrag", typeof(bool), typeof(Calendar), new UIPropertyMetadata(false, OnAllowDragChanged));
 
+          
         public bool AllowDrag
         {
             get { return (bool)this.GetValue(AllowDragProperty); }
@@ -944,7 +744,7 @@ namespace vhCalendar
         private static void OnAllowDragChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Calendar vc = d as Calendar;
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(AllowDragPropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(AllowDrag)));
         }
         #endregion
 
@@ -952,7 +752,8 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets drag usese adorned window
         /// </summary>
-        public static readonly DependencyProperty AdornDragProperty;
+        public static readonly DependencyProperty AdornDragProperty =
+            DependencyProperty.Register("AdornDrag", typeof(bool), typeof(Calendar), new PropertyMetadata(false, OnAdornChanged, CoerceAdornDrag));
 
         public bool AdornDrag
         {
@@ -975,7 +776,7 @@ namespace vhCalendar
         private static void OnAdornChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Calendar vc = d as Calendar;
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(AdornDragPropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(AdornDrag)));
         }
         #endregion
 
@@ -993,7 +794,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the date that is being displayed in the calendar
         /// </summary>
-        public static readonly DependencyProperty DisplayDateProperty;
+        public static readonly DependencyProperty DisplayDateProperty =
+            DependencyProperty.Register("DisplayDate", typeof(DateTime), typeof(Calendar),
+                new UIPropertyMetadata(DateTime.Today, OnModeChanged, CoerceDateToBeInRange));
 
         public DateTime DisplayDate
         {
@@ -1022,7 +825,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the calender display mode
         /// </summary>
-        public static readonly DependencyProperty DisplayModeProperty;
+        public static readonly DependencyProperty DisplayModeProperty =
+            DependencyProperty.Register("DisplayMode", typeof(DisplayType), typeof(Calendar),
+                new FrameworkPropertyMetadata(DisplayType.Month, OnDisplayModeChanged));
 
         public DisplayType DisplayMode
         {
@@ -1044,7 +849,7 @@ namespace vhCalendar
             vc.RaiseEvent(args);
 
             //raise the PropertyChanged event
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(DisplayModePropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(DisplayMode)));
         }
 
         private static void OnModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -1073,7 +878,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the minimum date that is displayed and selected
         /// </summary>
-        public static readonly DependencyProperty DisplayDateStartProperty;
+        public static readonly DependencyProperty DisplayDateStartProperty =
+            DependencyProperty.Register("DisplayDateStart", typeof(DateTime), typeof(Calendar),
+                new UIPropertyMetadata(new DateTime(1, 1, 1), OnDisplayDateStartChanged, CoerceDisplayDateStart));
 
         public DateTime DisplayDateStart
         {
@@ -1089,7 +896,7 @@ namespace vhCalendar
             vc.CoerceValue(SelectedDateProperty);
             vc.CoerceValue(DisplayDateProperty);
 
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(DisplayDateStartPropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(DisplayDateStart)));
             OnModeChanged(d, new DependencyPropertyChangedEventArgs());
         }
 
@@ -1105,7 +912,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the maximum date that is displayed and selected
         /// </summary>
-        public static readonly DependencyProperty DisplayDateEndProperty;
+        public static readonly DependencyProperty DisplayDateEndProperty =
+            DependencyProperty.Register("DisplayDateEnd", typeof(DateTime), typeof(Calendar),
+                new UIPropertyMetadata(new DateTime(2199, 1, 1), OnDisplayDateEndChanged, CoerceDisplayDateEnd));
 
         public DateTime DisplayDateEnd
         {
@@ -1141,7 +950,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the footer visibility
         /// </summary>
-        public static readonly DependencyProperty FooterVisibilityProperty;
+        public static readonly DependencyProperty FooterVisibilityProperty =
+            DependencyProperty.Register("FooterVisibility", typeof(Visibility), typeof(Calendar),
+                new FrameworkPropertyMetadata(Visibility.Visible, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsMeasure, OnFooterVisibilityChanged));
 
         public Visibility FooterVisibility
         {
@@ -1167,7 +978,7 @@ namespace vhCalendar
                     vc.UpdateCalendar();
                 }
 
-                vc.OnPropertyChanged(new PropertyChangedEventArgs(FooterVisibilityPropName));
+                vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(FooterVisibility)));
             }
         }
         #endregion
@@ -1176,7 +987,8 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the title button font size
         /// </summary>
-        public static readonly DependencyProperty HeaderFontSizeProperty;
+        public static readonly DependencyProperty HeaderFontSizeProperty =
+            DependencyProperty.Register("HeaderFontSize", typeof(double), typeof(Calendar), new PropertyMetadata((double)12, OnHeaderFontSizeChanged, CoerceHeaderFontSize));
 
         public double HeaderFontSize
         {
@@ -1209,7 +1021,7 @@ namespace vhCalendar
             if (btnTitle != null)
             {
                 btnTitle.FontSize = (double)e.NewValue;
-                vc.OnPropertyChanged(new PropertyChangedEventArgs(HeaderFontSizePropName));
+                vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(HeaderFontSize)));
             }
         }
         #endregion
@@ -1218,7 +1030,8 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the title button font weight
         /// </summary>
-        public static readonly DependencyProperty HeaderFontWeightProperty;
+        public static readonly DependencyProperty HeaderFontWeightProperty =
+            DependencyProperty.Register("HeaderFontWeight", typeof(FontWeight), typeof(Calendar), new FrameworkPropertyMetadata(FontWeights.Bold, FrameworkPropertyMetadataOptions.AffectsRender, OnHeaderFontWeightChanged));
 
         public FontWeight HeaderFontWeight
         {
@@ -1234,7 +1047,7 @@ namespace vhCalendar
             if (btnTitle != null)
             {
                 btnTitle.FontWeight = (FontWeight)e.NewValue;
-                vc.OnPropertyChanged(new PropertyChangedEventArgs(HeaderFontWeightPropName));
+                vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(HeaderFontWeight)));
             }
         }
         #endregion
@@ -1243,7 +1056,10 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the header height
         /// </summary>
-        public static readonly DependencyProperty HeaderHeightProperty;
+        public static readonly DependencyProperty HeaderHeightProperty =
+            DependencyProperty.Register("HeaderHeight", typeof(double), typeof(Calendar),
+                new FrameworkPropertyMetadata((double)20, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsMeasure,
+                    new PropertyChangedCallback(OnHeaderHeightChanged), new CoerceValueCallback(CoerceHeaderHeight)));
 
         public double HeaderHeight
         {
@@ -1276,7 +1092,7 @@ namespace vhCalendar
             if (brdHeaderBorder != null)
             {
                 brdHeaderBorder.Height = (double)e.NewValue;
-                vc.OnPropertyChanged(new PropertyChangedEventArgs(HeaderHeightPropName));
+                vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(HeaderHeight)));
             }
         }
         #endregion
@@ -1285,7 +1101,8 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets animations are used
         /// </summary>
-        public static readonly DependencyProperty IsAnimatedProperty;
+        public static readonly DependencyProperty IsAnimatedProperty =
+            DependencyProperty.Register("IsAnimated", typeof(bool), typeof(Calendar), new FrameworkPropertyMetadata(true, OnIsAnimatedChanged));
 
         public bool IsAnimated
         {
@@ -1296,7 +1113,7 @@ namespace vhCalendar
         private static void OnIsAnimatedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Calendar vc = d as Calendar;
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(IsAnimatedPropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsAnimated)));
         }
         #endregion
 
@@ -1314,7 +1131,8 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets current day is highlighted
         /// </summary>
-        public static readonly DependencyProperty IsTodayHighlightedProperty;
+        public static readonly DependencyProperty IsTodayHighlightedProperty =
+            DependencyProperty.Register("IsTodayHighlighted", typeof(bool), typeof(Calendar), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender, OnTodayHighlightedChanged));
 
         public bool IsTodayHighlighted
         {
@@ -1329,7 +1147,7 @@ namespace vhCalendar
             if (vc.DisplayMode == DisplayType.Month)
             {
                 vc.SetMonthMode();
-                vc.OnPropertyChanged(new PropertyChangedEventArgs(TodayHighlightedPropName));
+                vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsTodayHighlighted)));
             }
         }
         #endregion
@@ -1338,7 +1156,10 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the currently viewed date
         /// </summary>
-        public static readonly DependencyProperty SelectedDateProperty;
+        public static readonly DependencyProperty SelectedDateProperty =
+            DependencyProperty.Register("SelectedDate", typeof(DateTime), typeof(Calendar),
+                new UIPropertyMetadata(DateTime.Now, OnSelectedDateChanged));
+  
 
         public DateTime SelectedDate
         {
@@ -1350,7 +1171,7 @@ namespace vhCalendar
         {
             Calendar vc = (Calendar)obj;
             vc.OnDateChanged(vc.SelectedDate, (DateTime)e.OldValue);
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(CurrentlySelectedDatePropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(SelectedDate)));
         }
 
         private void OnDateChanged(DateTime newDate, DateTime oldDate)
@@ -1383,7 +1204,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets a collection of selected dates
         /// </summary>
-        public static readonly DependencyProperty SelectedDatesProperty;
+        public static readonly DependencyProperty SelectedDatesProperty =
+            DependencyProperty.Register("SelectedDates", typeof(ObservableCollection<DateTime>), typeof(Calendar),
+                new UIPropertyMetadata(null, OnSelectedDatesChanged, CoerceDatesChanged));
 
         public ObservableCollection<DateTime> SelectedDates
         {
@@ -1395,14 +1218,32 @@ namespace vhCalendar
         {
             Calendar vc = (Calendar)obj;
             vc.OnDatesChanged((ObservableCollection<DateTime>)e.NewValue, (ObservableCollection<DateTime>)e.OldValue);
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(CurrentlySelectedDatePropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(SelectedDate)));
         }
 
-        private static object CoerceDatesChanged(DependencyObject d, object o)
+        static object CoerceDatesChanged(DependencyObject d, object o)
         {
             Calendar vc = d as Calendar;
             return o;
         }
+
+
+//        // SelectedDates
+//        SelectedDatesProperty = DependencyProperty.Register("CurrentlySelectedDates", typeof(ObservableCollection<DateTime>),
+//                typeof(Calendar), new UIPropertyMetadata(null,
+//                    delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e)
+//                    { 
+//                        Calendar cld = (Calendar)sender;
+//        INotifyCollectionChanged collection = e.NewValue as INotifyCollectionChanged;
+//                        if (collection != null)
+//                        {
+//                            collection.CollectionChanged +=
+//                                delegate { cld.OnPropertyChanged(new PropertyChangedEventArgs(CurrentlySelectedDatePropName)); };
+//}
+//cld.OnPropertyChanged(new PropertyChangedEventArgs(CurrentlySelectedDatePropName));
+//                    }
+//            ));
+
 
         private void OnDatesChanged(ObservableCollection<DateTime> newDates, ObservableCollection<DateTime> oldDates)
         {
@@ -1455,7 +1296,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the selection mode
         /// </summary>
-        public static readonly DependencyProperty SelectionModeProperty;
+        public static readonly DependencyProperty SelectionModeProperty =
+            DependencyProperty.Register("SelectionMode", typeof(SelectionType), typeof(Calendar),
+                new UIPropertyMetadata(SelectionType.Single, OnSelectionModeChanged, CoerceSelectionMode));
 
 
         public SelectionType SelectionMode
@@ -1463,7 +1306,11 @@ namespace vhCalendar
             get { return (SelectionType)GetValue(SelectionModeProperty); }
             set { SetValue(SelectionModeProperty, value); }
         }
-
+        private static void OnSelectionModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Calendar vc = d as Calendar;
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(SelectionMode)));
+        }
         private static object CoerceSelectionMode(DependencyObject d, object o)
         {
             Calendar vc = d as Calendar;
@@ -1477,7 +1324,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets days of all months written to grid
         /// </summary>
-        public static readonly DependencyProperty ShowDaysOfAllMonthsProperty;
+        public static readonly DependencyProperty ShowDaysOfAllMonthsProperty =
+            DependencyProperty.Register("ShowDaysOfAllMonths", typeof(bool), typeof(Calendar),
+                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender, OnShowDaysOfAllMonthsChanged));
 
         public bool ShowDaysOfAllMonths
         {
@@ -1496,7 +1345,7 @@ namespace vhCalendar
                 {
                     vc.SetMonthMode();
                 }
-                vc.OnPropertyChanged(new PropertyChangedEventArgs(ShowDaysOfAllMonthsPropName));
+                vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(ShowDaysOfAllMonths)));
             }
         }
         #endregion
@@ -1505,7 +1354,10 @@ namespace vhCalendar
         /// <summary>
         /// Get/Sets the Calender theme
         /// </summary>
-        public static DependencyProperty ThemeProperty;
+        public static DependencyProperty ThemeProperty =
+            DependencyProperty.Register("Theme", typeof(string), typeof(Calendar),
+                new FrameworkPropertyMetadata(Themes.AeroNormal.ToString(), FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsMeasure,
+                    new PropertyChangedCallback(OnThemeChanged), new CoerceValueCallback(CoerceThemeChange)));
 
         public string Theme
         {
@@ -1553,7 +1405,7 @@ namespace vhCalendar
                 vc.Resources.MergedDictionaries.Add(newThemeDictionary);
             }
             
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(ThemePropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(Theme)));
         }
 
         private static object CoerceThemeChange(DependencyObject d, object o)
@@ -1566,7 +1418,9 @@ namespace vhCalendar
         /// <summary>
         /// Gets/Sets the week column visibility
         /// </summary>
-        public static readonly DependencyProperty WeekColumnVisibilityProperty;
+        public static readonly DependencyProperty WeekColumnVisibilityProperty =
+            DependencyProperty.Register("WeekColumnVisibility", typeof(Visibility), typeof(Calendar),
+                new FrameworkPropertyMetadata(Visibility.Visible, FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsMeasure, OnWeekColumnVisibilityChanged));
 
         public Visibility WeekColumnVisibility
         {
@@ -1592,7 +1446,7 @@ namespace vhCalendar
                     vc.UpdateCalendar();
                 }
             }
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(WeekColumnVisibilityPropName));
+            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(WeekColumnVisibility)));
         }
         #endregion
         #endregion
@@ -2384,7 +2238,7 @@ namespace vhCalendar
                                 _btnMonthMode[row, column].IsSelected = true;
                             }
                         }
-                        else
+                        else if (SelectedDates != null)
                         {
                             if (SelectedDates.Contains(date))
                             {

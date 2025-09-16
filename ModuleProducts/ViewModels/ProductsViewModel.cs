@@ -264,9 +264,11 @@ namespace ModuleProducts.ViewModels
                     return ValidationResult.ValidResult;
                 }
             }
+
         }
         public struct ProductOrder(Dictionary<string, string> OrderLink, string OrderNr, int? Quantity,
-            DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed, string?[] tags, DateTime? completed, int archivState)
+            DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed,
+            string?[] tags, DateTime? completed, int archivState) : INotifyPropertyChanged
         {
             public string OrderNr { get; } = OrderNr;
             public int Quantity { get; } = Quantity ??= 0;
@@ -280,7 +282,13 @@ namespace ModuleProducts.ViewModels
             public string?[] Tags { get; } = tags;
             public DateTime? Completed { get; } = completed;
             private int _archivState = archivState;
-            public int ArchivState { get { return _archivState; } set { _archivState = value; } }
+            public int ArchivState { get { return _archivState; } set { _archivState = value; OnPropertyChanged(nameof(ArchivState)); } }
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+            private void OnPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
     }

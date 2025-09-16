@@ -4,7 +4,7 @@
 
     <!--default template-->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/vhCalendar;component/Themes/Office.Blue.xaml"/>
+        <ResourceDictionary Source="/vhCalendar;component/Themes/vhCalendar.Generic.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

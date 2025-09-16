@@ -73,12 +73,16 @@ namespace El2Core.Utils
             using (var db = Container.Resolve<DB_COS_LIEFERLISTE_SQLContext>())
             {
 
-                Rules = db.Rules.ToList(); 
+                Rules = db.Rules.ToList();
             }
             Archivator.ArchivLocation = Rules.Find(x => x.RuleName.Trim() == "MeasureArchivFolder").RuleValue;
 
-            var ext = Rules.Find(x => x.RuleName.Trim() == "MeasureFileExt").RuleValue.Trim();
-            Archivator.FileExtensions = (ext.Length > 0) ? ext.Split(',') : null;
+            var ext = Rules.Find(x => x.RuleName.Trim() == "MeasureFileExt");
+            if (ext != null)
+            {
+                var ex = ext.RuleValue.Trim();
+                Archivator.FileExtensions = (ex.Length > 0) ? ex.Split(',') : null;
+            }
             Archivator.DelayDays = int.Parse(Rules.Find(x => x.RuleName.Trim() == "MeasureArchivDelay").RuleValue);
         }
         public static void SaveRule(string RuleKey, string value)
