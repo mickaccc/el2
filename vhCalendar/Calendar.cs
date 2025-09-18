@@ -120,6 +120,7 @@ namespace vhCalendar
     TemplatePart(Name = "Part_DecadeGrid", Type = typeof(UniformGrid)),
     TemplatePart(Name = "Part_YearGrid", Type = typeof(UniformGrid)),
     TemplatePart(Name = "Part_CurrentDatePanel", Type = typeof(StackPanel)),
+    TemplatePart(Name = "Part_FooterLabel", Type =typeof(TextBlock)),
     TemplatePart(Name = "Part_CurrentDateText", Type = typeof(TextBlock)),
     TemplatePart(Name = "Part_AnimationContainer", Type = typeof(Grid)),
     TemplatePart(Name = "Part_FooterContainer", Type = typeof(Grid))]
@@ -420,7 +421,9 @@ namespace vhCalendar
             }
             else if (SelectionMode == SelectionType.Range)
             {
-
+/// <todo>
+/// SelectionType.Range
+/// </todo>
             }
         }
 
@@ -2111,6 +2114,15 @@ namespace vhCalendar
                 btnTitle.Click += new RoutedEventHandler(titleButton_Click);
             }
 
+            TextBlock txtFooterLabel = (TextBlock)FindElement("Part_FooterLabel");
+            if (txtFooterLabel != null)
+            {
+                txtFooterLabel.FontFamily = this.FontFamily;
+                txtFooterLabel.FontSize = this.FontSize;
+                txtFooterLabel.FontStyle = this.FontStyle;
+                txtFooterLabel.FontWeight = FontWeights.DemiBold;
+            }
+
             TextBlock txtCurrentDate = (TextBlock)FindElement("Part_CurrentDateText");
             if (txtCurrentDate != null)
             {
@@ -2277,16 +2289,24 @@ namespace vhCalendar
                 }
                 //footer
                 TextBlock txtCurrentDate = (TextBlock)FindElement("Part_CurrentDateText");
-                if (txtCurrentDate != null)
+                TextBlock txtFooterLabel = (TextBlock)FindElement("Part_FooterLabel");
+                if (txtCurrentDate != null && txtFooterLabel != null)
                 {
                     if (FooterStyle == FooterType.Today)
                     {
-                        txtCurrentDate.Text = "Heute: " + DateTime.Today.ToShortDateString();
+                        txtFooterLabel.Text = "Heute: ";
+                        txtCurrentDate.Text = DateTime.Today.ToShortDateString();
                     }
                     else if (FooterStyle == FooterType.Selection_Count)
                     {
-                        var s = (SelectedDates != null) ? SelectedDates.Count : 0;
-                        txtCurrentDate.Text = "Ausgewählte Tage: " + s;
+                        // bind the week column grid visibility to the property
+                        Binding bindIsSelectCount = new Binding();
+                        bindIsSelectCount.Source = SelectedDates;
+                        bindIsSelectCount.Path = new PropertyPath("Count");
+                        bindIsSelectCount.Mode = BindingMode.OneWay;
+                        txtCurrentDate.SetBinding(TextBlock.TextProperty, bindIsSelectCount);
+
+                        txtFooterLabel.Text = "Ausgewählte Tage: ";
                     }
                 }
                 // header title

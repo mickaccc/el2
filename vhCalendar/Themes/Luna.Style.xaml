@@ -175,7 +175,12 @@
                                     <ContentPresenter Margin="0,0,1,1" 
                                                           HorizontalAlignment="Center" VerticalAlignment="Center" 
                                                           RecognizesAccessKey="True"/>
-                                    <Path Name="BlackOutPath"                                               Margin="0,0,1,1"                                               Width="10" Height="10"                                               HorizontalAlignment="Center" VerticalAlignment="Center"                                               Stretch="Fill" Fill="Transparent"                                               Data="F1 M 352.248,97.8266L 349.82,101.038L 352.208,104.173L 350.861,104.173L 349.445,102.117C 349.356,101.988 349.25,101.827 349.127,101.633L 349.1,101.633C 349.076,101.67 348.965,101.831 348.768,102.117L 347.324,104.173L 345.992,104.173L 348.456,101.061L 346.098,97.8266L 347.444,97.8266L 348.838,99.9964C 348.942,100.158 349.042,100.323 349.14,100.492L 349.17,100.492L 350.972,97.8266L 352.248,97.8266 Z "/>
+                                    <Path Name="BlackOutPath" 
+                                              Margin="0,0,1,1" 
+                                              Width="10" Height="10" 
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                              Stretch="Fill" Fill="Transparent" 
+                                              Data="F1 M 352.248,97.8266L 349.82,101.038L 352.208,104.173L 350.861,104.173L 349.445,102.117C 349.356,101.988 349.25,101.827 349.127,101.633L 349.1,101.633C 349.076,101.67 348.965,101.831 348.768,102.117L 347.324,104.173L 345.992,104.173L 348.456,101.061L 346.098,97.8266L 347.444,97.8266L 348.838,99.9964C 348.942,100.158 349.042,100.323 349.14,100.492L 349.17,100.492L 350.972,97.8266L 352.248,97.8266 Z "/>
                                 </Grid>
                             </Border>
                             <ControlTemplate.Triggers>
@@ -409,6 +414,10 @@
                                             MinHeight="18" 
                                             HorizontalAlignment="Center" VerticalAlignment="Stretch"
                                             SnapsToDevicePixels="True">
+                                    <TextBlock Name="Part_FooterLabel" 
+                                              Margin="2" Padding="2" Foreground="{DynamicResource {x:Static local:ResourceKeys.FooterForegroundBrushKey}}"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              SnapsToDevicePixels="True"/>
                                     <TextBlock Name="Part_CurrentDateText" 
                                                Margin="2" Padding="2" Foreground="{DynamicResource {x:Static local:ResourceKeys.FooterForegroundBrushKey}}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
