@@ -553,9 +553,23 @@ namespace Lieferliste_WPF.ViewModels
                 if (tt == null) { tt = string.Empty; }
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, orb.Aid, string.Empty], string.IsNullOrEmpty(orb.Material));
             }
-            else if (obj is Dictionary<string, string> dic)
+            else if (obj is ValueTuple<string, string, int> dic)
             {
-                docu = _workareaDocumentInfo.CreateDocumentInfos([(string)dic["ttnr"], (string)dic["aid"], string.Empty]);
+                if (dic.Item3 > 1)
+                {
+                    MessageBox.Show("Für diesen Auftrag gibt es keine Dokumente!"
+                        , "Info", MessageBoxButton.OK);
+                    return;
+                }
+                else if (dic.Item3 == 0)
+                {
+                    docu = _workareaDocumentInfo.CreateDocumentInfos([dic.Item1, dic.Item2, string.Empty]);
+                }
+                else
+                {
+                    var p = Path.Combine(Archivator.ArchivLocation, dic.Item2);
+                    Process.Start("explorer.exe", @p);
+                }
             }
             else if (obj is Dictionary<string, object> dicobj)
             {

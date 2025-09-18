@@ -414,7 +414,7 @@
                                         SnapsToDevicePixels="True">
                                 </Border>
                                 <!--current date panel-->
-                                <StackPanel Name="Part_CurrentDatePanel"
+                                <StackPanel Name="Part_CurrentDatePanel" Orientation="Horizontal"
                                             MinHeight="18" 
                                             HorizontalAlignment="Center" VerticalAlignment="Stretch"
                                             SnapsToDevicePixels="True">

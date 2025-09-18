@@ -421,9 +421,52 @@ namespace vhCalendar
             }
             else if (SelectionMode == SelectionType.Range)
             {
-/// <todo>
-/// SelectionType.Range
-/// </todo>
+                if (SelectedDates.Count > 0)
+                {
+                    if (SelectedDates.Count == 1)
+                    {
+
+                        if (SelectedDates[0] > date)
+                        {
+                            
+                            while (SelectedDates[0] != date)
+                            {
+
+                                DateTime dt = SelectedDates[0].AddDays(-1);
+                                SelectedDates.Insert(0, dt);
+                                MonthModeDateToRowColumn(dt, out row, out column);
+                                _btnMonthMode[row, column].IsSelected = true;
+                                
+                            }
+                        }
+                        else
+                        {
+                            int ind = 0;
+                            while (SelectedDates[ind] < date)
+                            {
+
+                                DateTime dt = SelectedDates[ind].AddDays(1);
+                                SelectedDates.Add(dt);
+                                MonthModeDateToRowColumn(dt, out row, out column);
+                                _btnMonthMode[row, column].IsSelected = true;
+                                ind++;
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        ClearSelectedDates(false);
+                        SelectedDates.Add(date);
+                        button.IsSelected = true;
+                    }
+                }
+                else
+                {
+                    SelectedDates.Add(date);
+                    button.IsSelected = true;
+                }
+
             }
         }
 

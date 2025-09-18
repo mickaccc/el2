@@ -248,7 +248,7 @@ namespace ModuleProducts.ViewModels
                         var d = order.Vorgangs.MaxBy(static x => x.Vnr)?.QuantityYield;
                         var s = order.Vorgangs.Sum(x => x.QuantityScrap);
                         var r = order.Vorgangs.Sum(x => x.QuantityRework);
-                        var dic = new Dictionary<string, string>() { ["ttnr"] = ttnr, ["aid"] = order.Aid };
+                        var dic = new ValueTuple<string, string, int>(ttnr, order.Aid, order.ArchivState);
                         var msf = order.Vorgangs.Where(x => x.Msf != null).Select(x => x.Msf).ToArray();
                         ProdOrders.Add(new ProductOrder(dic, order.Aid, order.Quantity, order.Eckstart, order.Eckende,
                             d, s, r, order.Abgeschlossen, msf, order.CompleteDate, order.ArchivState));
@@ -267,14 +267,14 @@ namespace ModuleProducts.ViewModels
             }
 
         }
-        public struct ProductOrder(Dictionary<string, string> OrderLink, string OrderNr, int? Quantity,
+        public struct ProductOrder(ValueTuple<string, string, int> OrderLink, string OrderNr, int? Quantity,
             DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed,
             string?[] tags, DateTime? completed, int archivState) : INotifyPropertyChanged
         {
             public string OrderNr { get; } = OrderNr;
             public int Quantity { get; } = Quantity ??= 0;
             public bool Closed { get; } = closed;
-            public Dictionary<string, string> OrderLink { get; } = OrderLink;
+            public ValueTuple<string, string, int> OrderLink { get; } = OrderLink;
             public DateTime? Start { get; } = EckStart;
             public DateTime? End { get; } = EckEnd;
             public int Delivered { get; } = Delivered ??= 0;

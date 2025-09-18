@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
+using vhCalendar;
 
 namespace ModuleProducts.Views
 {
@@ -46,7 +48,7 @@ namespace ModuleProducts.Views
 
         private void Range_Click(object sender, RoutedEventArgs e)
         {
-            //CLD.SelectionMode = SelectionType.Range;
+            CLD.SelectionMode = SelectionType.Range;
             var mnitem = (MenuItem)sender;
             mnitem.IsEnabled = false;
             Single.IsEnabled = true;
@@ -56,7 +58,7 @@ namespace ModuleProducts.Views
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            CLD.SelectedDates.Clear();
+            CLD.ClearSelectedDates(false);
         }
     }
 }
