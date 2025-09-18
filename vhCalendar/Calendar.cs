@@ -120,6 +120,7 @@ namespace vhCalendar
     TemplatePart(Name = "Part_DecadeGrid", Type = typeof(UniformGrid)),
     TemplatePart(Name = "Part_YearGrid", Type = typeof(UniformGrid)),
     TemplatePart(Name = "Part_CurrentDatePanel", Type = typeof(StackPanel)),
+    TemplatePart(Name = "Part_FooterLabel", Type =typeof(TextBlock)),
     TemplatePart(Name = "Part_CurrentDateText", Type = typeof(TextBlock)),
     TemplatePart(Name = "Part_AnimationContainer", Type = typeof(Grid)),
     TemplatePart(Name = "Part_FooterContainer", Type = typeof(Grid))]
@@ -179,7 +180,16 @@ namespace vhCalendar
             Dez
         }
         #endregion
+        #region Footer enum
 
+        public enum FooterType
+        {
+            None = 0,
+            Today,
+            Selection_Count
+        }
+        #endregion
+       
         #region Fields
         Point _dragStart = new Point();
         Point _currentPos = new Point();
@@ -409,6 +419,12 @@ namespace vhCalendar
                 }
                 OnSelectedDatesChanged(this, new DependencyPropertyChangedEventArgs(SelectedDatesProperty, oldDates, SelectedDates));
             }
+            else if (SelectionMode == SelectionType.Range)
+            {
+/// <todo>
+/// SelectionType.Range
+/// </todo>
+            }
         }
 
         /// <summary>
@@ -554,20 +570,21 @@ namespace vhCalendar
         #endregion
 
         #region Constructors
-        public Calendar()
+        static Calendar()
         {
             // override style
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Calendar), new FrameworkPropertyMetadata(typeof(Calendar)));
-            SelectedDates = [];
+            
+        }
+        public Calendar()
+        {
             // register inbuilt themes
             RegisterAttachedThemes();
             // load aero default
             LoadDefaultTheme();
-            
+            SelectedDates = [];
             this._blackoutDates = new BlackoutDatesCollection(this);
-            
         }
-
         #endregion
 
         #region INotifyPropertyChanged Members
@@ -983,6 +1000,21 @@ namespace vhCalendar
         }
         #endregion
 
+        #region FooterStyle
+
+        public FooterType FooterStyle
+        {
+            get { return (FooterType)GetValue(FooterStyleProperty); }
+            set { SetValue(FooterStyleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FooterTypea.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FooterStyleProperty =
+            DependencyProperty.Register("Footer", typeof(FooterType), typeof(Calendar),
+                new PropertyMetadata(FooterType.Today));
+
+        #endregion
+
         #region HeaderFontSize
         /// <summary>
         /// Gets/Sets the title button font size
@@ -1158,7 +1190,7 @@ namespace vhCalendar
         /// </summary>
         public static readonly DependencyProperty SelectedDateProperty =
             DependencyProperty.Register("SelectedDate", typeof(DateTime), typeof(Calendar),
-                new UIPropertyMetadata(DateTime.Now, OnSelectedDateChanged));
+                new UIPropertyMetadata(DateTime.Today, OnSelectedDateChanged));
   
 
         public DateTime SelectedDate
@@ -1226,23 +1258,6 @@ namespace vhCalendar
             Calendar vc = d as Calendar;
             return o;
         }
-
-
-//        // SelectedDates
-//        SelectedDatesProperty = DependencyProperty.Register("CurrentlySelectedDates", typeof(ObservableCollection<DateTime>),
-//                typeof(Calendar), new UIPropertyMetadata(null,
-//                    delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e)
-//                    { 
-//                        Calendar cld = (Calendar)sender;
-//        INotifyCollectionChanged collection = e.NewValue as INotifyCollectionChanged;
-//                        if (collection != null)
-//                        {
-//                            collection.CollectionChanged +=
-//                                delegate { cld.OnPropertyChanged(new PropertyChangedEventArgs(CurrentlySelectedDatePropName)); };
-//}
-//cld.OnPropertyChanged(new PropertyChangedEventArgs(CurrentlySelectedDatePropName));
-//                    }
-//            ));
 
 
         private void OnDatesChanged(ObservableCollection<DateTime> newDates, ObservableCollection<DateTime> oldDates)
@@ -2099,6 +2114,15 @@ namespace vhCalendar
                 btnTitle.Click += new RoutedEventHandler(titleButton_Click);
             }
 
+            TextBlock txtFooterLabel = (TextBlock)FindElement("Part_FooterLabel");
+            if (txtFooterLabel != null)
+            {
+                txtFooterLabel.FontFamily = this.FontFamily;
+                txtFooterLabel.FontSize = this.FontSize;
+                txtFooterLabel.FontStyle = this.FontStyle;
+                txtFooterLabel.FontWeight = FontWeights.DemiBold;
+            }
+
             TextBlock txtCurrentDate = (TextBlock)FindElement("Part_CurrentDateText");
             if (txtCurrentDate != null)
             {
@@ -2265,9 +2289,25 @@ namespace vhCalendar
                 }
                 //footer
                 TextBlock txtCurrentDate = (TextBlock)FindElement("Part_CurrentDateText");
-                if (txtCurrentDate != null)
+                TextBlock txtFooterLabel = (TextBlock)FindElement("Part_FooterLabel");
+                if (txtCurrentDate != null && txtFooterLabel != null)
                 {
-                    txtCurrentDate.Text = "Today: " + DateTime.Today.ToShortDateString();
+                    if (FooterStyle == FooterType.Today)
+                    {
+                        txtFooterLabel.Text = "Heute: ";
+                        txtCurrentDate.Text = DateTime.Today.ToShortDateString();
+                    }
+                    else if (FooterStyle == FooterType.Selection_Count)
+                    {
+                        // bind the week column grid visibility to the property
+                        Binding bindIsSelectCount = new Binding();
+                        bindIsSelectCount.Source = SelectedDates;
+                        bindIsSelectCount.Path = new PropertyPath("Count");
+                        bindIsSelectCount.Mode = BindingMode.OneWay;
+                        txtCurrentDate.SetBinding(TextBlock.TextProperty, bindIsSelectCount);
+
+                        txtFooterLabel.Text = "Ausgewählte Tage: ";
+                    }
                 }
                 // header title
                 DateButton btnTitle = (DateButton)FindElement("Part_TitleButton");

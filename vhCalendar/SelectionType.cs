@@ -16,6 +16,10 @@
         /// <summary>
         /// Select dates by week
         /// </summary>
-        Week
+        Week,
+        /// <summary>
+        /// Select dates by range
+        /// </summary>
+        Range
     }
 }
