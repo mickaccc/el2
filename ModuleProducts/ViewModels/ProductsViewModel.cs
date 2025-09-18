@@ -158,7 +158,7 @@ namespace ModuleProducts.ViewModels
         }
         private bool OnCanArchivateExecute(object arg)
         {
-            return true;
+            return UserInfo.User.UserId == "DOO1HL" || UserInfo.User.UserId == "SCM2HL";
         }
 
         private void OnArchivateExecute(object obj)
@@ -205,21 +205,22 @@ namespace ModuleProducts.ViewModels
         private bool OnFilterPredicate(object obj)
         {
             bool accept = true;
-            if (obj is ProductMaterial mat && string.IsNullOrEmpty(_SearchText) == false)
+            if (obj is ProductMaterial mat)
             {
-                accept = mat.TTNR.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
-                if (!accept)
-                    accept = (mat.Description != null) && mat.Description.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
-                if (!accept)
-                    accept = mat.ProdOrders.Any(x => x.OrderNr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase));
+                if (string.IsNullOrEmpty(_SearchText) == false)
+                {
+                    accept = mat.TTNR.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
+                    if (!accept)
+                        accept = (mat.Description != null) && mat.Description.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
+                    if (!accept)
+                        accept = mat.ProdOrders.Any(x => x.OrderNr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase));
+                }
+                if (Selected_Dates != null)
+                {
+                    if (accept)
+                        accept = mat.ProdOrders.Any(x => x.Completed != null && Selected_Dates.Contains(x.Completed.Value.Date));             
+                }
             }
-            //if (Selected_Dates.Any())
-            //{
-            //    if (obj is ProductMaterial m)
-            //    {
-            //        accept = m.ProdOrders.Any(x => x.Completed != null && Selected_Dates.Contains(x.Completed.Value.Date));
-            //    }
-            //}
             return accept;
         }
         private void OnTextSearch(object obj)

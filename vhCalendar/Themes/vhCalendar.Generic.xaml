@@ -421,7 +421,7 @@
                                     <TextBlock Name="Part_CurrentDateText" 
                                                Margin="2" Padding="2" Foreground="{DynamicResource {x:Static local:ResourceKeys.FooterForegroundBrushKey}}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                                               SnapsToDevicePixels="True">Today: </TextBlock>
+                                               SnapsToDevicePixels="True">Heute: </TextBlock>
                                 </StackPanel>
                             </Grid>
                         </Grid>
