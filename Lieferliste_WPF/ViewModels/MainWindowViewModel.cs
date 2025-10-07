@@ -535,6 +535,18 @@ namespace Lieferliste_WPF.ViewModels
             {
                 var tt = (o.Material == "DUMMY") ? o.DummyMat : o.Material;
                 if (tt == null) { tt = string.Empty; }
+                if (o.ArchivState > 1)
+                {
+                    MessageBox.Show("Für diesen Auftrag gibt es keine Dokumente!"
+                        , "Info", MessageBoxButton.OK);
+                    return;
+                }
+                else if (o.ArchivState == 1)
+                {
+                    var p = Path.Combine(Archivator.ArchivLocation, o.Aid);
+                    Process.Start("explorer.exe", @p);
+                    return;
+                }
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, o.Aid, string.Empty], o.Material == "DUMMY");
             }
             else if (obj is Vorgang v)
@@ -551,6 +563,19 @@ namespace Lieferliste_WPF.ViewModels
             {
                 var tt = string.IsNullOrEmpty(orb.Material) ? orb.DummyMat : orb.Material;
                 if (tt == null) { tt = string.Empty; }
+                if (orb.ArchivState > 1)
+                {
+                    MessageBox.Show("Für diesen Auftrag gibt es keine Dokumente!"
+                        , "Info", MessageBoxButton.OK);
+                    return;
+                }
+                else if (orb.ArchivState == 1)
+                {
+                    var p = Path.Combine(Archivator.ArchivLocation, orb.Aid);
+                    Process.Start("explorer.exe", @p);
+                    return;
+                }
+
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, orb.Aid, string.Empty], string.IsNullOrEmpty(orb.Material));
             }
             else if (obj is ValueTuple<string, string, int> dic)
