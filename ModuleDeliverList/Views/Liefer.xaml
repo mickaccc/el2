@@ -265,7 +265,7 @@
                             SysStatus="{Binding AidNavigation.SysStatus}"
                             MarkCode="{Binding AidNavigation.MarkCode, Mode=TwoWay}"
                             Doku="{Binding AidNavigation.Mappe, Mode=TwoWay}" 
-                            Archivated="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}"
+                            Enclosed="{Binding AidNavigation.Abgeschlossen, Mode=OneWay}"
                             AttachmentCount="{Binding AttCount, Mode=OneWay}">
 
                         </userControls:LieferlisteControl>

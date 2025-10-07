@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Lieferliste_WPF.Views.Archive"
+﻿<UserControl x:Class="Lieferliste_WPF.Views.Seclusions"
              xml:lang="de-AT"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -33,8 +33,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-            <Button Content="Messdokumente Archivieren"
-                    Command="{Binding ArchivateCommand}"/>
+
             <TextBlock HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignHeadline4TextBlock}" Text="{Binding Path=Items.Count, ElementName=data}"/>
         </DockPanel>
         <StackPanel Grid.Row="1">

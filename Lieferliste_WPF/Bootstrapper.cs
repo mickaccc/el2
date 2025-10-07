@@ -113,7 +113,7 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterForNavigation<MachinePlan>();
             containerRegistry.RegisterForNavigation<MachineEdit>();
             containerRegistry.RegisterForNavigation<UserEdit>();
-            containerRegistry.RegisterForNavigation<Archive>();
+            containerRegistry.RegisterForNavigation<Seclusions>();
             containerRegistry.RegisterForNavigation<Liefer>();
             containerRegistry.RegisterForNavigation<ShowWorkArea>();
             containerRegistry.RegisterForNavigation<MeasuringRoom>();

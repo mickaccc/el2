@@ -11,11 +11,11 @@
         public const string CommentMe = "COM-ME";
         public const string CommentMa = "COM-MA";
         public const string CommentTe = "COM-TE";
-        public const string Archivate = "ARCHIVATE";
-        public const string Archiv = "ARCHIV";
+        public const string Enclose = "ENCLOSE";
+        public const string Seclusions = "SECLUSIONS";
         public const string Order = "OO00";
         public const string OpenExpl = "EXPL00";
-        public const string DeArchivate = "ARCHIVATE0";
+        public const string DeEnclose = "DE-ENCLOSE";
         public const string MachPrint = "MACHPR";
         public const string OpenMach = "MACH00";
         public const string SETMARK = "SETMARK";
@@ -85,5 +85,6 @@
         public const string EmplCorr = "EMPLCORR";
         public const string RetriveOrder = "OO10";
         public const string CloseOrder = "OO09";
+        public const string Archivate = "ARCHIVATE";
     }
 }

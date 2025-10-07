@@ -108,7 +108,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Archiv" Command="{Binding OpenArchiveCommand}" />
+                    <MenuItem Header="Abgeschlossen" Command="{Binding OpenSeclusionsCommand}" />
                     <MenuItem Header="Arbeitszeiten" Command="{Binding OpenNoteCommand}"/>
                     <MenuItem Header="Hilfe">
                         <MenuItem Header="Einstellungen" Command="{Binding OpenSettingsCommand}"/>

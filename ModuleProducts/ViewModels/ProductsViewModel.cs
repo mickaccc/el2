@@ -1,4 +1,5 @@
 ﻿using CompositeCommands.Core;
+using El2Core.Constants;
 using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
@@ -158,7 +159,7 @@ namespace ModuleProducts.ViewModels
         }
         private bool OnCanArchivateExecute(object arg)
         {
-            return UserInfo.User.UserId == "DOO1HL" || UserInfo.User.UserId == "SCM2HL";
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
 
         private void OnArchivateExecute(object obj)

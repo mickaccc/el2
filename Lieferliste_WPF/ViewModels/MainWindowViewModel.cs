@@ -42,7 +42,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand OpenMachineMgmtCommand { get; private set; }
         public ICommand TabCloseCommand { get; private set; }
         public ICommand CloseCommand { get; private set; }
-        public ICommand OpenArchiveCommand { get; private set; }
+        public ICommand OpenSeclusionsCommand { get; private set; }
         public ICommand OpenWorkAreaCommand { get; private set; }
         public ICommand OpenProjectCombineCommand { get; private set; }
         public ICommand OpenMeasuringCommand { get; private set; }
@@ -168,7 +168,7 @@ namespace Lieferliste_WPF.ViewModels
                 OpenRoleMgmtCommand = new ActionCommand(OnOpenRoleMgmtExecuted, OnOpenRoleMgmtCanExecute);
                 OpenMachineMgmtCommand = new ActionCommand(OnOpenMachineMgmtExecuted, OnOpenMachineMgmtCanExecute);
                 OpenSettingsCommand = new ActionCommand(OnOpenSettingsExecuted, OnOpenSettingsCanExecute);
-                OpenArchiveCommand = new ActionCommand(OnOpenArchiveExecuted, OnOpenArchiveCanExecute);
+                OpenSeclusionsCommand = new ActionCommand(OnOpenSeclusionsExecuted, OnOpenSeclusionsCanExecute);
                 OpenWorkAreaCommand = new ActionCommand(OnOpenWorkAreaExecuted, OnOpenWorkAreaCanExecute);
                 OpenMeasuringCommand = new ActionCommand(OnOpenMeasuringExecuted, OnOpenMeasuringCanExecute);
                 OpenProjectCombineCommand = new ActionCommand(OnOpenProjectCombineExecuted, OnOpenProjectCombineCanExecute);
@@ -324,14 +324,14 @@ namespace Lieferliste_WPF.ViewModels
             _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("ShowWorkArea", UriKind.Relative));
         }
 
-        private bool OnOpenArchiveCanExecute(object arg)
+        private bool OnOpenSeclusionsCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archiv);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Seclusions);
         }
 
-        private void OnOpenArchiveExecuted(object obj)
+        private void OnOpenSeclusionsExecuted(object obj)
         {
-            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Archive", UriKind.Relative));
+            _regionmanager.RequestNavigate(RegionNames.MainContentRegion, new Uri("Seclusions", UriKind.Relative));
         }
         private void OnOrderCloseExecuted(object obj)
         {
@@ -346,9 +346,9 @@ namespace Lieferliste_WPF.ViewModels
                     {
                         item.Visability = true;
                     }
-                    _Logger.LogInformation("Archivated: {message}", v.Aid);
+                    _Logger.LogInformation("Enclosed: {message}", v.Aid);
                     db.SaveChangesAsync();
-                    _ea.GetEvent<MessageOrderArchivated>().Publish(v);
+                    _ea.GetEvent<MessageOrderEnclose>().Publish(v);
                 }
             }
             catch (Exception e)
@@ -374,7 +374,7 @@ namespace Lieferliste_WPF.ViewModels
             catch (Exception e)
             {
                 _Logger.LogError("{message}", e.ToString());
-                MessageBox.Show(e.Message, "ArchiveCan", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.Message, "EncloseCan", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }

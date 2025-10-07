@@ -5,9 +5,9 @@ namespace Lieferliste_WPF.Views
     /// <summary>
     /// Interaction logic for Archive.xaml
     /// </summary>
-    public partial class Archive : UserControl
+    public partial class Seclusions : UserControl
     {
-        public Archive()
+        public Seclusions()
         {
             InitializeComponent();
         }

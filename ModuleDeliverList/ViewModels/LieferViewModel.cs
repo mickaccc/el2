@@ -280,7 +280,7 @@ namespace ModuleDeliverList.ViewModels
 
                 _ea.GetEvent<MessageVorgangChanged>().Subscribe(MessageVorgangReceived);
                 _ea.GetEvent<MessageOrderChanged>().Subscribe(MessageOrderReceived);
-                _ea.GetEvent<MessageOrderArchivated>().Subscribe(MessageOrderArchivated);
+                _ea.GetEvent<MessageOrderEnclose>().Subscribe(MessageOrderEnclosed);
                 _ea.GetEvent<EnableAutoSave>().Subscribe(AutoSaveEnable);
                 SetAutoSave();
             }
@@ -356,7 +356,7 @@ namespace ModuleDeliverList.ViewModels
             return outputStream;
         }
 
-        private void MessageOrderArchivated(OrderRb rb)
+        private void MessageOrderEnclosed(OrderRb rb)
         {
             try
             {
@@ -370,7 +370,7 @@ namespace ModuleDeliverList.ViewModels
                             _orders.Remove(x);
                             DBctx.ChangeTracker.Entries<OrderRb>().First(x => x.Entity.Aid == rb.Aid).State = EntityState.Unchanged;
                             OrdersView.Refresh();
-                            _Logger.LogInformation("Auftrag archiviert: {message}", rb.Aid);
+                            _Logger.LogInformation("Auftrag abgeschlossen: {message}", rb.Aid);
                         }
                     }
                 }
@@ -378,7 +378,7 @@ namespace ModuleDeliverList.ViewModels
             catch (Exception ex)
             {
                 _Logger.LogError("{message}", ex.ToString());
-                MessageBox.Show(ex.Message, "MsgReceivedArchivated", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, "MsgReceivedEnclosed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void MessageOrderReceived(List<(string, string)?> rb)

@@ -9,7 +9,7 @@ namespace El2Core.Utils
     { }
     public class MessageOrderChanged : PubSubEvent<List<(string, string)?>>
     { }
-    public class MessageOrderArchivated : PubSubEvent<OrderRb>
+    public class MessageOrderEnclose : PubSubEvent<OrderRb>
     { }
     public class ContextPlanMachineChanged : PubSubEvent<int>
     { }

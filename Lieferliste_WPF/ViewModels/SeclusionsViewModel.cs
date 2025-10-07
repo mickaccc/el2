@@ -14,7 +14,7 @@ using System.Windows.Input;
 namespace Lieferliste_WPF.ViewModels
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows10.0")]
-    internal class ArchiveViewModel : ViewModelBase
+    internal class SeclusionsViewModel : ViewModelBase
     {
         private IContainerExtension _container;
         private IApplicationCommands _applicationCommands;
@@ -31,7 +31,7 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         private NotifyTaskCompletion<ICollectionView>? _contentTask;
-        public string Title { get; } = "Archiv";
+        public string Title { get; } = "Abgeschlossen";
         private string? _searchValue;
         private readonly ConcurrentObservableCollection<OrderRb> result = [];
         public ICollectionView? CollectionView { get; private set; }
@@ -52,7 +52,6 @@ namespace Lieferliste_WPF.ViewModels
             }
         }
         public ICommand RetriveCommand { get; set; }
-        public ICommand ArchivateCommand { get; set; }
         private RelayCommand? _textSearchCommand;
         public ICommand TextSearchCommand => _textSearchCommand ??= new RelayCommand(OnTextSearch);
 
@@ -62,42 +61,19 @@ namespace Lieferliste_WPF.ViewModels
             CollectionView?.Refresh();
         }
 
-        public ArchiveViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
+        public SeclusionsViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
         {
             _container = container;
             _applicationCommands = applicationCommands;
             RetriveCommand = new ActionCommand(OnRetriveExecuted, OnRetriveCanExecute);
-            ArchivateCommand = new ActionCommand(OnArchivateExecuted, OnArchivateCanExecute);
             MeasureInfo = new MeasureDocumentInfo(container);
             ContentTask = new NotifyTaskCompletion<ICollectionView>(LoadAsync());
         }
 
-        private bool OnArchivateCanExecute(object arg)
-        {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
-        }
-
-        private void OnArchivateExecuted(object obj)
-        {
-            string path;
-            if (RuleInfo.Rules.TryGetValue("MeasureArchivFolder", out Rule? archiv))
-            {
-                path = archiv.RuleValue;
-
-                foreach (var col in CollectionView)
-                {
-                    var order = (OrderRb)col;
-                    if (order.Material != null)
-                    {
-                        MeasureInfo.CreateDocumentInfos([order.Material, order.Aid]);
-                    }
-                }
-            }
-        }
 
         private bool OnRetriveCanExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.RetriveOrder);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.DeEnclose);
         }
 
         private void OnRetriveExecuted(object obj)

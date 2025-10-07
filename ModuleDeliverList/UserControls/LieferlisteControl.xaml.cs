@@ -439,15 +439,15 @@ namespace ModuleDeliverList.UserControls
 
 
 
-        public bool Archivated
+        public bool Enclosed
         {
-            get { return (bool)GetValue(ArchivatedProperty); }
-            set { SetValue(ArchivatedProperty, value); }
+            get { return (bool)GetValue(EnclosedProperty); }
+            set { SetValue(EnclosedProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Archited.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ArchivatedProperty =
-            DependencyProperty.Register("Archivated", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
+        public static readonly DependencyProperty EnclosedProperty =
+            DependencyProperty.Register("Enclosed", typeof(bool), typeof(LieferlisteControl), new PropertyMetadata(false));
 
 
         public string SelectedValue
