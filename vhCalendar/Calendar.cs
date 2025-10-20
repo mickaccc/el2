@@ -93,6 +93,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -421,6 +422,11 @@ namespace vhCalendar
             }
             else if (SelectionMode == SelectionType.Range)
             {
+                ObservableCollection<DateTime> oldDates = new ObservableCollection<DateTime>();
+                foreach (DateTime dt in SelectedDates)
+                {
+                    oldDates.Add(dt);
+                }
                 if (SelectedDates.Count > 0)
                 {
                     if (SelectedDates.Count == 1)
@@ -466,7 +472,7 @@ namespace vhCalendar
                     SelectedDates.Add(date);
                     button.IsSelected = true;
                 }
-
+                OnSelectedDatesChanged(this, new DependencyPropertyChangedEventArgs(SelectedDatesProperty, oldDates, SelectedDates));
             }
         }
 
@@ -642,10 +648,11 @@ namespace vhCalendar
         /// <param name="e">The arguments to pass</param>
         protected void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, e);
-            }
+            PropertyChanged?.Invoke(this, e);
+        }
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
 
@@ -1293,7 +1300,8 @@ namespace vhCalendar
         {
             Calendar vc = (Calendar)obj;
             vc.OnDatesChanged((ObservableCollection<DateTime>)e.NewValue, (ObservableCollection<DateTime>)e.OldValue);
-            vc.OnPropertyChanged(new PropertyChangedEventArgs(nameof(SelectedDate)));
+            vc.OnPropertyChanged(nameof(SelectedDates));
+            vc.OnPropertyChanged("SelectedDates.Count");
         }
 
         static object CoerceDatesChanged(DependencyObject d, object o)

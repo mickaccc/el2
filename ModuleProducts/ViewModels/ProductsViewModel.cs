@@ -168,7 +168,8 @@ namespace ModuleProducts.ViewModels
             foreach (var m in ProductsView)
             {
                 var mat = (m as ProductMaterial)?.TTNR;
-                foreach (var o in (m as ProductMaterial)?.ProdOrders.Where(x => x.ArchivState == 0 && x.Closed) ?? [])
+                List<ProductOrder> pord = (List<ProductOrder>)(m as ProductMaterial).ProdOrders.SourceCollection;
+                foreach (var o in pord.Where(x => x.ArchivState == 0 && x.Closed) ?? [])
                 {
                     if (o.Completed > DateTime.Now.AddDays(-Archivator.DelayDays))
                         continue;
@@ -186,7 +187,8 @@ namespace ModuleProducts.ViewModels
                     var matObj = _Materials.First(x => x.TTNR == mat);
                     if (matObj != null)
                     {
-                        var or = matObj.ProdOrders.Find(x => x.OrderNr == o.OrderNr);
+                        var por = (List<ProductOrder>)matObj.ProdOrders.SourceCollection;
+                        var or = por.Find(x => x.OrderNr == o.OrderNr);
                         or.ArchivState = state;
         
                     }
@@ -214,12 +216,25 @@ namespace ModuleProducts.ViewModels
                     if (!accept)
                         accept = (mat.Description != null) && mat.Description.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
                     if (!accept)
-                        accept = mat.ProdOrders.Any(x => x.OrderNr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase));
+                    {
+                        mat.ProdOrders.Filter = item =>
+                        {
+                            return item is ProductOrder ord && ord.OrderNr.Contains(_SearchText, StringComparison.CurrentCultureIgnoreCase);
+                        };
+                        accept = !mat.ProdOrders.IsEmpty;
+                    }
+
                 }
                 if (Selected_Dates != null)
                 {
                     if (accept)
-                        accept = mat.ProdOrders.Any(x => x.Completed != null && Selected_Dates.Contains(x.Completed.Value.Date));             
+                    {
+                        mat.ProdOrders.Filter = item =>
+                        {
+                            return item is ProductOrder ord && ord.Completed != null && Selected_Dates.Contains(ord.Completed.Value.Date);
+                        };
+                    }
+                    accept = !mat.ProdOrders.IsEmpty;            
                 }
             }
             return accept;
@@ -237,11 +252,12 @@ namespace ModuleProducts.ViewModels
             public string TTNR { get; }
             public string? Description { get; }
 
-            public List<ProductOrder> ProdOrders { get; } = [];
+            public ICollectionView ProdOrders { get; private set; }
             public ProductMaterial(string ttnr, string? description, List<OrderRb> orders)
             {
                 TTNR = ttnr;
                 Description = description;
+                List<ProductOrder> products = [];
                 foreach (var order in orders)
                 {
                     if (order.Vorgangs.Count > 0)
@@ -251,10 +267,12 @@ namespace ModuleProducts.ViewModels
                         var r = order.Vorgangs.Sum(x => x.QuantityRework);
                         var dic = new ValueTuple<string, string, int>(ttnr, order.Aid, order.ArchivState);
                         var msf = order.Vorgangs.Where(x => x.Msf != null).Select(x => x.Msf).ToArray();
-                        ProdOrders.Add(new ProductOrder(dic, order.Aid, order.Quantity, order.Eckstart, order.Eckende,
+                        
+                        products.Add(new ProductOrder(dic, order.Aid, order.Quantity, order.Eckstart, order.Eckende,
                             d, s, r, order.Abgeschlossen, msf, order.CompleteDate, order.ArchivState));
                     }
                 }
+                ProdOrders = CollectionViewSource.GetDefaultView(products);
             }
             internal class DateValidationRule : ValidationRule
             {
