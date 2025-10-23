@@ -543,8 +543,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else if (o.ArchivState == 1)
                 {
-                    var p = Path.Combine(Archivator.ArchivLocation, o.Aid);
-                    Process.Start("explorer.exe", @p);
+                    //var p = Path.Combine(Archivator.ArchivLocation, o.Aid);
+                    //Process.Start("explorer.exe", @p);
                     return;
                 }
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, o.Aid, string.Empty], o.Material == "DUMMY");
@@ -571,8 +571,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else if (orb.ArchivState == 1)
                 {
-                    var p = Path.Combine(Archivator.ArchivLocation, orb.Aid);
-                    Process.Start("explorer.exe", @p);
+                    //var p = Path.Combine(Archivator.ArchivLocation, orb.Aid);
+                    //Process.Start("explorer.exe", @p);
                     return;
                 }
 
@@ -592,8 +592,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else
                 {
-                    var p = Path.Combine(Archivator.ArchivLocation, dic.Item2);
-                    Process.Start("explorer.exe", @p);
+                    //var p = Path.Combine(Archivator.ArchivLocation, dic.Item2);
+                    //Process.Start("explorer.exe", @p);
                 }
             }
             else if (obj is Dictionary<string, object> dicobj)

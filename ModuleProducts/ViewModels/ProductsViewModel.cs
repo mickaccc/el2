@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -174,8 +175,22 @@ namespace ModuleProducts.ViewModels
                     if (o.Completed > DateTime.Now.AddDays(-Archivator.DelayDays))
                         continue;
                     var doku = firstPartInfo.CreateDocumentInfos([mat, o.OrderNr]);
+                    int rulenr = 0;
+                    bool matched = false;
+                    foreach (var rule in Archivator.ArchiveRules)
+                    {
+                        string? input = (rule.MatchTarget.Equals(Archivator.ArchivatorTarget.TTNR)) ? mat : o.OrderNr;
+                        if (Regex.IsMatch(input, rule.RegexString))
+                        {
+                            matched = true;
+                            break;
+                        }
+                        rulenr++;
+                    }
+                    if (!matched)
+                        continue;
                     var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
-                    var state = Archivator.Archivate(p);
+                    var state = Archivator.Archivate(p, rulenr);
                     if (state == 1 || state == 2)
                         Directory.Delete(p, true);
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();

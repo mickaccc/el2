@@ -7,6 +7,8 @@ using System.Collections.Immutable;
 using System.Data;
 using System.IO;
 using System.Linq;
+using static El2Core.Utils.Archivator;
+using static El2Core.Utils.RuleInfo;
 using Rule = El2Core.Models.Rule;
 
 namespace El2Core.Utils
@@ -75,15 +77,18 @@ namespace El2Core.Utils
 
                 Rules = db.Rules.ToList();
             }
-            Archivator.ArchivLocation = Rules.Find(x => x.RuleName.Trim() == "MeasureArchivFolder").RuleValue;
+            
 
-            var ext = Rules.Find(x => x.RuleName.Trim() == "MeasureFileExt");
+            var ext = Rules.Find(x => x.RuleName.Trim() == "Archivator");
             if (ext != null)
             {
-                var ex = ext.RuleValue.Trim();
-                Archivator.FileExtensions = (ex.Length > 0) ? ex.Split(',') : null;
+                var serializer = XmlSerializerHelper.GetSerializer(typeof(ArchivatorWrap));
+                
+                TextReader xmlData = new StringReader(ext.RuleData);
+                var arc = serializer.Deserialize(xmlData);
+                (arc as ArchivatorWrap)?.SetArchivator();
             }
-            Archivator.DelayDays = int.Parse(Rules.Find(x => x.RuleName.Trim() == "MeasureArchivDelay").RuleValue);
+
         }
         public static void SaveRule(string RuleKey, string value)
         {
@@ -125,6 +130,20 @@ namespace El2Core.Utils
                 rule.RuleData = sw.ToString();
             SaveRule(rule);
 
+        }
+        public static void SaveArchivator()
+        {
+            ArchivatorWrap wrap = new();
+            wrap.GetArchivator();
+            var serializer = XmlSerializerHelper.GetSerializer(typeof(ArchivatorWrap));
+            StringWriter sw = new StringWriter();
+            serializer.Serialize(sw, wrap);
+            Rule rule = new Rule();
+            rule.RuleName = "Archivator";
+            rule.RuleValue = "Archivator";
+            rule.RuleData = sw.ToString();
+            SaveRule(rule);
+            Archivator.IsChanged = false;
         }
         public void Dispose()
         {
@@ -168,7 +187,26 @@ namespace El2Core.Utils
                 ProjectSchemes = sc.ToImmutableDictionary();
             }
         }
-        
+        public class ArchivatorWrap
+        {
+            public List<ArchivatorRule>? ArchiveRules { get; set; }
+            public int DelayDays { get; set; }
+            public string? FileExtensions { get; set; } 
+            
+            public void SetArchivator()
+            {
+                if (ArchiveRules != null)
+                  Archivator.ArchiveRules.AddRange(ArchiveRules);
+                Archivator.DelayDays = DelayDays;
+                Archivator.FileExtensions = (FileExtensions != null && FileExtensions.Length > 0) ? FileExtensions.Split(',') : null;
+            }
+            public void GetArchivator()
+            {
+                ArchiveRules = Archivator.ArchiveRules;
+                DelayDays = Archivator.DelayDays;
+                FileExtensions = (Archivator.FileExtensions != null) ? string.Join(',', Archivator.FileExtensions) : null;
+            }
+        }
     }
     public class ProjectScheme
     {
@@ -190,4 +228,5 @@ namespace El2Core.Utils
         public List<AccountWorkArea> AccountWorkAreas { get; set; }
 
     }
+
 }

@@ -34,6 +34,8 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand PersonalFilterAddCommand { get; }
         public ICommand PersonalFilterRemoveCommand { get; }
         public ICommand PersonalFilterNewCommand { get; }
+        public ICommand ArchivatorRuleAddCommand { get; }
+        public ICommand ArchivatorRuleRemoveCommand { get; }
 
         public string Title { get; } = "Einstellungen";
         private bool _isDarkTheme;
@@ -116,13 +118,7 @@ namespace Lieferliste_WPF.ViewModels
             get => _ruleMsfDomain; 
             set { _ruleMsfDomain = value; }
         }
-        private string _RuleMeasureArchivFolder = string.Empty;
 
-        public string RuleMeasureArchivFolder
-        {
-            get { return _RuleMeasureArchivFolder; }
-            set { _RuleMeasureArchivFolder = Archivator.ArchivLocation = value; }
-        }
         private string _DrawingLink;
 
         public string DrawingLink
@@ -144,7 +140,13 @@ namespace Lieferliste_WPF.ViewModels
             get { return _ArchivDelayDays; }
             set { _ArchivDelayDays = Archivator.DelayDays = value; }
         }
+        private List<ArchivatorRule> _ArchivatorRules = Archivator.ArchiveRules ?? [];
 
+        public ICollectionView ArchivatorRules { get; }
+            
+        
+        public string ArchivatorRuleRegEx { get; set; }
+        public string ArchivatorRuleFolder { get; set; }
 
         public List<Tuple<string, string, int>> PropertyNames { get; } = [];
         private PersonalFilterContainer _filterContainer;
@@ -215,6 +217,8 @@ namespace Lieferliste_WPF.ViewModels
                 PersonalFilterAddCommand = new ActionCommand(OnPersonalFilterAddExecuted, OnPersonalFilterAddCanExecute);
                 PersonalFilterNewCommand = new ActionCommand(OnPersonalFilterNewExecuted, OnPersonalFilterNewCanExecute);
                 PersonalFilterRemoveCommand = new ActionCommand(OnPersonalFilterRemoveExecuted, OnPersonalFilterRemoveCanExecute);
+                ArchivatorRuleAddCommand = new ActionCommand(OnArchivatorRuleAddExecuted, OnArchivatorRuleAddCanExecute);
+                ArchivatorRuleRemoveCommand = new ActionCommand(OnArchivatorRuleRemoveExecuted, OnArchivatorRuleRemoveCanExecute);
                 ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
                 SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
                 FirstPartInfo = new MeasureFirstPartInfo(container);
@@ -225,6 +229,7 @@ namespace Lieferliste_WPF.ViewModels
                 Wdocu = WorkareaDocumentInfo.CreateDocumentInfos();
                 MeasureDocumentInfo = new MeasureDocumentInfo(container);
                 Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
+                ArchivatorRules = CollectionViewSource.GetDefaultView(_ArchivatorRules);
                 LoadFilters();
                 LoadProjectSchemes();
                 LoadRules();
@@ -244,7 +249,6 @@ namespace Lieferliste_WPF.ViewModels
             if (RuleInfo.Rules.TryGetValue("MeasureScan", out Rule? scan))
                 RuleInfoScan= scan.RuleValue;
 
-            RuleMeasureArchivFolder = Archivator.ArchivLocation;
             ArchivFileExt = (Archivator.FileExtensions != null) ? string.Join(',', Archivator.FileExtensions) : " ";
             ArchivDelayDays = Archivator.DelayDays;
 
@@ -326,7 +330,7 @@ namespace Lieferliste_WPF.ViewModels
         {
             if (_settingsService != null && _filterContainer != null)
             {
-                return _settingsService.IsChanged || _filterContainer.IsChanged;
+                return _settingsService.IsChanged || _filterContainer.IsChanged || Archivator.IsChanged;
             }
             return false;
         }
@@ -341,12 +345,14 @@ namespace Lieferliste_WPF.ViewModels
             
             Globals.SaveRule("MeasureScan", RuleInfoScan);
             Globals.SaveRule("MeasureMsfDomain", RuleMsfDomain);
-            Globals.SaveRule("MeasureArchivFolder", RuleMeasureArchivFolder);
-            Globals.SaveRule("MeasureFileExt", ArchivFileExt);
-            Globals.SaveRule("MeasureArchivDelay", ArchivDelayDays.ToString());
+   
             Globals.SaveProjectSchemes([.. ProjectSchemes]);
             _filterContainer.Save();
-
+            if (Archivator.IsChanged)
+            {
+                Globals.SaveArchivator();
+                
+            }
         }
         private bool OnPersonalFilterRemoveCanExecute(object arg)
         {
@@ -435,6 +441,30 @@ namespace Lieferliste_WPF.ViewModels
 
                 _logger.LogError("{message}", e.ToString());
             }
+        }
+        private bool OnArchivatorRuleRemoveCanExecute(object arg)
+        {
+            return ArchivatorRules.CurrentPosition != -1;
+        }
+
+        private void OnArchivatorRuleRemoveExecuted(object obj)
+        {
+            _ArchivatorRules.Remove((ArchivatorRule)ArchivatorRules.CurrentItem);
+            Archivator.ArchiveRules = _ArchivatorRules;
+            ArchivatorRules.Refresh();
+        }
+
+        private bool OnArchivatorRuleAddCanExecute(object arg)
+        {
+            return !string.IsNullOrEmpty(ArchivatorRuleFolder) && !string.IsNullOrEmpty(ArchivatorRuleRegEx);
+        }
+
+        private void OnArchivatorRuleAddExecuted(object obj)
+        {
+            var item = new ArchivatorRule(ArchivatorRuleRegEx, Archivator.ArchivatorTarget.TTNR, ArchivatorRuleFolder);
+            _ArchivatorRules.Add(item);
+            Archivator.ArchiveRules = _ArchivatorRules;
+            ArchivatorRules.Refresh();           
         }
 
         public string ExplorerPathPattern

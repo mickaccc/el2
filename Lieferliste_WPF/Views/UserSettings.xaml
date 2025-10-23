@@ -146,7 +146,7 @@
 
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Lieferliste">
+            <TabItem Header="Pers. Filter">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
@@ -378,33 +378,7 @@
                                 <TextBox Text="{Binding RuleMsfDomain}"/>
                             </StackPanel>
       
-                            <StackPanel>
-                                <Label>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Archivpfad für Messdokumente"/>
-                                        <materialDesign:PackIcon Kind="Settings"/>
-                                    </StackPanel>
-                                </Label>
-                                <TextBox Text="{Binding RuleMeasureArchivFolder}"/>
-                            </StackPanel>
-                            <StackPanel>
-                                <Label>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Dateierweiterungen (Komma getrennt)"/>
-                                        <materialDesign:PackIcon Kind="Settings"/>
-                                    </StackPanel>
-                                </Label>
-                                <TextBox Text="{Binding ArchivFileExt}"/>
-                            </StackPanel>
-                            <StackPanel>
-                                <Label>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Verzögerung der Archivierung in Tagen"/>
-                                        <materialDesign:PackIcon Kind="Settings"/>
-                                    </StackPanel>
-                                </Label>
-                                <TextBox Text="{Binding ArchivDelayDays}"/>
-                            </StackPanel>
+                           
                         </StackPanel>
                     </TabItem>
                 </TabControl>
@@ -412,6 +386,64 @@
             <TabItem Header="Projekte">
                 <DataGrid ItemsSource="{Binding ProjectSchemes}" IsEnabled="{Binding Converter={StaticResource permiss},
 							ConverterParameter={x:Static const:Permissions.ProjectScheme}}"  />
+            </TabItem>
+            <TabItem Header="Archivator">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+ 
+                    <StackPanel Grid.Column="1">
+                        <Label>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Dateierweiterungen (Komma getrennt)"/>
+                                <materialDesign:PackIcon Kind="Settings"/>
+                            </StackPanel>
+                        </Label>
+                        <TextBox Text="{Binding ArchivFileExt}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.Row="1">
+                        <Label>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Verzögerung der Archivierung in Tagen"/>
+                                <materialDesign:PackIcon Kind="Settings"/>
+                            </StackPanel>
+                        </Label>
+                        <TextBox Text="{Binding ArchivDelayDays}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" >
+
+                        <TextBox x:Name="ArRegExBox" Text="{Binding ArchivatorRuleRegEx}" Margin="10,0,10,0" MinWidth="60"
+                            TextChanged="TestBox_TextChanged" ToolTip="Regular Expression"/>
+                        <TextBox x:Name="ArTestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
+                        <ComboBox ItemsSource="{Binding PropertyNames}" SelectedValue="{Binding PersonalFilterField}"
+                            DisplayMemberPath="Item1" ToolTip="Feld in dem der RegEx angewendet werden soll">
+                        </ComboBox>
+                        <TextBox Text="{Binding ArchivatorRuleFolder}" Margin="10,0,10,0" MinWidth="60" ToolTip="Archivpfad"/>
+                        <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                            Command="{Binding ArchivatorRuleAddCommand}"/>
+                        <Button Content="Entfernen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                            Command="{Binding ArchivatorRuleRemoveCommand}"/>
+                    </StackPanel>
+                    <ListBox Grid.RowSpan="4" ItemsSource="{Binding ArchivatorRules}" Margin="10" MinWidth="80" IsSynchronizedWithCurrentItem="True"
+                          Background="AntiqueWhite">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Path=RegexString}" TextWrapping="Wrap" MaxWidth="160"/>
+                                    <TextBlock Text="{Binding Path=TargetPath}" TextWrapping="Wrap" MaxWidth="160"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

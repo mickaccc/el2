@@ -92,6 +92,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -153,13 +154,13 @@ namespace vhCalendar
         /// </summary>
         private enum DayOfWeek
         {
-            Montag = 1,
-            Dienstag,
-            Mittwoch,
-            Donnerstag,
-            Freitag,
-            Samstag,
-            Sonntag
+            Monday,
+            Tuesday,
+            Wednesday,
+            Thursday,
+            Friday,
+            Saturday,
+            Sunday
         }
 
         /// <summary>
@@ -632,6 +633,7 @@ namespace vhCalendar
             // load aero default
             LoadDefaultTheme();
             SelectedDates = [];
+   
             this._blackoutDates = new BlackoutDatesCollection(this);
         }
         #endregion
@@ -719,7 +721,6 @@ namespace vhCalendar
             {
                 FindParentWindow();
             }
-            SelectedDates = [];
         }
 
         /// <summary>
@@ -1299,9 +1300,7 @@ namespace vhCalendar
         static void OnSelectedDatesChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             Calendar vc = (Calendar)obj;
-            vc.OnDatesChanged((ObservableCollection<DateTime>)e.NewValue, (ObservableCollection<DateTime>)e.OldValue);
             vc.OnPropertyChanged(nameof(SelectedDates));
-            vc.OnPropertyChanged("SelectedDates.Count");
         }
 
         static object CoerceDatesChanged(DependencyObject d, object o)
@@ -1309,16 +1308,7 @@ namespace vhCalendar
             Calendar vc = d as Calendar;
             return o;
         }
-
-
-        private void OnDatesChanged(ObservableCollection<DateTime> newDates, ObservableCollection<DateTime> oldDates)
-        {
-            SelectedDatesChangedEventArgs args = new SelectedDatesChangedEventArgs(SelectedDatesChangedEvent);
-
-            args.NewDates = newDates;
-            args.OldDates = oldDates;
-            RaiseEvent(args);
-        }
+ 
 
         /// <summary>
         /// Event for the DateSelectionChanged raised when the date changes
@@ -1979,11 +1969,13 @@ namespace vhCalendar
             int year = date.Year;
             int month = date.Month;
             DateTime firstDay = new DateTime(year, month, 1);
-            int fstCol = (int)firstDay.DayOfWeek -1;
+            var en = Enum.Parse<DayOfWeek>(firstDay.DayOfWeek.ToString());
+            var da = Enum.Parse<DayOfWeek>(date.DayOfWeek.ToString());
+            int fstCol = (int)en;
             int rowOffset = 0;
-            if (fstCol < 0) { fstCol = 6; rowOffset = 1; }
+            c = (int)da;
+            if (c == 6) { rowOffset = 1; }
             r = (date.Day + fstCol) / 7 - rowOffset;
-            c = (date.Day + fstCol-1) % 7;
         }
 
         /// <summary>
@@ -2353,9 +2345,11 @@ namespace vhCalendar
                         // bind the week column grid visibility to the property
                         Binding bindIsSelectCount = new Binding();
                         bindIsSelectCount.Source = SelectedDates;
-                        bindIsSelectCount.Path = new PropertyPath("Count");
+                        bindIsSelectCount.Path = new PropertyPath(nameof(SelectedDates.Count));
                         bindIsSelectCount.Mode = BindingMode.OneWay;
-                        txtCurrentDate.SetBinding(TextBlock.TextProperty, bindIsSelectCount);
+                        bindIsSelectCount.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                        bindIsSelectCount.NotifyOnSourceUpdated = true;
+                        BindingOperations.SetBinding(txtCurrentDate, TextBlock.TextProperty, bindIsSelectCount);
 
                         txtFooterLabel.Text = "Ausgewählte Tage: ";
                     }

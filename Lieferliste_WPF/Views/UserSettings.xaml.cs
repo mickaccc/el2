@@ -30,32 +30,43 @@ namespace Lieferliste_WPF.Views
 
         private void TestBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            TextBox testbox = new();
+            TextBox RegExBox = new();
+            if (sender is TextBox t)
+            {
+                if (t.Name == "RegExBox" || t.Name == "TestBox")
+                {
+                    testbox = (TextBox)FindName("TestBox");
+                    RegExBox = (TextBox)FindName("RegExBox");
+                }
+                else
+                {
+                    testbox = (TextBox)FindName("ArTestBox");
+                    RegExBox = (TextBox)FindName("ArRegExBox");
+                }
+            }
             try
             {
-                TextBox testbox = (TextBox)FindName("TestBox");
-                TextBox RegExBox = (TextBox)FindName("RegExBox");
                 RegExBox.Foreground = Brushes.Black;
-                if (testbox != null)
+  
+                if (string.IsNullOrEmpty(RegExBox.Text) == false)
                 {
-                    if (string.IsNullOrEmpty(RegExBox.Text) == false)
+                    var regex = new Regex(RegExBox.Text);
+                    if (regex.IsMatch(testbox.Text))
                     {
-                        var regex = new Regex(RegExBox.Text);
-                        if (regex.IsMatch(testbox.Text))
-                        {
-                            testbox.Background = Brushes.LightGreen;
-                        }
-                        else
-                        {
-                            testbox.Background = Brushes.White;
-                        }
+                        testbox.Background = Brushes.LightGreen;
                     }
-                    else testbox.Background = Brushes.White;
+                    else
+                    {
+                        testbox.Background = Brushes.White;
+                    }
                 }
+                else testbox.Background = Brushes.White;
+                               
             }
             catch (RegexParseException)
             {
-                TextBox testbox = (TextBox)FindName("TestBox");
-                TextBox RegExBox = (TextBox)FindName("RegExBox");
+                
                 RegExBox.Foreground = Brushes.Red; testbox.Background = Brushes.White;
             }
             catch (System.Exception)

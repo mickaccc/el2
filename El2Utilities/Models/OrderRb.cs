@@ -66,6 +66,8 @@ public partial class OrderRb : ModelBase
 
     public int ArchivState { get; set; }
 
+    public string? ArchivPath { get; set; }
+
     public virtual TblDummy? DummyMatNavigation { get; set; }
 
     public virtual TblMaterial? MaterialNavigation { get; set; }
