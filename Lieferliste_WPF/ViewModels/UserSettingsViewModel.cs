@@ -456,13 +456,14 @@ namespace Lieferliste_WPF.ViewModels
 
         private bool OnArchivatorRuleAddCanExecute(object arg)
         {
-            return !string.IsNullOrEmpty(ArchivatorRuleFolder) && !string.IsNullOrEmpty(ArchivatorRuleRegEx);
+            return !string.IsNullOrEmpty(ArchivatorRuleFolder) && !string.IsNullOrEmpty(ArchivatorRuleRegEx)
+                && PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
 
         private void OnArchivatorRuleAddExecuted(object obj)
         {
             var target = Enum.Parse(typeof(Archivator.ArchivatorTarget), ArchivRuleTargetSelect);
-            var item = new ArchivatorRule(ArchivatorRuleRegEx, (Archivator.ArchivatorTarget)target, ArchivatorRuleFolder);
+            var item = new ArchivatorRule(ArchivatorRuleRegEx, (Archivator.ArchivatorTarget)target, ArchivatorRuleFolder, ArchivFileExt);
             _ArchivatorRules.Add(item);
             Archivator.ArchiveRules = _ArchivatorRules;
             ArchivatorRules.Refresh();           

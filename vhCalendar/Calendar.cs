@@ -1300,10 +1300,20 @@ namespace vhCalendar
         static void OnSelectedDatesChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             Calendar vc = (Calendar)obj;
+            vc.OnDatesChanged(vc.SelectedDates, (ObservableCollection<DateTime>)e.OldValue);
             vc.OnPropertyChanged(nameof(SelectedDates));
+            
+        }
+        private void OnDatesChanged(ObservableCollection<DateTime> newDates, ObservableCollection<DateTime> oldDates)
+        {
+            SelectedDatesChangedEventArgs args =
+                new SelectedDatesChangedEventArgs(SelectedDatesChangedEvent);
+
+            args.NewDates = newDates;
+            args.OldDates = oldDates;
+            RaiseEvent(args);
         }
 
- 
 
         /// <summary>
         /// Event for the DateSelectionChanged raised when the date changes

@@ -27,13 +27,13 @@ namespace El2Core.Utils
             List<FileInfo> files = [];
             var dir = new DirectoryInfo(SourceLocation);
             if (dir.Exists == false) return 3;
-            if (FileExtensions == null)
+            if (ArchiveRules[rule].FileExt == null)
             {
                 files.AddRange([.. dir.GetFiles()]);
             }
             else
             {
-                foreach (var ext in FileExtensions)
+                foreach (var ext in ArchiveRules[rule].FileExt)
                 {
                     files.AddRange(dir.GetFiles($"*{ext}"));
                 }
@@ -57,7 +57,7 @@ namespace El2Core.Utils
                 }
                 else
                 {
-                    foreach (var ext in FileExtensions)
+                    foreach (var ext in ArchiveRules[rule].FileExt)
                     {
                         files.AddRange(d.GetFiles($"*{ext}"));
                     }
@@ -102,11 +102,13 @@ namespace El2Core.Utils
     }
     public class ArchivatorRule
     {
+        public string[]? FileExt { get; set; }
         public string? RegexString { get; set; }
         public Archivator.ArchivatorTarget MatchTarget { get; set; } = Archivator.ArchivatorTarget.TTNR;
         public string? TargetPath { get; set; }
-        public ArchivatorRule(string regex, Archivator.ArchivatorTarget target, string targetPath)
+        public ArchivatorRule(string regex, Archivator.ArchivatorTarget target, string targetPath, string extension)
         {
+            FileExt = extension.Split(',');
             RegexString = regex;
             MatchTarget = target;
             TargetPath  = targetPath;

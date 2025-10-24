@@ -589,7 +589,7 @@ namespace Lieferliste_WPF.ViewModels
 
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, orb.Aid, string.Empty], string.IsNullOrEmpty(orb.Material));
             }
-            else if (obj is ValueTuple<string, string, int> dic)
+            else if (obj is ValueTuple<string, string, int, string> dic)
             {
                 if (dic.Item3 > 1)
                 {
@@ -603,8 +603,8 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else
                 {
-                    //var p = Path.Combine(Archivator.ArchivLocation, dic.Item2);
-                    //Process.Start("explorer.exe", @p);
+
+                    Process.Start("explorer.exe", dic.Item4);
                 }
             }
             else if (obj is Dictionary<string, object> dicobj)

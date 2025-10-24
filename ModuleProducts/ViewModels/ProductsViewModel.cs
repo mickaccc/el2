@@ -166,7 +166,7 @@ namespace ModuleProducts.ViewModels
         }
         private bool OnCanArchivateExecute(object arg)
         {
-            return true; // PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
 
         private void OnArchivateExecute(object obj)
@@ -204,7 +204,7 @@ namespace ModuleProducts.ViewModels
                     {
                         var order = db.OrderRbs.FirstOrDefault(x => x.Aid == o.OrderNr);
                         order.ArchivState = state;
-                        order.ArchivPath = Location;
+                        order.ArchivPath = Path.Combine(Location, order.Aid);
                         db.SaveChanges();
                     }
                     var matObj = _Materials.First(x => x.TTNR == mat);
@@ -213,7 +213,7 @@ namespace ModuleProducts.ViewModels
                         var por = (List<ProductOrder>)matObj.ProdOrders.SourceCollection;
                         var or = por.Find(x => x.OrderNr == o.OrderNr);
                         or.ArchivState = state;
-                        or.ArchivPath = Location;
+                        or.ArchivPath = Path.Combine(Location, o.OrderNr); ;
                     }
                     if (state == 1)
                         s1++;
@@ -288,7 +288,7 @@ namespace ModuleProducts.ViewModels
                         var d = order.Vorgangs.MaxBy(static x => x.Vnr)?.QuantityYield;
                         var s = order.Vorgangs.Sum(x => x.QuantityScrap);
                         var r = order.Vorgangs.Sum(x => x.QuantityRework);
-                        var dic = new ValueTuple<string, string, int>(ttnr, order.Aid, order.ArchivState);
+                        var dic = new ValueTuple<string, string, int, string>(ttnr, order.Aid, order.ArchivState, order.ArchivPath);
                         var msf = order.Vorgangs.Where(x => x.Msf != null).Select(x => x.Msf).ToArray();
                         
                         products.Add(new ProductOrder(dic, order.Aid, order.Quantity, order.Eckstart, order.Eckende,
@@ -307,16 +307,15 @@ namespace ModuleProducts.ViewModels
                     return ValidationResult.ValidResult;
                 }
             }
-
         }
-        public struct ProductOrder(ValueTuple<string, string, int> OrderLink, string OrderNr, int? Quantity,
+        public struct ProductOrder(ValueTuple<string, string, int, string> OrderLink, string OrderNr, int? Quantity,
             DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed,
             string?[] tags, DateTime? completed, int archivState) : INotifyPropertyChanged
         {
             public string OrderNr { get; } = OrderNr;
             public int Quantity { get; } = Quantity ??= 0;
             public bool Closed { get; } = closed;
-            public ValueTuple<string, string, int> OrderLink { get; } = OrderLink;
+            public ValueTuple<string, string, int, string> OrderLink { get; } = OrderLink;
             public DateTime? Start { get; } = EckStart;
             public DateTime? End { get; } = EckEnd;
             public int Delivered { get; } = Delivered ??= 0;
@@ -324,7 +323,8 @@ namespace ModuleProducts.ViewModels
             public int Rework { get; } = Rework ??= 0;
             public string?[] Tags { get; } = tags;
             public DateTime? Completed { get; } = completed;
-            public string? ArchivPath { get; set; }
+            private string? _archivPath;
+            public string? ArchivPath { get { return _archivPath; } set { _archivPath = value; OnPropertyChanged(nameof(ArchivPath)); } }
             private int _archivState = archivState;
             public int ArchivState { get { return _archivState; } set { _archivState = value; OnPropertyChanged(nameof(ArchivState)); } }
 
