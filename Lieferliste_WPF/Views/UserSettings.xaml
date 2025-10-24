@@ -385,9 +385,10 @@
             </TabItem>
             <TabItem Header="Projekte">
                 <DataGrid ItemsSource="{Binding ProjectSchemes}" IsEnabled="{Binding Converter={StaticResource permiss},
-							ConverterParameter={x:Static const:Permissions.ProjectScheme}}"  />
+							ConverterParameter={x:Static const:Permissions.ProjectScheme}}" />
             </TabItem>
-            <TabItem Header="Archivator">
+            <TabItem Header="Archivator" IsEnabled="{Binding Converter={StaticResource permiss},
+                ConverterParameter={x:Static const:Permissions.Archivate}}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>

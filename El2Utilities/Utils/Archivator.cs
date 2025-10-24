@@ -12,12 +12,34 @@ namespace El2Core.Utils
 
     public static class Archivator
     {
-
-        public static bool IsChanged { get; set; } = false;
-        public static List<ArchivatorRule> ArchiveRules { get; set { IsChanged = true; } } = [];
-
-        public static string[]? FileExtensions { get; set { IsChanged = true; } }
-        public static int DelayDays { get; set { IsChanged = true; } } = 0;
+        private static bool _isChanged = false;
+        public static bool IsChanged
+        {
+            get { return _isChanged; }
+            set { _isChanged = value; }
+        }
+        private static List<ArchivatorRule> _ArchivRules = [];
+        public static List<ArchivatorRule> ArchiveRules
+        {
+            get { return _ArchivRules; }
+            set { _ArchivRules = value; _isChanged = true; }
+        }
+        private static string[]? _FileExtensions;
+        public static string[]? FileExtensions
+        {
+            get { return _FileExtensions; }
+            set
+            {
+                _isChanged = true;
+                _FileExtensions = value;
+            }
+        }
+        private static int _DelayDays =0;
+        public static int DelayDays
+        { 
+            get { return _DelayDays; }
+            set { _isChanged = true; _DelayDays = value; }
+        }
 
         public static int Archivate(string SourceLocation, int rule, out string Location)
         {
@@ -27,13 +49,13 @@ namespace El2Core.Utils
             List<FileInfo> files = [];
             var dir = new DirectoryInfo(SourceLocation);
             if (dir.Exists == false) return 3;
-            if (ArchiveRules[rule].FileExt == null)
+            if (FileExtensions == null)
             {
                 files.AddRange([.. dir.GetFiles()]);
             }
             else
             {
-                foreach (var ext in ArchiveRules[rule].FileExt)
+                foreach (var ext in FileExtensions)
                 {
                     files.AddRange(dir.GetFiles($"*{ext}"));
                 }
@@ -57,7 +79,7 @@ namespace El2Core.Utils
                 }
                 else
                 {
-                    foreach (var ext in ArchiveRules[rule].FileExt)
+                    foreach (var ext in FileExtensions)
                     {
                         files.AddRange(d.GetFiles($"*{ext}"));
                     }
@@ -102,16 +124,17 @@ namespace El2Core.Utils
     }
     public class ArchivatorRule
     {
-        public string[]? FileExt { get; set; }
+
         public string? RegexString { get; set; }
         public Archivator.ArchivatorTarget MatchTarget { get; set; } = Archivator.ArchivatorTarget.TTNR;
         public string? TargetPath { get; set; }
-        public ArchivatorRule(string regex, Archivator.ArchivatorTarget target, string targetPath, string extension)
+        public ArchivatorRule(string regex, Archivator.ArchivatorTarget target, string targetPath)
         {
-            FileExt = extension.Split(',');
+
             RegexString = regex;
             MatchTarget = target;
             TargetPath  = targetPath;
+  
         }
         public ArchivatorRule() { }
     }

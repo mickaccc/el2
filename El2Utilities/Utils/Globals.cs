@@ -192,20 +192,20 @@ namespace El2Core.Utils
         {
             public List<ArchivatorRule>? ArchiveRules { get; set; }
             public int DelayDays { get; set; }
-            public string? FileExtensions { get; set; } 
+            public string[]? FileExtensions { get; set; } 
             
             public void SetArchivator()
             {
                 if (ArchiveRules != null)
                   Archivator.ArchiveRules.AddRange(ArchiveRules);
                 Archivator.DelayDays = DelayDays;
-                Archivator.FileExtensions = (FileExtensions != null && FileExtensions.Length > 0) ? FileExtensions.Split(',') : null;
+                Archivator.FileExtensions = FileExtensions;
             }
             public void GetArchivator()
             {
                 ArchiveRules = Archivator.ArchiveRules;
                 DelayDays = Archivator.DelayDays;
-                FileExtensions = (Archivator.FileExtensions != null) ? string.Join(',', Archivator.FileExtensions) : null;
+                FileExtensions = Archivator.FileExtensions;
             }
         }
     }

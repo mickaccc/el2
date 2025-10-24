@@ -350,8 +350,9 @@ namespace Lieferliste_WPF.ViewModels
             _filterContainer.Save();
             if (Archivator.IsChanged)
             {
-                Globals.SaveArchivator();
-                
+                Archivator.FileExtensions = ArchivFileExt.Split(',');
+                Archivator.DelayDays = ArchivDelayDays;
+                Globals.SaveArchivator();              
             }
         }
         private bool OnPersonalFilterRemoveCanExecute(object arg)
@@ -463,7 +464,7 @@ namespace Lieferliste_WPF.ViewModels
         private void OnArchivatorRuleAddExecuted(object obj)
         {
             var target = Enum.Parse(typeof(Archivator.ArchivatorTarget), ArchivRuleTargetSelect);
-            var item = new ArchivatorRule(ArchivatorRuleRegEx, (Archivator.ArchivatorTarget)target, ArchivatorRuleFolder, ArchivFileExt);
+            var item = new ArchivatorRule(ArchivatorRuleRegEx, (Archivator.ArchivatorTarget)target, ArchivatorRuleFolder);
             _ArchivatorRules.Add(item);
             Archivator.ArchiveRules = _ArchivatorRules;
             ArchivatorRules.Refresh();           
