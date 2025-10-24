@@ -1289,7 +1289,7 @@ namespace vhCalendar
         /// </summary>
         public static readonly DependencyProperty SelectedDatesProperty =
             DependencyProperty.Register("SelectedDates", typeof(ObservableCollection<DateTime>), typeof(Calendar),
-                new UIPropertyMetadata(null, OnSelectedDatesChanged, CoerceDatesChanged));
+                new UIPropertyMetadata(null, OnSelectedDatesChanged));
 
         public ObservableCollection<DateTime> SelectedDates
         {
@@ -1303,11 +1303,6 @@ namespace vhCalendar
             vc.OnPropertyChanged(nameof(SelectedDates));
         }
 
-        static object CoerceDatesChanged(DependencyObject d, object o)
-        {
-            Calendar vc = d as Calendar;
-            return o;
-        }
  
 
         /// <summary>

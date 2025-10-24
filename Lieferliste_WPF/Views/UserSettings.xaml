@@ -423,8 +423,10 @@
                         <TextBox x:Name="ArRegExBox" Text="{Binding ArchivatorRuleRegEx}" Margin="10,0,10,0" MinWidth="60"
                             TextChanged="TestBox_TextChanged" ToolTip="Regular Expression"/>
                         <TextBox x:Name="ArTestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
-                        <ComboBox ItemsSource="{Binding PropertyNames}" SelectedValue="{Binding PersonalFilterField}"
-                            DisplayMemberPath="Item1" ToolTip="Feld in dem der RegEx angewendet werden soll">
+                        <ComboBox x:Name="ArchivTarget" ItemsSource="{Binding ArchivRuleTargets}"
+                            SelectedItem="{Binding ArchivRuleTargetSelect, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsSynchronizedWithCurrentItem="True"
+                             ToolTip="Feld in dem der RegEx angewendet werden soll">
                         </ComboBox>
                         <TextBox Text="{Binding ArchivatorRuleFolder}" Margin="10,0,10,0" MinWidth="60" ToolTip="Archivpfad"/>
                         <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"

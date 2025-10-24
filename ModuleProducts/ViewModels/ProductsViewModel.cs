@@ -156,11 +156,17 @@ namespace ModuleProducts.ViewModels
 
         private void OnDateSelectedExecute(object obj)
         {
-           Selected_Dates = (IEnumerable<DateTime>)obj;
+            if (obj is DateTime o)
+            {
+                Selected_Dates = [];
+                Selected_Dates = Selected_Dates.Append(o);
+            }
+            else 
+                Selected_Dates = (IEnumerable<DateTime>)obj;
         }
         private bool OnCanArchivateExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
+            return true; // PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
 
         private void OnArchivateExecute(object obj)
@@ -190,13 +196,15 @@ namespace ModuleProducts.ViewModels
                     if (!matched)
                         continue;
                     var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
-                    var state = Archivator.Archivate(p, rulenr);
+                    string Location;
+                    var state = Archivator.Archivate(p, rulenr, out Location);
                     if (state == 1 || state == 2)
                         Directory.Delete(p, true);
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     {
                         var order = db.OrderRbs.FirstOrDefault(x => x.Aid == o.OrderNr);
                         order.ArchivState = state;
+                        order.ArchivPath = Location;
                         db.SaveChanges();
                     }
                     var matObj = _Materials.First(x => x.TTNR == mat);
@@ -205,7 +213,7 @@ namespace ModuleProducts.ViewModels
                         var por = (List<ProductOrder>)matObj.ProdOrders.SourceCollection;
                         var or = por.Find(x => x.OrderNr == o.OrderNr);
                         or.ArchivState = state;
-        
+                        or.ArchivPath = Location;
                     }
                     if (state == 1)
                         s1++;
@@ -316,6 +324,7 @@ namespace ModuleProducts.ViewModels
             public int Rework { get; } = Rework ??= 0;
             public string?[] Tags { get; } = tags;
             public DateTime? Completed { get; } = completed;
+            public string? ArchivPath { get; set; }
             private int _archivState = archivState;
             public int ArchivState { get { return _archivState; } set { _archivState = value; OnPropertyChanged(nameof(ArchivState)); } }
 

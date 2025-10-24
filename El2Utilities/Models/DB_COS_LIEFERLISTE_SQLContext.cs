@@ -98,7 +98,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
         IConfiguration configuration = builder.Build();
-        var defaultconnection = configuration.GetConnectionString("ConnectionHome");
+        var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
         optionsBuilder.UseSqlServer(defaultconnection).EnableThreadSafetyChecks();
         base.OnConfiguring(optionsBuilder);
     }
@@ -117,6 +117,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Created)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_AccountCost_created")
                 .HasColumnType("datetime")
                 .HasColumnName("created");
 
@@ -140,8 +141,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Created)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_AccountWorkArea_created")
                 .HasColumnType("datetime")
                 .HasColumnName("created");
+            entity.Property(e => e.FullAccess).HasAnnotation("Relational:DefaultConstraintName", "DF_AccountWorkArea_FullAccess");
+            entity.Property(e => e.Standard).HasAnnotation("Relational:DefaultConstraintName", "DF_AccountWorkArea_Standard");
 
             entity.HasOne(d => d.Account).WithMany(p => p.AccountWorkAreas)
                 .HasForeignKey(d => d.AccountId)
@@ -162,7 +166,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .ValueGeneratedNever()
                 .HasColumnName("costunitID");
             entity.Property(e => e.Description).HasMaxLength(50);
-            entity.Property(e => e.PlanRelevance).HasColumnName("plan_relevance");
+            entity.Property(e => e.PlanRelevance)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Costunit_plan_relevance")
+                .HasColumnName("plan_relevance");
         });
 
         modelBuilder.Entity<EmploySelection>(entity =>
@@ -172,7 +178,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.ToTable("EmploySelection");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Active).HasDefaultValue(true);
+            entity.Property(e => e.Active)
+                .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_EmploySelection_Active");
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -208,6 +216,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("stk");
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Employee_note_timestamp")
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp");
             entity.Property(e => e.Usr)
@@ -326,10 +335,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<InMemoryMsg>(entity =>
         {
             entity.HasKey(e => e.MsgId)
-                .HasName("PK__InMemory__6623589344B17E95")
-                .IsClustered(false);
+                .HasName("PK__InMemory__662358934B319009")
+                .IsClustered(false)
+                .HasFillFactor(95);
 
-            entity.ToTable("InMemoryMsg");
+            entity
+                .ToTable("InMemoryMsg")
+                .IsMemoryOptimized();
 
             entity.Property(e => e.MsgId).HasColumnName("MsgID");
             entity.Property(e => e.Invoker).HasMaxLength(255);
@@ -337,6 +349,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.TableName).HasMaxLength(50);
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_InMemoryMsg_timestamp")
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp");
         });
@@ -344,15 +357,19 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
         modelBuilder.Entity<InMemoryOnline>(entity =>
         {
             entity.HasKey(e => e.OnlId)
-                .HasName("PK__InMemory__A34E6163C0494893")
-                .IsClustered(false);
+                .HasName("PK__InMemory__A34E616341453DE5")
+                .IsClustered(false)
+                .HasFillFactor(95);
 
-            entity.ToTable("InMemoryOnline");
+            entity
+                .ToTable("InMemoryOnline")
+                .IsMemoryOptimized();
 
             entity.Property(e => e.OnlId).HasColumnName("OnlID");
             entity.Property(e => e.LifeTime).HasColumnType("datetime");
             entity.Property(e => e.Login)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_InMemoryOnline_Login")
                 .HasColumnType("datetime");
             entity.Property(e => e.PcId)
                 .HasMaxLength(50)
@@ -410,6 +427,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("vorg_id");
             entity.Property(e => e.Created)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_MeasureRessVorgang_created")
                 .HasColumnType("datetime")
                 .HasColumnName("created");
 
@@ -427,6 +445,10 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.HasKey(e => e.CompId).HasFillFactor(95);
 
             entity.ToTable("OrderComponent");
+
+            entity.HasIndex(e => e.Aid, "ixAid").HasFillFactor(95);
+
+            entity.HasIndex(e => e.Material, "ixOrderComponentMaterial").HasFillFactor(95);
 
             entity.Property(e => e.CompId).HasColumnName("CompID");
             entity.Property(e => e.Aid)
@@ -462,23 +484,33 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("AID");
-            entity.Property(e => e.Abgeschlossen).HasColumnName("abgeschlossen");
+            entity.Property(e => e.Abgeschlossen)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Order_abgeschlossen")
+                .HasColumnName("abgeschlossen");
             entity.Property(e => e.ArchivPath)
                 .HasMaxLength(150)
                 .IsUnicode(false);
+            entity.Property(e => e.ArchivState).HasAnnotation("Relational:DefaultConstraintName", "DF_OrderRB_ArchivState");
+            entity.Property(e => e.Archivated).HasAnnotation("Relational:DefaultConstraintName", "DF_OrderRB_Archivated");
             entity.Property(e => e.AuftragFarbe).HasMaxLength(10);
-            entity.Property(e => e.Ausgebl).HasColumnName("ausgebl");
+            entity.Property(e => e.Ausgebl)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Order_ausgebl")
+                .HasColumnName("ausgebl");
             entity.Property(e => e.Bemerkung).HasMaxLength(255);
             entity.Property(e => e.CompleteDate).HasColumnType("datetime");
+            entity.Property(e => e.Dringend).HasAnnotation("Relational:DefaultConstraintName", "DF_Order_Dringend");
             entity.Property(e => e.DummyMat)
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Eckende).HasColumnType("datetime");
             entity.Property(e => e.Eckstart).HasColumnType("datetime");
-            entity.Property(e => e.Fertig).HasColumnName("fertig");
+            entity.Property(e => e.Fertig)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Order_fertig")
+                .HasColumnName("fertig");
             entity.Property(e => e.Istende).HasColumnType("datetime");
             entity.Property(e => e.Iststart).HasColumnType("datetime");
             entity.Property(e => e.LieferTermin).HasMaxLength(255);
+            entity.Property(e => e.Mappe).HasAnnotation("Relational:DefaultConstraintName", "DF_Order_Mappe");
             entity.Property(e => e.MarkCode).HasMaxLength(255);
             entity.Property(e => e.Material).HasMaxLength(255);
             entity.Property(e => e.Mrpcontroller)
@@ -560,6 +592,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.ProjectColor)
                 .HasMaxLength(10)
                 .IsFixedLength();
+            entity.Property(e => e.ProjectPrio).HasAnnotation("Relational:DefaultConstraintName", "DF_Project_ProjectPrio");
+            entity.Property(e => e.ProjectType).HasAnnotation("Relational:DefaultConstraintName", "DF_Project_ProjectType");
         });
 
         modelBuilder.Entity<ProjectAttachment>(entity =>
@@ -568,9 +602,11 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.ToTable("ProjectAttachment");
 
+            entity.Property(e => e.IsLink).HasAnnotation("Relational:DefaultConstraintName", "DF_ProjectAttachment_IsLink");
             entity.Property(e => e.ProjectPsp).HasMaxLength(50);
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_ProjectAttachment_Timestamp")
                 .HasColumnType("datetime");
 
             entity.HasOne(d => d.ProjectPspNavigation).WithMany(p => p.ProjectAttachments)
@@ -586,16 +622,24 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.ToTable("Response");
 
+            entity.HasIndex(e => e.VorgangId, "ixVorgangId").HasFillFactor(95);
+
             entity.Property(e => e.ResponseId).HasColumnName("response_id");
             entity.Property(e => e.Notreal).HasColumnName("notreal");
-            entity.Property(e => e.Rework).HasColumnName("rework");
-            entity.Property(e => e.Scrap).HasColumnName("scrap");
+            entity.Property(e => e.Rework)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_response_rework")
+                .HasColumnName("rework");
+            entity.Property(e => e.Scrap)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_response_scrap")
+                .HasColumnName("scrap");
             entity.Property(e => e.Timestamp).HasColumnName("timestamp");
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("vorgang_id");
-            entity.Property(e => e.Yield).HasColumnName("yield");
+            entity.Property(e => e.Yield)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_response_yield")
+                .HasColumnName("yield");
 
             entity.HasOne(d => d.Vorgang).WithMany(p => p.Responses)
                 .HasForeignKey(d => d.VorgangId)
@@ -612,9 +656,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Abteilung).HasMaxLength(15);
             entity.Property(e => e.Info).HasMaxLength(255);
             entity.Property(e => e.Inventarnummer).HasMaxLength(255);
-            entity.Property(e => e.ProcessAddable).HasDefaultValue(true);
+            entity.Property(e => e.ProcessAddable)
+                .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Ressource_ProcessAddable");
             entity.Property(e => e.RessName).HasMaxLength(30);
-            entity.Property(e => e.Visability).HasDefaultValue(true);
+            entity.Property(e => e.Visability)
+                .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Ressource_Visability");
 
             entity.HasOne(d => d.ShiftCalendarNavigation).WithMany(p => p.Ressources)
                 .HasForeignKey(d => d.ShiftCalendar)
@@ -680,6 +728,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .IsFixedLength();
             entity.Property(e => e.Created)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_PermissionsRole_created")
                 .HasColumnType("datetime")
                 .HasColumnName("created");
 
@@ -713,12 +762,16 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.CalendarName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Lock).HasColumnName("lock");
+            entity.Property(e => e.Lock)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_ShiftCalendar_lock")
+                .HasColumnName("lock");
             entity.Property(e => e.Repeat)
                 .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_ShiftCalendar_repeat")
                 .HasColumnName("repeat");
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_ShiftCalendar_timestamp")
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp");
         });
@@ -731,6 +784,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_ShiftCalendarShiftPlan_timestamp")
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp");
             entity.Property(e => e.YearKw)
@@ -760,7 +814,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.CoverName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Lock).HasColumnName("lock");
+            entity.Property(e => e.Lock)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_ShiftCover_lock")
+                .HasColumnName("lock");
         });
 
         modelBuilder.Entity<ShiftPlan>(entity =>
@@ -774,7 +830,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(180)
                 .IsFixedLength()
                 .HasColumnName("fre");
-            entity.Property(e => e.Lock).HasColumnName("lock");
+            entity.Property(e => e.Lock)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_ShiftPlan_lock")
+                .HasColumnName("lock");
             entity.Property(e => e.Mon)
                 .HasMaxLength(180)
                 .IsFixedLength()
@@ -816,6 +874,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.Starttime).HasColumnType("datetime");
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Stopage_timestamp")
                 .HasColumnType("datetime")
                 .HasColumnName("timestamp");
 
@@ -864,6 +923,8 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                     tb.HasTrigger("AuditInsertVorgang");
                 });
 
+            entity.HasIndex(e => new { e.Aid, e.Text, e.SysStatus }, "<ixAidTextSysstatus").HasFillFactor(95);
+
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -874,7 +935,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("AID");
-            entity.Property(e => e.Aktuell).HasColumnName("aktuell");
+            entity.Property(e => e.Aktuell)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Vorgang_aktuell")
+                .HasColumnName("aktuell");
             entity.Property(e => e.ArbPlSap)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -895,14 +958,17 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
                 .HasColumnName("Bem_T");
             entity.Property(e => e.Bullet)
                 .HasMaxLength(9)
-                .HasDefaultValue("#FFFFFFFF");
+                .HasDefaultValue("#FFFFFFFF")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Vorgang_Bullet");
             entity.Property(e => e.BulletTwo).HasMaxLength(9);
             entity.Property(e => e.CommentMach).IsUnicode(false);
             entity.Property(e => e.MarkCode).HasMaxLength(50);
             entity.Property(e => e.Msf)
                 .HasMaxLength(50)
                 .HasColumnName("MSF");
-            entity.Property(e => e.MsfInWork).HasColumnName("MSF-InWork");
+            entity.Property(e => e.MsfInWork)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Vorgang_MSF-InWork")
+                .HasColumnName("MSF-InWork");
             entity.Property(e => e.ProcessingUom)
                 .HasMaxLength(16)
                 .IsFixedLength()
@@ -927,7 +993,9 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.SysStatus).HasMaxLength(255);
             entity.Property(e => e.Termin).HasColumnType("datetime");
             entity.Property(e => e.Text).HasMaxLength(150);
-            entity.Property(e => e.Visability).HasDefaultValue(true);
+            entity.Property(e => e.Visability)
+                .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Vorgang_ausgebl");
             entity.Property(e => e.Vnr).HasColumnName("VNR");
             entity.Property(e => e.Wrtze).HasColumnName("WRTZE");
             entity.Property(e => e.WrtzeEinheit)
@@ -955,11 +1023,13 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.ToTable("VorgangAttachment");
 
             entity.Property(e => e.AttachId).HasColumnName("AttachID");
+            entity.Property(e => e.IsLink).HasAnnotation("Relational:DefaultConstraintName", "DF_VorgangAttachment_IsLink");
             entity.Property(e => e.Link)
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Timestamp)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_VorgangAttachment_timestamp")
                 .HasColumnName("timestamp");
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)
@@ -979,6 +1049,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.VorgangId)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+            entity.Property(e => e.InWorkState).HasAnnotation("Relational:DefaultConstraintName", "DF_VorgangDocu_InWorkState");
             entity.Property(e => e.VmpbOriginal)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -999,8 +1070,12 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
 
             entity.Property(e => e.WorkAreaId).HasColumnName("WorkAreaID");
             entity.Property(e => e.Bereich).HasMaxLength(255);
+            entity.Property(e => e.CreateFolder).HasAnnotation("Relational:DefaultConstraintName", "DF_WorkArea_CreateFolder");
             entity.Property(e => e.Info).HasMaxLength(255);
-            entity.Property(e => e.Sort).HasColumnName("SORT");
+            entity.Property(e => e.IsLocked).HasAnnotation("Relational:DefaultConstraintName", "DF_WorkArea_IsLocked");
+            entity.Property(e => e.Sort)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_WorkArea_SORT")
+                .HasColumnName("SORT");
         });
 
         modelBuilder.Entity<WorkSap>(entity =>
@@ -1015,6 +1090,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.CostId).HasColumnName("CostID");
             entity.Property(e => e.Created)
                 .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_WorkSap_timestamp")
                 .HasColumnType("datetime")
                 .HasColumnName("created");
 

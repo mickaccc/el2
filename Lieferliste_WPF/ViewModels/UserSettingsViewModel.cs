@@ -143,11 +143,11 @@ namespace Lieferliste_WPF.ViewModels
         private List<ArchivatorRule> _ArchivatorRules = Archivator.ArchiveRules ?? [];
 
         public ICollectionView ArchivatorRules { get; }
-            
-        
+                   
         public string ArchivatorRuleRegEx { get; set; }
         public string ArchivatorRuleFolder { get; set; }
-
+        public Array ArchivRuleTargets { get; } = Enum.GetValues(typeof(Archivator.ArchivatorTarget));
+        public string? ArchivRuleTargetSelect { get; set; } = Enum.GetName(Archivator.ArchivatorTarget.TTNR);
         public List<Tuple<string, string, int>> PropertyNames { get; } = [];
         private PersonalFilterContainer _filterContainer;
         private ObservableCollection<string> _filterContainerKeys;
@@ -249,9 +249,9 @@ namespace Lieferliste_WPF.ViewModels
             if (RuleInfo.Rules.TryGetValue("MeasureScan", out Rule? scan))
                 RuleInfoScan= scan.RuleValue;
 
-            ArchivFileExt = (Archivator.FileExtensions != null) ? string.Join(',', Archivator.FileExtensions) : " ";
+            ArchivFileExt = (Archivator.FileExtensions != null) ? string.Join(',', Archivator.FileExtensions) : "";
             ArchivDelayDays = Archivator.DelayDays;
-
+            Archivator.IsChanged = false;
         }
         private void LoadFilters()
         {
@@ -444,7 +444,7 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnArchivatorRuleRemoveCanExecute(object arg)
         {
-            return ArchivatorRules.CurrentPosition != -1;
+            return ArchivatorRules.CurrentPosition != -1 && PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
 
         private void OnArchivatorRuleRemoveExecuted(object obj)
@@ -461,7 +461,8 @@ namespace Lieferliste_WPF.ViewModels
 
         private void OnArchivatorRuleAddExecuted(object obj)
         {
-            var item = new ArchivatorRule(ArchivatorRuleRegEx, Archivator.ArchivatorTarget.TTNR, ArchivatorRuleFolder);
+            var target = Enum.Parse(typeof(Archivator.ArchivatorTarget), ArchivRuleTargetSelect);
+            var item = new ArchivatorRule(ArchivatorRuleRegEx, (Archivator.ArchivatorTarget)target, ArchivatorRuleFolder);
             _ArchivatorRules.Add(item);
             Archivator.ArchiveRules = _ArchivatorRules;
             ArchivatorRules.Refresh();           

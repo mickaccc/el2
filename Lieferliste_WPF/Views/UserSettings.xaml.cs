@@ -15,7 +15,7 @@ namespace Lieferliste_WPF.Views
         public UserSettings()
         {
             InitializeComponent();
-
+          
         }
 
         private void AccentSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -45,6 +45,7 @@ namespace Lieferliste_WPF.Views
                     RegExBox = (TextBox)FindName("ArRegExBox");
                 }
             }
+            if (testbox == null || RegExBox == null)  return;
             try
             {
                 RegExBox.Foreground = Brushes.Black;

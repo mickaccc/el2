@@ -88,6 +88,7 @@ namespace El2Core.Utils
                 var arc = serializer.Deserialize(xmlData);
                 (arc as ArchivatorWrap)?.SetArchivator();
             }
+            Archivator.IsChanged = false;
 
         }
         public static void SaveRule(string RuleKey, string value)

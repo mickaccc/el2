@@ -304,7 +304,8 @@ namespace Lieferliste_WPF.ViewModels
         {
             get { return _archivState; }
         }
-
+        private string? _ArchivPath;
+        public string? ArchivPath { get { return _ArchivPath; } }
 
         public ICollectionView VorgangCV { get; }
         private string _title = "Auftragsübersicht";
@@ -368,6 +369,7 @@ namespace Lieferliste_WPF.ViewModels
                 Ready = v.AidNavigation.Fertig;
                 EckEnde = v.AidNavigation.Eckende;
                 _archivState = v.AidNavigation.ArchivState;
+                _ArchivPath = v.AidNavigation.ArchivPath;
                 VorgangCV.Refresh();
             }
             else

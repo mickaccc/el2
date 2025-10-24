@@ -543,8 +543,14 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else if (o.ArchivState == 1)
                 {
-                    //var p = Path.Combine(Archivator.ArchivLocation, o.Aid);
-                    //Process.Start("explorer.exe", @p);
+
+                    if (o.ArchivPath != null)
+                    {
+                        if (new DirectoryInfo(o.ArchivPath).Exists)
+                            Process.Start("explorer.exe", o.ArchivPath);
+                        else
+                            MessageBox.Show("Der Dateiordner existiert nicht", "Information", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                     return;
                 }
                 docu = _workareaDocumentInfo.CreateDocumentInfos([tt, o.Aid, string.Empty], o.Material == "DUMMY");
@@ -571,8 +577,13 @@ namespace Lieferliste_WPF.ViewModels
                 }
                 else if (orb.ArchivState == 1)
                 {
-                    //var p = Path.Combine(Archivator.ArchivLocation, orb.Aid);
-                    //Process.Start("explorer.exe", @p);
+                    if (orb.ArchivPath != null)
+                    {
+                        if (new DirectoryInfo(orb.ArchivPath).Exists)
+                            Process.Start("explorer.exe", orb.ArchivPath);
+                        else
+                            MessageBox.Show("Der Dateiordner existiert nicht", "Information", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                     return;
                 }
 

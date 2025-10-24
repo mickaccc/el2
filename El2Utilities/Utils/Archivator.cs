@@ -16,7 +16,7 @@ namespace El2Core.Utils
         public static bool IsChanged { get; set; } = false;
         public static List<ArchivatorRule> ArchiveRules { get; set { IsChanged = true; } } = [];
 
-        public static string[]? FileExtensions { get; set => IsChanged = true; }
+        public static string[]? FileExtensions { get; set { IsChanged = true; } }
         public static int DelayDays { get; set { IsChanged = true; } } = 0;
 
         public static int Archivate(string SourceLocation, int rule, out string Location)
