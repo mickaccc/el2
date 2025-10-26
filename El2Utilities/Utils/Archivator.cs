@@ -12,6 +12,7 @@ namespace El2Core.Utils
 
     public static class Archivator
     {
+        
         private static bool _isChanged = false;
         public static bool IsChanged
         {
@@ -124,13 +125,13 @@ namespace El2Core.Utils
     }
     public class ArchivatorRule
     {
-
+        public string? Name { get; set; }
         public string? RegexString { get; set; }
         public Archivator.ArchivatorTarget MatchTarget { get; set; } = Archivator.ArchivatorTarget.TTNR;
         public string? TargetPath { get; set; }
-        public ArchivatorRule(string regex, Archivator.ArchivatorTarget target, string targetPath)
+        public ArchivatorRule(string name, string regex, Archivator.ArchivatorTarget target, string targetPath)
         {
-
+            Name = name;
             RegexString = regex;
             MatchTarget = target;
             TargetPath  = targetPath;

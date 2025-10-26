@@ -36,6 +36,7 @@ namespace Lieferliste_WPF.ViewModels
         public ICommand PersonalFilterNewCommand { get; }
         public ICommand ArchivatorRuleAddCommand { get; }
         public ICommand ArchivatorRuleRemoveCommand { get; }
+        public ICommand ArchivatorRuleNewCommand { get; }
 
         public string Title { get; } = "Einstellungen";
         private bool _isDarkTheme;
@@ -126,6 +127,14 @@ namespace Lieferliste_WPF.ViewModels
             get { return _DrawingLink; }
             set { _DrawingLink = value; }
         }
+        private string _ArchivRuleName;
+
+        public string ArchivRuleName
+        {
+            get { return _ArchivRuleName; }
+            set { _ArchivRuleName = value; NotifyPropertyChanged(() => ArchivRuleName); }
+        }
+
         private string _ArchivFileExt;
 
         public string ArchivFileExt
@@ -143,11 +152,27 @@ namespace Lieferliste_WPF.ViewModels
         private List<ArchivatorRule> _ArchivatorRules = Archivator.ArchiveRules ?? [];
 
         public ICollectionView ArchivatorRules { get; }
-                   
-        public string ArchivatorRuleRegEx { get; set; }
-        public string ArchivatorRuleFolder { get; set; }
+        
+        private bool ArchivRuleNew;
+        private string _ArchivatorRuleEx;
+        public string ArchivatorRuleRegEx
+        {
+            get { return _ArchivatorRuleEx; }
+            set { _ArchivatorRuleEx = value; NotifyPropertyChanged(() => ArchivatorRuleRegEx); }
+        }
+        private string _ArchivatorRuleFolder;
+        public string ArchivatorRuleFolder
+        {
+            get { return _ArchivatorRuleFolder; }
+            set { _ArchivatorRuleFolder = value; NotifyPropertyChanged(() => ArchivatorRuleFolder); }
+        }
         public Array ArchivRuleTargets { get; } = Enum.GetValues(typeof(Archivator.ArchivatorTarget));
-        public string? ArchivRuleTargetSelect { get; set; } = Enum.GetName(Archivator.ArchivatorTarget.TTNR);
+        private string _ArchivatorRuleTargetSelect = Enum.GetName(Archivator.ArchivatorTarget.TTNR);
+        public string ArchivRuleTargetSelect
+        {
+            get { return _ArchivatorRuleTargetSelect; }
+            set { _ArchivatorRuleTargetSelect = value; NotifyPropertyChanged(() => ArchivRuleTargetSelect); }
+        }
         public List<Tuple<string, string, int>> PropertyNames { get; } = [];
         private PersonalFilterContainer _filterContainer;
         private ObservableCollection<string> _filterContainerKeys;
@@ -219,6 +244,7 @@ namespace Lieferliste_WPF.ViewModels
                 PersonalFilterRemoveCommand = new ActionCommand(OnPersonalFilterRemoveExecuted, OnPersonalFilterRemoveCanExecute);
                 ArchivatorRuleAddCommand = new ActionCommand(OnArchivatorRuleAddExecuted, OnArchivatorRuleAddCanExecute);
                 ArchivatorRuleRemoveCommand = new ActionCommand(OnArchivatorRuleRemoveExecuted, OnArchivatorRuleRemoveCanExecute);
+                ArchivatorRuleNewCommand = new ActionCommand(OnArchivatorRuleNewExecuted, OnArchivatorRuleNewCanExecute);
                 ExplorerFilter = CollectionViewSource.GetDefaultView(_ExplorerFilter);
                 SelectedTheme = ThemeManager.Current.DetectTheme(App.Current.MainWindow);
                 FirstPartInfo = new MeasureFirstPartInfo(container);
@@ -230,6 +256,7 @@ namespace Lieferliste_WPF.ViewModels
                 MeasureDocumentInfo = new MeasureDocumentInfo(container);
                 Mdocu = MeasureDocumentInfo.CreateDocumentInfos();
                 ArchivatorRules = CollectionViewSource.GetDefaultView(_ArchivatorRules);
+                ArchivatorRules.CurrentChanged += OnArchiveRuleCurrentChanged;
                 LoadFilters();
                 LoadProjectSchemes();
                 LoadRules();
@@ -305,7 +332,25 @@ namespace Lieferliste_WPF.ViewModels
                 PersonalFilterRegex = string.Empty;
             }
         }
-
+        private void OnArchiveRuleCurrentChanged(object? sender, EventArgs e)
+        {
+            var arule = ArchivatorRules.CurrentItem as ArchivatorRule;
+            if (arule != null)
+            {
+                ArchivRuleName = arule.Name;
+                ArchivRuleTargetSelect = Enum.GetName(arule.MatchTarget);
+                
+                ArchivatorRuleRegEx = arule.RegexString;
+                ArchivatorRuleFolder = arule.TargetPath;
+            }
+            else
+            {
+                ArchivRuleName = string.Empty;
+                ArchivatorRuleRegEx = string.Empty;
+                ArchivatorRuleFolder = string.Empty;
+                
+            }
+        }
         private bool OnReloadCanExecute(object arg)
         {
             return true;
@@ -445,31 +490,43 @@ namespace Lieferliste_WPF.ViewModels
         }
         private bool OnArchivatorRuleRemoveCanExecute(object arg)
         {
-            return ArchivatorRules.CurrentPosition != -1 && PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
+            return ArchivatorRules.CurrentPosition != -1;
         }
 
         private void OnArchivatorRuleRemoveExecuted(object obj)
         {
             _ArchivatorRules.Remove((ArchivatorRule)ArchivatorRules.CurrentItem);
-            Archivator.ArchiveRules = _ArchivatorRules;
+
             ArchivatorRules.Refresh();
         }
 
         private bool OnArchivatorRuleAddCanExecute(object arg)
         {
             return !string.IsNullOrEmpty(ArchivatorRuleFolder) && !string.IsNullOrEmpty(ArchivatorRuleRegEx)
-                && PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
+                && !string.IsNullOrEmpty(ArchivRuleName);
         }
 
         private void OnArchivatorRuleAddExecuted(object obj)
         {
             var target = Enum.Parse(typeof(Archivator.ArchivatorTarget), ArchivRuleTargetSelect);
-            var item = new ArchivatorRule(ArchivatorRuleRegEx, (Archivator.ArchivatorTarget)target, ArchivatorRuleFolder);
+            var item = new ArchivatorRule(ArchivRuleName, ArchivatorRuleRegEx, (Archivator.ArchivatorTarget)target, ArchivatorRuleFolder);
             _ArchivatorRules.Add(item);
-            Archivator.ArchiveRules = _ArchivatorRules;
-            ArchivatorRules.Refresh();           
+            
+            ArchivatorRules.Refresh();
+            ArchivRuleNew = false;
+        }
+        private bool OnArchivatorRuleNewCanExecute(object arg)
+        {
+            return !ArchivRuleNew;
         }
 
+        private void OnArchivatorRuleNewExecuted(object obj)
+        {
+            ArchivRuleName = string.Empty;
+            ArchivatorRuleRegEx = string.Empty;
+            ArchivatorRuleFolder = string.Empty;
+            ArchivRuleNew = true;
+        }
         public string ExplorerPathPattern
         {
             get { return _settingsService.ExplorerPath; }

@@ -106,6 +106,7 @@
                             <ColumnDefinition Width="3*"/>
                             <ColumnDefinition Width="5"/>
                             <ColumnDefinition Width="5*"/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Angezeigte Spalten" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
                         <TextBlock Grid.Column="2" Text="STEUERUNG" HorizontalAlignment="Center" Background="{DynamicResource MahApps.Brushes.Accent3}"/>
@@ -156,6 +157,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="40*"/>
                         <ColumnDefinition Width="200*"/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.ColumnSpan="2" Background="Aquamarine" HorizontalContentAlignment="Center">
     
@@ -419,30 +421,34 @@
                         </Label>
                         <TextBox Text="{Binding ArchivDelayDays}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" >
-
-                        <TextBox x:Name="ArRegExBox" Text="{Binding ArchivatorRuleRegEx}" Margin="10,0,10,0" MinWidth="60"
-                            TextChanged="TestBox_TextChanged" ToolTip="Regular Expression"/>
-                        <TextBox x:Name="ArTestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
-                        <ComboBox x:Name="ArchivTarget" ItemsSource="{Binding ArchivRuleTargets}"
-                            SelectedItem="{Binding ArchivRuleTargetSelect, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            IsSynchronizedWithCurrentItem="True"
-                             ToolTip="Feld in dem der RegEx angewendet werden soll">
-                        </ComboBox>
-                        <TextBox Text="{Binding ArchivatorRuleFolder}" Margin="10,0,10,0" MinWidth="60" ToolTip="Archivpfad"/>
-                        <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                    <StackPanel Grid.Row="2" Grid.Column="1">
+                        <StackPanel Orientation="Horizontal" >
+                            <TextBox x:Name="ArName" Text="{Binding ArchivRuleName}" Margin="10,0,10,0" MinWidth="60"
+                                ToolTip="Name der Regel"/>
+                            <TextBox x:Name="ArRegExBox" Text="{Binding ArchivatorRuleRegEx}" Margin="10,0,10,0" MinWidth="60"
+                                TextChanged="TestBox_TextChanged" ToolTip="Regular Expression"/>
+                            
+                            <ComboBox x:Name="ArchivTarget" ItemsSource="{Binding ArchivRuleTargets}"
+                                SelectedValue="{Binding ArchivRuleTargetSelect, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ToolTip="Feld in dem der RegEx angewendet werden soll">
+                            </ComboBox>
+                            <TextBox x:Name="ArRuleFolder" Text="{Binding ArchivatorRuleFolder}" Margin="10,0,10,0" MinWidth="60" ToolTip="Archivpfad"/>
+                            <Button Content="Neu" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                            Command="{Binding ArchivatorRuleNewCommand}"/>
+                            <Button Content="Hinzufügen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
                             Command="{Binding ArchivatorRuleAddCommand}"/>
-                        <Button Content="Entfernen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
+                            <Button Content="Entfernen" Style="{DynamicResource MahApps.Styles.Button.MetroSquare.Accent}"
                             Command="{Binding ArchivatorRuleRemoveCommand}"/>
+                        </StackPanel>
+                        <TextBox x:Name="ArTestBox" Margin="10,0,10,0" TextChanged="TestBox_TextChanged" MinWidth="60" ToolTip="Tester"/>
                     </StackPanel>
                     <ListBox Grid.RowSpan="4" ItemsSource="{Binding ArchivatorRules}" Margin="10" MinWidth="80" IsSynchronizedWithCurrentItem="True"
-                          Background="AntiqueWhite">
+                          Background="AntiqueWhite" >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Path=RegexString}" TextWrapping="Wrap" MaxWidth="160"/>
-                                    <TextBlock Text="{Binding Path=TargetPath}" TextWrapping="Wrap" MaxWidth="160"/>
-                                </StackPanel>
+      
+                                 <TextBlock Text="{Binding Path=Name}" TextWrapping="Wrap" MaxWidth="160"/>
+  
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
