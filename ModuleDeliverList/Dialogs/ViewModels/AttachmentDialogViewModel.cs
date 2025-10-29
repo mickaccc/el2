@@ -81,7 +81,7 @@ namespace ModuleDeliverList.Dialogs.ViewModels
         {
             
             var f = await AttachmentFactory.GetFilePickerPath();
-            if (f != null)
+            if (string.IsNullOrEmpty(f))
             {
                 AddAttachment(f, true);
                 Logger.LogInformation("{message}", f);

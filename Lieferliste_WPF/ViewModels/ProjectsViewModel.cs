@@ -279,7 +279,7 @@ namespace Lieferliste_WPF.ViewModels
         private async void OnAddFileExecutedAsync(object obj)
         {
             var f = await AttachmentFactory.GetFilePickerPath();
-            if (f != null)
+            if (!string.IsNullOrEmpty(f))
             {
                 AddAttachment(f, false);
                 _logger.LogInformation("Att added {message}", f);
@@ -293,7 +293,7 @@ namespace Lieferliste_WPF.ViewModels
         private async void OnAddFileAsLinkExecutedAsync(object obj)
         {
             var f = await AttachmentFactory.GetFilePickerPath();
-            if (f != null)
+            if (!string.IsNullOrEmpty(f))
             {
                 AddAttachment(f, true);
                 _logger.LogInformation("Att added as Link {message}", f);
