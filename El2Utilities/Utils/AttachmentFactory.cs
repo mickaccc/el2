@@ -10,7 +10,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using WinRT;
+using Windows.UI.WindowManagement;
+
 
 namespace El2Core.Utils
 {
@@ -20,6 +21,13 @@ namespace El2Core.Utils
         public abstract IDbAttachment CreateDbAttachment(string link, bool isLink);
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto, PreserveSig = true, SetLastError = false)]
         public static extern IntPtr GetActiveWindow();
+        [ComImport]
+        [Guid("3E68D4BD-7135-4D10-8018-9FB6D9F33FA1")]
+        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        public interface IInitializeWithWindow
+        {
+            void Initialize(IntPtr hwnd);
+        }
         private static BitmapSource? GetIcon(ProgramIcon programIcon)
         {
             try
@@ -127,14 +135,20 @@ namespace El2Core.Utils
         }
         public static async Task<string> GetFilePickerPath()
         {
-            FileOpenPicker openPicker = new FileOpenPicker();
-            var initializeWithWindowWrapper = openPicker.As<IInitializeWithWindow>();
-            initializeWithWindowWrapper.Initialize(GetActiveWindow());
+
+            FileOpenPicker openPicker = new();
+
+            WinRT.Interop.InitializeWithWindow.
+                Initialize(openPicker, new System.Windows.Interop.WindowInteropHelper(Application.Current.MainWindow).Handle);
+ 
             openPicker.ViewMode = PickerViewMode.List;
             openPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
             openPicker.FileTypeFilter.Add("*");
+
             StorageFile op = await openPicker.PickSingleFileAsync();
             if (op != null) { return op.Path; }
+            
+
             return string.Empty;
         }
 
