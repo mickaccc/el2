@@ -64,8 +64,6 @@ public partial class OrderRb : ModelBase
 
     public DateTime? CompleteDate { get; set; }
 
-    public bool Archivated { get; set; }
-
     public int ArchivState { get; set; }
 
     public string? ArchivPath { get; set; }

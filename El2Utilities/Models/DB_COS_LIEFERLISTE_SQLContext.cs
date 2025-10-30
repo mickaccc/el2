@@ -98,7 +98,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
         IConfiguration configuration = builder.Build();
-        var defaultconnection = configuration.GetConnectionString("ConnectionBosch");
+        var defaultconnection = configuration.GetConnectionString("ConnectionHome");
         optionsBuilder.UseSqlServer(defaultconnection).EnableThreadSafetyChecks();
         base.OnConfiguring(optionsBuilder);
     }
@@ -490,8 +490,7 @@ public partial class DB_COS_LIEFERLISTE_SQLContext : DbContext
             entity.Property(e => e.ArchivPath)
                 .HasMaxLength(150)
                 .IsUnicode(false);
-            entity.Property(e => e.ArchivState).HasAnnotation("Relational:DefaultConstraintName", "DF_OrderRB_ArchivState");
-            entity.Property(e => e.Archivated).HasAnnotation("Relational:DefaultConstraintName", "DF_OrderRB_Archivated");
+            entity.Property(e => e.ArchivState).HasAnnotation("Relational:DefaultConstraintName", "DF_OrderRB_ArchivState_1");
             entity.Property(e => e.AuftragFarbe).HasMaxLength(10);
             entity.Property(e => e.Ausgebl)
                 .HasAnnotation("Relational:DefaultConstraintName", "DF_Order_ausgebl")

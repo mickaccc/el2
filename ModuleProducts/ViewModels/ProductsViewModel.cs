@@ -13,12 +13,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using static ModuleProducts.Dialogs.ViewModels.ArchivProcessDialogVM;
 
 namespace ModuleProducts.ViewModels
 {
     internal class ProductsViewModel : ViewModelBase
     {
-        public ProductsViewModel(IContainerExtension container, IApplicationCommands applicationCommands)
+        public ProductsViewModel(IContainerExtension container, IApplicationCommands applicationCommands, IDialogService dialogService)
         {
             _container = container;
             _applicationCommands = applicationCommands;
@@ -26,11 +27,13 @@ namespace ModuleProducts.ViewModels
             _Logger = loggerFactory.CreateLogger<ProductsViewModel>();
             firstPartInfo = new MeasureFirstPartInfo(_container);
             MaterialTask = new NotifyTaskCompletion<ICollectionView>(OnLoadMaterialsAsync());
+            _dialogService = dialogService;
         }
         public string Title { get; } = "Produkt Übersicht";
 
         private readonly IContainerExtension _container;
         private readonly ILogger _Logger;
+        private readonly IDialogService _dialogService;
         public ICollectionView ProductsView { get; private set; }
         private MeasureFirstPartInfo firstPartInfo;
         private ObservableCollection<ProductMaterial> _Materials =[];
@@ -171,66 +174,32 @@ namespace ModuleProducts.ViewModels
 
         private void OnArchivateExecute(object obj)
         {
-            int s1=0, s2=0, s3 =0;
-            foreach (var m in ProductsView)
+            try
             {
-                var mat = (m as ProductMaterial)?.TTNR;
-                List<ProductOrder> pord = (List<ProductOrder>)(m as ProductMaterial).ProdOrders.SourceCollection;
-                foreach (var o in pord.Where(x => x.ArchivState == 0 && x.Closed) ?? [])
-                {
-                    if (o.Completed > DateTime.Now.AddDays(-Archivator.DelayDays))
-                        continue;
-                    var doku = firstPartInfo.CreateDocumentInfos([mat, o.OrderNr]);
-                    int rulenr = 0;
-                    bool matched = false;
-                    foreach (var rule in Archivator.ArchiveRules)
-                    {
-                        string? input = (rule.MatchTarget.Equals(Archivator.ArchivatorTarget.TTNR)) ? mat : o.OrderNr;
-                        if (Regex.IsMatch(input, rule.RegexString))
-                        {
-                            matched = true;
-                            break;
-                        }
-                        rulenr++;
-                    }
-                    if (!matched)
-                        continue;
-                    var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
-                    string Location;
-                    var state = Archivator.Archivate(p, rulenr, out Location);
-                    if (state == Archivator.ArchivState.Archivated || state == Archivator.ArchivState.NoFiles)
-                        Directory.Delete(p, true);
-                    using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
-                    {
-                        var order = db.OrderRbs.FirstOrDefault(x => x.Aid == o.OrderNr);
-                        order.ArchivState = (int)state;
-                        if (state == Archivator.ArchivState.Archivated)
-                            order.ArchivPath = Path.Combine(Location, order.Aid);
-                        db.SaveChanges();
-                    }
-                    var matObj = _Materials.First(x => x.TTNR == mat);
-                    if (matObj != null)
-                    {
-                        var por = (List<ProductOrder>)matObj.ProdOrders.SourceCollection;
-                        var or = por.Find(x => x.OrderNr == o.OrderNr);
-                        or.ArchivState = state;
-                        if (state == Archivator.ArchivState.Archivated)
-                            or.ArchivPath = Path.Combine(Location, o.OrderNr); ;
-                    }
-                    if (state == Archivator.ArchivState.Archivated)
-                        s1++;
-                    else if (state == Archivator.ArchivState.NoDirectory)
-                        s2++;
-                    else if (state == Archivator.ArchivState.NoFiles)
-                        s3++;                   
-                }
-                
+                var par = new DialogParameters();
+                par.Add("Archivate", ProductsView);
+                par.Add("Container", _container);
+    
+ 
+                _dialogService.Show("ArchivProcessDialog", par, ArchivatorCallBack);
             }
-            string msg = string.Format("Archivierung abgeschlossen. Erfolgreich: {0}\nKeine Dateien: {1}\nQuelle nicht gefunden: {2}", s1, s2, s3);
-            _Logger.LogInformation(msg);
-            MessageBox.Show(msg, "Archivierung", MessageBoxButton.OK, MessageBoxImage.Information);
+            catch (Exception e)
+            {
+                _Logger.LogError("{message}", e.ToString());
+                MessageBox.Show(e.Message, "Error OpenArchivate", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        
         }
-        private bool OnFilterPredicate(object obj)
+        private void ArchivatorCallBack(IDialogResult result)
+        {
+            if (result.Result == ButtonResult.Yes)
+            {
+                string[] bemt = [];
+                var res = result.Parameters.GetValue<ArchivatorResult>("Results");
+
+            }
+        }
+private bool OnFilterPredicate(object obj)
         {
             bool accept = true;
             if (obj is ProductMaterial mat)

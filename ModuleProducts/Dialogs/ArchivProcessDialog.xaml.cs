@@ -17,7 +17,7 @@ namespace ModuleProducts.Dialogs
     /// <summary>
     /// Interaction logic for ArchivProcessDialog.xaml
     /// </summary>
-    public partial class ArchivProcessDialog : Window
+    public partial class ArchivProcessDialog : UserControl
     {
         public ArchivProcessDialog()
         {
