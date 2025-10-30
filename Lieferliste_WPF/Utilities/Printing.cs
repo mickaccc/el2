@@ -1,4 +1,5 @@
-﻿using El2Core.Models;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Lieferliste_WPF.Views;
@@ -16,8 +17,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Resources;
 using System.Windows.Xps.Packaging;
 using System.Windows.Xps.Serialization;
+using Thickness = System.Windows.Thickness;
 using ValidationResult = System.Printing.ValidationResult;
 
 namespace Lieferliste_WPF.Utilities
@@ -99,9 +103,33 @@ namespace Lieferliste_WPF.Utilities
 
             var printDlg = new PrintDialog();
             printDlg.PrintTicket = ticket;
+            StreamResourceInfo BitmapStreamSourceInfo;
 
             FlowDocument fd = new FlowDocument();
-            Paragraph p1 = new Paragraph(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy HH:mm")));
+            Paragraph logo = new Paragraph(new Run("COS-Lieferliste"));
+            logo.FontSize = 20;
+            logo.FontWeight = FontWeights.Bold;
+            logo.Padding = new Thickness(0.0, 15.0, 0.0, 0.0);
+            BitmapImage bitmap = new BitmapImage(); 
+            BitmapStreamSourceInfo = Application.GetResourceStream(new Uri("..\\Images\\BOSCH2.jpg", UriKind.Relative));
+
+            bitmap.BeginInit();
+            bitmap.StreamSource = BitmapStreamSourceInfo.Stream;
+            bitmap.EndInit();
+            Image l = new Image() { Source = bitmap };
+            Figure figureLogo = new Figure();
+            figureLogo.Width = new FigureLength(200);
+            figureLogo.Height = new FigureLength(120);
+            figureLogo.Background = Brushes.GhostWhite;
+            figureLogo.HorizontalAnchor = FigureHorizontalAnchor.PageLeft;
+            figureLogo.Blocks.Add(new BlockUIContainer(l));
+
+            figureLogo.Blocks.Add(logo);
+
+            Paragraph p1 = new Paragraph();
+            p1.Inlines.Add(figureLogo);
+            p1.Inlines.Add(new Run(DateTime.Now.ToString("ddd, dd/MM/yyyy HH:mm")));
+
             fd.PageWidth = printDlg.PrintableAreaWidth;
             fd.PageHeight = printDlg.PrintableAreaHeight;
             fd.PagePadding = new Thickness(96 / 3);

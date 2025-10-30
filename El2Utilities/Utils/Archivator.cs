@@ -42,14 +42,14 @@ namespace El2Core.Utils
             set { _isChanged = true; _DelayDays = value; }
         }
 
-        public static int Archivate(string SourceLocation, int rule, out string Location)
+        public static ArchivState Archivate(string SourceLocation, int rule, out string Location)
         {
-            int state = 0;
+            ArchivState state = 0;
             Location = string.Empty;
-            if (rule < 0 || rule >= ArchiveRules.Count) return 3;
+            if (rule < 0 || rule >= ArchiveRules.Count) return ArchivState.NoRule;
             List<FileInfo> files = [];
             var dir = new DirectoryInfo(SourceLocation);
-            if (dir.Exists == false) return 3;
+            if (dir.Exists == false) return ArchivState.NoDirectory;
             if (FileExtensions == null)
             {
                 files.AddRange([.. dir.GetFiles()]);
@@ -87,29 +87,26 @@ namespace El2Core.Utils
                 }
                 if (files.Count > 0)
                 {
-                    if (arch == null)
+                    if (arch == null || !arch.Exists)
                     {
                         arch = Directory.CreateDirectory(Path.Combine(Location, dir.Name));
                     }
-                    if (!arch.Exists)
-                    {
-                        Directory.CreateDirectory(Path.Combine(Location, dir.Name));
-                    }
+
                     var subArch = Directory.CreateDirectory(Path.Combine(arch.FullName, d.Name));
                     MoveFiles([.. files], subArch.FullName, ref state);
                 }
             }
-            state = (state == 0) ? 2 : state;
+            state = (state == 0) ? ArchivState.NoFiles : state;
             return state;
         }
-        private static void MoveFiles(FileInfo[] source, string target, ref int state)
+        private static void MoveFiles(FileInfo[] source, string target, ref ArchivState state)
         {
             foreach (var file in source)
             {
                 try
                 {
                     file.MoveTo(Path.Combine(target, file.Name));
-                    state = 1;
+                    state = ArchivState.Archivated;
                 }
                 catch (Exception ex)
                 {
@@ -121,6 +118,14 @@ namespace El2Core.Utils
         {
             TTNR,
             OrderNumber
+        }
+        public enum ArchivState
+        {
+            None,
+            Archivated,
+            NoFiles,
+            NoDirectory,
+            NoRule
         }
     }
     public class ArchivatorRule

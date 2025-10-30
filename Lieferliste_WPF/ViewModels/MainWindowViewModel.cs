@@ -899,16 +899,13 @@ namespace Lieferliste_WPF.ViewModels
             //gl.SaveProjectSchemes(schemes);
             var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             var orders = db.OrderRbs
-                .Include(x => x.Vorgangs)
-                .Where(x => x.Abgeschlossen == true && x.CompleteDate == null).ToList();
-            
+                .Where(x => x.ArchivState == 1 && x.ArchivPath.Length != 0);
+
             foreach (var order in orders)
             {
-                var accdate = order.Vorgangs.OrderBy(y => y.Vnr).Last().ActualEndDate;
-                if (accdate != null)
-                    order.CompleteDate = accdate;
-                //db.Update(order);
-                
+                order.ArchivPath =  "Q:\\Archiv\\Technical_Functions\\420_Musterbau\\10J\\" + order.Aid;
+                db.Update(order);
+
             }
             db.SaveChanges();
             //var pcont = new PersonalFilterContainer();

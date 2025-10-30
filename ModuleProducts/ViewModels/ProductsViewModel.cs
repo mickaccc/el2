@@ -198,13 +198,14 @@ namespace ModuleProducts.ViewModels
                     var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
                     string Location;
                     var state = Archivator.Archivate(p, rulenr, out Location);
-                    if (state == 1 || state == 2)
+                    if (state == Archivator.ArchivState.Archivated || state == Archivator.ArchivState.NoFiles)
                         Directory.Delete(p, true);
                     using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
                     {
                         var order = db.OrderRbs.FirstOrDefault(x => x.Aid == o.OrderNr);
-                        order.ArchivState = state;
-                        order.ArchivPath = Path.Combine(Location, order.Aid);
+                        order.ArchivState = (int)state;
+                        if (state == Archivator.ArchivState.Archivated)
+                            order.ArchivPath = Path.Combine(Location, order.Aid);
                         db.SaveChanges();
                     }
                     var matObj = _Materials.First(x => x.TTNR == mat);
@@ -213,13 +214,14 @@ namespace ModuleProducts.ViewModels
                         var por = (List<ProductOrder>)matObj.ProdOrders.SourceCollection;
                         var or = por.Find(x => x.OrderNr == o.OrderNr);
                         or.ArchivState = state;
-                        or.ArchivPath = Path.Combine(Location, o.OrderNr); ;
+                        if (state == Archivator.ArchivState.Archivated)
+                            or.ArchivPath = Path.Combine(Location, o.OrderNr); ;
                     }
-                    if (state == 1)
+                    if (state == Archivator.ArchivState.Archivated)
                         s1++;
-                    else if (state == 2)
+                    else if (state == Archivator.ArchivState.NoDirectory)
                         s2++;
-                    else if (state == 3)
+                    else if (state == Archivator.ArchivState.NoFiles)
                         s3++;                   
                 }
                 
@@ -292,7 +294,7 @@ namespace ModuleProducts.ViewModels
                         var msf = order.Vorgangs.Where(x => x.Msf != null).Select(x => x.Msf).ToArray();
                         
                         products.Add(new ProductOrder(dic, order.Aid, order.Quantity, order.Eckstart, order.Eckende,
-                            d, s, r, order.Abgeschlossen, msf, order.CompleteDate, order.ArchivState));
+                            d, s, r, order.Abgeschlossen, msf, order.CompleteDate, (Archivator.ArchivState)order.ArchivState));
                     }
                 }
                 ProdOrders = CollectionViewSource.GetDefaultView(products);
@@ -310,7 +312,7 @@ namespace ModuleProducts.ViewModels
         }
         public struct ProductOrder(ValueTuple<string, string, int, string> OrderLink, string OrderNr, int? Quantity,
             DateTime? EckStart, DateTime? EckEnd, int? Delivered, int? Scrap, int? Rework, bool closed,
-            string?[] tags, DateTime? completed, int archivState) : INotifyPropertyChanged
+            string?[] tags, DateTime? completed, Archivator.ArchivState archivState) : INotifyPropertyChanged
         {
             public string OrderNr { get; } = OrderNr;
             public int Quantity { get; } = Quantity ??= 0;
@@ -325,8 +327,8 @@ namespace ModuleProducts.ViewModels
             public DateTime? Completed { get; } = completed;
             private string? _archivPath;
             public string? ArchivPath { get { return _archivPath; } set { _archivPath = value; OnPropertyChanged(nameof(ArchivPath)); } }
-            private int _archivState = archivState;
-            public int ArchivState { get { return _archivState; } set { _archivState = value; OnPropertyChanged(nameof(ArchivState)); } }
+            private Archivator.ArchivState _archivState = archivState;
+            public Archivator.ArchivState ArchivState { get { return _archivState; } set { _archivState = value; OnPropertyChanged(nameof(ArchivState)); } }
 
             public event PropertyChangedEventHandler? PropertyChanged;
             private void OnPropertyChanged(string propertyName)
