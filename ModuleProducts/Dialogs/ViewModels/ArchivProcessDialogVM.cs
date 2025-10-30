@@ -94,7 +94,7 @@ namespace ModuleProducts.Dialogs.ViewModels
             _closeDialogCommand ?? (_closeDialogCommand = new DelegateCommand<Vorgang?>(CloseDialog));
         public bool CanCloseDialog()
         {
-            return false;
+            return true;
         }
 
         public void OnDialogClosed()

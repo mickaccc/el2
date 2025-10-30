@@ -194,8 +194,8 @@ namespace ModuleProducts.ViewModels
         {
             if (result.Result == ButtonResult.Yes)
             {
-                string[] bemt = [];
-                var res = result.Parameters.GetValue<ArchivatorResult>("Results");
+
+                var res = result.Parameters.GetValue<List<ArchivatorResult>>("Results");
 
             }
         }
