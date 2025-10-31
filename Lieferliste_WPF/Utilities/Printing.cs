@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using El2Core.Models;
+﻿using El2Core.Models;
 using El2Core.Utils;
 using El2Core.ViewModelBase;
 using Lieferliste_WPF.Views;
