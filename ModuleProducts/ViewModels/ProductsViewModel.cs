@@ -37,6 +37,74 @@ namespace ModuleProducts.ViewModels
         public ICollectionView ProductsView { get; private set; }
         private MeasureFirstPartInfo firstPartInfo;
         private ObservableCollection<ProductMaterial> _Materials =[];
+        private int _ArchivProcessingCount;
+
+        public int ArchivProcessingCount
+        {
+            get { return _ArchivProcessingCount; }
+            set
+            {
+                _ArchivProcessingCount = value;
+                NotifyPropertyChanged(() => ArchivProcessingCount);
+            }
+        }
+        private int _Archivated;
+
+        public int Archivated
+        {
+            get { return _Archivated; }
+            set
+            {
+                _Archivated = value;
+                NotifyPropertyChanged(() => Archivated);
+            }
+        }
+        private int _ArchivState2Count;
+
+        public int ArchivState2Count
+        {
+            get { return _ArchivState2Count; }
+            set
+            {
+                _ArchivState2Count = value;
+                NotifyPropertyChanged(() => ArchivState2Count);
+            }
+        }
+        private int _ArchivState3Count
+;
+
+        public int ArchivState3Count
+
+        {
+            get { return _ArchivState3Count; }
+            set
+            {
+                _ArchivState3Count = value;
+                NotifyPropertyChanged(() => ArchivState3Count);
+            }
+        }
+        private int _ArchivState4Count;
+
+        public int ArchivState4Count
+        {
+            get { return _ArchivState4Count; }
+            set
+            {
+                _ArchivState4Count = value;
+                NotifyPropertyChanged(() => ArchivState4Count);
+            }
+        }
+        private bool _ArchivComplete;
+
+        public bool ArchivComplete
+        {
+            get { return _ArchivComplete; }
+            set
+            {
+                _ArchivComplete = value;
+                NotifyPropertyChanged(() => ArchivComplete);
+            }
+        }
         private string? _SearchText;
         public string? SearchText
         {
