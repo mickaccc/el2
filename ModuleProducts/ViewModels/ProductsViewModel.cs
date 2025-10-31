@@ -9,11 +9,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using static ModuleProducts.Dialogs.ViewModels.ArchivProcessDialogVM;
 
 namespace ModuleProducts.ViewModels
 {
@@ -48,7 +46,7 @@ namespace ModuleProducts.ViewModels
                 NotifyPropertyChanged(() => ArchivProcessingCount);
             }
         }
-        private int _Archivated;
+        private int _Archivated = 0;
 
         public int Archivated
         {
@@ -59,7 +57,7 @@ namespace ModuleProducts.ViewModels
                 NotifyPropertyChanged(() => Archivated);
             }
         }
-        private int _ArchivState2Count;
+        private int _ArchivState2Count = 0;
 
         public int ArchivState2Count
         {
@@ -70,8 +68,7 @@ namespace ModuleProducts.ViewModels
                 NotifyPropertyChanged(() => ArchivState2Count);
             }
         }
-        private int _ArchivState3Count
-;
+        private int _ArchivState3Count = 0;
 
         public int ArchivState3Count
 
@@ -83,7 +80,7 @@ namespace ModuleProducts.ViewModels
                 NotifyPropertyChanged(() => ArchivState3Count);
             }
         }
-        private int _ArchivState4Count;
+        private int _ArchivState4Count = 0;
 
         public int ArchivState4Count
         {
@@ -94,7 +91,7 @@ namespace ModuleProducts.ViewModels
                 NotifyPropertyChanged(() => ArchivState4Count);
             }
         }
-        private bool _ArchivComplete;
+        private bool _ArchivComplete = false;
 
         public bool ArchivComplete
         {
@@ -105,6 +102,18 @@ namespace ModuleProducts.ViewModels
                 NotifyPropertyChanged(() => ArchivComplete);
             }
         }
+        private bool _IsArchivating;
+
+        public bool IsArchivating
+        {
+            get { return _IsArchivating; }
+            set
+            {
+                _IsArchivating = value;
+                NotifyPropertyChanged(() => IsArchivating);
+            }
+        }
+
         private string? _SearchText;
         public string? SearchText
         {
@@ -153,6 +162,8 @@ namespace ModuleProducts.ViewModels
         public RelayCommand SearchCommand => _SearchCommand ??= new RelayCommand(OnTextSearch);
         public ICommand ArchivateCommand => new ActionCommand(OnArchivateExecute, OnCanArchivateExecute);
         public ICommand DateSelectedCommand => new ActionCommand(OnDateSelectedExecute, OnCanDateSelectedExecute);
+        public ICommand CloseArchivMessageCommand => new ActionCommand(OnCloseArchivMessageExecuted, OnCanCloseArchivMessageExecute);
+
 
 
         private IApplicationCommands _applicationCommands;
@@ -235,6 +246,21 @@ namespace ModuleProducts.ViewModels
             else 
                 Selected_Dates = (IEnumerable<DateTime>)obj;
         }
+        private bool OnCanCloseArchivMessageExecute(object arg)
+        {
+            return ArchivComplete;
+        }
+
+        private void OnCloseArchivMessageExecuted(object obj)
+        {
+            ArchivProcessingCount = 0;
+            Archivated = 0;
+            ArchivState2Count = 0;
+            ArchivState3Count = 0;
+            ArchivState4Count = 0;
+            ArchivComplete = false;
+            IsArchivating = false;
+        }
         private bool OnCanArchivateExecute(object arg)
         {
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
@@ -242,30 +268,87 @@ namespace ModuleProducts.ViewModels
 
         private void OnArchivateExecute(object obj)
         {
-            try
-            {
-                var par = new DialogParameters();
-                par.Add("Archivate", ProductsView);
-                par.Add("Container", _container);
-    
- 
-                _dialogService.Show("ArchivProcessDialog", par, ArchivatorCallBack);
-            }
-            catch (Exception e)
-            {
-                _Logger.LogError("{message}", e.ToString());
-                MessageBox.Show(e.Message, "Error OpenArchivate", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        
-        }
-        private void ArchivatorCallBack(IDialogResult result)
-        {
-            if (result.Result == ButtonResult.Yes)
+            IsArchivating = true;
+            using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
+            foreach (var m in ProductsView)
             {
 
-                var res = result.Parameters.GetValue<List<ArchivatorResult>>("Results");
-
+                foreach (var o in (m as ProductMaterial).ProdOrders)
+                {
+                    ProductOrder s = (ProductOrder)o;
+                    if (s.ArchivState == Archivator.ArchivState.None &&
+                        s.Closed &&
+                        s.Completed < DateTime.Now.AddDays(-Archivator.DelayDays))
+     
+                            ArchivProcessingCount++;
+                }
             }
+
+            foreach (var m in ProductsView)
+            {
+
+                ProductMaterial mat = (ProductMaterial)m;
+
+                foreach (var item in mat.ProdOrders)
+                {
+                    ProductOrder ord = (ProductOrder)item;
+                    if (ord.ArchivState == Archivator.ArchivState.None &&
+                    ord.Closed &&
+                    ord.Completed < DateTime.Now.AddDays(-Archivator.DelayDays))
+                    {
+                        var doku = firstPartInfo.CreateDocumentInfos([mat.TTNR, ord.OrderNr]);
+                        int rulenr = 0;
+                        bool matched = false;
+                        foreach (var rule in Archivator.ArchiveRules)
+                        {
+                            string? input = (rule.MatchTarget.Equals(Archivator.ArchivatorTarget.TTNR)) ? mat.TTNR : ord.OrderNr;
+                            if (Regex.IsMatch(input, rule.RegexString))
+                            {
+                                matched = true;
+                                break;
+                            }
+                            rulenr++;
+                        }
+                        if (!matched)
+                        {
+                            ArchivState4Count++;
+                            ArchivProcessingCount--;
+                            continue;
+                        }
+                        var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
+                        string Location;
+                        var state = Archivator.Archivate(p, rulenr, out Location);
+                        if (state == Archivator.ArchivState.Archivated || state == Archivator.ArchivState.NoFiles)
+                            Directory.Delete(p, true);
+                        
+                        var o = db.OrderRbs.Single(x => x.Aid == ord.OrderNr);
+                        
+                        switch (state)
+                        {
+                            case Archivator.ArchivState.Archivated:
+                                Archivated++;                              
+                                o.ArchivPath = Path.Combine(Location, ord.OrderNr);
+                                o.ArchivState = (int)state;
+                                ord.OrderLink = new ValueTuple<string, string, int, string>(mat.TTNR, ord.OrderNr, (int)state, o.ArchivPath);
+                                break;
+                            case Archivator.ArchivState.NoFiles:
+                                ArchivState2Count++;
+                                o.ArchivState = (int)state;
+                                break;
+                            case Archivator.ArchivState.NoDirectory:
+                                ArchivState3Count++;
+                                o.ArchivState = (int)state;
+                                break;
+                        }
+                        ord.ArchivState = state;
+                        db.Update(o);                   
+                    }
+                    ArchivProcessingCount--;
+                }
+            }
+            
+            ArchivComplete = true;
+            db.SaveChanges();
         }
 private bool OnFilterPredicate(object obj)
         {
@@ -354,7 +437,15 @@ private bool OnFilterPredicate(object obj)
             public string OrderNr { get; } = OrderNr;
             public int Quantity { get; } = Quantity ??= 0;
             public bool Closed { get; } = closed;
-            public ValueTuple<string, string, int, string> OrderLink { get; } = OrderLink;
+            private ValueTuple<string, string, int, string> _orderLink = OrderLink;
+            public ValueTuple<string, string, int, string> OrderLink
+            {
+                get { return _orderLink; }
+                set {
+                    _orderLink = value;
+                    OnPropertyChanged(nameof(OrderLink));
+                }
+            }
             public DateTime? Start { get; } = EckStart;
             public DateTime? End { get; } = EckEnd;
             public int Delivered { get; } = Delivered ??= 0;
@@ -365,7 +456,15 @@ private bool OnFilterPredicate(object obj)
             private string? _archivPath;
             public string? ArchivPath { get { return _archivPath; } set { _archivPath = value; OnPropertyChanged(nameof(ArchivPath)); } }
             private Archivator.ArchivState _archivState = archivState;
-            public Archivator.ArchivState ArchivState { get { return _archivState; } set { _archivState = value; OnPropertyChanged(nameof(ArchivState)); } }
+            public Archivator.ArchivState ArchivState
+            {
+                get { return _archivState; }
+                set
+                {
+                    _archivState = value;
+                    OnPropertyChanged(nameof(ArchivState));
+                }
+            }
 
             public event PropertyChangedEventHandler? PropertyChanged;
             private void OnPropertyChanged(string propertyName)

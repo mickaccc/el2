@@ -152,53 +152,37 @@
                 </ContextMenu>
             </vh:Calendar.ContextMenu>
         </vh:Calendar>
-        <Popup Placement="Bottom" PlacementTarget="{Binding ElementName=CLD}" IsOpen="True" >
-            <Grid Background="BlueViolet">
-                <Grid.Resources>
-                    <conv:BooleanToVisibilityConverter x:Key="boolToVis"/>
-                </Grid.Resources>
+        <Popup Placement="Bottom" PlacementTarget="{Binding ElementName=CLD}" IsOpen="{Binding IsArchivating}"  Width="170" >
+            <Grid Background="LightCyan">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
                     <RowDefinition/>
+                    <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="Archivierung" TextElement.FontSize="30" TextElement.FontWeight="Bold" TextAlignment="Center"/>
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
+                <TextBlock Text="Archivierung" TextElement.FontSize="25" TextElement.FontWeight="Bold" TextAlignment="Center"/>
+    
+                    <StackPanel Grid.Row="1">
+                        <TextBlock Text="noch zu verarbeitende
+                                   Datensätze:"/>
+                        <TextBlock Text="{Binding ArchivProcessingCount}" Margin="10,0,20,0"/>
 
-                    <TextBlock Text="noch zu verarbeitende Datensätze:"/>
-                    <TextBlock Grid.Column="1" Text="{Binding ArchivProcessingCount}" Margin="10,0,0,0"/>
+                        <TextBlock Text="Archiviert:"/>
+                        <TextBlock Text="{Binding ArchivatedCount}" Margin="10,0,20,0"/>
 
-                    <TextBlock Grid.Row="1"  Text="Archiviert:"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ArchivatedCount}" Margin="10,0,0,0"/>
+                        <TextBlock Text="keine Dateien:"/>
+                        <TextBlock Text="{Binding ArchivState2Count}" Margin="10,0,20,0"/>
 
-                    <TextBlock Grid.Row="2" Text="keine Dateien:"/>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ArchivState2Count}" Margin="10,0,0,0"/>
+                        <TextBlock Text="kein Ordner:"/>
+                        <TextBlock Text="{Binding ArchivState3Count}" Margin="10,0,20,0"/>
 
-                    <TextBlock Grid.Row="3" Text="kein Ordner:"/>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ArchivState3Count}" Margin="10,0,0,0"/>
-
-                    <TextBlock Grid.Row="4" Text="keine Regel:"/>
-                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ArchivState4Count}" Margin="10,0,0,0"/>
-
-                    <DockPanel Grid.Row="5" Grid.ColumnSpan="2">
-                        <TextBlock Text="Process ist abgeschlossen!" TextElement.FontSize="18" TextElement.FontWeight="DemiBold"
-   TextElement.FontStretch="Expanded" VerticalAlignment="Center"
-   Visibility="{Binding ArchivComplete, Converter={StaticResource boolToVis}}"/>
-                        <Button Content="schliessen" Command="{Binding CloseDialogCommand}" HorizontalAlignment="Right"/>
-                    </DockPanel>
-                </Grid>
-
+                        <TextBlock Text="keine Regel:"/>
+                        <TextBlock Text="{Binding ArchivState4Count}" Margin="10,0,20,0"/>
+                    </StackPanel>
+                <DockPanel Grid.Row="2">
+ 
+                    <Button Content="schliessen" Command="{Binding CloseArchivMessageCommand}" HorizontalAlignment="Right"
+                            Visibility="{Binding ArchivComplete, Converter={StaticResource BoolToVis}}"/>
+                </DockPanel>
             </Grid>
         </Popup>
 

@@ -18,8 +18,6 @@ using ModulePlanning.Dialogs;
 using ModulePlanning.Dialogs.ViewModels;
 using ModulePlanning.Planning;
 using ModulePlanning.Views;
-using ModuleProducts.Dialogs;
-using ModuleProducts.Dialogs.ViewModels;
 using ModuleProducts.Views;
 using ModuleReport.Views;
 using ModuleShift.Dialogs;
@@ -143,7 +141,6 @@ namespace Lieferliste_WPF
             containerRegistry.RegisterDialog<AttachmentDialog, AttachmentDialogViewModel>();
             containerRegistry.RegisterDialog<InputStoppage, InputStoppageVM>();
             containerRegistry.RegisterDialog<ProcessTimeDialog, ProcessTimeDialogVM>();
-            containerRegistry.RegisterDialog<ArchivProcessDialog, ArchivProcessDialogVM>();
 
 
             Globals gl = new(Container);

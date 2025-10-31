@@ -72,7 +72,6 @@ namespace El2Core.Utils
             foreach (var d in dir.GetDirectories())
             {
 
-
                 files.Clear();
                 if (FileExtensions == null)
                 {
@@ -96,7 +95,7 @@ namespace El2Core.Utils
                     MoveFiles([.. files], subArch.FullName, ref state);
                 }
             }
-            state = (state == 0) ? ArchivState.NoFiles : state;
+            
             return state;
         }
         private static void MoveFiles(FileInfo[] source, string target, ref ArchivState state)
