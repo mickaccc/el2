@@ -14,7 +14,7 @@
     prism:ViewModelLocator.AutoWireViewModel="True"
     x:Class="Lieferliste_WPF.Views.Order"
         mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="1000" MinWidth="1000" Tag="{Binding Title}">
+    d:DesignHeight="450" d:DesignWidth="1200" MinWidth="1000" Tag="{Binding Title}">
 
     <UserControl.Resources>
         <conv:DateConverter x:Key="DateConverter1" />
@@ -290,7 +290,7 @@
                                 </TextBox>
 
                             </GroupBox>
-                            <!--<GroupBox Grid.Column="9"  ToolTip="Kommentar Mitarbeiter" 
+                            <GroupBox Grid.Column="9"  ToolTip="Kommentar Mitarbeiter" 
                                                   Header="{Binding BemMa,
                                     Converter={StaticResource CommentConv}, ConverterParameter={StaticResource TrueValue}}">
                                 <TextBox x:Name="bemma" Text="{Binding BemMa, NotifyOnSourceUpdated=True,
@@ -310,9 +310,17 @@
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </TextBox>
-                            </GroupBox>-->
-                            <wpf:CommentControl Grid.Column="9" CommentString="{Binding BemMa, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                User="{Binding Path=DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            </GroupBox>
+                            <!--<wpf:CommentControl Grid.Column="9" CommentString="{Binding BemMa, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                User="{Binding Path=DataContext.UserIdent, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Width="200">
+                                <wpf:CommentControl.IsEditable>
+                                    <MultiBinding Converter="{StaticResource Relpermiss}">
+                                        <Binding Source="{x:Static const:Permissions.CommentTe}"/>
+                                        <Binding Path="ArbPlSapNavigation.Ressource.WorkAreaId"/>
+                                    </MultiBinding>
+                                </wpf:CommentControl.IsEditable>
+                            </wpf:CommentControl>-->
                         </Grid>
                     </Border>
                 </DataTemplate>

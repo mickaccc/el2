@@ -201,12 +201,12 @@ namespace ModuleProducts.ViewModels
 
                 var onr = await db.Vorgangs
                     .Where(x => x.ArbPlSap != null && x.ArbPlSap.Length >=3)
-                    .Select(x => new ValueTuple<string, string> (x.Aid, x.ArbPlSap))
+                    .Select(x => new ValueTuple<string, string> (x.Aid, x.ArbPlSap)).Distinct()
                     .ToListAsync();
 
                 var a = onr
                     .Where(x => UserInfo.User.AccountCostUnits.Any(y => y.CostId.ToString().Equals(x.Item2[..3])))
-                    .Select(x => x.Item1)
+                    .Select(x => x.Item1).Distinct()
                     .ToList();
 
                 var mat = await db.TblMaterials
@@ -217,8 +217,8 @@ namespace ModuleProducts.ViewModels
 
                 foreach (var m in mat)
                 {
-    
-                    var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs]);
+   
+                    var p = new ProductMaterial(m.Ttnr, m.Bezeichng, [.. m.OrderRbs.IntersectBy(a, x => x.Aid)]);
                     _Materials.Add(p);
         
                 }
@@ -317,7 +317,8 @@ namespace ModuleProducts.ViewModels
                         }
                         var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
                         string Location;
-                        var state = Archivator.Archivate(p, rulenr, out Location);
+                        int MovedFiles;
+                        var state = Archivator.Archivate(p, rulenr, out Location, out MovedFiles);
                         if (state == Archivator.ArchivState.Archivated || state == Archivator.ArchivState.NoFiles)
                             Directory.Delete(p, true);
                         
