@@ -42,10 +42,11 @@ namespace El2Core.Utils
             set { _isChanged = true; _DelayDays = value; }
         }
 
-        public static ArchivState Archivate(string SourceLocation, int rule, out string Location)
+        public static ArchivState Archivate(string SourceLocation, int rule, out string Location, out int MovedFiles)
         {
             ArchivState state = 0;
             Location = string.Empty;
+            MovedFiles = 0;
             if (rule < 0 || rule >= ArchiveRules.Count) return ArchivState.NoRule;
             List<FileInfo> files = [];
             var dir = new DirectoryInfo(SourceLocation);
@@ -67,7 +68,7 @@ namespace El2Core.Utils
             {
                 arch = Directory.CreateDirectory(Path.Combine(Location, dir.Name));
 
-                MoveFiles([.. files], arch.FullName, ref state);
+                _ = MoveFilesAsync([.. files], arch.FullName, 0);
             }
             foreach (var d in dir.GetDirectories())
             {
@@ -92,10 +93,22 @@ namespace El2Core.Utils
                     }
 
                     var subArch = Directory.CreateDirectory(Path.Combine(arch.FullName, d.Name));
-                    MoveFiles([.. files], subArch.FullName, ref state);
+                    ValueTuple<int, int> result = new (0,0);
+                    do
+                    {
+                       result = MoveFilesAsync([.. files], subArch.FullName, result.Item2).Result;
+                       MovedFiles += result.Item1;
+                    } while (result.Item2 > 0);
                 }
             }
-            
+            if (MovedFiles == 0)
+            {
+                state = ArchivState.NoFiles;
+            }
+            else
+            {
+                state = ArchivState.Archivated;
+            }
             return state;
         }
         private static void MoveFiles(FileInfo[] source, string target, ref ArchivState state)
@@ -113,6 +126,31 @@ namespace El2Core.Utils
                 }
             }
         }
+        private static async Task<ValueTuple<int, int>> MoveFilesAsync(FileInfo[] source, string target, int dirNumber)
+        {
+            int result = 0;
+            int dirCount = 0;
+            await Task.Run(() =>
+            {
+
+                foreach (var file in source)
+                {
+  
+                    try
+                    {
+                        AdvanceFileOperations.MoveFileAsync(file.FullName, Path.Combine(target, file.Name)).Wait();
+                        result++;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                    dirCount = file.Directory != null ? file.Directory.GetDirectories().Length : 0;
+                }            
+            });
+            return new (result, dirCount-dirNumber);
+        }
+
         public enum ArchivatorTarget
         {
             TTNR,
