@@ -263,11 +263,13 @@ namespace ModuleProducts.ViewModels
         }
         private bool OnCanArchivateExecute(object arg)
         {
-            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
+            return false;
+            //return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
 
         private void OnArchivateExecute(object obj)
         {
+            int MovedFiles =0;
             IsArchivating = true;
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             foreach (var m in ProductsView)
@@ -317,7 +319,7 @@ namespace ModuleProducts.ViewModels
                         }
                         var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
                         string Location;
-                        int MovedFiles;
+                        
                         var state = Archivator.Archivate(p, rulenr, out Location, out MovedFiles);
                         if (state == Archivator.ArchivState.Archivated || state == Archivator.ArchivState.NoFiles)
                             Directory.Delete(p, true);
@@ -350,6 +352,8 @@ namespace ModuleProducts.ViewModels
             
             ArchivComplete = true;
             db.SaveChanges();
+            _Logger.LogInformation("Archiviert: {0} NoFiles(2): {1} NoDirectory(3): {2} NoRules(4): {3} copied Files {4}",
+                Archivated, ArchivState2Count, ArchivState3Count, ArchivState4Count, MovedFiles);
         }
 private bool OnFilterPredicate(object obj)
         {

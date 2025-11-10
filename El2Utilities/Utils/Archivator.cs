@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Automation;
 
 namespace El2Core.Utils
 {
@@ -44,6 +40,7 @@ namespace El2Core.Utils
 
         public static ArchivState Archivate(string SourceLocation, int rule, out string Location, out int MovedFiles)
         {
+            
             ArchivState state = 0;
             Location = string.Empty;
             MovedFiles = 0;
@@ -72,7 +69,7 @@ namespace El2Core.Utils
             }
             foreach (var d in dir.GetDirectories())
             {
-
+                int repeatNo = 0;
                 files.Clear();
                 if (FileExtensions == null)
                 {
@@ -93,12 +90,29 @@ namespace El2Core.Utils
                     }
 
                     var subArch = Directory.CreateDirectory(Path.Combine(arch.FullName, d.Name));
-                    ValueTuple<int, int> result = new (0,0);
+                    ValueTuple<int, string> result = new (0, string.Empty);
                     do
                     {
-                       result = MoveFilesAsync([.. files], subArch.FullName, result.Item2).Result;
+                       result = MoveFilesAsync([.. files], subArch.FullName, repeatNo).Result;
                        MovedFiles += result.Item1;
-                    } while (result.Item2 > 0);
+                        if (result.Item2 != null)
+                        {
+                            var f = new DirectoryInfo(result.Item2);
+                            files.Clear();
+                            if (FileExtensions == null)
+                            {
+                                files.AddRange([.. f.GetFiles()]);
+                            }
+                            else
+                            {
+                                foreach (var ext in FileExtensions)
+                                {
+                                    files.AddRange(f.GetFiles($"*{ext}"));
+                                }
+                            }
+                            repeatNo++;
+                        }
+                    } while (result.Item2 != string.Empty);
                 }
             }
             if (MovedFiles == 0)
@@ -126,10 +140,11 @@ namespace El2Core.Utils
                 }
             }
         }
-        private static async Task<ValueTuple<int, int>> MoveFilesAsync(FileInfo[] source, string target, int dirNumber)
+        private static async Task<ValueTuple<int, string>> MoveFilesAsync(FileInfo[] source, string target, int repeatNr)
         {
             int result = 0;
             int dirCount = 0;
+            string path = string.Empty;
             await Task.Run(() =>
             {
 
@@ -146,9 +161,10 @@ namespace El2Core.Utils
                         throw;
                     }
                     dirCount = file.Directory != null ? file.Directory.GetDirectories().Length : 0;
+                    if (dirCount > 0) path = file.Directory.GetDirectories()[repeatNr].FullName;
                 }            
             });
-            return new (result, dirCount-dirNumber);
+            return new (result, path);
         }
 
         public enum ArchivatorTarget

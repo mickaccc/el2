@@ -626,7 +626,10 @@ namespace Lieferliste_WPF.ViewModels
                 else
                 {
                     var p = Path.Combine(docu[DocumentPart.RootPath], docu[DocumentPart.SavePath]);
-                    Process.Start("explorer.exe", @p);
+                    if (Directory.Exists(p))
+                        Process.Start("explorer.exe", @p);
+                    else
+                        MessageBox.Show(@"Der Pfad " + @p + " wurde nicht gefunden.", "Dateiexplorer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
             }
         }
