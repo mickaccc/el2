@@ -91,6 +91,18 @@ namespace ModuleProducts.ViewModels
                 NotifyPropertyChanged(() => ArchivState4Count);
             }
         }
+        private int _MovedFiles;
+
+        public int MovedFiles
+        {
+            get { return _MovedFiles; }
+            set
+            {
+                _MovedFiles = value;
+                NotifyPropertyChanged(() => MovedFiles);
+            }
+        }
+
         private bool _ArchivComplete = false;
 
         public bool ArchivComplete
@@ -316,32 +328,33 @@ namespace ModuleProducts.ViewModels
                             continue;
                         }
                         var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
-                        string Location;
-                        int MovedFiles;
-                        var state = Archivator.Archivate(p, rulenr, out Location, out MovedFiles);
-                        if (state == Archivator.ArchivState.Archivated || state == Archivator.ArchivState.NoFiles)
-                            Directory.Delete(p, true);
+     
+                        var result = Archivator.ArchivateAsync(new DirectoryInfo(p), rulenr);
+                        if (result.IsCompleted && (result.Result.State == Archivator.ArchivState.Archivated ||
+                            result.Result.State == Archivator.ArchivState.NoFiles))
+                             Directory.Delete(p, true);
                         
                         var o = db.OrderRbs.Single(x => x.Aid == ord.OrderNr);
                         
-                        switch (state)
+                        switch (result.Result.State)
                         {
                             case Archivator.ArchivState.Archivated:
-                                Archivated++;                              
-                                o.ArchivPath = Path.Combine(Location, ord.OrderNr);
-                                o.ArchivState = (int)state;
-                                ord.OrderLink = new ValueTuple<string, string, int, string>(mat.TTNR, ord.OrderNr, (int)state, o.ArchivPath);
+                                Archivated++;
+                                MovedFiles += result.Result.MovedFiles;
+                                o.ArchivPath = Path.Combine(result.Result.Location, ord.OrderNr);
+                                o.ArchivState = (int)result.Result.State;
+                                ord.OrderLink = new ValueTuple<string, string, int, string>(mat.TTNR, ord.OrderNr, (int)result.Result.State, o.ArchivPath);
                                 break;
                             case Archivator.ArchivState.NoFiles:
                                 ArchivState2Count++;
-                                o.ArchivState = (int)state;
+                                o.ArchivState = (int)result.Result.State;
                                 break;
                             case Archivator.ArchivState.NoDirectory:
                                 ArchivState3Count++;
-                                o.ArchivState = (int)state;
+                                o.ArchivState = (int)result.Result.State;
                                 break;
                         }
-                        ord.ArchivState = state;
+                        ord.ArchivState = result.Result.State;
                         db.Update(o);                   
                     }
                     ArchivProcessingCount--;

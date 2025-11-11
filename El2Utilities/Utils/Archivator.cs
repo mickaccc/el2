@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Automation;
 
@@ -42,74 +43,105 @@ namespace El2Core.Utils
             set { _isChanged = true; _DelayDays = value; }
         }
 
-        public static ArchivState Archivate(string SourceLocation, int rule, out string Location, out int MovedFiles)
+        public static async Task<ArchivatorResult> ArchivateAsync(DirectoryInfo SourceLocation, int rule, CancellationToken cancellationToken = default)
         {
             ArchivState state = 0;
-            Location = string.Empty;
-            MovedFiles = 0;
-            if (rule < 0 || rule >= ArchiveRules.Count) return ArchivState.NoRule;
-            List<FileInfo> files = [];
-            var dir = new DirectoryInfo(SourceLocation);
-            if (dir.Exists == false) return ArchivState.NoDirectory;
+            string Location = string.Empty;
+            int MovedFiles = 0;
+            if (rule < 0 || rule >= ArchiveRules.Count) return new ArchivatorResult() { State = ArchivState.NoRule, Location = Location, MovedFiles = 0 };
+            List<FileInfo> files;
+   
+            if (!SourceLocation.Exists) return new ArchivatorResult() { State = ArchivState.NoDirectory, Location = Location, MovedFiles = 0 };
             if (FileExtensions == null)
             {
-                files.AddRange([.. dir.GetFiles()]);
+                files = [.. SourceLocation.GetFiles( "*.*", SearchOption.AllDirectories)];
             }
             else
             {
+                files = [];
                 foreach (var ext in FileExtensions)
                 {
-                    files.AddRange(dir.GetFiles($"*{ext}"));
+                    files.AddRange(SourceLocation.GetFiles($"*{ext}", SearchOption.AllDirectories));
                 }
             }
+            if (files.Count == 0) return new ArchivatorResult() { State = ArchivState.NoFiles, Location = Location, MovedFiles = 0 };
             DirectoryInfo? arch = null;
-            Location = ArchiveRules[rule].TargetPath;
-            if (files.Count > 0)
-            {
-                arch = Directory.CreateDirectory(Path.Combine(Location, dir.Name));
-
-                _ = MoveFilesAsync([.. files], arch.FullName, 0);
-            }
-            foreach (var d in dir.GetDirectories())
+            Location = ArchiveRules[rule].TargetPath ?? string.Empty;
+            List<Task> movingtasks = [];
+            foreach (var file in files)
             {
 
-                files.Clear();
-                if (FileExtensions == null)
+                try
                 {
-                    files.AddRange([.. d.GetFiles()]);
-                }
-                else
-                {
-                    foreach (var ext in FileExtensions)
-                    {
-                        files.AddRange(d.GetFiles($"*{ext}"));
-                    }
-                }
-                if (files.Count > 0)
-                {
-                    if (arch == null || !arch.Exists)
-                    {
-                        arch = Directory.CreateDirectory(Path.Combine(Location, dir.Name));
-                    }
+                    var target = file.FullName.Replace(SourceLocation.Parent.FullName, Location);
+                    AdvanceFileOperations.MoveFileAsyncStream(file.FullName, Path.Combine(Location, target));
+                    //movingtasks.Add(t);
 
-                    var subArch = Directory.CreateDirectory(Path.Combine(arch.FullName, d.Name));
-                    ValueTuple<int, int> result = new (0,0);
-                    do
-                    {
-                       result = MoveFilesAsync([.. files], subArch.FullName, result.Item2).Result;
-                       MovedFiles += result.Item1;
-                    } while (result.Item2 > 0);
+                }
+                catch (AggregateException ex) { }
+                catch (ArgumentException ex) { }
+                catch (FileNotFoundException ex)
+                {
+                }
+                catch (IOException ex)
+                {
+
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                }
+                catch (Exception ex)
+                {
+                    throw;
                 }
             }
-            if (MovedFiles == 0)
+            //if (files.Count > 0)
+            //{
+            //    arch = Directory.CreateDirectory(Path.Combine(Location, dir.Name));
+
+            //    _ = MoveFilesAsync([.. files], arch.FullName, 0);
+            //}
+            //foreach (var d in dir.GetDirectories())
+            //{
+
+            //    files.Clear();
+            //    if (FileExtensions == null)
+            //    {
+            //        files.AddRange([.. d.GetFiles()]);
+            //    }
+            //    else
+            //    {
+            //        foreach (var ext in FileExtensions)
+            //        {
+            //            files.AddRange(d.GetFiles($"*{ext}"));
+            //        }
+            //    }
+            //    if (files.Count > 0)
+            //    {
+            //        if (arch == null || !arch.Exists)
+            //        {
+            //            arch = Directory.CreateDirectory(Path.Combine(Location, dir.Name));
+            //        }
+
+            //        var subArch = Directory.CreateDirectory(Path.Combine(arch.FullName, d.Name));
+            //        ValueTuple<int, int> result = new (0,0);
+            //        do
+            //        {
+            //           result = MoveFilesAsync([.. files], subArch.FullName, result.Item2).Result;
+            //           MovedFiles += result.Item1;
+            //        } while (result.Item2 > 0);
+            //    }
+            //}
+            if (movingtasks.Count > 0)
             {
-                state = ArchivState.NoFiles;
+                Task.WaitAll(movingtasks);
             }
-            else
-            {
+            MovedFiles = files.Count;
+            if (MovedFiles > 0)
+            {  
                 state = ArchivState.Archivated;
             }
-            return state;
+            return new ArchivatorResult() { State = state, Location = Location, MovedFiles = MovedFiles };
         }
         private static void MoveFiles(FileInfo[] source, string target, ref ArchivState state)
         {
@@ -164,6 +196,12 @@ namespace El2Core.Utils
             NoDirectory,
             NoRule
         }
+    }
+    public struct ArchivatorResult
+    {
+        public Archivator.ArchivState State { get; set; }
+        public string Location { get; set; }
+        public int MovedFiles { get; set; }
     }
     public class ArchivatorRule
     {

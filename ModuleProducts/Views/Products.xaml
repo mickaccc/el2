@@ -167,7 +167,7 @@
                         <TextBlock Text="{Binding ArchivProcessingCount}" Margin="10,0,20,0"/>
 
                         <TextBlock Text="Archiviert:"/>
-                        <TextBlock Text="{Binding ArchivatedCount}" Margin="10,0,20,0"/>
+                        <TextBlock Text="{Binding Archivated}" Margin="10,0,20,0"/>
 
                         <TextBlock Text="keine Dateien:"/>
                         <TextBlock Text="{Binding ArchivState2Count}" Margin="10,0,20,0"/>
@@ -177,7 +177,10 @@
 
                         <TextBlock Text="keine Regel:"/>
                         <TextBlock Text="{Binding ArchivState4Count}" Margin="10,0,20,0"/>
-                    </StackPanel>
+                        
+                    <TextBlock Text="Archivierte Dateien:"/>
+                    <TextBlock Text="{Binding MovedFiles}" Margin="10,0,20,0"/>
+                </StackPanel>
                 <DockPanel Grid.Row="2">
  
                     <Button Content="schliessen" Command="{Binding CloseArchivMessageCommand}" HorizontalAlignment="Right"
