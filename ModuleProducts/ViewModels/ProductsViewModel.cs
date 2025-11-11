@@ -270,18 +270,18 @@ namespace ModuleProducts.ViewModels
             ArchivState2Count = 0;
             ArchivState3Count = 0;
             ArchivState4Count = 0;
+            MovedFiles = 0;
             ArchivComplete = false;
             IsArchivating = false;
         }
         private bool OnCanArchivateExecute(object arg)
         {
-            return false;
-            //return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
+            
+            return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
 
         private void OnArchivateExecute(object obj)
         {
-            int MovedFiles =0;
             IsArchivating = true;
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             foreach (var m in ProductsView)
@@ -334,7 +334,7 @@ namespace ModuleProducts.ViewModels
                         var result = Archivator.ArchivateAsync(new DirectoryInfo(p), rulenr);
                         if (result.IsCompleted && (result.Result.State == Archivator.ArchivState.Archivated ||
                             result.Result.State == Archivator.ArchivState.NoFiles))
-                             Directory.Delete(p, true);
+                             CoreFunction.DeleteDirectoryWithWait(p, true);
                         
                         var o = db.OrderRbs.Single(x => x.Aid == ord.OrderNr);
                         
@@ -368,7 +368,8 @@ namespace ModuleProducts.ViewModels
             _Logger.LogInformation("Archiviert: {0} NoFiles(2): {1} NoDirectory(3): {2} NoRules(4): {3} copied Files {4}",
                 Archivated, ArchivState2Count, ArchivState3Count, ArchivState4Count, MovedFiles);
         }
-private bool OnFilterPredicate(object obj)
+ 
+        private bool OnFilterPredicate(object obj)
         {
             bool accept = true;
             if (obj is ProductMaterial mat)
