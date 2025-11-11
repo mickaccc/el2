@@ -4,9 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Automation;
 
 namespace El2Core.Utils
 {
@@ -45,6 +43,7 @@ namespace El2Core.Utils
 
         public static async Task<ArchivatorResult> ArchivateAsync(DirectoryInfo SourceLocation, int rule, CancellationToken cancellationToken = default)
         {
+            
             ArchivState state = 0;
             string Location = string.Empty;
             int MovedFiles = 0;
@@ -158,10 +157,11 @@ namespace El2Core.Utils
                 }
             }
         }
-        private static async Task<ValueTuple<int, int>> MoveFilesAsync(FileInfo[] source, string target, int dirNumber)
+        private static async Task<ValueTuple<int, string>> MoveFilesAsync(FileInfo[] source, string target, int repeatNr)
         {
             int result = 0;
             int dirCount = 0;
+            string path = string.Empty;
             await Task.Run(() =>
             {
 
@@ -178,9 +178,10 @@ namespace El2Core.Utils
                         throw;
                     }
                     dirCount = file.Directory != null ? file.Directory.GetDirectories().Length : 0;
+                    if (dirCount > 0) path = file.Directory.GetDirectories()[repeatNr].FullName;
                 }            
             });
-            return new (result, dirCount-dirNumber);
+            return new (result, path);
         }
 
         public enum ArchivatorTarget
