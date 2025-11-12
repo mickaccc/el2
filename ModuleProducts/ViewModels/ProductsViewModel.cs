@@ -283,6 +283,7 @@ namespace ModuleProducts.ViewModels
         private void OnArchivateExecute(object obj)
         {
             IsArchivating = true;
+            DateTime ProcessTime = DateTime.Now;
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             foreach (var m in ProductsView)
             {
@@ -365,8 +366,8 @@ namespace ModuleProducts.ViewModels
             
             ArchivComplete = true;
             db.SaveChanges();
-            _Logger.LogInformation("Archiviert: {0} NoFiles(2): {1} NoDirectory(3): {2} NoRules(4): {3} copied Files {4}",
-                Archivated, ArchivState2Count, ArchivState3Count, ArchivState4Count, MovedFiles);
+            _Logger.LogInformation("Archiviert: {0} NoFiles(2): {1} NoDirectory(3): {2} NoRules(4): {3} copied Files {4}\nProcesstime: {5}",
+                Archivated, ArchivState2Count, ArchivState3Count, ArchivState4Count, MovedFiles, DateTime.Now - ProcessTime);
         }
  
         private bool OnFilterPredicate(object obj)
