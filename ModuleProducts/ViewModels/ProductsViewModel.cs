@@ -279,10 +279,16 @@ namespace ModuleProducts.ViewModels
             
             return PermissionsProvider.GetInstance().GetUserPermission(Permissions.Archivate);
         }
-
         private void OnArchivateExecute(object obj)
         {
             IsArchivating = true;
+            ArchivComplete = OnArchivateExecuteAsync(obj).IsCompleted;
+        }
+        private async Task OnArchivateExecuteAsync(object obj)
+        {
+            
+            int apc = 0;
+
             using var db = _container.Resolve<DB_COS_LIEFERLISTE_SQLContext>();
             foreach (var m in ProductsView)
             {
@@ -293,78 +299,83 @@ namespace ModuleProducts.ViewModels
                     if (s.ArchivState == Archivator.ArchivState.None &&
                         s.Closed &&
                         s.Completed < DateTime.Now.AddDays(-Archivator.DelayDays))
-     
-                            ArchivProcessingCount++;
+
+                        apc++;
                 }
             }
+            ArchivProcessingCount = apc;
 
-            foreach (var m in ProductsView)
-            {
-
-                ProductMaterial mat = (ProductMaterial)m;
-
-                foreach (var item in mat.ProdOrders)
+                foreach (var m in ProductsView)
                 {
-                    ProductOrder ord = (ProductOrder)item;
-                    if (ord.ArchivState == Archivator.ArchivState.None &&
-                    ord.Closed &&
-                    ord.Completed < DateTime.Now.AddDays(-Archivator.DelayDays))
+
+                    ProductMaterial mat = (ProductMaterial)m;
+
+                    foreach (var item in mat.ProdOrders)
                     {
-                        var doku = firstPartInfo.CreateDocumentInfos([mat.TTNR, ord.OrderNr]);
-                        int rulenr = 0;
-                        bool matched = false;
-                        foreach (var rule in Archivator.ArchiveRules)
+                    ProductOrder ord = (ProductOrder)item;
+                        if (ord.ArchivState == Archivator.ArchivState.None &&
+                        ord.Closed &&
+                        ord.Completed < DateTime.Now.AddDays(-Archivator.DelayDays))
                         {
-                            string? input = (rule.MatchTarget.Equals(Archivator.ArchivatorTarget.TTNR)) ? mat.TTNR : ord.OrderNr;
-                            if (Regex.IsMatch(input, rule.RegexString))
+
+                            var doku = firstPartInfo.CreateDocumentInfos([mat.TTNR, ord.OrderNr]);
+                            int rulenr = 0;
+                            bool matched = false;
+                            foreach (var rule in Archivator.ArchiveRules)
                             {
-                                matched = true;
-                                break;
+                                string? input = (rule.MatchTarget.Equals(Archivator.ArchivatorTarget.TTNR)) ? mat.TTNR : ord.OrderNr;
+                                if (Regex.IsMatch(input, rule.RegexString))
+                                {
+                                    matched = true;
+                                    break;
+                                }
+                                rulenr++;
                             }
-                            rulenr++;
+                            if (!matched)
+                            {
+                                ArchivState4Count++;
+                                ArchivProcessingCount--;
+                                continue;
+                            }
+                            var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
+
+                            var result = Archivator.ArchivateAsync(new DirectoryInfo(p), rulenr);
+                            
+                            if (result.IsCompleted && (result.Result.State == Archivator.ArchivState.Archivated ||
+                                result.Result.State == Archivator.ArchivState.NoFiles))
+                                CoreFunction.DeleteDirectoryWithWait(p, true);
+
+                            var o = db.OrderRbs.Single(x => x.Aid == ord.OrderNr);
+
+                            switch (result.Result.State)
+                            {
+                                case Archivator.ArchivState.Archivated:
+                                    Archivated++;
+                                    MovedFiles += result.Result.MovedFiles;
+                                    o.ArchivPath = Path.Combine(result.Result.Location, ord.OrderNr);
+                                    o.ArchivState = (int)result.Result.State;
+                                    ord.OrderLink = new ValueTuple<string, string, int, string>(mat.TTNR, ord.OrderNr, (int)result.Result.State, o.ArchivPath);
+                                    break;
+                                case Archivator.ArchivState.NoFiles:
+                                    ArchivState2Count++;
+                                    o.ArchivState = (int)result.Result.State;
+                                    break;
+                                case Archivator.ArchivState.NoDirectory:
+                                    ArchivState3Count++;
+                                    o.ArchivState = (int)result.Result.State;
+                                    break;
+                            }
+                            ord.ArchivState = result.Result.State;
+                            db.Update(o);
+                        _ = await db.SaveChangesAsync();
+
                         }
-                        if (!matched)
-                        {
-                            ArchivState4Count++;
-                            ArchivProcessingCount--;
-                            continue;
-                        }
-                        var p = Path.Combine(doku[DocumentPart.RootPath], doku[DocumentPart.SavePath], doku[DocumentPart.Folder]);
-     
-                        var result = Archivator.ArchivateAsync(new DirectoryInfo(p), rulenr);
-                        if (result.IsCompleted && (result.Result.State == Archivator.ArchivState.Archivated ||
-                            result.Result.State == Archivator.ArchivState.NoFiles))
-                             CoreFunction.DeleteDirectoryWithWait(p, true);
-                        
-                        var o = db.OrderRbs.Single(x => x.Aid == ord.OrderNr);
-                        
-                        switch (result.Result.State)
-                        {
-                            case Archivator.ArchivState.Archivated:
-                                Archivated++;
-                                MovedFiles += result.Result.MovedFiles;
-                                o.ArchivPath = Path.Combine(result.Result.Location, ord.OrderNr);
-                                o.ArchivState = (int)result.Result.State;
-                                ord.OrderLink = new ValueTuple<string, string, int, string>(mat.TTNR, ord.OrderNr, (int)result.Result.State, o.ArchivPath);
-                                break;
-                            case Archivator.ArchivState.NoFiles:
-                                ArchivState2Count++;
-                                o.ArchivState = (int)result.Result.State;
-                                break;
-                            case Archivator.ArchivState.NoDirectory:
-                                ArchivState3Count++;
-                                o.ArchivState = (int)result.Result.State;
-                                break;
-                        }
-                        ord.ArchivState = result.Result.State;
-                        db.Update(o);                   
+                        ArchivProcessingCount--;
                     }
-                    ArchivProcessingCount--;
                 }
-            }
             
-            ArchivComplete = true;
-            db.SaveChanges();
+            
+
             _Logger.LogInformation("Archiviert: {0} NoFiles(2): {1} NoDirectory(3): {2} NoRules(4): {3} copied Files {4}",
                 Archivated, ArchivState2Count, ArchivState3Count, ArchivState4Count, MovedFiles);
         }
